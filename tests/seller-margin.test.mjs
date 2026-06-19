@@ -12,7 +12,7 @@ const baseInput = {
   quantity: 2,
   sellerDiscount: 2_000,
   customerShippingFee: 3_000,
-  totalProductCost: 18_000,
+  unitProductCost: 9_000,
   platformFeeRate: 10,
   paymentFeeRate: 3,
   sellerShippingCost: 3_500,
@@ -61,7 +61,7 @@ test("비용이 매출보다 큰 적자 주문을 계산한다", () => {
       quantity: 1,
       sellerDiscount: 0,
       customerShippingFee: 0,
-      totalProductCost: 12_000,
+      unitProductCost: 12_000,
       platformFeeRate: 0,
       paymentFeeRate: 0,
       sellerShippingCost: 0,
@@ -119,7 +119,7 @@ test("고객에게 받은 배송비를 결제금액에 더한다", () => {
       quantity: 1,
       sellerDiscount: 0,
       customerShippingFee: 3_000,
-      totalProductCost: 4_000,
+      unitProductCost: 4_000,
       platformFeeRate: 0,
       paymentFeeRate: 0,
       sellerShippingCost: 3_000,
@@ -141,7 +141,7 @@ test("판매자 부담 할인금액을 결제금액에서 뺀다", () => {
       quantity: 1,
       sellerDiscount: 1_500,
       customerShippingFee: 0,
-      totalProductCost: 4_000,
+      unitProductCost: 4_000,
       platformFeeRate: 0,
       paymentFeeRate: 0,
       sellerShippingCost: 0,
@@ -162,7 +162,7 @@ test("소수 수수료율을 각각 원 단위로 반올림한다", () => {
       quantity: 1,
       sellerDiscount: 0,
       customerShippingFee: 0,
-      totalProductCost: 5_000,
+      unitProductCost: 5_000,
       platformFeeRate: 2.5,
       paymentFeeRate: 1.5,
       sellerShippingCost: 0,
@@ -186,7 +186,7 @@ test("소수 수수료율을 각각 원 단위로 반올림한다", () => {
   });
 });
 
-test("판매수량이 여러 개인 주문을 판매단가와 곱한다", () => {
+test("판매수량을 판매단가와 1개당 원가에 각각 곱한다", () => {
   const data = assertSuccess(
     calculateSellerMargin({
       ...baseInput,
@@ -194,7 +194,7 @@ test("판매수량이 여러 개인 주문을 판매단가와 곱한다", () => 
       quantity: 4,
       sellerDiscount: 0,
       customerShippingFee: 0,
-      totalProductCost: 12_000,
+      unitProductCost: 3_000,
       platformFeeRate: 0,
       paymentFeeRate: 0,
       sellerShippingCost: 0,
@@ -204,6 +204,7 @@ test("판매수량이 여러 개인 주문을 판매단가와 곱한다", () => 
   );
 
   assert.equal(data.productSalesAmount, 30_000);
+  assert.equal(data.totalCosts, 12_000);
   assert.equal(data.estimatedNetProfit, 18_000);
 });
 
@@ -217,7 +218,7 @@ for (const field of [
   "unitPrice",
   "sellerDiscount",
   "customerShippingFee",
-  "totalProductCost",
+  "unitProductCost",
   "sellerShippingCost",
   "allocatedAdCost",
   "otherCost",
@@ -273,8 +274,8 @@ test("판매자 부담 할인금액이 상품 판매금액보다 크면 거부�
 for (const invalidValue of [Number.NaN, Infinity, -Infinity]) {
   test(`${String(invalidValue)} 입력을 거부한다`, () => {
     assertHasError(
-      calculateSellerMargin({ ...baseInput, totalProductCost: invalidValue }),
-      "totalProductCost",
+      calculateSellerMargin({ ...baseInput, unitProductCost: invalidValue }),
+      "unitProductCost",
       "INVALID_NUMBER",
     );
   });
@@ -293,7 +294,7 @@ test("원 단위와 소수점 둘째 자리의 0.5 경계를 안정적으로 반
       quantity: 1,
       sellerDiscount: 0,
       customerShippingFee: 0,
-      totalProductCost: 0,
+      unitProductCost: 0,
       platformFeeRate: 1,
       paymentFeeRate: 0,
       sellerShippingCost: 0,
@@ -372,7 +373,7 @@ test("수수료율이 정확히 100%이면 유효하다", () => {
       quantity: 1,
       sellerDiscount: 0,
       customerShippingFee: 0,
-      totalProductCost: 0,
+      unitProductCost: 0,
       platformFeeRate: 100,
       paymentFeeRate: 100,
       sellerShippingCost: 0,

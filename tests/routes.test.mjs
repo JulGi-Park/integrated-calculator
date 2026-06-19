@@ -7,7 +7,7 @@ const routes = [
   ["app/calculators/page.tsx", "전체 계산기 목록"],
   [
     "app/calculators/seller-margin/page.tsx",
-    "온라인 판매자 마진·순이익 계산기",
+    "온라인 판매자 마진·순이익 계산기 | 수수료·원가 계산",
   ],
 ];
 
@@ -18,14 +18,14 @@ test("필수 페이지에 고유한 메타데이터 제목이 있다", async () 
   }
 });
 
-test("판매자 마진 페이지는 준비 중 상태만 제공한다", async () => {
+test("판매자 마진 페이지는 계산기 UI를 제공한다", async () => {
   const source = await readFile(
     "app/calculators/seller-margin/page.tsx",
     "utf8",
   );
 
-  assert.match(source, /계산 기능 준비 중/);
-  assert.doesNotMatch(source, /<form|<input|<button/);
+  assert.match(source, /SellerMarginCalculator/);
+  assert.doesNotMatch(source, /계산 기능 준비 중/);
 });
 
 test("Next.js가 Cloudflare Pages용 정적 내보내기로 설정되어 있다", async () => {

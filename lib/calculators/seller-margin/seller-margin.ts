@@ -15,8 +15,8 @@ export interface SellerMarginInput {
   sellerDiscount: number;
   /** 고객에게 받은 배송비 (원) */
   customerShippingFee: number;
-  /** 상품 원가 총액 (원) */
-  totalProductCost: number;
+  /** 상품 1개당 원가 (원) */
+  unitProductCost: number;
   /** 플랫폼 수수료율 (%) */
   platformFeeRate: number;
   /** 결제 수수료율 (%) */
@@ -91,7 +91,7 @@ const inputFields: SellerMarginInputField[] = [
   "quantity",
   "sellerDiscount",
   "customerShippingFee",
-  "totalProductCost",
+  "unitProductCost",
   "platformFeeRate",
   "paymentFeeRate",
   "sellerShippingCost",
@@ -102,7 +102,7 @@ const inputFields: SellerMarginInputField[] = [
 const nonNegativeAmountFields: SellerMarginInputField[] = [
   "sellerDiscount",
   "customerShippingFee",
-  "totalProductCost",
+  "unitProductCost",
   "sellerShippingCost",
   "allocatedAdCost",
   "otherCost",
@@ -334,8 +334,11 @@ export function calculateSellerMargin(
 
   // 정산금액과 순이익은 반올림된 금액 및 수수료만으로 계산합니다.
   const estimatedSettlement = paymentAmount - platformFee - paymentFee;
+  const totalProductCost = roundToWon(
+    input.unitProductCost * input.quantity,
+  );
   const totalCosts = roundToWon(
-    input.totalProductCost +
+    totalProductCost +
       input.sellerShippingCost +
       input.allocatedAdCost +
       input.otherCost,
@@ -358,7 +361,7 @@ export function calculateSellerMargin(
         2,
       ),
       productCostRate: roundToDecimalPlaces(
-        (input.totalProductCost / productSalesAmount) * 100,
+        (totalProductCost / productSalesAmount) * 100,
         2,
       ),
       totalFeeRate: roundToDecimalPlaces(

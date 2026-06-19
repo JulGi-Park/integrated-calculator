@@ -11,7 +11,7 @@ const requiredStaticFiles = [
   ["out/calculators/index.html", "계산기 목록"],
   [
     "out/calculators/seller-margin/index.html",
-    "계산 기능 준비 중",
+    "판매 조건을 입력하세요",
   ],
 ];
 

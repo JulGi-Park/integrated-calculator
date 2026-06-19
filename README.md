@@ -33,7 +33,9 @@ npm run build
 
 - `/` — 서비스 홈
 - `/calculators` — 계산기 목록
-- `/calculators/seller-margin` — 온라인 판매자 마진·순이익 계산기 준비 중 페이지
+- `/calculators/seller-margin` — 온라인 판매자 마진·순이익 계산기
+
+판매자 마진 계산기는 최신 계산 결과의 텍스트 복사와 지원 기기의 Web Share 공유를 제공합니다. 입력값은 브라우저의 localStorage에 버전이 포함된 raw 문자열 형식으로 저장되며, 계산 결과·오류·사용자 식별 정보는 저장하지 않습니다. 초기화하면 저장된 입력값도 삭제됩니다.
 
 ## Cloudflare Pages 호환성
 
