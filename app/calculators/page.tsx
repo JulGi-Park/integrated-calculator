@@ -18,6 +18,24 @@ export default function CalculatorsPage() {
       <div className="calculator-grid" role="list">
         <Link
           className="calculator-card"
+          href="/calculators/salary"
+          role="listitem"
+        >
+          <div>
+            <span className="calculator-card__category">급여</span>
+            <h2>연봉·월급 실수령액 계산기</h2>
+            <p>
+              2026년 기준 4대보험과 간이세액표를 적용한 예상 실수령액을
+              확인합니다.
+            </p>
+          </div>
+          <span className="calculator-card__arrow" aria-hidden="true">
+            →
+          </span>
+        </Link>
+
+        <Link
+          className="calculator-card"
           href="/calculators/seller-margin"
           role="listitem"
         >

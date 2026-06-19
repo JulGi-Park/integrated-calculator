@@ -18,6 +18,18 @@ test("필수 페이지에 고유한 메타데이터 제목이 있다", async () 
   }
 });
 
+test("연봉 계산기 페이지와 목록 링크가 실제 UI를 제공한다", async () => {
+  const [pageSource, listSource] = await Promise.all([
+    readFile("app/calculators/salary/page.tsx", "utf8"),
+    readFile("app/calculators/page.tsx", "utf8"),
+  ]);
+
+  assert.match(pageSource, /SalaryTakeHomeCalculator/);
+  assert.match(pageSource, /연봉·월급/);
+  assert.doesNotMatch(pageSource, /계산 기능 준비 중/);
+  assert.match(listSource, /href="\/calculators\/salary"/);
+});
+
 test("판매자 마진 페이지는 계산기 UI를 제공한다", async () => {
   const source = await readFile(
     "app/calculators/seller-margin/page.tsx",
