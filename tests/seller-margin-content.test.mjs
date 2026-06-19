@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { metadata } from "../app/calculators/seller-margin/page.tsx";
+import { serializeJsonLd } from "../components/common/JsonLdScripts.tsx";
 import {
   sellerMarginBreadcrumbJsonLd,
   sellerMarginExampleInput,
@@ -11,7 +12,6 @@ import {
   sellerMarginFaqs,
   sellerMarginFormulas,
   sellerMarginWebApplicationJsonLd,
-  serializeJsonLd,
 } from "../components/calculators/sellerMarginContentData.ts";
 import { calculateSellerMargin } from "../lib/calculators/seller-margin/seller-margin.ts";
 
@@ -23,7 +23,11 @@ const contentSource = await readFile(
   "components/calculators/SellerMarginContent.tsx",
   "utf8",
 );
-const source = `${pageSource}\n${contentSource}`;
+const jsonLdSource = await readFile(
+  "components/common/JsonLdScripts.tsx",
+  "utf8",
+);
+const source = `${pageSource}\n${contentSource}\n${jsonLdSource}`;
 
 test("페이지 상단에 고유 H1, 설명, 기준일과 예상값 안내가 있다", () => {
   assert.equal((pageSource.match(/<h1/g) ?? []).length, 1);
@@ -188,8 +192,15 @@ test("JSON-LD 직렬화가 script 종료 문자를 안전하게 이스케이프�
   assert.equal(serialized, '{"text":"\\u003c/script>\\u003cscript>"}');
 });
 
+test("공통 JSON-LD 직렬화가 비정상 값을 거부한다", () => {
+  assert.throws(() => serializeJsonLd({ value: Number.NaN }), TypeError);
+  assert.throws(() => serializeJsonLd({ value: Infinity }), TypeError);
+  assert.throws(() => serializeJsonLd({ value: undefined }), TypeError);
+});
+
 test("페이지가 세 JSON-LD script를 정적으로 출력한다", async () => {
-  assert.match(source, /jsonLdItems\.map/);
+  assert.match(pageSource, /<JsonLdScripts items=\{jsonLdItems\}/);
+  assert.match(source, /items\.map/);
   assert.match(source, /type="application\/ld\+json"/);
   assert.match(source, /serializeJsonLd/);
   assert.match(source, /dangerouslySetInnerHTML/);

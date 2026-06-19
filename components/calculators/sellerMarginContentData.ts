@@ -178,7 +178,3 @@ export const sellerMarginFaqJsonLd = {
     },
   })),
 };
-
-export function serializeJsonLd(data: object): string {
-  return JSON.stringify(data).replace(/</g, "\\u003c");
-}

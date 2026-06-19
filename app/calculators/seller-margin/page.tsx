@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { SellerMarginCalculator } from "@/components/calculators/SellerMarginCalculator";
 import { SellerMarginContent } from "@/components/calculators/SellerMarginContent";
 import {
   sellerMarginBreadcrumbJsonLd,
   sellerMarginFaqJsonLd,
   sellerMarginWebApplicationJsonLd,
-  serializeJsonLd,
 } from "@/components/calculators/sellerMarginContentData";
 
 export const metadata: Metadata = {
@@ -34,13 +34,7 @@ export default function SellerMarginPage() {
 
   return (
     <section className="page-section seller-margin-page">
-      {jsonLdItems.map((jsonLd) => (
-        <script
-          key={jsonLd["@type"]}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
-        />
-      ))}
+      <JsonLdScripts items={jsonLdItems} />
 
       <div className="page-heading seller-margin-heading">
         <p className="page-heading__eyebrow">Seller margin</p>
