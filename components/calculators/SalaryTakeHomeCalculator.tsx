@@ -3,6 +3,7 @@
 import {
   type ChangeEvent,
   type FormEvent,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -14,13 +15,20 @@ import {
   SALARY_TAKE_HOME_POLICY_2026,
 } from "@/lib/calculators/salary-take-home/policy";
 import type {
+  SalaryTakeHomeInput,
   SalaryTakeHomeInputField,
   SalaryTakeHomeResult,
   SalaryTakeHomeValidationError,
 } from "@/lib/calculators/salary-take-home/types";
+import {
+  buildSalaryTakeHomeResultText,
+  initialSalaryTakeHomeInputs,
+  parseSalaryTakeHomeStoredInputs,
+  SALARY_TAKE_HOME_STORAGE_KEY,
+  serializeSalaryTakeHomeInputs,
+  type SalaryTakeHomeRawInputs,
+} from "./salaryTakeHomeClientUtils";
 import styles from "./SalaryTakeHomeCalculator.module.css";
-
-type SalaryRawInputs = Record<SalaryTakeHomeInputField, string>;
 
 interface FieldDefinition {
   name: SalaryTakeHomeInputField;
@@ -28,13 +36,6 @@ interface FieldDefinition {
   unit: "원" | "명";
   description: string;
 }
-
-const initialInputs: SalaryRawInputs = {
-  annualSalary: "",
-  monthlyNonTaxableAmount: "0",
-  dependentCount: "1",
-  childCount: "0",
-};
 
 const fields: FieldDefinition[] = [
   {
@@ -86,7 +87,9 @@ function getNextDate(value: string): string {
   ].join("-");
 }
 
-function parseInputs(input: SalaryRawInputs): Record<string, unknown> {
+function parseInputs(
+  input: SalaryTakeHomeRawInputs,
+): Record<string, unknown> {
   return Object.fromEntries(
     Object.entries(input).map(([field, value]) => [
       field,
@@ -125,15 +128,59 @@ function getErrorMessage(error: SalaryTakeHomeValidationError): string {
 }
 
 export function SalaryTakeHomeCalculator() {
-  const [input, setInput] = useState<SalaryRawInputs>(initialInputs);
+  const [input, setInput] = useState<SalaryTakeHomeRawInputs>(
+    initialSalaryTakeHomeInputs,
+  );
   const [errors, setErrors] = useState<SalaryTakeHomeValidationError[]>([]);
   const [result, setResult] = useState<SalaryTakeHomeResult | null>(null);
+  const [calculatedInput, setCalculatedInput] =
+    useState<SalaryTakeHomeInput | null>(null);
   const [calculatedNonTaxableAmount, setCalculatedNonTaxableAmount] =
     useState<number | null>(null);
   const [isResultStale, setIsResultStale] = useState(false);
+  const [isShareSupported, setIsShareSupported] = useState(false);
+  const [actionMessage, setActionMessage] = useState("");
+  const hasRestoredInputs = useRef(false);
   const inputRefs = useRef<
     Partial<Record<SalaryTakeHomeInputField, HTMLInputElement>>
   >({});
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    queueMicrotask(() => {
+      if (isCancelled) {
+        return;
+      }
+
+      setIsShareSupported(typeof navigator.share === "function");
+
+      try {
+        const storedValue = window.localStorage.getItem(
+          SALARY_TAKE_HOME_STORAGE_KEY,
+        );
+
+        if (storedValue !== null) {
+          const restoredInput =
+            parseSalaryTakeHomeStoredInputs(storedValue);
+
+          if (restoredInput) {
+            setInput(restoredInput);
+          } else {
+            window.localStorage.removeItem(SALARY_TAKE_HOME_STORAGE_KEY);
+          }
+        }
+      } catch {
+        // Browser storage is optional; calculation remains available.
+      } finally {
+        hasRestoredInputs.current = true;
+      }
+    });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   const errorsByField = errors.reduce<
     Partial<
@@ -147,26 +194,42 @@ export function SalaryTakeHomeCalculator() {
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const field = event.currentTarget.name as SalaryTakeHomeInputField;
     const value = event.currentTarget.value;
-
-    setInput((current) => ({
-      ...current,
+    const nextInput = {
+      ...input,
       [field]: value,
-    }));
+    };
+
+    setInput(nextInput);
     setErrors([]);
+    setActionMessage("");
 
     if (result) {
       setIsResultStale(true);
+    }
+
+    if (hasRestoredInputs.current) {
+      try {
+        window.localStorage.setItem(
+          SALARY_TAKE_HOME_STORAGE_KEY,
+          serializeSalaryTakeHomeInputs(nextInput),
+        );
+      } catch {
+        // Storage failure must not block input or calculation.
+      }
     }
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const response = calculateSalaryTakeHome(parseInputs(input));
+    const parsedInput = parseInputs(input);
+    setActionMessage("");
+    const response = calculateSalaryTakeHome(parsedInput);
 
     if (!response.success) {
       setErrors(response.errors);
       setResult(null);
+      setCalculatedInput(null);
       setCalculatedNonTaxableAmount(null);
       setIsResultStale(false);
 
@@ -181,6 +244,7 @@ export function SalaryTakeHomeCalculator() {
 
     setErrors([]);
     setResult(response.data);
+    setCalculatedInput(parsedInput as unknown as SalaryTakeHomeInput);
     setCalculatedNonTaxableAmount(
       response.data.monthlyGrossSalary - response.data.monthlyTaxableSalary,
     );
@@ -188,12 +252,119 @@ export function SalaryTakeHomeCalculator() {
   }
 
   function handleReset() {
-    setInput(initialInputs);
+    try {
+      window.localStorage.removeItem(SALARY_TAKE_HOME_STORAGE_KEY);
+    } catch {
+      // Screen reset continues even if storage deletion is unavailable.
+    }
+
+    setInput(initialSalaryTakeHomeInputs);
     setErrors([]);
     setResult(null);
+    setCalculatedInput(null);
     setCalculatedNonTaxableAmount(null);
     setIsResultStale(false);
+    setActionMessage("");
     inputRefs.current.annualSalary?.focus();
+  }
+
+  async function copyWithFallback(text: string): Promise<boolean> {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch {
+      // Fall through to the document-based copy attempt.
+    }
+
+    const activeElement =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    textarea.style.opacity = "0";
+    textarea.style.pointerEvents = "none";
+    document.body.appendChild(textarea);
+    textarea.select();
+
+    try {
+      return typeof document.execCommand === "function"
+        ? document.execCommand("copy")
+        : false;
+    } catch {
+      return false;
+    } finally {
+      textarea.remove();
+      activeElement?.focus();
+    }
+  }
+
+  function getCurrentResultText(): string | null {
+    if (!result || !calculatedInput || isResultStale || errors.length > 0) {
+      return null;
+    }
+
+    try {
+      return buildSalaryTakeHomeResultText(calculatedInput, result);
+    } catch {
+      return null;
+    }
+  }
+
+  async function handleCopy() {
+    setActionMessage("");
+    const text = getCurrentResultText();
+
+    if (!text) {
+      setActionMessage("최신 계산 결과가 없습니다. 다시 계산해 주세요.");
+      return;
+    }
+
+    const copied = await copyWithFallback(text);
+    setActionMessage(
+      copied
+        ? "계산 결과를 복사했습니다."
+        : "결과를 복사하지 못했습니다. 다시 시도해 주세요.",
+    );
+  }
+
+  async function handleShare() {
+    setActionMessage("");
+    const text = getCurrentResultText();
+
+    if (!text || typeof navigator.share !== "function") {
+      return;
+    }
+
+    try {
+      const shareData: ShareData = {
+        title: "연봉·월급 실수령액 계산 결과",
+        text,
+      };
+
+      if (
+        window.location.protocol === "http:" ||
+        window.location.protocol === "https:"
+      ) {
+        shareData.url = window.location.href;
+      }
+
+      await navigator.share(shareData);
+      setActionMessage("계산 결과를 공유했습니다.");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        setActionMessage("");
+      } else {
+        setActionMessage(
+          "결과를 공유하지 못했습니다. 결과 복사를 이용해 주세요.",
+        );
+      }
+    }
   }
 
   const policy = SALARY_TAKE_HOME_POLICY_2026;
@@ -279,6 +450,10 @@ export function SalaryTakeHomeCalculator() {
               );
             })}
           </div>
+
+          <p className={styles.storageNotice}>
+            입력값은 서버로 전송하지 않고 현재 브라우저에만 저장됩니다.
+          </p>
 
           {errors.length > 0 && (
             <p className={styles.errorSummary} role="alert">
@@ -423,6 +598,23 @@ export function SalaryTakeHomeCalculator() {
                 <p className={styles.disclaimer}>
                   입력값과 {result.policyYear}년 적용 기준에 따른 예상값이며
                   실제 급여명세서와 차이가 날 수 있습니다.
+                </p>
+
+                {!isResultStale && calculatedInput && (
+                  <div className={styles.resultActions}>
+                    <button type="button" onClick={handleCopy}>
+                      결과 복사
+                    </button>
+                    {isShareSupported && (
+                      <button type="button" onClick={handleShare}>
+                        공유
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                <p className={styles.actionMessage} aria-live="polite">
+                  {actionMessage}
                 </p>
               </div>
             )}
