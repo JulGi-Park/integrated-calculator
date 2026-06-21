@@ -9,6 +9,10 @@ const routes = [
     "app/calculators/seller-margin/page.tsx",
     "온라인 판매자 마진·순이익 계산기 | 수수료·원가 계산",
   ],
+  [
+    "app/calculators/salary/page.tsx",
+    "2026 연봉·월급 실수령액 계산기 | 4대보험·소득세 계산",
+  ],
 ];
 
 test("필수 페이지에 고유한 메타데이터 제목이 있다", async () => {

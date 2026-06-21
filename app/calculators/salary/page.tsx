@@ -1,6 +1,38 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { SalaryTakeHomeCalculator } from "@/components/calculators/SalaryTakeHomeCalculator";
+import { SalaryTakeHomeContent } from "@/components/calculators/SalaryTakeHomeContent";
+import {
+  salaryTakeHomeBreadcrumbJsonLd,
+  salaryTakeHomeFaqJsonLd,
+  salaryTakeHomeWebApplicationJsonLd,
+} from "@/components/calculators/salaryTakeHomeContentData";
 import { SALARY_TAKE_HOME_POLICY_2026 } from "@/lib/calculators/salary-take-home/policy";
+
+const title =
+  "2026 연봉·월급 실수령액 계산기 | 4대보험·소득세 계산";
+const description =
+  "연봉과 비과세액, 공제대상 가족 수를 입력해 2026년 국민연금·건강보험·고용보험·소득세를 반영한 월급 실수령액을 계산합니다.";
+
+export const metadata: Metadata = {
+  title,
+  description,
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title,
+    description,
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title,
+    description,
+  },
+};
 
 function formatKoreanDate(value: string) {
   const [year, month, day] = value.split("-").map(Number);
@@ -8,8 +40,16 @@ function formatKoreanDate(value: string) {
 }
 
 export default function SalaryTakeHomePage() {
+  const jsonLdItems = [
+    salaryTakeHomeWebApplicationJsonLd,
+    salaryTakeHomeBreadcrumbJsonLd,
+    salaryTakeHomeFaqJsonLd,
+  ];
+
   return (
     <section className="page-section salary-page">
+      <JsonLdScripts items={jsonLdItems} />
+
       <div className="page-heading seller-margin-heading">
         <p className="page-heading__eyebrow">Salary take-home</p>
         <h1>
@@ -23,6 +63,9 @@ export default function SalaryTakeHomePage() {
         </p>
         <div className="seller-margin-meta">
           <span>
+            적용 정책: {SALARY_TAKE_HOME_POLICY_2026.year}년
+          </span>
+          <span>
             기준 확인일:{" "}
             {formatKoreanDate(SALARY_TAKE_HOME_POLICY_2026.verifiedAt)}
           </span>
@@ -33,6 +76,7 @@ export default function SalaryTakeHomePage() {
       </div>
 
       <SalaryTakeHomeCalculator />
+      <SalaryTakeHomeContent />
 
       <nav className="link-row seller-margin-links" aria-label="페이지 이동">
         <Link className="text-link" href="/calculators">
