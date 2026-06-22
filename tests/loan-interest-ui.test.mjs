@@ -301,6 +301,147 @@ test("더 보기로 나머지 회차를 표시하고 완료 후 버튼을 제거
   );
 });
 
+test("1개월과 20개월 일정은 처음부터 전체를 표시하고 더 보기를 숨긴다", async () => {
+  for (const months of ["1", "20"]) {
+    const user = userEvent.setup();
+    renderCalculator();
+    await enterLoan(user, { months });
+    await calculate(user);
+
+    assert.equal(screen.getAllByRole("row").length, Number(months) + 1);
+    assert.ok(
+      screen.getByText(
+        `전체 ${months}회차 중 ${months}회차 표시`,
+      ),
+    );
+    assert.equal(screen.queryByRole("button", { name: /더 보기/ }), null);
+    assert.ok(screen.getByText(`마지막 ${months}회차`));
+    assert.ok(screen.getByText("납부 후 잔액 0원"));
+
+    cleanup();
+  }
+});
+
+test("40개월과 41개월 일정은 20회차 단위로 안전하게 확장한다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+  await enterLoan(user, { months: "40" });
+  await calculate(user);
+
+  assert.equal(screen.getAllByRole("row").length, 21);
+  await user.click(
+    screen.getByRole("button", { name: "다음 20회차 더 보기" }),
+  );
+  assert.equal(screen.getAllByRole("row").length, 41);
+  assert.ok(screen.getByText("전체 40회차 중 40회차 표시"));
+  assert.equal(screen.queryByRole("button", { name: /더 보기/ }), null);
+
+  cleanup();
+  renderCalculator();
+  const nextUser = userEvent.setup();
+  await enterLoan(nextUser, { months: "41" });
+  await calculate(nextUser);
+
+  await nextUser.click(
+    screen.getByRole("button", { name: "다음 20회차 더 보기" }),
+  );
+  assert.equal(screen.getAllByRole("row").length, 41);
+  await nextUser.click(
+    screen.getByRole("button", { name: "다음 1회차 더 보기" }),
+  );
+  assert.equal(screen.getAllByRole("row").length, 42);
+  assert.ok(screen.getByText("전체 41회차 중 41회차 표시"));
+  assert.equal(screen.queryByRole("button", { name: /더 보기/ }), null);
+});
+
+test("600개월 일정은 20회차씩 늘고 전체 회차에 중복·누락이 없다", async (t) => {
+  const user = userEvent.setup();
+  renderCalculator();
+  const startedAt = performance.now();
+  await enterLoan(user, {
+    principal: "10000000000",
+    rate: "100",
+    months: "600",
+  });
+  await calculate(user);
+
+  assert.equal(screen.getAllByRole("row").length, 21);
+
+  let expectedVisible = 20;
+  while (screen.queryByRole("button", { name: /더 보기/ })) {
+    const moreButton = screen.getByRole("button", { name: /더 보기/ });
+    expectedVisible = Math.min(expectedVisible + 20, 600);
+    await user.click(moreButton);
+    assert.equal(screen.getAllByRole("row").length, expectedVisible + 1);
+  }
+
+  const installments = screen
+    .getAllByRole("row")
+    .slice(1)
+    .map((row) => Number(within(row).getByRole("rowheader").textContent));
+
+  assert.equal(installments.length, 600);
+  assert.equal(new Set(installments).size, 600);
+  assert.deepEqual(
+    installments,
+    Array.from({ length: 600 }, (_, index) => index + 1),
+  );
+  assert.ok(screen.getByText("전체 600회차 중 600회차 표시"));
+  assert.equal(screen.queryByRole("button", { name: /더 보기/ }), null);
+  assert.ok(screen.getByText("마지막 600회차"));
+  assert.ok(screen.getByText("납부 후 잔액 0원"));
+
+  t.diagnostic(
+    `jsdom에서 최대 입력 계산부터 600행 표시까지 ${Math.round(
+      performance.now() - startedAt,
+    )}ms`,
+  );
+});
+
+test("방식 변경은 caption과 일정만 교체하고 표시 개수를 20회차로 복원한다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+  await enterLoan(user, { months: "41" });
+  await calculate(user);
+  await user.click(
+    screen.getByRole("button", { name: "다음 20회차 더 보기" }),
+  );
+  assert.equal(screen.getAllByRole("row").length, 41);
+
+  await user.click(screen.getByRole("button", { name: "원금균등상환" }));
+  assert.equal(screen.getAllByRole("row").length, 21);
+  assert.ok(
+    screen.getByRole("table", {
+      name: "원금균등상환 월별 상환 일정",
+    }),
+  );
+  assert.ok(screen.getByText("전체 41회차 중 20회차 표시"));
+
+  await user.click(screen.getByRole("button", { name: "만기일시상환" }));
+  assert.equal(screen.getAllByRole("row").length, 21);
+  assert.ok(
+    screen.getByRole("table", {
+      name: "만기일시상환 월별 상환 일정",
+    }),
+  );
+  assert.ok(screen.getAllByText("375,000원").length >= 1);
+});
+
+test("성공 결과 뒤 검증 실패 시 이전 결과와 일정이 제거된다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+  await enterLoan(user);
+  await calculate(user);
+  assert.ok(screen.getByText("대출 상환 비교 결과"));
+
+  await replaceValue(user, "연이율", "4.12345");
+  await calculate(user);
+
+  assert.ok(screen.getByText(/소수점 이하 4자리/));
+  assert.equal(screen.queryByText("대출 상환 비교 결과"), null);
+  assert.equal(screen.queryByRole("table"), null);
+});
+
 test("새 계산은 일정 선택과 표시 개수를 기본값으로 복원한다", async () => {
   const user = userEvent.setup();
   renderCalculator();
@@ -342,4 +483,18 @@ test("일정 표는 열 제목·caption과 키보드 접근 가능한 스크롤 
   });
   assert.equal(region.getAttribute("tabindex"), "0");
   assert.equal(screen.getAllByRole("row").length, 2);
+  assert.equal(
+    screen.getByRole("button", { name: "상환방식 비교하기" }).getAttribute(
+      "type",
+    ),
+    "submit",
+  );
+  assert.equal(
+    screen.getByRole("button", { name: "초기화" }).getAttribute("type"),
+    "button",
+  );
+  assert.equal(
+    screen.getByRole("button", { name: "원금균등상환" }).getAttribute("type"),
+    "button",
+  );
 });
