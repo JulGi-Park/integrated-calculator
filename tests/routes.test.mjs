@@ -13,12 +13,19 @@ const routes = [
     "app/calculators/salary/page.tsx",
     "2026 연봉·월급 실수령액 계산기 | 4대보험·소득세 계산",
   ],
+  [
+    "app/calculators/loan/page.tsx",
+    "대출이자 계산기｜원리금균등·원금균등·만기일시상환 비교",
+  ],
 ];
 
 test("필수 페이지에 고유한 메타데이터 제목이 있다", async () => {
   for (const [file, title] of routes) {
     const source = await readFile(file, "utf8");
-    assert.match(source, new RegExp(`title: "${title}"`));
+    assert.match(
+      source,
+      new RegExp(`(?:title:\\s*"${title}"|const\\s+title\\s*=\\s*"${title}")`),
+    );
   }
 });
 
