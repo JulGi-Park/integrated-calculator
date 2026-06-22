@@ -135,6 +135,14 @@
   font-weight: 700;
 }
 
+.storageNotice,
+.actionMessage {
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
 .errorSummary,
 .staleNotice {
   margin: 22px 0 0;
@@ -271,6 +279,30 @@
   margin-top: 5px;
   color: var(--accent-dark);
   line-height: 1.45;
+}
+
+.resultActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.resultActions button {
+  min-height: 46px;
+  border: 1px solid #cfd6d0;
+  border-radius: 11px;
+  padding: 0 18px;
+  color: #3c4b42;
+  background: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.resultActions button:focus-visible {
+  outline: 3px solid rgba(35, 97, 68, 0.3);
+  outline-offset: 3px;
 }
 
 .comparisonGrid {

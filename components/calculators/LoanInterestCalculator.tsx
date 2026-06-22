@@ -3,6 +3,7 @@
 import {
   type ChangeEvent,
   type FormEvent,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -18,18 +19,18 @@ import type {
   LoanRepaymentValidationError,
   LoanScheduleItem,
 } from "@/lib/calculators/loan/types";
+import {
+  buildLoanInterestResultText,
+  initialLoanInterestInputs,
+  LOAN_INTEREST_STORAGE_KEY,
+  parseLoanInterestStoredInputs,
+  serializeLoanInterestInputs,
+  type LoanInterestRawInputs,
+} from "./loanInterestClientUtils";
 import styles from "./LoanInterestCalculator.module.css";
-
-type RawInputs = Record<LoanRepaymentInputField, string>;
 
 const INITIAL_VISIBLE_INSTALLMENTS = 20;
 const VISIBLE_INSTALLMENT_STEP = 20;
-
-const initialInputs: RawInputs = {
-  principal: "",
-  annualInterestRate: "",
-  termMonths: "",
-};
 
 const repaymentLabels: Record<LoanRepaymentType, string> = {
   equalPayment: "원리금균등상환",
@@ -89,7 +90,7 @@ function formatPrincipalInput(value: string): string {
   return `${sign}${digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
 }
 
-function parseInputs(input: RawInputs): Record<string, unknown> {
+function parseInputs(input: LoanInterestRawInputs): Record<string, unknown> {
   return {
     principal:
       input.principal.trim() === ""
@@ -177,7 +178,9 @@ function ScheduleRow({ item }: { item: LoanScheduleItem }) {
 }
 
 export function LoanInterestCalculator() {
-  const [input, setInput] = useState<RawInputs>(initialInputs);
+  const [input, setInput] = useState<LoanInterestRawInputs>(
+    initialLoanInterestInputs,
+  );
   const [errors, setErrors] = useState<LoanRepaymentValidationError[]>([]);
   const [result, setResult] =
     useState<LoanRepaymentComparisonResult | null>(null);
@@ -189,9 +192,48 @@ export function LoanInterestCalculator() {
   const [visibleInstallments, setVisibleInstallments] = useState(
     INITIAL_VISIBLE_INSTALLMENTS,
   );
+  const [isShareSupported, setIsShareSupported] = useState(false);
+  const [actionMessage, setActionMessage] = useState("");
+  const hasRestoredInputs = useRef(false);
   const inputRefs = useRef<
     Partial<Record<LoanRepaymentInputField, HTMLInputElement>>
   >({});
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    queueMicrotask(() => {
+      if (isCancelled) {
+        return;
+      }
+
+      setIsShareSupported(typeof navigator.share === "function");
+
+      try {
+        const storedValue = window.localStorage.getItem(
+          LOAN_INTEREST_STORAGE_KEY,
+        );
+
+        if (storedValue !== null) {
+          const restoredInput = parseLoanInterestStoredInputs(storedValue);
+
+          if (restoredInput) {
+            setInput(restoredInput);
+          } else {
+            window.localStorage.removeItem(LOAN_INTEREST_STORAGE_KEY);
+          }
+        }
+      } catch {
+        // Storage access is optional; calculation remains available.
+      } finally {
+        hasRestoredInputs.current = true;
+      }
+    });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   const errorsByField = errors.reduce<
     Partial<Record<LoanRepaymentInputField, LoanRepaymentValidationError[]>>
@@ -205,17 +247,34 @@ export function LoanInterestCalculator() {
     const rawValue = event.currentTarget.value;
     const value =
       field === "principal" ? formatPrincipalInput(rawValue) : rawValue;
+    const nextInput = {
+      ...input,
+      [field]: value,
+    };
 
-    setInput((current) => ({ ...current, [field]: value }));
+    setInput(nextInput);
     setErrors([]);
+    setActionMessage("");
 
     if (result) {
       setIsResultStale(true);
+    }
+
+    if (hasRestoredInputs.current) {
+      try {
+        window.localStorage.setItem(
+          LOAN_INTEREST_STORAGE_KEY,
+          serializeLoanInterestInputs(nextInput),
+        );
+      } catch {
+        // Storage failure must not block input or calculation.
+      }
     }
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setActionMessage("");
     const parsedInput = parseInputs(input);
     const response = calculateLoanRepaymentComparison(parsedInput);
 
@@ -224,6 +283,7 @@ export function LoanInterestCalculator() {
       setResult(null);
       setCalculatedInput(null);
       setIsResultStale(false);
+      setSelectedType("equalPayment");
       setVisibleInstallments(INITIAL_VISIBLE_INSTALLMENTS);
 
       const firstErrorField = fields.find(({ name }) =>
@@ -242,19 +302,125 @@ export function LoanInterestCalculator() {
   }
 
   function handleReset() {
-    setInput(initialInputs);
+    try {
+      window.localStorage.removeItem(LOAN_INTEREST_STORAGE_KEY);
+    } catch {
+      // Screen reset continues even if storage deletion is unavailable.
+    }
+
+    setInput(initialLoanInterestInputs);
     setErrors([]);
     setResult(null);
     setCalculatedInput(null);
     setIsResultStale(false);
     setSelectedType("equalPayment");
     setVisibleInstallments(INITIAL_VISIBLE_INSTALLMENTS);
+    setActionMessage("");
     inputRefs.current.principal?.focus();
   }
 
   function selectRepaymentType(type: LoanRepaymentType) {
     setSelectedType(type);
     setVisibleInstallments(INITIAL_VISIBLE_INSTALLMENTS);
+  }
+
+  async function copyWithFallback(text: string): Promise<boolean> {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch {
+      // Fall through to the document-based copy attempt.
+    }
+
+    const activeElement =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    textarea.style.opacity = "0";
+    textarea.style.pointerEvents = "none";
+    document.body.appendChild(textarea);
+    textarea.select();
+
+    try {
+      return typeof document.execCommand === "function"
+        ? document.execCommand("copy")
+        : false;
+    } catch {
+      return false;
+    } finally {
+      textarea.remove();
+      activeElement?.focus();
+    }
+  }
+
+  function getCurrentResultText(): string | null {
+    if (!result || !calculatedInput || isResultStale || errors.length > 0) {
+      return null;
+    }
+
+    try {
+      return buildLoanInterestResultText(calculatedInput, result);
+    } catch {
+      return null;
+    }
+  }
+
+  async function handleCopy() {
+    setActionMessage("");
+    const text = getCurrentResultText();
+
+    if (!text) {
+      setActionMessage("최신 계산 결과가 없습니다. 다시 계산해 주세요.");
+      return;
+    }
+
+    const copied = await copyWithFallback(text);
+    setActionMessage(
+      copied
+        ? "계산 결과를 복사했습니다."
+        : "결과를 복사하지 못했습니다. 다시 시도해 주세요.",
+    );
+  }
+
+  async function handleShare() {
+    setActionMessage("");
+    const text = getCurrentResultText();
+
+    if (!text || typeof navigator.share !== "function") {
+      return;
+    }
+
+    try {
+      const shareData: ShareData = {
+        title: "대출이자 계산 결과",
+        text,
+      };
+
+      if (
+        window.location.protocol === "http:" ||
+        window.location.protocol === "https:"
+      ) {
+        shareData.url = window.location.href;
+      }
+
+      await navigator.share(shareData);
+      setActionMessage("계산 결과를 공유했습니다.");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        setActionMessage("");
+      } else {
+        setActionMessage(
+          "결과를 공유하지 못했습니다. 결과 복사를 이용해 주세요.",
+        );
+      }
+    }
   }
 
   const selectedResult = result
@@ -330,6 +496,10 @@ export function LoanInterestCalculator() {
             );
           })}
         </div>
+
+        <p className={styles.storageNotice}>
+          입력값은 서버로 전송하지 않고 현재 브라우저에 저장됩니다.
+        </p>
 
         {errors.length > 0 && (
           <p className={styles.errorSummary} role="alert">
@@ -409,6 +579,23 @@ export function LoanInterestCalculator() {
                   </strong>
                 </div>
               </div>
+
+              {!isResultStale && calculatedInput && (
+                <div className={styles.resultActions}>
+                  <button type="button" onClick={handleCopy}>
+                    결과 복사
+                  </button>
+                  {isShareSupported && (
+                    <button type="button" onClick={handleShare}>
+                      공유
+                    </button>
+                  )}
+                </div>
+              )}
+
+              <p className={styles.actionMessage} aria-live="polite">
+                {actionMessage}
+              </p>
             </div>
           </section>
 
