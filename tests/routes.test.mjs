@@ -44,6 +44,19 @@ test("판매자 마진 페이지는 계산기 UI를 제공한다", async () => {
   assert.doesNotMatch(source, /계산 기능 준비 중/);
 });
 
+test("대출이자 계산기 페이지와 목록 링크가 실제 UI를 제공한다", async () => {
+  const [pageSource, listSource] = await Promise.all([
+    readFile("app/calculators/loan/page.tsx", "utf8"),
+    readFile("app/calculators/page.tsx", "utf8"),
+  ]);
+
+  assert.match(pageSource, /LoanInterestCalculator/);
+  assert.match(pageSource, /<h1>대출이자 계산기<\/h1>/);
+  assert.doesNotMatch(pageSource, /계산 기능 준비 중/);
+  assert.match(listSource, /href="\/calculators\/loan"/);
+  assert.match(listSource, /대출이자 계산기/);
+});
+
 test("Next.js가 Cloudflare Pages용 정적 내보내기로 설정되어 있다", async () => {
   const source = await readFile("next.config.ts", "utf8");
 

@@ -18,6 +18,24 @@ export default function CalculatorsPage() {
       <div className="calculator-grid" role="list">
         <Link
           className="calculator-card"
+          href="/calculators/loan"
+          role="listitem"
+        >
+          <div>
+            <span className="calculator-card__category">금융</span>
+            <h2>대출이자 계산기</h2>
+            <p>
+              원리금균등·원금균등·만기일시상환의 이자와 월별 일정을
+              비교합니다.
+            </p>
+          </div>
+          <span className="calculator-card__arrow" aria-hidden="true">
+            →
+          </span>
+        </Link>
+
+        <Link
+          className="calculator-card"
           href="/calculators/salary"
           role="listitem"
         >
