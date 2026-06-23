@@ -66,6 +66,24 @@ export default function CalculatorsPage() {
             →
           </span>
         </Link>
+
+        <Link
+          className="calculator-card"
+          href="/calculators/severance"
+          role="listitem"
+        >
+          <div>
+            <span className="calculator-card__category">급여</span>
+            <h2>퇴직금 계산기</h2>
+            <p>
+              입사일과 퇴직 전 임금을 바탕으로 법정 퇴직금 예상액과 대상
+              여부를 확인합니다.
+            </p>
+          </div>
+          <span className="calculator-card__arrow" aria-hidden="true">
+            →
+          </span>
+        </Link>
       </div>
     </section>
   );
