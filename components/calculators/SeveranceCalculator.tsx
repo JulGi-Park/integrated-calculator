@@ -3,6 +3,7 @@
 import {
   type ChangeEvent,
   type FormEvent,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -11,13 +12,21 @@ import { calculateSeverance } from "@/lib/calculators/severance/severance";
 import type {
   AppliedDailyWageReason,
   SeveranceCalculationResponse,
+  SeveranceInput,
   SeveranceInputField,
   SeveranceResult,
   SeveranceValidationError,
 } from "@/lib/calculators/severance/types";
+import {
+  buildSeveranceResultText,
+  formatSeveranceAmountInput,
+  initialSeveranceInputs,
+  parseSeveranceStoredInputs,
+  SEVERANCE_STORAGE_KEY,
+  serializeSeveranceInputs,
+  type SeveranceRawInputs,
+} from "./severanceClientUtils";
 import styles from "./SeveranceCalculator.module.css";
-
-type SeveranceRawInputs = Record<SeveranceInputField, string>;
 
 type FieldDefinition = {
   name: SeveranceInputField;
@@ -27,16 +36,6 @@ type FieldDefinition = {
   type?: "text" | "date";
   required: boolean;
   description: string;
-};
-
-const initialInputs: SeveranceRawInputs = {
-  employmentStartDate: "",
-  retirementDate: "",
-  wagesForAveragePeriod: "",
-  annualBonusTotal: "0",
-  annualLeaveAllowanceTotal: "0",
-  ordinaryDailyWage: "",
-  averageWeeklyContractHours: "40",
 };
 
 const fields: FieldDefinition[] = [
@@ -114,22 +113,6 @@ const amountFields = new Set<SeveranceInputField>([
   "annualLeaveAllowanceTotal",
   "ordinaryDailyWage",
 ]);
-
-function formatAmountInput(value: string): string {
-  const normalized = value.replaceAll(",", "");
-
-  if (normalized === "") {
-    return "";
-  }
-
-  if (!/^-?\d+$/.test(normalized)) {
-    return value;
-  }
-
-  const sign = normalized.startsWith("-") ? "-" : "";
-  const digits = sign ? normalized.slice(1) : normalized;
-  return `${sign}${digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
-}
 
 function parseInputs(input: SeveranceRawInputs): Record<string, unknown> {
   return {
@@ -242,14 +225,55 @@ function getIneligibilityMessage(result: SeveranceResult): string {
 }
 
 export function SeveranceCalculator() {
-  const [input, setInput] = useState<SeveranceRawInputs>(initialInputs);
+  const [input, setInput] = useState<SeveranceRawInputs>(
+    initialSeveranceInputs,
+  );
   const [errors, setErrors] = useState<SeveranceValidationError[]>([]);
   const [result, setResult] = useState<SeveranceResult | null>(null);
+  const [calculatedInput, setCalculatedInput] =
+    useState<SeveranceInput | null>(null);
   const [isResultStale, setIsResultStale] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isShareSupported, setIsShareSupported] = useState(false);
+  const [actionMessage, setActionMessage] = useState("");
+  const hasRestoredInputs = useRef(false);
   const inputRefs = useRef<
     Partial<Record<SeveranceInputField, HTMLInputElement>>
   >({});
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    queueMicrotask(() => {
+      if (isCancelled) {
+        return;
+      }
+
+      setIsShareSupported(typeof navigator.share === "function");
+
+      try {
+        const storedValue = window.localStorage.getItem(SEVERANCE_STORAGE_KEY);
+
+        if (storedValue !== null) {
+          const restoredInput = parseSeveranceStoredInputs(storedValue);
+
+          if (restoredInput) {
+            setInput(restoredInput);
+          } else {
+            window.localStorage.removeItem(SEVERANCE_STORAGE_KEY);
+          }
+        }
+      } catch {
+        // Browser storage is optional; calculation remains available.
+      } finally {
+        hasRestoredInputs.current = true;
+      }
+    });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   const errorsByField = errors.reduce<
     Partial<Record<SeveranceInputField, SeveranceValidationError[]>>
@@ -262,7 +286,7 @@ export function SeveranceCalculator() {
     const field = event.currentTarget.name as SeveranceInputField;
     const rawValue = event.currentTarget.value;
     const nextValue = amountFields.has(field)
-      ? formatAmountInput(rawValue)
+      ? formatSeveranceAmountInput(rawValue)
       : rawValue;
     const nextInput = {
       ...input,
@@ -271,9 +295,21 @@ export function SeveranceCalculator() {
 
     setInput(nextInput);
     setErrors([]);
+    setActionMessage("");
 
     if (result) {
       setIsResultStale(true);
+    }
+
+    if (hasRestoredInputs.current) {
+      try {
+        window.localStorage.setItem(
+          SEVERANCE_STORAGE_KEY,
+          serializeSeveranceInputs(nextInput),
+        );
+      } catch {
+        // Storage failure must not block input or calculation.
+      }
     }
   }
 
@@ -281,6 +317,7 @@ export function SeveranceCalculator() {
     event.preventDefault();
 
     setIsSubmitting(true);
+    setActionMessage("");
 
     try {
       const parsedInput = parseInputs(input);
@@ -290,6 +327,7 @@ export function SeveranceCalculator() {
       if (!response.success) {
         setErrors(response.errors);
         setResult(null);
+        setCalculatedInput(null);
         setIsResultStale(false);
 
         const firstErrorField = fields.find(({ name }) =>
@@ -303,6 +341,7 @@ export function SeveranceCalculator() {
 
       setErrors([]);
       setResult(response.data);
+      setCalculatedInput(parsedInput as unknown as SeveranceInput);
       setIsResultStale(false);
     } finally {
       setIsSubmitting(false);
@@ -310,11 +349,121 @@ export function SeveranceCalculator() {
   }
 
   function handleReset() {
-    setInput(initialInputs);
+    try {
+      window.localStorage.removeItem(SEVERANCE_STORAGE_KEY);
+    } catch {
+      // Screen reset continues even if storage deletion is unavailable.
+    }
+
+    setInput(initialSeveranceInputs);
     setErrors([]);
     setResult(null);
+    setCalculatedInput(null);
     setIsResultStale(false);
+    setActionMessage("");
     inputRefs.current.employmentStartDate?.focus();
+  }
+
+  async function copyWithFallback(text: string): Promise<boolean> {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch {
+      // Fall through to the document-based copy attempt.
+    }
+
+    const activeElement =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    textarea.style.opacity = "0";
+    textarea.style.pointerEvents = "none";
+    document.body.appendChild(textarea);
+    textarea.select();
+
+    try {
+      return typeof document.execCommand === "function"
+        ? document.execCommand("copy")
+        : false;
+    } catch {
+      return false;
+    } finally {
+      textarea.remove();
+      activeElement?.focus();
+    }
+  }
+
+  function getCurrentResultText(): string | null {
+    if (!result || !calculatedInput || isResultStale || errors.length > 0) {
+      return null;
+    }
+
+    try {
+      return buildSeveranceResultText(
+        calculatedInput,
+        result,
+      );
+    } catch {
+      return null;
+    }
+  }
+
+  async function handleCopy() {
+    setActionMessage("");
+    const text = getCurrentResultText();
+
+    if (!text) {
+      setActionMessage("최신 계산 결과가 없습니다. 다시 계산해 주세요.");
+      return;
+    }
+
+    const copied = await copyWithFallback(text);
+    setActionMessage(
+      copied
+        ? "계산 결과를 복사했습니다."
+        : "결과를 복사하지 못했습니다. 다시 시도해 주세요.",
+    );
+  }
+
+  async function handleShare() {
+    setActionMessage("");
+    const text = getCurrentResultText();
+
+    if (!text || typeof navigator.share !== "function") {
+      return;
+    }
+
+    try {
+      const shareData: ShareData = {
+        title: "퇴직금 계산 결과",
+        text,
+      };
+
+      if (
+        window.location.protocol === "http:" ||
+        window.location.protocol === "https:"
+      ) {
+        shareData.url = window.location.href;
+      }
+
+      await navigator.share(shareData);
+      setActionMessage("계산 결과를 공유했습니다.");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        setActionMessage("");
+      } else {
+        setActionMessage(
+          "결과를 공유하지 못했습니다. 결과 복사를 이용해 주세요.",
+        );
+      }
+    }
   }
 
   return (
@@ -404,8 +553,7 @@ export function SeveranceCalculator() {
           </div>
 
           <p className={styles.storageNotice}>
-            입력값은 서버로 전송하지 않으며, 계산 결과는 기존 퇴직금 엔진을
-            그대로 사용합니다.
+            입력값은 서버로 전송하지 않고 현재 브라우저에만 저장됩니다.
           </p>
 
           {errors.length > 0 && (
@@ -599,6 +747,23 @@ export function SeveranceCalculator() {
                   입력값과 {formatKoreanDate(result.policyVerifiedAt)} 기준의
                   예상 계산 결과이며, 실제 지급액은 사업장 규정과 산정 자료에
                   따라 달라질 수 있습니다.
+                </p>
+
+                {!isResultStale && calculatedInput && (
+                  <div className={styles.resultActions}>
+                    <button type="button" onClick={handleCopy}>
+                      결과 복사
+                    </button>
+                    {isShareSupported && (
+                      <button type="button" onClick={handleShare}>
+                        공유
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                <p className={styles.actionMessage} aria-live="polite">
+                  {actionMessage}
                 </p>
               </div>
             )}
