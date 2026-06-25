@@ -3,7 +3,12 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import test from "node:test";
 import { AdSenseScript } from "../components/ads/AdSenseScript.tsx";
-import { getValidAdSenseClient, hasValidAdSenseClient } from "../lib/adsense.ts";
+import {
+  ADSENSE_CLIENT,
+  getConfiguredAdSenseClient,
+  getValidAdSenseClient,
+  hasValidAdSenseClient,
+} from "../lib/adsense.ts";
 
 test("AdSense client 검증은 비어 있거나 잘못된 값을 차단한다", () => {
   const invalidValues = [
@@ -35,15 +40,19 @@ test("AdSense client 검증은 실제 형식의 ca-pub ID만 허용한다", () =
   assert.equal(hasValidAdSenseClient(client), true);
 });
 
-test("AdSenseScript는 유효한 client가 있을 때만 스크립트를 렌더링한다", () => {
-  assert.equal(renderToStaticMarkup(React.createElement(AdSenseScript, { client: "" })), "");
-  assert.equal(renderToStaticMarkup(React.createElement(AdSenseScript, { client: "pub-123" })), "");
+test("AdSense 설정값은 제공된 실제 publisher ID를 기본값으로 사용한다", () => {
+  assert.equal(ADSENSE_CLIENT, "ca-pub-4273771596550595");
+  assert.equal(getConfiguredAdSenseClient(undefined), ADSENSE_CLIENT);
+  assert.equal(getConfiguredAdSenseClient(""), ADSENSE_CLIENT);
+  assert.equal(getConfiguredAdSenseClient("pub-123"), ADSENSE_CLIENT);
+  assert.equal(getConfiguredAdSenseClient("G-YMJFLPRFMV"), ADSENSE_CLIENT);
+  assert.equal(getConfiguredAdSenseClient("ca-pub-1234567890123456"), "ca-pub-1234567890123456");
+});
 
-  const markup = renderToStaticMarkup(
-    React.createElement(AdSenseScript, { client: "ca-pub-1234567890123456" }),
-  );
+test("AdSenseScript는 기본 publisher ID로 전역 연결 스크립트를 렌더링한다", () => {
+  const markup = renderToStaticMarkup(React.createElement(AdSenseScript));
 
   assert.match(markup, /pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/);
-  assert.match(markup, /client=ca-pub-1234567890123456/);
+  assert.match(markup, /client=ca-pub-4273771596550595/);
   assert.match(markup, /crossorigin="anonymous"/);
 });

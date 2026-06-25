@@ -1,11 +1,11 @@
-import { getValidAdSenseClient } from "@/lib/adsense";
+import { getConfiguredAdSenseClient } from "@/lib/adsense";
 
 type AdSenseScriptProps = {
   client?: string | null;
 };
 
 export function AdSenseScript({ client }: AdSenseScriptProps) {
-  const adSenseClient = getValidAdSenseClient(client);
+  const adSenseClient = getConfiguredAdSenseClient(client);
 
   if (!adSenseClient) {
     return null;
