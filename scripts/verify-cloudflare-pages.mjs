@@ -13,6 +13,10 @@ const requiredStaticFiles = [
     "out/calculators/seller-margin/index.html",
     "판매 조건을 입력하세요",
   ],
+  [
+    "out/calculators/unemployment/index.html",
+    "실업급여 계산기",
+  ],
 ];
 
 const forbiddenSourcePatterns = [

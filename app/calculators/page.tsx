@@ -84,6 +84,24 @@ export default function CalculatorsPage() {
             →
           </span>
         </Link>
+
+        <Link
+          className="calculator-card"
+          href="/calculators/unemployment"
+          role="listitem"
+        >
+          <div>
+            <span className="calculator-card__category">급여</span>
+            <h2>실업급여 계산기</h2>
+            <p>
+              월급 또는 1일 평균임금과 고용보험 가입기간으로 예상 구직급여를
+              계산합니다.
+            </p>
+          </div>
+          <span className="calculator-card__arrow" aria-hidden="true">
+            →
+          </span>
+        </Link>
       </div>
     </section>
   );
