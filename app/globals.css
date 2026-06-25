@@ -221,6 +221,61 @@ a:focus-visible {
   color: var(--muted);
 }
 
+.policy-page {
+  width: min(100%, 820px);
+}
+
+.policy-page__heading {
+  margin-bottom: 36px;
+}
+
+.policy-page__content {
+  display: grid;
+  gap: 30px;
+}
+
+.policy-page__content section {
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--line);
+}
+
+.policy-page__content section:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.policy-page__content h2 {
+  margin: 0 0 12px;
+  font-size: 1.25rem;
+  line-height: 1.35;
+}
+
+.policy-page__content p,
+.policy-page__content ul {
+  margin: 0;
+  color: var(--muted);
+}
+
+.policy-page__content p + p {
+  margin-top: 12px;
+}
+
+.policy-page__content ul {
+  padding-left: 1.2rem;
+}
+
+.policy-page__content a {
+  overflow-wrap: anywhere;
+  color: var(--accent);
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.policy-page__links {
+  justify-content: flex-start;
+}
+
 .seller-margin-heading {
   max-width: 760px;
 }
@@ -385,10 +440,35 @@ a:focus-visible {
   margin: 0;
 }
 
+.site-footer__brand {
+  display: grid;
+  gap: 10px;
+}
+
 .site-footer__link {
   overflow-wrap: anywhere;
   color: var(--accent);
   font-weight: 800;
+}
+
+.site-footer__copyright {
+  color: #536058;
+}
+
+.site-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  max-width: 460px;
+}
+
+.site-footer__nav a {
+  color: #425148;
+  font-weight: 700;
+}
+
+.site-footer__nav a:hover {
+  color: var(--accent);
 }
 
 .site-footer__note {

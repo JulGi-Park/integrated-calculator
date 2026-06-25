@@ -12,6 +12,11 @@ const routes = [
   "/calculators/loan",
   "/calculators/severance",
   "/calculators/unemployment",
+  "/about",
+  "/contact",
+  "/privacy-policy",
+  "/terms",
+  "/disclaimer",
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {

@@ -1,0 +1,70 @@
+import type { Metadata } from "next";
+import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
+
+export const metadata: Metadata = {
+  title: "개인정보처리방침 | 계산박스",
+  description:
+    "계산박스의 개인정보 처리, 쿠키, 광고, 분석 도구 사용 가능성 및 문의 방법을 안내합니다.",
+  alternates: {
+    canonical: "https://gyesanbox.kr/privacy-policy",
+  },
+};
+
+export default function PrivacyPolicyPage() {
+  return (
+    <PolicyPageLayout
+      eyebrow="Privacy"
+      title="개인정보처리방침"
+      description="계산박스의 개인정보 처리 기준과 쿠키, 광고, 분석 도구 사용 가능성을 안내합니다."
+    >
+      <section>
+        <h2>기본 처리 원칙</h2>
+        <p>
+          계산박스는 초기 MVP에서 로그인, 회원가입, 결제, 운영 DB 저장 기능을
+          사용하지 않습니다. 사용자가 입력한 계산값은 계산 결과 제공을 위해
+          브라우저에서 처리되며 서버에 저장하지 않습니다.
+        </p>
+      </section>
+
+      <section>
+        <h2>브라우저 로컬 저장</h2>
+        <p>
+          일부 계산기는 사용 편의를 위해 입력값을 사용자의 브라우저
+          localStorage에 저장할 수 있습니다. 이 정보는 사용자의 기기에
+          저장되며, 브라우저 설정이나 초기화 기능을 통해 삭제할 수 있습니다.
+        </p>
+      </section>
+
+      <section>
+        <h2>쿠키와 제3자 서비스</h2>
+        <p>
+          계산박스는 향후 Google AdSense, Google Analytics 4, Google Search Console
+          같은 제3자 서비스를 사용할 수 있습니다. 이 과정에서 쿠키,
+          로그, 광고 식별자, 접속 정보, IP 주소, 브라우저 정보 등이 서비스
+          제공자에 의해 처리될 수 있습니다.
+        </p>
+        <p>
+          Google을 포함한 제3자 공급업체는 쿠키를 사용해 사용자의 이전 방문
+          정보에 기반한 광고를 제공할 수 있습니다. Google의 광고 쿠키 사용으로
+          사용자의 사이트 방문 이력에 기반한 광고가 제공될 수 있으며, 사용자는
+          Google 광고 설정 등을 통해 맞춤 광고를 관리할 수 있습니다.
+        </p>
+        <p>
+          제3자는 광고 제공 결과를 측정하거나 광고 품질을 관리하기 위해 쿠키,
+          웹 비콘, IP 주소와 유사한 기술 정보를 사용할 수 있습니다.
+        </p>
+      </section>
+
+      <section>
+        <h2>정책 변경과 문의</h2>
+        <p>
+          서비스 기능이나 사용하는 외부 도구가 변경되면 개인정보처리방침도
+          수정될 수 있습니다. 개인정보 관련 문의는{" "}
+          <a href="mailto:contact@gyesanbox.kr">contact@gyesanbox.kr</a> 로
+          보내 주세요.
+        </p>
+        <p>시행일: 2026년 6월 25일</p>
+      </section>
+    </PolicyPageLayout>
+  );
+}

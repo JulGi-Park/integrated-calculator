@@ -21,6 +21,11 @@ const routes = [
     "app/calculators/unemployment/page.tsx",
     "실업급여 계산기 2026 | 구직급여 상한액·하한액·수급기간 예상",
   ],
+  ["app/about/page.tsx", "계산박스 소개 | 계산박스"],
+  ["app/contact/page.tsx", "문의 | 계산박스"],
+  ["app/privacy-policy/page.tsx", "개인정보처리방침 | 계산박스"],
+  ["app/terms/page.tsx", "이용약관 | 계산박스"],
+  ["app/disclaimer/page.tsx", "면책문구 | 계산박스"],
 ];
 
 test("필수 페이지에 고유한 메타데이터 제목이 있다", async () => {
