@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { AdSenseScript } from "@/components/ads/AdSenseScript";
+import { GoogleTag } from "@/components/analytics/GoogleTag";
 import { SiteFooter } from "@/components/common/SiteFooter";
 import { SiteHeader } from "@/components/common/SiteHeader";
 import "./globals.css";
@@ -16,6 +18,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="ko">
+      <head>
+        <GoogleTag />
+        <AdSenseScript />
+      </head>
       <body>
         <div className="site-shell">
           <SiteHeader />
