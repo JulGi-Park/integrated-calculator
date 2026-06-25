@@ -10,7 +10,7 @@ export const UNEMPLOYMENT_POLICY_2026 = {
   policyVersion: "2026-06-25-draft",
   basisDate: "2026-06-25",
   sourceNote:
-    "2026년 1일 구직급여 상한액 68,100원, 하한액 66,048원 기준의 예상 계산입니다. 공식 원문 재검증이 필요합니다.",
+    "2026년 1일 구직급여 상한액 68,100원, 하한액 66,048원을 현재 계산기 적용 기준으로 사용하는 예상 계산입니다. 고용보험 공식 모의계산 안내의 2019년 이후 상한액 66,000원 안내 및 2026년 최저임금 기반 하한 산식과 수치 차이가 있을 수 있어 공식 원문 재검증이 필요합니다.",
   needsOfficialVerification: true,
   benefitRateNumerator: 60,
   benefitRateDenominator: 100,

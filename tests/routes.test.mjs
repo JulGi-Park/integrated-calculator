@@ -19,7 +19,7 @@ const routes = [
   ],
   [
     "app/calculators/unemployment/page.tsx",
-    "실업급여 계산기 | 구직급여 예상 금액 계산",
+    "실업급여 계산기 2026 | 구직급여 상한액·하한액·수급기간 예상",
   ],
 ];
 
