@@ -62,11 +62,11 @@ export function UnemploymentContent() {
           <p>{unemploymentBasisSummary}</p>
         </div>
         <aside className={styles.policyNotice} aria-label="공식 기준 재확인 안내">
-          <strong>공식 기준 확인 필요</strong>
+          <strong>2026년 공식 금액 기준 반영</strong>
           <p>
-            {UNEMPLOYMENT_POLICY_2026.sourceNote} 공식 안내에서 확인한 일부
-            상한액 정보와 현재 계산기 상수가 다를 수 있어 신청 전 고용보험 또는
-            고용센터에서 최신 기준을 확인해 주세요.
+            {UNEMPLOYMENT_POLICY_2026.sourceNote} 법령·제도 변경이나 개인별
+            이력에 따라 실제 수급 여부와 지급 시점은 달라질 수 있으므로 신청
+            전 고용24 또는 고용센터에서 본인 기준을 확인해 주세요.
           </p>
         </aside>
       </section>

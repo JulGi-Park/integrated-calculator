@@ -175,10 +175,14 @@ test("퇴직 사유별 안내는 지급 가능 여부를 확정하지 않는다"
   assert.match(unclear.eligibilityMessage, /공식 절차/);
 });
 
-test("정책 상수는 기준일과 공식 재검증 필요 여부를 노출한다", () => {
+test("정책 상수는 2026년 공식 상한액과 하한액 기준을 노출한다", () => {
   assert.equal(UNEMPLOYMENT_POLICY_2026.basisDate, "2026-06-25");
-  assert.equal(UNEMPLOYMENT_POLICY_2026.needsOfficialVerification, true);
-  assert.match(UNEMPLOYMENT_POLICY_2026.sourceNote, /공식 원문 재검증/);
+  assert.equal(UNEMPLOYMENT_POLICY_2026.needsOfficialVerification, false);
+  assert.equal(UNEMPLOYMENT_POLICY_2026.dailyBenefitUpperLimit, 68_100);
+  assert.equal(UNEMPLOYMENT_POLICY_2026.dailyBenefitLowerLimit, 66_048);
+  assert.match(UNEMPLOYMENT_POLICY_2026.sourceNote, /113,500원 × 60%/);
+  assert.match(UNEMPLOYMENT_POLICY_2026.sourceNote, /10,320원 × 8시간 × 80%/);
+  assert.match(UNEMPLOYMENT_POLICY_2026.sourceNote, /실제 수급 여부/);
 });
 
 test("검증 함수는 입력 객체를 변경하지 않는다", () => {

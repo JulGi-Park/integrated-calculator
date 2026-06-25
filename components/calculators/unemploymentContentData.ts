@@ -48,6 +48,10 @@ function formatKoreanDate(value: string): string {
 }
 
 export const unemploymentPolicyCheckedAt = "2026-06-25";
+export const unemploymentUpperBasisDailyWage = 113_500;
+export const unemploymentMinimumWage2026 = 10_320;
+export const unemploymentStandardDailyHours = 8;
+export const unemploymentMinimumWageBenefitRate = 80;
 
 export const unemploymentExampleInput: UnemploymentInput = {
   wageInputType: "monthlyWage",
@@ -101,12 +105,12 @@ export const unemploymentInterpretationCards = [
   {
     title: "1일 구직급여액",
     description:
-      "퇴직 전 평균임금 또는 입력한 1일 평균임금에 60%를 적용한 뒤, 현재 계산기에 설정된 상한액과 하한액 범위로 조정한 하루 예상 금액입니다.",
+      "퇴직 전 평균임금 또는 입력한 1일 평균임금에 60%를 적용한 뒤, 2026년 공식 상한액과 하한액 범위로 조정한 하루 예상 금액입니다.",
   },
   {
     title: "상한액·하한액",
     description:
-      "계산 전 기준 급여액이 너무 높거나 낮을 때 적용되는 일 단위 한도입니다. 현재 페이지는 계산기 적용 수치를 보여주되 공식 기준 재확인이 필요하다고 안내합니다.",
+      "상한액은 급여기초 임금일액 상한 113,500원 × 60% = 68,100원, 하한액은 2026년 최저임금 10,320원 × 8시간 × 80% = 66,048원 기준입니다.",
   },
   {
     title: "소정급여일수",
@@ -180,17 +184,17 @@ export const unemploymentCriteriaRows: UnemploymentCriteriaRow[] = [
   {
     item: "60% 계산",
     currentCalculatorBasis: "추정 1일 평균임금에 60%를 곱합니다.",
-    officialCheck: "고용보험 구직급여 산정 기준 확인",
+    officialCheck: "고용보험법 제46조 구직급여일액 산식",
   },
   {
     item: "상한액",
-    currentCalculatorBasis: `${formatWon(UNEMPLOYMENT_POLICY_2026.dailyBenefitUpperLimit)}을 현재 계산기 적용 기준으로 사용합니다.`,
-    officialCheck: "공식 안내와 수치 재검증 필요",
+    currentCalculatorBasis: `급여기초 임금일액 상한 ${formatWon(unemploymentUpperBasisDailyWage)} × 60% = ${formatWon(UNEMPLOYMENT_POLICY_2026.dailyBenefitUpperLimit)}을 적용합니다.`,
+    officialCheck: "고용노동부 상한액 인상 자료와 고용보험법 시행령 제68조",
   },
   {
     item: "하한액",
-    currentCalculatorBasis: `${formatWon(UNEMPLOYMENT_POLICY_2026.dailyBenefitLowerLimit)}을 현재 계산기 적용 기준으로 사용합니다.`,
-    officialCheck: "2026년 최저임금 기반 하한 산식 확인 필요",
+    currentCalculatorBasis: `2026년 최저임금 ${formatWon(unemploymentMinimumWage2026)} × ${unemploymentStandardDailyHours}시간 × ${unemploymentMinimumWageBenefitRate}% = ${formatWon(UNEMPLOYMENT_POLICY_2026.dailyBenefitLowerLimit)}을 적용합니다.`,
+    officialCheck: "고용보험법 제45조·제46조와 2026년 최저임금 고시",
   },
   {
     item: "고용보험 가입기간",
@@ -228,7 +232,7 @@ export const unemploymentFaqs: UnemploymentFaq[] = [
   {
     question: "상한액과 하한액은 왜 적용되나요?",
     answer:
-      "구직급여일액은 평균임금의 일정 비율로 계산되지만 일 단위 한도 범위 안에서 조정됩니다. 현재 계산기는 설정된 상한액과 하한액을 적용하며, 공식 고시와 안내는 신청 전 다시 확인해야 합니다.",
+      "구직급여일액은 평균임금의 일정 비율로 계산되지만 일 단위 한도 범위 안에서 조정됩니다. 2026년 기준 상한액은 급여기초 임금일액 상한 113,500원에 60%를 곱한 68,100원이고, 하한액은 최저임금 10,320원에 8시간과 80%를 곱한 66,048원입니다.",
   },
   {
     question: "고용보험 가입기간이 6개월이면 바로 받을 수 있나요?",
@@ -266,11 +270,32 @@ export const unemploymentSources: UnemploymentSource[] = [
     criterion: "신청 절차, 이직확인서, 실업인정 흐름",
   },
   {
-    organization: "고용보험",
-    title: "실업급여 모의계산 안내",
+    organization: "고용노동부",
+    title: "고용보험법 시행령 등 일부개정령안 국무회의 심의",
     checkedAt: unemploymentPolicyCheckedAt,
-    href: "https://eiac.ei.go.kr/ei/m/pf/MOW-PF-00-180-C.html",
-    criterion: "1일 평균급여 60%, 상한액·하한액 안내, 소정급여일수 안내",
+    href: "https://www.moel.go.kr/news/enews/report/enewsView.do?news_seq=18736",
+    criterion: "2026년 구직급여 상한액 68,100원 인상과 급여기초 임금일액 상한 113,500원",
+  },
+  {
+    organization: "국가법령정보센터",
+    title: "고용보험법 제45조 급여의 기초가 되는 임금일액",
+    checkedAt: unemploymentPolicyCheckedAt,
+    href: "https://www.law.go.kr/LSW//lsLawLinkInfo.do?chrClsCd=010202&lsId=001761&lsJoLnkSeq=1000770542&print=print",
+    criterion: "기초일액 산정, 최저기초일액, 대통령령 상한 근거",
+  },
+  {
+    organization: "국가법령정보센터",
+    title: "고용보험법 제46조 구직급여일액",
+    checkedAt: unemploymentPolicyCheckedAt,
+    href: "https://www.law.go.kr/LSW//lsLawLinkInfo.do?chrClsCd=010202&lsId=001761&lsJoLnkSeq=1000770549&print=print",
+    criterion: "기초일액 60%와 최저기초일액 80% 산식",
+  },
+  {
+    organization: "국가법령정보센터",
+    title: "고용보험법 시행령 제68조 급여기초 임금일액의 상한액",
+    checkedAt: unemploymentPolicyCheckedAt,
+    href: "https://www.law.go.kr/lsLinkProc.do?chrClsCd=010202&datClsCd=010102&gubun=admRul&joNo=006800000&lsId=41988&lsNm=%EA%B3%A0%EC%9A%A9%EB%B3%B4%ED%97%98%EB%B2%95%EC%8B%9C%ED%96%89%EB%A0%B9&mode=10",
+    criterion: "급여기초 임금일액 상한 113,500원",
   },
   {
     organization: "국가법령정보센터",
@@ -361,8 +386,16 @@ export const unemploymentFaqJsonLd = {
 export const unemploymentBasisSummary =
   `현재 계산기 기준일은 ${formatKoreanDate(
     UNEMPLOYMENT_POLICY_2026.basisDate,
-  )}이며, 상한액 ${formatWon(
+  )}이며, 2026년 공식 기준인 상한액 ${formatWon(
     UNEMPLOYMENT_POLICY_2026.dailyBenefitUpperLimit,
   )}, 하한액 ${formatWon(
     UNEMPLOYMENT_POLICY_2026.dailyBenefitLowerLimit,
-  )}을 계산 상수로 사용합니다. 공식 출처에서 최신 상한액·하한액을 다시 확인해야 합니다.`;
+  )}을 계산 상수로 사용합니다. 상한액 산식은 ${formatWon(
+    unemploymentUpperBasisDailyWage,
+  )} × 60% = ${formatWon(
+    UNEMPLOYMENT_POLICY_2026.dailyBenefitUpperLimit,
+  )}, 하한액 산식은 ${formatWon(
+    unemploymentMinimumWage2026,
+  )} × ${unemploymentStandardDailyHours}시간 × ${unemploymentMinimumWageBenefitRate}% = ${formatWon(
+    UNEMPLOYMENT_POLICY_2026.dailyBenefitLowerLimit,
+  )}입니다.`;
