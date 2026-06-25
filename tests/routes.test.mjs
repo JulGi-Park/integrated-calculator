@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const routes = [
-  ["app/page.tsx", "계산박스 - 연봉·퇴직금·실업급여·대출 이자 계산기"],
+  ["app/page.tsx", "계산박스 | 생활·금융·근로 계산기 모음"],
   ["app/calculators/page.tsx", "계산박스 계산기 목록"],
   [
     "app/calculators/seller-margin/page.tsx",
