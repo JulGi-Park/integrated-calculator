@@ -399,7 +399,7 @@ export function LoanInterestCalculator() {
 
     try {
       const shareData: ShareData = {
-        title: "대출이자 계산 결과",
+        title: "대출 이자 계산 결과",
         text,
       };
 

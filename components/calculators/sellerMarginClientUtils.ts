@@ -155,7 +155,7 @@ export function buildSellerMarginResultText(
   const productCostTotal = getProductCostTotal(input);
 
   return [
-    "온라인 판매자 마진·순이익 계산 결과",
+    "판매자 마진 계산 결과",
     "",
     "[입력 조건]",
     `상품 판매단가: ${formatSellerMarginWon(input.unitPrice)}`,

@@ -328,12 +328,12 @@ export const unemploymentRelatedCalculators: UnemploymentRelatedCalculator[] = [
   },
   {
     href: "/calculators/salary",
-    title: "연봉·월급 실수령액 계산기",
+    title: "연봉 실수령액 계산기",
     description: "4대보험과 간이세액표 기준 실수령액을 확인합니다.",
   },
   {
     href: "/calculators/loan",
-    title: "대출이자 계산기",
+    title: "대출 이자 계산기",
     description: "상환방식별 월 납입액과 총이자를 비교합니다.",
   },
   {

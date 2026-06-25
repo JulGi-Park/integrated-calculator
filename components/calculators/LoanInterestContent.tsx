@@ -196,14 +196,14 @@ export function LoanInterestContent() {
             className={`${styles.relatedCard} ${styles.relatedLink}`}
             href="/calculators/salary"
           >
-            <h3>연봉·월급 실수령액 계산기</h3>
+            <h3>연봉 실수령액 계산기</h3>
             <p>월 급여 공제와 예상 실수령액을 함께 확인합니다.</p>
           </Link>
           <Link
             className={`${styles.relatedCard} ${styles.relatedLink}`}
             href="/calculators/seller-margin"
           >
-            <h3>판매자 마진·순이익 계산기</h3>
+            <h3>판매자 마진 계산기</h3>
             <p>수수료와 비용을 반영한 예상 순이익을 계산합니다.</p>
           </Link>
         </div>

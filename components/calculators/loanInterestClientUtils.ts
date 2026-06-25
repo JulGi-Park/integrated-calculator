@@ -213,7 +213,7 @@ export function buildLoanInterestResultText(
   result: LoanRepaymentComparisonResult,
 ): string {
   return [
-    "대출이자 계산 결과",
+    "대출 이자 계산 결과",
     "",
     "[입력 조건]",
     `대출금액: ${formatWon(input.principal)}`,

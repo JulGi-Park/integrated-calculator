@@ -11,7 +11,7 @@ import {
 } from "@/components/calculators/loanInterestContentData";
 
 const title =
-  "대출이자 계산기｜원리금균등·원금균등·만기일시상환 비교";
+  "대출 이자 계산기 | 원리금균등·원금균등·만기일시상환 비교";
 const description =
   "대출금액과 연이율, 기간을 입력해 월 납입액과 총이자를 계산하고 원리금균등·원금균등·만기일시상환 결과와 월별 일정을 비교해 보세요.";
 
@@ -47,7 +47,7 @@ export default function LoanInterestPage() {
 
       <div className="page-heading seller-margin-heading">
         <p className="page-heading__eyebrow">Loan repayment</p>
-        <h1>대출이자 계산기</h1>
+        <h1>대출 이자 계산기</h1>
         <p>
           대출금액, 연이율과 기간을 입력해 원리금균등·원금균등·
           만기일시상환의 예상 비용과 월별 일정을 비교합니다.

@@ -154,20 +154,23 @@ export function SeveranceContent() {
             className={`${styles.relatedCard} ${styles.relatedLink}`}
             href="/calculators/salary"
           >
-            <h3>연봉·월급 실수령액 계산기</h3>
+            <h3>연봉 실수령액 계산기</h3>
             <p>급여 공제와 월 예상 실수령액을 함께 확인할 수 있습니다.</p>
           </Link>
           <Link
             className={`${styles.relatedCard} ${styles.relatedLink}`}
             href="/calculators/loan"
           >
-            <h3>대출이자 계산기</h3>
+            <h3>대출 이자 계산기</h3>
             <p>월 납입액과 총이자를 상환방식별로 비교해 볼 수 있습니다.</p>
           </Link>
-          <article className={styles.relatedCard}>
+          <Link
+            className={`${styles.relatedCard} ${styles.relatedLink}`}
+            href="/calculators/unemployment"
+          >
             <h3>실업급여 계산기</h3>
-            <span className={styles.comingSoon}>준비 중</span>
-          </article>
+            <p>고용보험 가입기간과 임금 기준 예상 구직급여를 계산합니다.</p>
+          </Link>
           <article className={styles.relatedCard}>
             <h3>시급·주휴·연장·야간수당 계산기</h3>
             <span className={styles.comingSoon}>준비 중</span>

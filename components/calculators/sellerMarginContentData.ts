@@ -145,7 +145,7 @@ export const sellerMarginFaqs: SellerMarginFaq[] = [
 export const sellerMarginWebApplicationJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "온라인 판매자 마진·순이익 계산기",
+  name: "판매자 마진 계산기",
   description:
     "판매단가, 수량, 개당 원가, 할인, 배송비, 플랫폼·결제 수수료와 광고비를 입력해 예상 정산금액과 세전 순이익을 계산합니다.",
   applicationCategory: "BusinessApplication",
@@ -161,7 +161,7 @@ export const sellerMarginBreadcrumbJsonLd = {
     {
       "@type": "ListItem",
       position: 3,
-      name: "온라인 판매자 마진·순이익 계산기",
+      name: "판매자 마진 계산기",
     },
   ],
 };

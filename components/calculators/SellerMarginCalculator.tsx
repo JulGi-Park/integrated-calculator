@@ -343,7 +343,7 @@ export function SellerMarginCalculator() {
 
     try {
       const shareData: ShareData = {
-        title: "온라인 판매자 마진·순이익 계산 결과",
+        title: "판매자 마진 계산 결과",
         text,
       };
 

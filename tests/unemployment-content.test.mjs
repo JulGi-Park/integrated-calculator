@@ -275,7 +275,7 @@ test("WebApplication, BreadcrumbList와 FAQPage JSON-LD가 안전하다", () => 
     assert.deepEqual(JSON.parse(serialized), item);
     assert.doesNotMatch(
       serialized,
-      /aggregateRating|review|offers|NaN|Infinity|undefined|localhost|127\.0\.0\.1|pages\.dev|연봉·월급|판매자 마진/,
+      /aggregateRating|review|offers|NaN|Infinity|undefined|localhost|127\.0\.0\.1|pages\.dev|연봉 실수령액 계산기|판매자 마진 계산기/,
     );
   }
 });

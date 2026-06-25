@@ -31,7 +31,7 @@ const source = `${pageSource}\n${contentSource}\n${jsonLdSource}`;
 
 test("페이지 상단에 고유 H1, 설명, 기준일과 예상값 안내가 있다", () => {
   assert.equal((pageSource.match(/<h1/g) ?? []).length, 1);
-  assert.match(pageSource, /온라인 판매자/);
+  assert.match(pageSource, /판매자 마진 계산기/);
   assert.match(
     pageSource,
     /판매단가, 수량, 원가, 수수료와 비용을 입력해 주문 기준 예상/,
@@ -136,7 +136,7 @@ test("관련 계산기에서 실제 목록만 링크이고 준비 중 항목은 
 test("seller-margin 전용 메타데이터에 가짜 URL 없이 SEO 정보를 설정한다", () => {
   assert.equal(
     metadata.title,
-    "온라인 판매자 마진·순이익 계산기 | 수수료·원가 계산",
+    "판매자 마진 계산기 | 수수료·원가·순이익 계산",
   );
   assert.equal(
     metadata.description,
@@ -161,6 +161,11 @@ test("WebApplication, BreadcrumbList와 FAQPage JSON-LD가 유효하다", () => 
   assert.deepEqual(
     jsonLdItems.map((item) => item["@type"]),
     ["WebApplication", "BreadcrumbList", "FAQPage"],
+  );
+  assert.equal(sellerMarginWebApplicationJsonLd.name, "판매자 마진 계산기");
+  assert.deepEqual(
+    sellerMarginBreadcrumbJsonLd.itemListElement.map((item) => item.name),
+    ["홈", "계산기 목록", "판매자 마진 계산기"],
   );
 
   for (const item of jsonLdItems) {

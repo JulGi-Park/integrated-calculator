@@ -11,7 +11,7 @@ import {
 import { SALARY_TAKE_HOME_POLICY_2026 } from "@/lib/calculators/salary-take-home/policy";
 
 const title =
-  "2026 연봉·월급 실수령액 계산기 | 4대보험·소득세 계산";
+  "2026 연봉 실수령액 계산기 | 월급·4대보험·소득세 계산";
 const description =
   "연봉과 비과세액, 공제대상 가족 수를 입력해 2026년 국민연금·건강보험·고용보험·소득세를 반영한 월급 실수령액을 계산합니다.";
 
@@ -52,11 +52,7 @@ export default function SalaryTakeHomePage() {
 
       <div className="page-heading seller-margin-heading">
         <p className="page-heading__eyebrow">Salary take-home</p>
-        <h1>
-          연봉·월급
-          <br />
-          실수령액 계산기
-        </h1>
+        <h1>연봉 실수령액 계산기</h1>
         <p>
           연봉과 비과세액, 공제대상 가족 수를 입력해 월·연간 예상
           실수령액과 공제 내역을 확인할 수 있습니다.

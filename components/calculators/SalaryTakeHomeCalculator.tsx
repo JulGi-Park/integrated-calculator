@@ -343,7 +343,7 @@ export function SalaryTakeHomeCalculator() {
 
     try {
       const shareData: ShareData = {
-        title: "연봉·월급 실수령액 계산 결과",
+        title: "연봉 실수령액 계산 결과",
         text,
       };
 

@@ -302,7 +302,7 @@ export const loanInterestSources: LoanInterestSource[] = [
   },
   {
     organization: "서민금융진흥원",
-    title: "대출이자 계산기",
+    title: "대출 이자 계산기",
     criterion:
       "원금균등상환, 원리금균등상환, 만기일시상환의 정의와 계산 결과가 참고용이라는 안내",
     verifiedAt: "2026년 6월 22일",
@@ -313,7 +313,7 @@ export const loanInterestSources: LoanInterestSource[] = [
 export const loanInterestWebApplicationJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "대출이자 계산기",
+  name: "대출 이자 계산기",
   description:
     "대출금액과 연이율, 기간을 입력해 월 납입액과 총이자를 계산하고 원리금균등·원금균등·만기일시상환 결과를 비교합니다.",
   applicationCategory: "FinanceApplication",
@@ -327,7 +327,7 @@ export const loanInterestBreadcrumbJsonLd = {
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "홈" },
     { "@type": "ListItem", position: 2, name: "계산기" },
-    { "@type": "ListItem", position: 3, name: "대출이자 계산기" },
+    { "@type": "ListItem", position: 3, name: "대출 이자 계산기" },
   ],
 };
 

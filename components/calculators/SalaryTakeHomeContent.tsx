@@ -158,17 +158,23 @@ export function SalaryTakeHomeContent() {
             className={`${styles.relatedCard} ${styles.relatedLink}`}
             href="/calculators/seller-margin"
           >
-            <h3>판매자 마진·순이익 계산기</h3>
+            <h3>판매자 마진 계산기</h3>
             <p>판매 수수료와 비용을 반영한 예상 순이익을 계산합니다.</p>
           </Link>
-          <article className={styles.relatedCard}>
+          <Link
+            className={`${styles.relatedCard} ${styles.relatedLink}`}
+            href="/calculators/severance"
+          >
             <h3>퇴직금 계산기</h3>
-            <span className={styles.comingSoon}>준비 중</span>
-          </article>
-          <article className={styles.relatedCard}>
+            <p>입사일과 퇴직 전 임금으로 예상 퇴직금을 계산합니다.</p>
+          </Link>
+          <Link
+            className={`${styles.relatedCard} ${styles.relatedLink}`}
+            href="/calculators/unemployment"
+          >
             <h3>실업급여 계산기</h3>
-            <span className={styles.comingSoon}>준비 중</span>
-          </article>
+            <p>고용보험 가입기간과 임금 기준 예상 구직급여를 계산합니다.</p>
+          </Link>
         </div>
       </section>
 

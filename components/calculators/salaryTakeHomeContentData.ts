@@ -272,7 +272,7 @@ export const salaryTakeHomeSources: SalaryTakeHomeSource[] = [
 export const salaryTakeHomeWebApplicationJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "연봉·월급 실수령액 계산기",
+  name: "연봉 실수령액 계산기",
   description:
     "연봉과 비과세액, 공제대상 가족 수를 입력해 2026년 국민연금·건강보험·고용보험·소득세를 반영한 월급 실수령액을 계산합니다.",
   applicationCategory: "FinanceApplication",
@@ -289,7 +289,7 @@ export const salaryTakeHomeBreadcrumbJsonLd = {
     {
       "@type": "ListItem",
       position: 3,
-      name: "연봉·월급 실수령액 계산기",
+      name: "연봉 실수령액 계산기",
     },
   ],
 };

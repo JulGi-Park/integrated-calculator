@@ -3,19 +3,19 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const routes = [
-  ["app/page.tsx", "통합 계산기 서비스"],
-  ["app/calculators/page.tsx", "전체 계산기 목록"],
+  ["app/page.tsx", "계산박스 - 연봉·퇴직금·실업급여·대출 이자 계산기"],
+  ["app/calculators/page.tsx", "계산박스 계산기 목록"],
   [
     "app/calculators/seller-margin/page.tsx",
-    "온라인 판매자 마진·순이익 계산기 | 수수료·원가 계산",
+    "판매자 마진 계산기 | 수수료·원가·순이익 계산",
   ],
   [
     "app/calculators/salary/page.tsx",
-    "2026 연봉·월급 실수령액 계산기 | 4대보험·소득세 계산",
+    "2026 연봉 실수령액 계산기 | 월급·4대보험·소득세 계산",
   ],
   [
     "app/calculators/loan/page.tsx",
-    "대출이자 계산기｜원리금균등·원금균등·만기일시상환 비교",
+    "대출 이자 계산기 | 원리금균등·원금균등·만기일시상환 비교",
   ],
   [
     "app/calculators/unemployment/page.tsx",
@@ -40,7 +40,7 @@ test("연봉 계산기 페이지와 목록 링크가 실제 UI를 제공한다",
   ]);
 
   assert.match(pageSource, /SalaryTakeHomeCalculator/);
-  assert.match(pageSource, /연봉·월급/);
+  assert.match(pageSource, /<h1>연봉 실수령액 계산기<\/h1>/);
   assert.doesNotMatch(pageSource, /계산 기능 준비 중/);
   assert.match(listSource, /href="\/calculators\/salary"/);
 });
@@ -55,17 +55,17 @@ test("판매자 마진 페이지는 계산기 UI를 제공한다", async () => {
   assert.doesNotMatch(source, /계산 기능 준비 중/);
 });
 
-test("대출이자 계산기 페이지와 목록 링크가 실제 UI를 제공한다", async () => {
+test("대출 이자 계산기 페이지와 목록 링크가 실제 UI를 제공한다", async () => {
   const [pageSource, listSource] = await Promise.all([
     readFile("app/calculators/loan/page.tsx", "utf8"),
     readFile("app/calculators/page.tsx", "utf8"),
   ]);
 
   assert.match(pageSource, /LoanInterestCalculator/);
-  assert.match(pageSource, /<h1>대출이자 계산기<\/h1>/);
+  assert.match(pageSource, /<h1>대출 이자 계산기<\/h1>/);
   assert.doesNotMatch(pageSource, /계산 기능 준비 중/);
   assert.match(listSource, /href="\/calculators\/loan"/);
-  assert.match(listSource, /대출이자 계산기/);
+  assert.match(listSource, /대출 이자 계산기/);
 });
 
 test("실업급여 계산기 페이지와 목록 링크가 실제 UI를 제공한다", async () => {

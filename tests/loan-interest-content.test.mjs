@@ -30,7 +30,7 @@ const dataSource = await readFile(
 
 test("대출 계산기 전용 SEO 메타데이터를 URL 하드코딩 없이 설정한다", () => {
   const expectedTitle =
-    "대출이자 계산기｜원리금균등·원금균등·만기일시상환 비교";
+    "대출 이자 계산기 | 원리금균등·원금균등·만기일시상환 비교";
   const expectedDescription =
     "대출금액과 연이율, 기간을 입력해 월 납입액과 총이자를 계산하고 원리금균등·원금균등·만기일시상환 결과와 월별 일정을 비교해 보세요.";
 
@@ -55,7 +55,7 @@ test("대출 계산기 전용 SEO 메타데이터를 URL 하드코딩 없이 설
 
 test("대출 페이지 상단은 H1 하나와 고정 안내를 유지한다", () => {
   assert.equal((pageSource.match(/<h1/g) ?? []).length, 1);
-  assert.match(pageSource, /<h1>대출이자 계산기<\/h1>/);
+  assert.match(pageSource, /<h1>대출 이자 계산기<\/h1>/);
   assert.match(pageSource, /원 단위 예상 계산/);
   assert.match(pageSource, /실제 대출 가능\s+범위를 뜻하지 않습니다/);
 });
@@ -287,7 +287,7 @@ test("WebApplication, BreadcrumbList와 FAQPage JSON-LD가 안전하다", () => 
   );
   assert.deepEqual(
     loanInterestBreadcrumbJsonLd.itemListElement.map((item) => item.name),
-    ["홈", "계산기", "대출이자 계산기"],
+    ["홈", "계산기", "대출 이자 계산기"],
   );
 
   for (const item of items) {
@@ -295,7 +295,7 @@ test("WebApplication, BreadcrumbList와 FAQPage JSON-LD가 안전하다", () => 
     assert.deepEqual(JSON.parse(serialized), item);
     assert.doesNotMatch(
       serialized,
-      /aggregateRating|review|offers|NaN|Infinity|undefined|localhost|127\.0\.0\.1|pages\.dev|판매자 마진|연봉·월급/,
+      /aggregateRating|review|offers|NaN|Infinity|undefined|localhost|127\.0\.0\.1|pages\.dev|판매자 마진 계산기|연봉 실수령액 계산기/,
     );
   }
 });

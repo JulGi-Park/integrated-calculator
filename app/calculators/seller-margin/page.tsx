@@ -10,7 +10,7 @@ import {
 } from "@/components/calculators/sellerMarginContentData";
 
 export const metadata: Metadata = {
-  title: "온라인 판매자 마진·순이익 계산기 | 수수료·원가 계산",
+  title: "판매자 마진 계산기 | 수수료·원가·순이익 계산",
   description:
     "판매단가, 수량, 개당 원가, 할인, 배송비, 플랫폼·결제 수수료와 광고비를 입력해 예상 정산금액과 세전 순이익을 계산합니다.",
   robots: {
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: "온라인 판매자 마진·순이익 계산기 | 수수료·원가 계산",
+    title: "판매자 마진 계산기 | 수수료·원가·순이익 계산",
     description:
       "판매단가, 수량, 개당 원가, 할인, 배송비, 플랫폼·결제 수수료와 광고비를 입력해 예상 정산금액과 세전 순이익을 계산합니다.",
     type: "website",
@@ -38,7 +38,7 @@ export default function SellerMarginPage() {
 
       <div className="page-heading seller-margin-heading">
         <p className="page-heading__eyebrow">Seller margin</p>
-        <h1>온라인 판매자<br />마진·순이익 계산기</h1>
+        <h1>판매자 마진 계산기</h1>
         <p>
           판매단가, 수량, 원가, 수수료와 비용을 입력해 주문 기준 예상
           정산금액과 순이익을 계산할 수 있습니다.

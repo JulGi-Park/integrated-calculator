@@ -7,7 +7,7 @@ const sourceDirectories = ["app", "components"];
 const nextConfigPath = path.join(projectRoot, "next.config.ts");
 
 const requiredStaticFiles = [
-  ["out/index.html", "통합 계산기"],
+  ["out/index.html", "계산박스"],
   ["out/calculators/index.html", "계산기 목록"],
   [
     "out/calculators/seller-margin/index.html",

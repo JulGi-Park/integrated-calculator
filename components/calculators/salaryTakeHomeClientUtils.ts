@@ -137,7 +137,7 @@ export function buildSalaryTakeHomeResultText(
   result: SalaryTakeHomeResult,
 ): string {
   return [
-    "연봉·월급 실수령액 계산 결과",
+    "연봉 실수령액 계산 결과",
     "",
     "[입력 및 계산 기준]",
     `연봉: ${formatWon(input.annualSalary)}`,
