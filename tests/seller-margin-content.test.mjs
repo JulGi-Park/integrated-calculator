@@ -167,6 +167,14 @@ test("WebApplication, BreadcrumbList와 FAQPage JSON-LD가 유효하다", () => 
     sellerMarginBreadcrumbJsonLd.itemListElement.map((item) => item.name),
     ["홈", "계산기 목록", "판매자 마진 계산기"],
   );
+  assert.deepEqual(
+    sellerMarginBreadcrumbJsonLd.itemListElement.map((item) => item.item),
+    [
+      "https://gyesanbox.kr/",
+      "https://gyesanbox.kr/calculators",
+      "https://gyesanbox.kr/calculators/seller-margin",
+    ],
+  );
 
   for (const item of jsonLdItems) {
     const serialized = serializeJsonLd(item);

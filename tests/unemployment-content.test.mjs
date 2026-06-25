@@ -267,7 +267,15 @@ test("WebApplication, BreadcrumbList와 FAQPage JSON-LD가 안전하다", () => 
   assert.equal(unemploymentWebApplicationJsonLd.url, "/calculators/unemployment");
   assert.deepEqual(
     unemploymentBreadcrumbJsonLd.itemListElement.map((item) => item.name),
-    ["홈", "계산기", "실업급여 계산기"],
+    ["홈", "계산기 목록", "실업급여 계산기"],
+  );
+  assert.deepEqual(
+    unemploymentBreadcrumbJsonLd.itemListElement.map((item) => item.item),
+    [
+      "https://gyesanbox.kr/",
+      "https://gyesanbox.kr/calculators",
+      "https://gyesanbox.kr/calculators/unemployment",
+    ],
   );
 
   for (const item of items) {

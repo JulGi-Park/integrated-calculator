@@ -236,7 +236,15 @@ test("WebApplication, BreadcrumbList와 FAQPage JSON-LD가 안전하다", () => 
   );
   assert.deepEqual(
     salaryTakeHomeBreadcrumbJsonLd.itemListElement.map((item) => item.name),
-    ["홈", "계산기", "연봉 실수령액 계산기"],
+    ["홈", "계산기 목록", "연봉 실수령액 계산기"],
+  );
+  assert.deepEqual(
+    salaryTakeHomeBreadcrumbJsonLd.itemListElement.map((item) => item.item),
+    [
+      "https://gyesanbox.kr/",
+      "https://gyesanbox.kr/calculators",
+      "https://gyesanbox.kr/calculators/salary",
+    ],
   );
 
   for (const item of items) {

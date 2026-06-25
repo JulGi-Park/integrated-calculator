@@ -247,7 +247,15 @@ test("WebApplication, BreadcrumbList와 FAQPage JSON-LD가 안전하다", () => 
   assert.equal(severanceWebApplicationJsonLd.applicationCategory, "FinanceApplication");
   assert.deepEqual(
     severanceBreadcrumbJsonLd.itemListElement.map((item) => item.name),
-    ["홈", "계산기", "퇴직금 계산기"],
+    ["홈", "계산기 목록", "퇴직금 계산기"],
+  );
+  assert.deepEqual(
+    severanceBreadcrumbJsonLd.itemListElement.map((item) => item.item),
+    [
+      "https://gyesanbox.kr/",
+      "https://gyesanbox.kr/calculators",
+      "https://gyesanbox.kr/calculators/severance",
+    ],
   );
 
   for (const item of items) {

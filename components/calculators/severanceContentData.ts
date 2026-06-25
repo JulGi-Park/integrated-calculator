@@ -318,9 +318,24 @@ export const severanceBreadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "홈" },
-    { "@type": "ListItem", position: 2, name: "계산기" },
-    { "@type": "ListItem", position: 3, name: "퇴직금 계산기" },
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "홈",
+      item: "https://gyesanbox.kr/",
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "계산기 목록",
+      item: "https://gyesanbox.kr/calculators",
+    },
+    {
+      "@type": "ListItem",
+      position: 3,
+      name: "퇴직금 계산기",
+      item: "https://gyesanbox.kr/calculators/severance",
+    },
   ],
 };
 

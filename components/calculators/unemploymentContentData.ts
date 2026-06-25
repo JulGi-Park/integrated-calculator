@@ -359,13 +359,23 @@ export const unemploymentBreadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "홈", item: "/" },
-    { "@type": "ListItem", position: 2, name: "계산기", item: "/calculators" },
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "홈",
+      item: "https://gyesanbox.kr/",
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "계산기 목록",
+      item: "https://gyesanbox.kr/calculators",
+    },
     {
       "@type": "ListItem",
       position: 3,
       name: "실업급여 계산기",
-      item: "/calculators/unemployment",
+      item: "https://gyesanbox.kr/calculators/unemployment",
     },
   ],
 } as const;

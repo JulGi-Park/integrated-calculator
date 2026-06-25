@@ -287,7 +287,15 @@ test("WebApplication, BreadcrumbList와 FAQPage JSON-LD가 안전하다", () => 
   );
   assert.deepEqual(
     loanInterestBreadcrumbJsonLd.itemListElement.map((item) => item.name),
-    ["홈", "계산기", "대출 이자 계산기"],
+    ["홈", "계산기 목록", "대출 이자 계산기"],
+  );
+  assert.deepEqual(
+    loanInterestBreadcrumbJsonLd.itemListElement.map((item) => item.item),
+    [
+      "https://gyesanbox.kr/",
+      "https://gyesanbox.kr/calculators",
+      "https://gyesanbox.kr/calculators/loan",
+    ],
   );
 
   for (const item of items) {
