@@ -14,6 +14,12 @@ export function SiteHeader() {
           <Link className="nav-link" href="/calculators">
             계산기 목록
           </Link>
+          <Link className="nav-link" href="/about">
+            소개
+          </Link>
+          <Link className="nav-link" href="/contact">
+            문의
+          </Link>
         </nav>
       </div>
     </header>

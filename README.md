@@ -1,6 +1,6 @@
 # 계산박스
 
-대한민국 사용자를 위한 생활·사업 계산기 웹서비스의 공통 기반입니다. 현재는 공통 레이아웃과 계산기 탐색 경로, 첫 번째 계산기의 준비 중 페이지를 제공합니다.
+대한민국 사용자를 위한 생활·금융·근로 계산기 웹서비스입니다. 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 계산기와 정책 페이지, sitemap, robots, 광고·분석 스크립트 구성을 포함합니다.
 
 ## 실행 환경
 
@@ -34,8 +34,17 @@ npm run build
 - `/` — 서비스 홈
 - `/calculators` — 계산기 목록
 - `/calculators/seller-margin` — 판매자 마진 계산기
+- `/calculators/salary` — 연봉 실수령액 계산기
+- `/calculators/loan` — 대출 이자 계산기
+- `/calculators/severance` — 퇴직금 계산기
+- `/calculators/unemployment` — 실업급여 계산기
+- `/about` — 서비스 소개
+- `/contact` — 문의
+- `/privacy-policy` — 개인정보처리방침
+- `/terms` — 이용약관
+- `/disclaimer` — 면책문구
 
-판매자 마진 계산기는 최신 계산 결과의 텍스트 복사와 지원 기기의 Web Share 공유를 제공합니다. 입력값은 브라우저의 localStorage에 버전이 포함된 raw 문자열 형식으로 저장되며, 계산 결과·오류·사용자 식별 정보는 저장하지 않습니다. 초기화하면 저장된 입력값도 삭제됩니다.
+각 계산기는 입력값 기준의 예상 결과를 제공하며, 계산 기준, 자동 반영되지 않는 항목, FAQ, 참고용 안내를 함께 표시합니다. 일부 입력값은 사용 편의를 위해 브라우저 localStorage에 저장될 수 있으며, 계산 결과·오류·사용자 식별 정보는 서버에 저장하지 않습니다.
 
 ## Cloudflare Pages 호환성
 
@@ -46,7 +55,7 @@ npm run build
 - Cloudflare Pages 프레임워크 프리셋: Next.js (Static HTML Export)
 - 서버 런타임, Server Actions, Route Handlers, SSR에 의존하지 않음
 - 현재 `next/image`를 사용하지 않음
-- 계산 기능은 브라우저에서 실행되는 순수 TypeScript 로직으로 추가할 예정
+- 계산 기능은 브라우저에서 실행되는 순수 TypeScript 로직으로 유지
 
 `npm run build`는 Next.js 빌드 후 `npm run verify:cloudflare`를 자동 실행합니다. 다음 조건 중 하나라도 깨지면 빌드는 실패합니다.
 
@@ -62,11 +71,13 @@ npm run build
 ## 프로젝트 구조
 
 - `app/` — App Router 페이지, 레이아웃, 전역 스타일
-- `components/common/` — 헤더와 푸터 등 공통 UI
-- `tests/` — 공통 기반 검증 테스트
+- `components/common/` — 헤더, 푸터, 정책 페이지 레이아웃, JSON-LD 등 공통 UI
+- `components/calculators/` — 계산기별 UI와 정적 설명 콘텐츠
+- `lib/calculators/` — UI와 분리된 계산 로직과 정책값
+- `tests/` — 계산 로직, UI, SEO, 정책 페이지, 정적 export 검증 테스트
 
-계산 기능을 추가할 때 계산기별 UI는 `components/calculators/`, UI와 분리된 계산 로직은 `lib/calculators/`, 공통 타입과 유틸리티는 각각 `types/`, `utils/`에 배치할 수 있습니다. 실제로 필요해질 때 폴더와 파일을 추가합니다.
+계산 기능을 추가할 때는 기존 계산기처럼 UI, 설명 콘텐츠, 계산 로직, 정책값, 테스트를 분리해 배치합니다.
 
-## 이번 작업에 포함되지 않은 기능
+## 포함되지 않은 기능
 
-실제 계산식과 입력 폼, 나머지 계산기, 로그인, 데이터베이스, 결제, 광고·분석 도구, PWA, Capacitor, Wrangler·OpenNext 및 실제 배포 설정은 아직 구현하지 않았습니다.
+로그인, 회원가입, 운영 데이터베이스, 결제, PWA, Capacitor, Wrangler·OpenNext 기반 서버 배포 구성은 포함하지 않습니다.

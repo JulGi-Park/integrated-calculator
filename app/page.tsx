@@ -37,6 +37,24 @@ const calculators = [
   },
 ] as const;
 
+const servicePrinciples = [
+  {
+    title: "계산 기준 공개",
+    description:
+      "각 계산기 본문에 계산식, 기준일, 자동 반영되지 않는 항목을 함께 정리합니다.",
+  },
+  {
+    title: "참고용 결과 안내",
+    description:
+      "세금, 보험료, 급여, 대출, 고용 관련 결과는 실제 기관 기준과 개인 조건에 따라 달라질 수 있음을 안내합니다.",
+  },
+  {
+    title: "운영 문의 창구",
+    description:
+      "계산 오류, 기준 변경, 출처 수정 요청은 contact@gyesanbox.kr 로 확인할 수 있습니다.",
+  },
+] as const;
+
 export const metadata: Metadata = {
   title: homeTitle,
   description: homeDescription,
@@ -122,7 +140,8 @@ export default function Home() {
         <h1>계산박스</h1>
         <p className="hero__description">
           판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여처럼
-          자주 필요한 계산기를 빠르게 찾아보세요.
+          자주 필요한 계산기를 빠르게 찾아보세요. 각 계산기는 입력값 기준의
+          예상 결과와 계산 기준, 유의사항을 함께 제공합니다.
         </p>
         <Link className="button button--primary" href="/calculators">
           계산기 목록 보기
@@ -132,7 +151,7 @@ export default function Home() {
 
       <section className="home-calculators" aria-labelledby="home-calculators-title">
         <div>
-          <p className="page-heading__eyebrow">Ready to use</p>
+          <p className="page-heading__eyebrow">Calculators</p>
           <h2 id="home-calculators-title">바로가기</h2>
         </div>
         <div className="home-calculators__links">
@@ -140,6 +159,23 @@ export default function Home() {
             <Link key={calculator.href} href={calculator.href}>
               {calculator.name}
             </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="home-calculators" aria-labelledby="home-principles-title">
+        <div>
+          <p className="page-heading__eyebrow">Principles</p>
+          <h2 id="home-principles-title">운영 기준</h2>
+        </div>
+        <div className="home-calculators__links">
+          {servicePrinciples.map((principle) => (
+            <article className="calculator-card" key={principle.title}>
+              <div>
+                <h3>{principle.title}</h3>
+                <p>{principle.description}</p>
+              </div>
+            </article>
           ))}
         </div>
       </section>

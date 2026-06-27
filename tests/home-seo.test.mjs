@@ -59,6 +59,10 @@ test("홈 화면에서 구현 완료 계산기 5개로 이동할 수 있다", ()
   const html = renderToStaticMarkup(React.createElement(Home));
 
   assert.match(html, /계산박스/);
+  assert.match(html, /각 계산기는 입력값 기준의\s*예상 결과와 계산 기준/);
+  assert.match(html, /계산 기준 공개/);
+  assert.match(html, /참고용 결과 안내/);
+  assert.match(html, /운영 문의 창구/);
   for (const [name, href] of calculators) {
     assert.match(html, new RegExp(`href="${href}"`));
     assert.match(html, new RegExp(name));

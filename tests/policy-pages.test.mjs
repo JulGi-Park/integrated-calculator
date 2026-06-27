@@ -51,14 +51,17 @@ const pages = [
       "Google AdSense",
       "Google Analytics 4",
       "Google Search Console",
-      "제3자 공급업체",
+      "제3자 광고 사업자",
+      "사용자의 이전 방문",
+      "방문한 이력을 바탕으로 광고",
       "맞춤 광고",
+      "개인 맞춤 광고를 관리",
       "쿠키",
       "웹 비콘",
       "IP 주소",
       "제3자 광고 및 쿠키",
       "Google AdSense 등 제3자 광고 서비스를 사용할 수",
-      "유사 기술을 사용",
+      "유사 기술",
       "브라우저 설정",
       "Google 광고 설정",
       "계산 결과는 참고용",
@@ -150,6 +153,15 @@ test("푸터에 정책 페이지 링크와 기존 연락처가 있다", async ()
   assert.match(source, /contact@gyesanbox\.kr/);
   assert.match(source, /© 2026 계산박스\. All rights reserved\./);
   assert.match(source, /계산 결과는 참고용입니다/);
+});
+
+test("헤더에서 주요 탐색과 신뢰성 페이지로 이동할 수 있다", async () => {
+  const source = await readFile("components/common/SiteHeader.tsx", "utf8");
+
+  assert.match(source, /href="\/calculators"/);
+  assert.match(source, /href="\/about"/);
+  assert.match(source, /href="\/contact"/);
+  assert.match(source, /aria-label="주요 메뉴"/);
 });
 
 test("홈 JSON-LD ItemList는 계산기 5개만 유지한다", async () => {

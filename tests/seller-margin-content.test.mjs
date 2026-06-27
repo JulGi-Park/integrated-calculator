@@ -126,11 +126,12 @@ test("화면에 FAQ 8개와 동일한 질문·답변을 표시한다", () => {
   }
 });
 
-test("관련 계산기에서 실제 목록만 링크이고 준비 중 항목은 링크가 아니다", () => {
+test("관련 계산기에서 실제 내부 라우트만 링크한다", () => {
   assert.match(contentSource, /href="\/calculators"/);
-  assert.match(contentSource, /<article className=\{styles\.relatedCard\}>[\s\S]*광고 ROAS/);
-  assert.match(contentSource, /<article className=\{styles\.relatedCard\}>[\s\S]*부가세·사업/);
+  assert.match(contentSource, /href="\/calculators\/loan"/);
+  assert.match(contentSource, /href="\/calculators\/salary"/);
   assert.doesNotMatch(contentSource, /href="#"/);
+  assert.doesNotMatch(contentSource, /준비 중|comingSoon/);
 });
 
 test("seller-margin 전용 메타데이터에 가짜 URL 없이 SEO 정보를 설정한다", () => {
