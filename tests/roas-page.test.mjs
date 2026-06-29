@@ -32,6 +32,12 @@ test("ROAS 페이지는 로컬 라우트와 계산기 UI, 기준일을 가진다
   assert.match(pageSource, /계산 기준일: 2026-06-29/);
 });
 
+test("ROAS 페이지는 공개 플래그가 없으면 notFound로 비공개 처리한다", () => {
+  assert.match(pageSource, /notFound/);
+  assert.match(pageSource, /isRoasCalculatorEnabled/);
+  assert.match(pageSource, /AdSense 승인 전/);
+});
+
 test("ROAS 메타데이터는 로컬 초안이며 색인을 막는다", () => {
   assert.equal(
     metadata.title,

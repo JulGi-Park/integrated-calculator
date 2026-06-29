@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { RoasCalculator } from "@/components/calculators/RoasCalculator";
 import { RoasContent } from "@/components/calculators/RoasContent";
 import {
@@ -7,6 +8,7 @@ import {
   roasWebApplicationJsonLd,
 } from "@/components/calculators/roasContentData";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
+import { isRoasCalculatorEnabled } from "@/lib/calculators/roas/roasVisibility";
 import pageStyles from "./RoasPage.module.css";
 
 export const metadata: Metadata = {
@@ -26,6 +28,11 @@ export const metadata: Metadata = {
 };
 
 export default function RoasPage() {
+  // AdSense 승인 전에는 명시적인 로컬 플래그가 있을 때만 ROAS 페이지를 노출합니다.
+  if (!isRoasCalculatorEnabled()) {
+    notFound();
+  }
+
   const jsonLdItems = [
     roasWebApplicationJsonLd,
     roasBreadcrumbJsonLd,
