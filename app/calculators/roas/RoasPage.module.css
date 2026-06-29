@@ -1,0 +1,22 @@
+.heading {
+  min-width: 0;
+}
+
+.heading h1,
+.heading p,
+.heading span {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+@media (max-width: 560px) {
+  .heading h1 {
+    font-size: clamp(2rem, 12vw, 2.7rem);
+    letter-spacing: 0;
+  }
+
+  .heading p,
+  .heading span {
+    word-break: break-all;
+  }
+}
