@@ -4,6 +4,7 @@ import {
   parentalLeaveExample,
   parentalLeaveExcludedItems,
   parentalLeaveFaqs,
+  parentalLeaveSpecialPolicySummary,
   parentalLeaveSources,
 } from "./parentalLeaveContentData";
 import styles from "./ParentalLeaveContent.module.css";
@@ -29,6 +30,17 @@ export function ParentalLeaveContent() {
             심사 결과에 따라 달라질 수 있습니다.
           </p>
         </aside>
+      </section>
+
+      <section className={styles.section} aria-labelledby="special-policy-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="special-policy-title">특례 계산 구조화 상태</h2>
+          <p>{parentalLeaveSpecialPolicySummary}</p>
+          <p>
+            특례가 중복될 수 있는 경우에는 고용센터 확인이 필요합니다. 이
+            계산기는 임의로 더 유리한 특례를 자동 선택하지 않습니다.
+          </p>
+        </div>
       </section>
 
       <section className={styles.section} aria-labelledby="criteria-title">

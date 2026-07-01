@@ -179,10 +179,11 @@ export function ParentalLeaveCalculator() {
   return (
     <>
       <aside className={styles.policyNotice} aria-label="육아휴직급여 계산 기준">
-        <strong>일반 육아휴직급여 1차 계산</strong>
+        <strong>일반 육아휴직급여 계산</strong>
         <p>
           계산 기준일: {PARENTAL_LEAVE_POLICY_2026.basisDate}. 부모 함께
-          육아휴직제 6+6, 한부모 특례는 1차 계산 범위에 포함하지 않습니다.
+          육아휴직제 6+6, 한부모 특례는 정책 구조와 검증 로직을 분리한 상태이며
+          화면 결과는 일반 계산을 기본으로 표시합니다.
         </p>
       </aside>
 
@@ -260,11 +261,11 @@ export function ParentalLeaveCalculator() {
               )}
             </div>
 
-            <div className={styles.disabledOption} aria-label="1차 제외 특례">
-              <strong>특례 계산 제외</strong>
+            <div className={styles.disabledOption} aria-label="특례 구조화 안내">
+              <strong>특례 구조화 안내</strong>
               <p>
-                부모 함께 육아휴직제 6+6, 한부모 육아휴직 특례는 1차 계산
-                범위에 포함하지 않습니다.
+                6+6 특례와 한부모 육아휴직 특례는 입력 부족이나 중복 특례를
+                확정 계산처럼 보이지 않도록 별도 정책 모듈에서 판단합니다.
               </p>
             </div>
           </div>

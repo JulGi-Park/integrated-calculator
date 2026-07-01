@@ -6,6 +6,7 @@ import {
   PARENTAL_LEAVE_POLICY_2026,
   validateParentalLeaveInput,
 } from "../lib/calculators/parental-leave/parentalLeave.ts";
+import { calculateParentalLeaveWithSpecialPolicy } from "../lib/calculators/parental-leave/parentalLeaveSpecialRules.ts";
 
 function assertSuccess(response) {
   assert.equal(response.success, true);
@@ -52,6 +53,29 @@ test("월 통상임금 300만원 경계 개월별 총액을 계산한다", () =>
       }),
     );
 
+    assert.equal(data.totalEstimatedAmount, expectedTotal);
+  }
+});
+
+test("특례 확장 진입점의 일반 계산 fallback도 1차 일반 계산 결과를 유지한다", () => {
+  const cases = [
+    [1, 2_500_000],
+    [3, 7_500_000],
+    [4, 9_500_000],
+    [6, 13_500_000],
+    [7, 15_100_000],
+    [12, 23_100_000],
+  ];
+
+  for (const [leaveMonths, expectedTotal] of cases) {
+    const data = assertSuccess(
+      calculateParentalLeaveWithSpecialPolicy({
+        monthlyOrdinaryWage: 3_000_000,
+        leaveMonths,
+      }),
+    );
+
+    assert.equal(data.appliedPolicy, "general");
     assert.equal(data.totalEstimatedAmount, expectedTotal);
   }
 });

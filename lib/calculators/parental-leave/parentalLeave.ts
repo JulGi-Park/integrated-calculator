@@ -1,80 +1,22 @@
-export type ParentalLeaveInputField = "monthlyOrdinaryWage" | "leaveMonths";
+import { PARENTAL_LEAVE_POLICY_2026 } from "./parentalLeavePolicy";
+import type {
+  ParentalLeaveCalculationResponse,
+  ParentalLeaveInput,
+  ParentalLeaveInputField,
+  ParentalLeaveValidationCode,
+  ParentalLeaveValidationError,
+} from "./parentalLeaveTypes";
 
-export type ParentalLeaveValidationCode =
-  | "REQUIRED"
-  | "INVALID_NUMBER"
-  | "MUST_BE_INTEGER"
-  | "MUST_BE_POSITIVE"
-  | "MONTHS_UNDER_MINIMUM"
-  | "MONTHS_EXCEEDS_LIMIT";
-
-export interface ParentalLeaveValidationError {
-  field: ParentalLeaveInputField;
-  code: ParentalLeaveValidationCode;
-  message: string;
-}
-
-export interface ParentalLeaveInput {
-  monthlyOrdinaryWage: unknown;
-  leaveMonths: unknown;
-}
-
-export interface ParentalLeaveMonthlyBenefit {
-  month: number;
-  rate: number;
-  baseAmount: number;
-  lowerLimit: number;
-  upperLimit: number;
-  estimatedAmount: number;
-  capApplied: boolean;
-  floorApplied: boolean;
-  bandLabel: string;
-}
-
-export interface ParentalLeaveResult {
-  monthlyOrdinaryWage: number;
-  leaveMonths: number;
-  totalEstimatedAmount: number;
-  basisDate: string;
-  monthlyBenefits: ParentalLeaveMonthlyBenefit[];
-  interpretation: string;
-  disclaimer: string;
-}
-
-export type ParentalLeaveCalculationResponse =
-  | { success: true; data: ParentalLeaveResult }
-  | { success: false; errors: ParentalLeaveValidationError[] };
-
-export const PARENTAL_LEAVE_POLICY_2026 = {
-  basisDate: "2026-07-01",
-  maxLeaveMonths: 12,
-  lowerLimit: 700_000,
-  bands: [
-    {
-      fromMonth: 1,
-      toMonth: 3,
-      rate: 1,
-      upperLimit: 2_500_000,
-      label: "1~3개월: 통상임금 100%, 상한 250만원",
-    },
-    {
-      fromMonth: 4,
-      toMonth: 6,
-      rate: 1,
-      upperLimit: 2_000_000,
-      label: "4~6개월: 통상임금 100%, 상한 200만원",
-    },
-    {
-      fromMonth: 7,
-      toMonth: 12,
-      rate: 0.8,
-      upperLimit: 1_600_000,
-      label: "7~12개월: 통상임금 80%, 상한 160만원",
-    },
-  ],
-  sourceNote:
-    "고용24 육아휴직급여 안내와 고용보험법 시행령 제95조의 일반 육아휴직급여 구간을 기준으로 한 참고용 예상 계산입니다.",
-} as const;
+export { PARENTAL_LEAVE_POLICY_2026 } from "./parentalLeavePolicy";
+export type {
+  ParentalLeaveCalculationResponse,
+  ParentalLeaveInput,
+  ParentalLeaveInputField,
+  ParentalLeaveMonthlyBenefit,
+  ParentalLeaveResult,
+  ParentalLeaveValidationCode,
+  ParentalLeaveValidationError,
+} from "./parentalLeaveTypes";
 
 function isBlank(value: unknown): boolean {
   return value === undefined || value === null || value === "";
@@ -227,6 +169,7 @@ export function calculateParentalLeaveBenefit(
       capApplied: baseAmount > band.upperLimit,
       floorApplied: baseAmount < PARENTAL_LEAVE_POLICY_2026.lowerLimit,
       bandLabel: band.label,
+      appliedPolicy: band.policyName,
     };
   });
 

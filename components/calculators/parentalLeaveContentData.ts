@@ -1,7 +1,8 @@
+import { calculateParentalLeaveBenefit } from "@/lib/calculators/parental-leave/parentalLeave";
 import {
-  calculateParentalLeaveBenefit,
   PARENTAL_LEAVE_POLICY_2026,
-} from "@/lib/calculators/parental-leave/parentalLeave";
+  PARENTAL_LEAVE_SPECIAL_SOURCE_NAMES,
+} from "@/lib/calculators/parental-leave/parentalLeavePolicy";
 import { formatWon } from "./parentalLeaveClientUtils";
 
 export interface ParentalLeaveFaq {
@@ -20,8 +21,8 @@ export interface ParentalLeaveSource {
 export const parentalLeavePolicyCheckedAt = "2026-07-01";
 
 export const parentalLeaveExcludedItems = [
-  "부모 함께 육아휴직제 6+6 특례 계산",
-  "한부모 육아휴직 특례 계산",
+  "부모 양쪽 급여를 모두 입력받아 부부 합산액을 계산하는 고급 UI",
+  "한부모 특례의 실제 신청 가능 여부 확정 판정",
   "사후지급 또는 제도 변경 전후 복합 케이스",
   "사업장별 별도 수당과 회사 내부 규정",
   "고용보험 피보험 단위기간 충족 여부 판정",
@@ -99,12 +100,12 @@ export const parentalLeaveFaqs: ParentalLeaveFaq[] = [
   {
     question: "부모 함께 육아휴직제 6+6도 계산되나요?",
     answer:
-      "이번 1차 계산기에는 포함하지 않습니다. 6+6 특례는 별도 상한과 요건이 있어 일반 육아휴직급여 결과와 다를 수 있습니다.",
+      "2차에서는 정책 모듈과 테스트 가능한 계산 구조를 분리했습니다. 다만 화면에서는 입력 부족이나 중복 특례를 확정 계산처럼 보이지 않도록 일반 계산을 기본으로 표시합니다.",
   },
   {
     question: "한부모 육아휴직 특례도 반영되나요?",
     answer:
-      "반영하지 않습니다. 한부모 특례는 일반 계산과 다른 지급 기준이 적용될 수 있으므로 고용24 또는 고용센터에서 별도 확인해야 합니다.",
+      "2차에서는 한부모 특례의 1~3개월 상한 300만원 구조를 정책 모듈에 반영했습니다. 실제 한부모 해당 여부와 지급 확정은 고용24 또는 고용센터에서 확인해야 합니다.",
   },
   {
     question: "12개월을 넘는 육아휴직도 계산할 수 있나요?",
@@ -137,6 +138,13 @@ export const parentalLeaveSources: ParentalLeaveSource[] = [
     checkedAt: parentalLeavePolicyCheckedAt,
     href: "https://www.law.go.kr/lsLawLinkInfo.do?chrClsCd=010202&lsJoLnkSeq=1000954744",
     criterion: "월별 지급액, 상한액, 하한액 법령 기준",
+  },
+  {
+    organization: "국가법령정보센터",
+    title: "고용보험법 시행령 제95조의3 육아휴직 급여 특례",
+    checkedAt: parentalLeavePolicyCheckedAt,
+    href: "https://www.law.go.kr/LSW//lumLsLinkPop.do?chrClsCd=010202&lspttninfSeq=106251",
+    criterion: `${PARENTAL_LEAVE_SPECIAL_SOURCE_NAMES.join(", ")} 기준 특례 구조`,
   },
 ] as const;
 
@@ -198,3 +206,6 @@ export const parentalLeaveBasisSummary =
   )}, 7~12개월 통상임금 80% 상한 ${formatWon(
     1_600_000,
   )}을 적용하고, 모든 구간에 월 하한 ${formatWon(700_000)}을 적용합니다.`;
+
+export const parentalLeaveSpecialPolicySummary =
+  "2차 구조화 기준: 부모 함께 육아휴직제 6+6은 같은 자녀, 생후 18개월 이내, 부모 모두 육아휴직 사용 조건을 확인한 뒤 첫 6개월 통상임금 100%와 월별 상한 250만원, 250만원, 300만원, 350만원, 400만원, 450만원을 적용합니다. 한부모 특례는 한부모 해당 여부가 확인된 경우 1~3개월 통상임금 100%, 상한 300만원을 적용하고 4개월차 이후는 일반 기준으로 계산합니다.";
