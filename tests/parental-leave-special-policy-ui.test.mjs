@@ -117,10 +117,32 @@ test("6+6 특례 적용 가능 결과는 월별 특례와 일반 fallback 구간
   await user.click(screen.getByRole("button", { name: "육아휴직급여 계산하기" }));
 
   assert.ok(await screen.findByText("21,600,000원"));
-  assert.ok(screen.getAllByText("부모 함께 육아휴직제 6+6 특례").length >= 1);
+  assert.ok(document.body.textContent.includes("부모 함께 육아휴직제 6+6"));
   assert.ok(screen.getByText("일반 계산 fallback 구간"));
   assert.ok(screen.getByText("7개월차는 일반 육아휴직급여 기준 예상액으로 표시합니다."));
   assert.ok(screen.getAllByText(/부모 함께 육아휴직제 6\+6 특례 기준 예상액/).length >= 1);
+});
+
+test("6+6 특례 적용 불가 결과는 reasons와 일반 fallback 안내를 표시한다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+
+  await enterBaseInputs(user, "3000000", "7");
+  await user.click(screen.getByRole("radio", { name: /6\+6 특례 검토/ }));
+  await user.type(screen.getByLabelText("자녀 월령"), "19");
+  await user.type(screen.getByLabelText("배우자 사용 개월 수"), "6");
+  await chooseRadioInGroup(user, "배우자 육아휴직 사용 여부", "아니오");
+  await chooseRadioInGroup(user, "같은 자녀 기준 여부", "아니오");
+  await user.click(screen.getByRole("button", { name: "육아휴직급여 계산하기" }));
+
+  assert.ok(await screen.findByText("15,100,000원"));
+  assert.ok(screen.getByText("적용 불가 또는 확인 사유"));
+  assert.ok(screen.getByText(/자녀 월령이 18개월을 초과/));
+  assert.ok(screen.getByText(/배우자 육아휴직 사용이 확인되지 않아/));
+  assert.ok(screen.getByText(/같은 자녀 기준이 아니므로/));
+  assert.ok(document.body.textContent.includes("부모 함께 육아휴직제 6+6"));
+  assert.ok(screen.getByText(/특례 조건을 충족하지 않아 일반 육아휴직급여 기준의 참고값/));
+  assert.equal(screen.queryByText("보완 입력"), null);
 });
 
 test("한부모 특례 입력 부족과 적용 가능 결과를 mapper 카드로 표시한다", async () => {
@@ -141,8 +163,25 @@ test("한부모 특례 입력 부족과 적용 가능 결과를 mapper 카드로
   await user.click(screen.getByRole("button", { name: "육아휴직급여 계산하기" }));
 
   assert.ok(await screen.findByText("11,000,000원"));
-  assert.ok(screen.getAllByText("한부모 육아휴직 특례").length >= 1);
+  assert.ok(document.body.textContent.includes("한부모 육아휴직 특례"));
   assert.ok(screen.getByText("4개월차는 일반 육아휴직급여 기준 예상액으로 표시합니다."));
+});
+
+test("한부모 특례 적용 불가 결과는 reasons와 일반 fallback 안내를 표시한다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+
+  await enterBaseInputs(user, "4000000", "4");
+  await user.click(screen.getByRole("radio", { name: /한부모 특례 검토/ }));
+  await chooseRadioInGroup(user, "한부모 해당 여부", "아니오");
+  await user.click(screen.getByRole("button", { name: "육아휴직급여 계산하기" }));
+
+  assert.ok(await screen.findByText("9,500,000원"));
+  assert.ok(screen.getByText("적용 불가 또는 확인 사유"));
+  assert.ok(screen.getByText(/한부모 특례 대상이 아닌 입력으로 확인/));
+  assert.ok(document.body.textContent.includes("한부모 육아휴직 특례"));
+  assert.ok(screen.getByText(/특례 조건을 충족하지 않아 일반 육아휴직급여 기준의 참고값/));
+  assert.equal(screen.queryByText("보완 입력"), null);
 });
 
 test("특례 UI와 결과 카드 소스에는 지급 확정 금지 표현이 없다", async () => {
@@ -155,4 +194,20 @@ test("특례 UI와 결과 카드 소스에는 지급 확정 금지 표현이 없
     source,
     /지급됩니다|확정 금액입니다|반드시 받을 수 있습니다|승인됩니다/,
   );
+});
+
+test("390px 모바일 폭에서 특례 입력과 결과 카드가 단일 열과 안전한 스크롤 규칙을 가진다", async () => {
+  const css = await readFile(
+    "components/calculators/ParentalLeaveCalculator.module.css",
+    "utf8",
+  );
+
+  assert.match(css, /@media\s*\(max-width:\s*560px\)/);
+  assert.match(
+    css,
+    /\.actions,\s*\.radioGrid,\s*\.segmented,\s*\.specialGrid,\s*\.summaryGrid\s*{\s*grid-template-columns:\s*1fr;/s,
+  );
+  assert.match(css, /\.formCard,\s*\.resultCard\s*{[^}]*padding:\s*22px;/s);
+  assert.match(css, /\.tableScroll\s*{[^}]*overflow-x:\s*auto;/s);
+  assert.match(css, /\.primaryResult strong\s*{[^}]*overflow-wrap:\s*anywhere;/s);
 });
