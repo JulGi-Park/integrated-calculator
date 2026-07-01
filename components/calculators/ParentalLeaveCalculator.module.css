@@ -76,7 +76,8 @@
   gap: 20px;
 }
 
-.field label {
+.field label,
+.legend {
   display: block;
   margin-bottom: 7px;
   color: #38433c;
@@ -157,6 +158,88 @@
   color: var(--muted);
   font-size: 0.78rem;
   line-height: 1.55;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.option {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid #cfd6d0;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.option:has(input:checked) {
+  border-color: var(--accent);
+  background: #edf6ef;
+  box-shadow: 0 0 0 3px rgba(35, 97, 68, 0.1);
+}
+
+.option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.option strong {
+  color: #26312a;
+  font-size: 0.88rem;
+}
+
+.option span {
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.specialGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.radioGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.inlineFieldset {
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid #d9dfdb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.inlineFieldset legend {
+  padding: 0 4px;
+  color: #38433c;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.inlineOption {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 14px 0 0 !important;
+  color: #445047 !important;
+  font-size: 0.84rem !important;
+  font-weight: 700 !important;
+}
+
+.inlineOption input {
+  margin: 0;
 }
 
 .errorSummary {
@@ -346,6 +429,30 @@
   line-height: 1.55;
 }
 
+.noticeBox {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 13px 14px;
+  border: 1px solid #d9dfdb;
+  border-radius: 12px;
+  color: #405047;
+  background: #fff;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.noticeBox strong {
+  color: var(--accent);
+}
+
+.noticeBox ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+}
+
 .resultActions {
   display: flex;
   flex-wrap: wrap;
@@ -384,6 +491,9 @@
   }
 
   .actions,
+  .radioGrid,
+  .segmented,
+  .specialGrid,
   .summaryGrid {
     grid-template-columns: 1fr;
   }
