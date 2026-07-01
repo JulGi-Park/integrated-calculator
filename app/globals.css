@@ -509,6 +509,22 @@ a:focus-visible {
     padding-block: 56px 80px;
   }
 
+  .page-heading,
+  .page-heading h1,
+  .page-heading p,
+  .seller-margin-meta {
+    min-width: 0;
+    max-width: 100%;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .page-section :where(h1, h2, h3, p, span, li, dt, dd, strong, label, button) {
+    min-width: 0;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
+
   .calculator-grid {
     grid-template-columns: 1fr;
   }

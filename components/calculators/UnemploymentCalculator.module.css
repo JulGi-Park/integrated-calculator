@@ -393,6 +393,15 @@
     border-radius: 18px;
   }
 
+  .cardHeading {
+    display: block;
+  }
+
+  .cardHeading > p {
+    margin-top: 8px;
+    text-align: left;
+  }
+
   .actions,
   .segmented,
   .summaryGrid {
