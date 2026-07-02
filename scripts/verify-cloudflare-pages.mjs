@@ -26,6 +26,7 @@ const privateCalculatorOutputDirectories = [
   "out/calculators/parental-leave",
   "out/calculators/rent-vs-jeonse",
   "out/calculators/car-cost",
+  "out/calculators/savings",
 ];
 
 const forbiddenSourcePatterns = [

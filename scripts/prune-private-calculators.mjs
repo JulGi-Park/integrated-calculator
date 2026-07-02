@@ -11,6 +11,7 @@ const privateCalculatorOutputDirectories = [
   "calculators/parental-leave",
   "calculators/rent-vs-jeonse",
   "calculators/car-cost",
+  "calculators/savings",
 ];
 
 function getOutputPath(relativePath) {

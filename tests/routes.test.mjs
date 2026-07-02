@@ -151,10 +151,32 @@ test("자동차 유지비 계산기는 공개 목록과 사이트맵에 노출�
   assert.doesNotMatch(homeSource, /car-cost|자동차 유지비 계산기/);
 });
 
+test("예금 적금 계산기는 공개 목록과 사이트맵에 노출하지 않는다", async () => {
+  const [listSource, sitemapSource, homeSource] = await Promise.all([
+    readFile("app/calculators/page.tsx", "utf8"),
+    readFile("app/sitemap.ts", "utf8"),
+    readFile("app/page.tsx", "utf8"),
+  ]);
+
+  assert.doesNotMatch(listSource, /savings|예금 적금 계산기/);
+  assert.doesNotMatch(sitemapSource, /savings/);
+  assert.doesNotMatch(homeSource, /savings|예금 적금 계산기/);
+});
+
 test("자동차 유지비 계산기 라우트는 정확한 공개 플래그에서만 렌더링한다", async () => {
   const source = await readFile("app/calculators/car-cost/page.tsx", "utf8");
 
   assert.match(source, /NEXT_PUBLIC_ENABLE_CAR_COST_CALCULATOR/);
+  assert.match(source, /===\s*"true"/);
+  assert.match(source, /notFound\(\)/);
+  assert.doesNotMatch(source, /===\s*"TRUE"|===\s*"yes"|===\s*"1"/);
+  assert.match(source, /index:\s*false/);
+});
+
+test("예금 적금 계산기 라우트는 정확한 공개 플래그에서만 렌더링한다", async () => {
+  const source = await readFile("app/calculators/savings/page.tsx", "utf8");
+
+  assert.match(source, /NEXT_PUBLIC_ENABLE_SAVINGS_CALCULATOR/);
   assert.match(source, /===\s*"true"/);
   assert.match(source, /notFound\(\)/);
   assert.doesNotMatch(source, /===\s*"TRUE"|===\s*"yes"|===\s*"1"/);
@@ -168,7 +190,9 @@ test("Cloudflare 검증은 자동차 유지비 비공개 산출물 제거를 검
   ]);
 
   assert.match(verifySource, /out\/calculators\/car-cost/);
+  assert.match(verifySource, /out\/calculators\/savings/);
   assert.match(verifySource, /Private calculator pruning verified/);
   assert.match(pruneSource, /calculators\/car-cost/);
+  assert.match(pruneSource, /calculators\/savings/);
   assert.match(pruneSource, /calculators\/rent-vs-jeonse/);
 });
