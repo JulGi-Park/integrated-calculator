@@ -7,6 +7,7 @@ export const GENERAL_INCOME_TAX_RATE = 0.14;
 export const LOCAL_INCOME_TAX_RATE_ON_INCOME_TAX = 0.1;
 export const GENERAL_TOTAL_TAX_RATE =
   GENERAL_INCOME_TAX_RATE * (1 + LOCAL_INCOME_TAX_RATE_ON_INCOME_TAX);
+export const MAX_SAVINGS_AMOUNT = 10_000_000_000;
 export const MAX_TERM_MONTHS = 600;
 export const MAX_ANNUAL_INTEREST_RATE = 100;
 
@@ -55,6 +56,8 @@ export type SavingsValidationErrorCode =
   | "INVALID_INTEREST_TYPE"
   | "MUST_BE_POSITIVE"
   | "MUST_BE_INTEGER"
+  | "MUST_BE_SAFE_INTEGER"
+  | "AMOUNT_TOO_LARGE"
   | "TERM_TOO_LARGE"
   | "RATE_TOO_LARGE"
   | "MUST_BE_NON_NEGATIVE";
@@ -102,7 +105,9 @@ function hasValidInputShape(
   return (
     (input.productType === "deposit" || input.productType === "installment") &&
     isFiniteNumber(input.amount) &&
+    Number.isSafeInteger(input.amount) &&
     isFiniteNumber(input.termMonths) &&
+    Number.isSafeInteger(input.termMonths) &&
     isFiniteNumber(input.annualInterestRate) &&
     (input.taxType === "general" || input.taxType === "taxFree") &&
     input.interestType === "simple"
@@ -152,6 +157,31 @@ export function validateSavingsInput(
       "MUST_BE_POSITIVE",
       "금액은 0원보다 커야 합니다.",
     );
+  } else {
+    if (!Number.isInteger(input.amount)) {
+      addError(
+        errors,
+        "amount",
+        "MUST_BE_INTEGER",
+        "금액은 원 단위 정수로 입력해 주세요.",
+      );
+    } else if (!Number.isSafeInteger(input.amount)) {
+      addError(
+        errors,
+        "amount",
+        "MUST_BE_SAFE_INTEGER",
+        "금액은 안전한 정수 범위의 원 단위 값이어야 합니다.",
+      );
+    }
+
+    if (input.amount > MAX_SAVINGS_AMOUNT) {
+      addError(
+        errors,
+        "amount",
+        "AMOUNT_TOO_LARGE",
+        `금액은 ${MAX_SAVINGS_AMOUNT.toLocaleString("ko-KR")}원 이하로 입력해 주세요.`,
+      );
+    }
   }
 
   if (!isFiniteNumber(input.termMonths)) {
@@ -163,6 +193,13 @@ export function validateSavingsInput(
         "termMonths",
         "MUST_BE_INTEGER",
         "기간은 개월 단위 정수로 입력해 주세요.",
+      );
+    } else if (!Number.isSafeInteger(input.termMonths)) {
+      addError(
+        errors,
+        "termMonths",
+        "MUST_BE_SAFE_INTEGER",
+        "기간은 안전한 정수 범위의 개월 수여야 합니다.",
       );
     }
 

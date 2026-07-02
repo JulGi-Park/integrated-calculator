@@ -6,6 +6,7 @@ import {
   GENERAL_INCOME_TAX_RATE,
   GENERAL_TOTAL_TAX_RATE,
   LOCAL_INCOME_TAX_RATE_ON_INCOME_TAX,
+  MAX_SAVINGS_AMOUNT,
   validateSavingsInput,
 } from "../lib/calculators/savings/savings.ts";
 
@@ -153,6 +154,28 @@ test("금액 0원과 음수 금액을 거부한다", () => {
   );
 });
 
+test("금액은 원 단위 정수와 서비스 최대 범위를 검증한다", () => {
+  assert.equal(
+    validateSavingsInput({ ...baseInput, amount: MAX_SAVINGS_AMOUNT }).length,
+    0,
+  );
+  assertHasError(
+    calculateSavings({ ...baseInput, amount: 1000.5 }),
+    "amount",
+    "MUST_BE_INTEGER",
+  );
+  assertHasError(
+    calculateSavings({ ...baseInput, amount: Number.MAX_SAFE_INTEGER + 1 }),
+    "amount",
+    "MUST_BE_SAFE_INTEGER",
+  );
+  assertHasError(
+    calculateSavings({ ...baseInput, amount: MAX_SAVINGS_AMOUNT + 1 }),
+    "amount",
+    "AMOUNT_TOO_LARGE",
+  );
+});
+
 test("숫자가 아닌 값과 NaN, Infinity를 거부한다", () => {
   assertHasError(
     calculateSavings({ ...baseInput, amount: "1000" }),
@@ -180,6 +203,11 @@ test("기간 경계값을 검증한다", () => {
     calculateSavings({ ...baseInput, termMonths: 12.5 }),
     "termMonths",
     "MUST_BE_INTEGER",
+  );
+  assertHasError(
+    calculateSavings({ ...baseInput, termMonths: Number.MAX_SAFE_INTEGER + 1 }),
+    "termMonths",
+    "MUST_BE_SAFE_INTEGER",
   );
   assertHasError(
     calculateSavings({ ...baseInput, termMonths: 601 }),

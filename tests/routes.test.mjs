@@ -179,7 +179,12 @@ test("예금 적금 계산기 라우트는 정확한 공개 플래그에서만 �
   assert.match(source, /NEXT_PUBLIC_ENABLE_SAVINGS_CALCULATOR/);
   assert.match(source, /===\s*"true"/);
   assert.match(source, /notFound\(\)/);
-  assert.doesNotMatch(source, /===\s*"TRUE"|===\s*"yes"|===\s*"1"/);
+  for (const forbiddenFlagValue of ["TRUE", "yes", "1", "0", "false", ""]) {
+    assert.doesNotMatch(
+      source,
+      new RegExp(`===\\s*["']${forbiddenFlagValue}["']`),
+    );
+  }
   assert.match(source, /index:\s*false/);
 });
 

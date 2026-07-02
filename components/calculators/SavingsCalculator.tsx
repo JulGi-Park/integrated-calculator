@@ -42,7 +42,8 @@ const numberFields = [
     depositLabel: "예치금",
     installmentLabel: "월 납입액",
     unit: "원",
-    description: "예금은 예치금, 적금은 매월 납입할 금액입니다.",
+    description:
+      "예금은 예치금, 적금은 매월 납입할 금액입니다. 100억원 이하의 원 단위 정수로 입력합니다.",
   },
   {
     name: "termMonths",
