@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readdir, readFile, stat } from "node:fs/promises";
+import { access, readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 const projectRoot = process.cwd();
@@ -17,6 +17,10 @@ const requiredStaticFiles = [
     "out/calculators/unemployment/index.html",
     "실업급여 계산기",
   ],
+];
+
+const forbiddenStaticPaths = [
+  "out/calculators/rent-vs-jeonse",
 ];
 
 const forbiddenSourcePatterns = [
@@ -116,6 +120,14 @@ async function verifyStaticOutput() {
       html,
       new RegExp(expectedText),
       `${relativePath} does not contain its expected page content.`,
+    );
+  }
+
+  for (const relativePath of forbiddenStaticPaths) {
+    const absolutePath = path.join(projectRoot, relativePath);
+    await assert.rejects(
+      access(absolutePath),
+      `${relativePath} must not be present in production static output.`,
     );
   }
 }
