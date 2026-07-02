@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { RentVsJeonseCalculator } from "@/components/calculators/RentVsJeonseCalculator";
+import { RentVsJeonseContent } from "@/components/calculators/RentVsJeonseContent";
+import {
+  rentVsJeonseBreadcrumbJsonLd,
+  rentVsJeonseFaqJsonLd,
+  rentVsJeonseWebApplicationJsonLd,
+} from "@/components/calculators/rentVsJeonseContentData";
 
-const title = "전세 vs 월세 비교 계산기";
+const title = "전세 vs 월세 비교 계산기 | 전세대출 이자·월세 부담 비교";
 const description =
-  "전세대출 이자, 월세, 보증금 차이, 관리비, 기회비용을 기준으로 전세와 월세의 월 부담과 총비용을 비교합니다.";
+  "전세대출 이자, 월세, 관리비, 보증금 기회비용을 입력해 전세와 월세의 월 부담과 거주기간 총비용을 비교해 보세요.";
 
 export const metadata: Metadata = {
   title,
@@ -24,8 +31,16 @@ export default function RentVsJeonsePage() {
     notFound();
   }
 
+  const jsonLdItems = [
+    rentVsJeonseWebApplicationJsonLd,
+    rentVsJeonseBreadcrumbJsonLd,
+    rentVsJeonseFaqJsonLd,
+  ];
+
   return (
     <section className="page-section">
+      <JsonLdScripts items={jsonLdItems} />
+
       <div className="page-heading seller-margin-heading">
         <p className="page-heading__eyebrow">Local calculator preview</p>
         <h1>전세 vs 월세 비교 계산기</h1>
@@ -38,15 +53,7 @@ export default function RentVsJeonsePage() {
       </div>
 
       <RentVsJeonseCalculator />
-
-      {/*
-        Future public content sections:
-        title, one-line description, reference date, input area, result summary,
-        detailed calculation, favorable jeonse case, favorable monthly rent case,
-        legal conversion-rate reference, examples, exclusions, FAQ, official
-        sources, disclaimer, SEO metadata, structured data, related calculators.
-        Related calculator links must be added only at public launch.
-      */}
+      <RentVsJeonseContent />
     </section>
   );
 }

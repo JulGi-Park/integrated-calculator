@@ -2,6 +2,11 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import {
+  rentVsJeonseFaqJsonLd,
+  rentVsJeonseFaqs,
+  rentVsJeonseSources,
+} from "../components/calculators/rentVsJeonseContentData.ts";
+import {
   calculateLegalReferenceRate,
   calculateRentVsJeonse,
   compareRentVsJeonse,
@@ -245,4 +250,36 @@ test("라우트는 정확히 true 문자열 플래그에서만 렌더링되고 �
   assert.match(packageJsonSource, /prune:local-only-routes/);
   assert.match(pruneScriptSource, /out\/calculators\/rent-vs-jeonse/);
   assert.match(verifyScriptSource, /out\/calculators\/rent-vs-jeonse/);
+});
+
+test("2차 콘텐츠는 계산 기준, 예시, FAQ, 출처와 면책 문구를 제공한다", async () => {
+  const [contentSource, pageSource] = await Promise.all([
+    readFile("components/calculators/RentVsJeonseContent.tsx", "utf8"),
+    readFile("app/calculators/rent-vs-jeonse/page.tsx", "utf8"),
+  ]);
+
+  assert.match(contentSource, /계산 기준/);
+  assert.match(contentSource, /법정 전월세전환율 참고/);
+  assert.match(contentSource, /계산 예시/);
+  assert.match(contentSource, /자동 반영되지 않는 항목/);
+  assert.match(contentSource, /공식 출처/);
+  assert.match(contentSource, /법률 판단이나 분쟁\s*해결을 대신하지/);
+  assert.match(pageSource, /JsonLdScripts/);
+  assert.match(pageSource, /rentVsJeonseFaqJsonLd/);
+
+  assert.ok(rentVsJeonseFaqs.length >= 6);
+  assert.equal(rentVsJeonseSources.length, 4);
+  assert.ok(
+    rentVsJeonseSources.every((source) => source.verifiedAt === "2026년 7월 2일"),
+  );
+  assert.deepEqual(
+    rentVsJeonseFaqJsonLd.mainEntity.map((item) => item.name),
+    rentVsJeonseFaqs.map(({ question }) => question),
+  );
+  assert.deepEqual(
+    rentVsJeonseFaqJsonLd.mainEntity.map(
+      (item) => item.acceptedAnswer.text,
+    ),
+    rentVsJeonseFaqs.map(({ answer }) => answer),
+  );
 });

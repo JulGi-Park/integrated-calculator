@@ -1,0 +1,377 @@
+.calculator,
+.results {
+  display: grid;
+  gap: 24px;
+}
+
+.formCard,
+.emptyCard,
+.summaryCard,
+.detailSection,
+.interpretation {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 18px 50px rgba(35, 57, 43, 0.06);
+}
+
+.formCard,
+.summaryCard,
+.detailSection,
+.interpretation {
+  padding: 30px;
+}
+
+.cardHeading,
+.sectionHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 26px;
+}
+
+.cardHeading h2,
+.cardHeading p,
+.sectionHeading h2,
+.sectionHeading p {
+  margin: 0;
+}
+
+.cardHeading h2,
+.sectionHeading h2 {
+  font-size: clamp(1.35rem, 3vw, 1.8rem);
+}
+
+.cardHeading > p,
+.sectionHeading > p {
+  max-width: 360px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  text-align: right;
+}
+
+.step {
+  margin-bottom: 6px !important;
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fieldGroup {
+  display: grid;
+  gap: 18px;
+}
+
+.fieldGroup + .fieldGroup {
+  margin-top: 26px;
+}
+
+.groupTitle {
+  margin: 0;
+  color: #344039;
+  font-size: 1rem;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.field {
+  min-width: 0;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 7px;
+  color: #38433c;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.inputShell {
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  border: 1px solid #cfd6d0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.inputShell:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(35, 97, 68, 0.12);
+}
+
+.inputShellError {
+  border-color: #b33c35;
+}
+
+.inputShell input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  padding: 12px 4px 12px 14px;
+  color: var(--text);
+  background: transparent;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.inputShell span {
+  flex: 0 0 auto;
+  padding: 0 14px 0 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.fieldDescription,
+.fieldError,
+.helperText {
+  margin: 7px 2px 0;
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.fieldDescription,
+.helperText {
+  color: var(--muted);
+}
+
+.fieldError {
+  color: #9f302b;
+  font-weight: 700;
+}
+
+.errorSummary,
+.staleNotice {
+  margin: 22px 0 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.83rem;
+  font-weight: 800;
+}
+
+.errorSummary {
+  color: #842d28;
+  background: #fbe9e7;
+}
+
+.staleNotice {
+  color: #735113;
+  background: #fff4d9;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.calculateButton,
+.resetButton {
+  min-height: 48px;
+  border-radius: 11px;
+  padding: 0 20px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.calculateButton {
+  border: 0;
+  color: #fff;
+  background: var(--accent);
+}
+
+.calculateButton:hover {
+  background: var(--accent-dark);
+}
+
+.resetButton {
+  border: 1px solid #cfd6d0;
+  color: #3c4b42;
+  background: #fff;
+}
+
+.emptyCard {
+  display: grid;
+  min-height: 240px;
+  place-content: center;
+  justify-items: center;
+  padding: 36px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.emptyCard span {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border-radius: 20px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.emptyCard h2 {
+  margin: 18px 0 4px;
+  color: var(--text);
+  font-size: 1.35rem;
+}
+
+.emptyCard p {
+  margin: 0;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.summaryItem,
+.winner {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid #e1e6e2;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.summaryItem span,
+.winner span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.summaryItem strong,
+.winner strong {
+  display: block;
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+  color: #263229;
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.winner {
+  grid-column: 1 / -1;
+  background: #eef5f0;
+}
+
+.winner strong {
+  color: var(--accent-dark);
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.detailCard {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #e1e6e2;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.detailCard h3 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+}
+
+.detailCard dl {
+  margin: 0;
+}
+
+.detailCard dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid #e7ebe8;
+}
+
+.detailCard dt {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.detailCard dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  text-align: right;
+  font-size: 0.86rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.interpretation {
+  color: #4f5c54;
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+
+.interpretation h2 {
+  margin: 0 0 8px;
+  color: #263229;
+  font-size: 1.25rem;
+}
+
+.interpretation p {
+  margin: 0;
+}
+
+.calculateButton:focus-visible,
+.resetButton:focus-visible {
+  outline: 3px solid rgba(35, 97, 68, 0.3);
+  outline-offset: 3px;
+}
+
+@media (max-width: 1000px) {
+  .fieldGrid,
+  .summaryGrid,
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .formCard,
+  .summaryCard,
+  .detailSection,
+  .interpretation {
+    padding: 22px;
+    border-radius: 18px;
+  }
+
+  .cardHeading,
+  .sectionHeading {
+    display: block;
+  }
+
+  .cardHeading > p,
+  .sectionHeading > p {
+    margin-top: 8px;
+    text-align: left;
+  }
+
+  .actions {
+    grid-template-columns: 1fr;
+  }
+}
