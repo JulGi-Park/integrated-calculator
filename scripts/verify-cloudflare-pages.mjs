@@ -137,6 +137,10 @@ async function verifyStaticOutput() {
       `${relativePath} must not be included in the default static export.`,
     );
   }
+
+  console.log(
+    `Private calculator pruning verified: ${privateCalculatorOutputDirectories.join(", ")}`,
+  );
 }
 
 await verifyNextConfig();

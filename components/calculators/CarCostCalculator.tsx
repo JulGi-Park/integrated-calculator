@@ -1,8 +1,14 @@
 "use client";
 
-import { type ChangeEvent, type FormEvent, useRef, useState } from "react";
+import {
+  type ChangeEvent,
+  type FormEvent,
+  useRef,
+  useState,
+} from "react";
 import {
   calculateCarCost,
+  type CarCostInput,
   type CarCostInputField,
   type CarCostResult,
   type CarCostValidationError,
@@ -44,7 +50,7 @@ const numberFields = [
     name: "fuelPricePerL",
     label: "유류 단가",
     unit: "원/L",
-    description: "휘발유·경유 등 실제 단가를 직접 입력합니다.",
+    description: "자동차 유류비 계산에 사용할 리터당 단가입니다.",
   },
   {
     name: "annualInsuranceCost",
@@ -108,27 +114,38 @@ function formatWon(value: number): string {
   return `${value.toLocaleString("ko-KR")}원`;
 }
 
+function formatNumber(value: number): string {
+  return value.toLocaleString("ko-KR", { maximumFractionDigits: 2 });
+}
+
 function formatLiter(value: number): string {
-  return `${value.toLocaleString("ko-KR", {
-    maximumFractionDigits: 2,
-  })}L`;
+  return `${formatNumber(value)}L`;
+}
+
+function parseNumberInput(value: string | boolean): number | undefined {
+  if (typeof value === "boolean") {
+    return undefined;
+  }
+
+  const normalized = value.trim().replaceAll(",", "");
+  return normalized === "" ? undefined : Number(normalized);
 }
 
 function parseInputs(input: RawInputs): Record<string, unknown> {
   return {
-    monthlyDistanceKm: Number(input.monthlyDistanceKm),
-    fuelEfficiencyKmPerL: Number(input.fuelEfficiencyKmPerL),
-    fuelPricePerL: Number(input.fuelPricePerL),
-    annualInsuranceCost: Number(input.annualInsuranceCost),
-    annualCarTax: Number(input.annualCarTax),
-    monthlyMaintenanceCost: Number(input.monthlyMaintenanceCost),
-    monthlyParkingCost: Number(input.monthlyParkingCost),
-    monthlyTollCost: Number(input.monthlyTollCost),
-    monthlyEtcCost: Number(input.monthlyEtcCost),
+    monthlyDistanceKm: parseNumberInput(input.monthlyDistanceKm),
+    fuelEfficiencyKmPerL: parseNumberInput(input.fuelEfficiencyKmPerL),
+    fuelPricePerL: parseNumberInput(input.fuelPricePerL),
+    annualInsuranceCost: parseNumberInput(input.annualInsuranceCost),
+    annualCarTax: parseNumberInput(input.annualCarTax),
+    monthlyMaintenanceCost: parseNumberInput(input.monthlyMaintenanceCost),
+    monthlyParkingCost: parseNumberInput(input.monthlyParkingCost),
+    monthlyTollCost: parseNumberInput(input.monthlyTollCost),
+    monthlyEtcCost: parseNumberInput(input.monthlyEtcCost),
     includeLoanPayment: input.includeLoanPayment === true,
-    monthlyLoanPayment: Number(input.monthlyLoanPayment),
+    monthlyLoanPayment: parseNumberInput(input.monthlyLoanPayment),
     includeDepreciation: input.includeDepreciation === true,
-    monthlyDepreciationCost: Number(input.monthlyDepreciationCost),
+    monthlyDepreciationCost: parseNumberInput(input.monthlyDepreciationCost),
   };
 }
 
@@ -136,10 +153,38 @@ function getErrorMessage(error: CarCostValidationError): string {
   return error.message;
 }
 
+function buildResultText(input: CarCostInput, result: CarCostResult): string {
+  return [
+    "자동차 유지비 계산 결과",
+    `월 주행거리: ${formatNumber(input.monthlyDistanceKm)}km`,
+    `연비: ${formatNumber(input.fuelEfficiencyKmPerL)}km/L`,
+    `유류 단가: ${formatWon(input.fuelPricePerL)}/L`,
+    `월 유류비: ${formatWon(result.monthlyFuelCost)}`,
+    `월 고정비: ${formatWon(result.monthlyFixedCost)}`,
+    `월 변동비: ${formatWon(result.monthlyVariableCost)}`,
+    `월 운행 유지비: ${formatWon(result.monthlyOperatingCost)}`,
+    `월 선택 비용: ${formatWon(result.monthlyOptionalCost)}`,
+    `월 총 부담액: ${formatWon(result.monthlyTotalCost)}`,
+    `연 총 부담액: ${formatWon(result.annualTotalCost)}`,
+    `1km당 총 부담: ${formatWon(result.totalCostPerKm)}`,
+    `할부금 포함: ${result.includedLoanPayment ? "예" : "아니오"}`,
+    `감가상각 포함: ${result.includedDepreciation ? "예" : "아니오"}`,
+  ].join("\n");
+}
+
 export function CarCostCalculator() {
   const [input, setInput] = useState(initialInputs);
   const [errors, setErrors] = useState<CarCostValidationError[]>([]);
   const [result, setResult] = useState<CarCostResult | null>(null);
+  const [calculatedInput, setCalculatedInput] = useState<CarCostInput | null>(
+    null,
+  );
+  const [isResultStale, setIsResultStale] = useState(false);
+  const [isShareSupported] = useState(
+    () =>
+      typeof navigator !== "undefined" && typeof navigator.share === "function",
+  );
+  const [actionMessage, setActionMessage] = useState("");
   const inputRefs = useRef<Partial<Record<CarCostInputField, HTMLInputElement>>>(
     {},
   );
@@ -160,15 +205,24 @@ export function CarCostCalculator() {
 
     setInput((current) => ({ ...current, [field]: value }));
     setErrors([]);
+    setActionMessage("");
+
+    if (result) {
+      setIsResultStale(true);
+    }
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const response = calculateCarCost(parseInputs(input));
+    setActionMessage("");
+    const parsedInput = parseInputs(input);
+    const response = calculateCarCost(parsedInput);
 
     if (!response.success) {
       setErrors(response.errors);
       setResult(null);
+      setCalculatedInput(null);
+      setIsResultStale(false);
       const firstErrorField = numberFields.find(({ name }) =>
         response.errors.some((error) => error.field === name),
       );
@@ -178,13 +232,111 @@ export function CarCostCalculator() {
 
     setErrors([]);
     setResult(response.data);
+    setCalculatedInput(parsedInput as unknown as CarCostInput);
+    setIsResultStale(false);
   }
 
   function handleReset() {
     setInput(initialInputs);
     setErrors([]);
     setResult(null);
+    setCalculatedInput(null);
+    setIsResultStale(false);
+    setActionMessage("");
     inputRefs.current.monthlyDistanceKm?.focus();
+  }
+
+  async function copyWithFallback(text: string): Promise<boolean> {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch {
+      // Fall through to the document-based copy attempt.
+    }
+
+    const activeElement =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    textarea.style.opacity = "0";
+    textarea.style.pointerEvents = "none";
+    document.body.appendChild(textarea);
+    textarea.select();
+
+    try {
+      return typeof document.execCommand === "function"
+        ? document.execCommand("copy")
+        : false;
+    } catch {
+      return false;
+    } finally {
+      textarea.remove();
+      activeElement?.focus();
+    }
+  }
+
+  function getCurrentResultText(): string | null {
+    if (!result || !calculatedInput || isResultStale || errors.length > 0) {
+      return null;
+    }
+
+    return buildResultText(calculatedInput, result);
+  }
+
+  async function handleCopy() {
+    setActionMessage("");
+    const text = getCurrentResultText();
+
+    if (!text) {
+      setActionMessage("최신 계산 결과가 없습니다. 다시 계산해 주세요.");
+      return;
+    }
+
+    const copied = await copyWithFallback(text);
+    setActionMessage(
+      copied
+        ? "계산 결과를 복사했습니다."
+        : "결과를 복사하지 못했습니다. 다시 시도해 주세요.",
+    );
+  }
+
+  async function handleShare() {
+    setActionMessage("");
+    const text = getCurrentResultText();
+
+    if (!text || typeof navigator.share !== "function") {
+      return;
+    }
+
+    try {
+      const shareData: ShareData = {
+        title: "자동차 유지비 계산 결과",
+        text,
+      };
+
+      if (
+        window.location.protocol === "http:" ||
+        window.location.protocol === "https:"
+      ) {
+        shareData.url = window.location.href;
+      }
+
+      await navigator.share(shareData);
+      setActionMessage("계산 결과를 공유했습니다.");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        setActionMessage("");
+      } else {
+        setActionMessage("결과를 공유하지 못했습니다. 결과 복사를 이용해 주세요.");
+      }
+    }
   }
 
   return (
@@ -195,7 +347,7 @@ export function CarCostCalculator() {
             <p className={styles.step}>01 · 차량 유지 조건</p>
             <h2>자동차 유지비를 입력하세요</h2>
           </div>
-          <p>1차 로컬 비공개 계산 UI</p>
+          <p>월 비용과 연간 환산 비용을 함께 계산합니다.</p>
         </div>
 
         <div className={styles.fieldGrid}>
@@ -238,7 +390,7 @@ export function CarCostCalculator() {
                   {description}
                 </p>
                 {fieldErrors.length > 0 && (
-                  <p className={styles.fieldError} id={errorId}>
+                  <p className={styles.fieldError} id={errorId} role="alert">
                     {fieldErrors.map(getErrorMessage).join(" ")}
                   </p>
                 )}
@@ -281,7 +433,7 @@ export function CarCostCalculator() {
 
         <div className={styles.actions}>
           <button className={styles.calculateButton} type="submit">
-            자동차 유지비 계산하기
+            {result ? "다시 계산하기" : "자동차 유지비 계산하기"}
           </button>
           <button
             className={styles.resetButton}
@@ -295,13 +447,19 @@ export function CarCostCalculator() {
 
       {!result && (
         <section className={styles.emptyCard} aria-live="polite">
-          <h2>월간·연간 유지비를 확인하세요</h2>
-          <p>주행거리와 비용을 입력하면 유지비와 1km당 비용을 계산합니다.</p>
+          <h2>자동차 한달 유지비를 확인하세요</h2>
+          <p>주행거리와 비용을 입력하면 월·연 비용과 1km당 비용을 계산합니다.</p>
         </section>
       )}
 
-      {result && (
+      {result && calculatedInput && (
         <div className={styles.results}>
+          {isResultStale && (
+            <p className={styles.staleNotice} role="status">
+              입력값이 변경되었습니다. 다시 계산해 주세요.
+            </p>
+          )}
+
           <section
             className={styles.summaryCard}
             aria-labelledby="car-cost-result-heading"
@@ -311,23 +469,59 @@ export function CarCostCalculator() {
                 <p className={styles.step}>02 · 계산 결과</p>
                 <h2 id="car-cost-result-heading">자동차 유지비 요약</h2>
               </div>
-              <p>원 단위 반올림</p>
+              <p>금액은 원 단위 반올림</p>
             </div>
 
             <dl className={styles.summaryGrid}>
               <div>
-                <dt>월 운행 유지비</dt>
+                <dt>월 고정비</dt>
+                <dd>{formatWon(result.monthlyFixedCost)}</dd>
+              </div>
+              <div>
+                <dt>월 변동비</dt>
+                <dd>{formatWon(result.monthlyVariableCost)}</dd>
+              </div>
+              <div>
+                <dt>월 총 자동차 유지비</dt>
                 <dd>{formatWon(result.monthlyOperatingCost)}</dd>
               </div>
               <div>
-                <dt>월 총 부담</dt>
+                <dt>월 총 부담액</dt>
                 <dd>{formatWon(result.monthlyTotalCost)}</dd>
               </div>
               <div>
-                <dt>1km당 총 부담</dt>
+                <dt>연간 환산 비용</dt>
+                <dd>{formatWon(result.annualTotalCost)}</dd>
+              </div>
+              <div>
+                <dt>1km당 비용</dt>
                 <dd>{formatWon(result.totalCostPerKm)}</dd>
               </div>
             </dl>
+
+            <div className={styles.resultActions}>
+              <button type="button" onClick={handleCopy}>
+                결과 복사
+              </button>
+              {isShareSupported && (
+                <button type="button" onClick={handleShare}>
+                  공유
+                </button>
+              )}
+            </div>
+            <p className={styles.actionMessage} aria-live="polite">
+              {actionMessage}
+            </p>
+          </section>
+
+          <section className={styles.summaryCard} aria-labelledby="detail-title">
+            <div className={styles.cardHeading}>
+              <div>
+                <p className={styles.step}>03 · 상세 계산 내역</p>
+                <h2 id="detail-title">항목별 비용</h2>
+              </div>
+              <p>고정비, 변동비, 선택 비용을 분리합니다.</p>
+            </div>
 
             <dl className={styles.detailGrid}>
               <div>
@@ -343,12 +537,40 @@ export function CarCostCalculator() {
                 <dd>{formatWon(result.annualFuelCost)}</dd>
               </div>
               <div>
+                <dt>월 보험료 환산</dt>
+                <dd>{formatWon(result.monthlyInsuranceCost)}</dd>
+              </div>
+              <div>
+                <dt>월 자동차세 환산</dt>
+                <dd>{formatWon(result.monthlyCarTax)}</dd>
+              </div>
+              <div>
+                <dt>월 주차비</dt>
+                <dd>{formatWon(calculatedInput.monthlyParkingCost)}</dd>
+              </div>
+              <div>
+                <dt>월 정비·소모품 비용</dt>
+                <dd>{formatWon(calculatedInput.monthlyMaintenanceCost)}</dd>
+              </div>
+              <div>
+                <dt>월 통행료</dt>
+                <dd>{formatWon(calculatedInput.monthlyTollCost)}</dd>
+              </div>
+              <div>
+                <dt>월 기타 비용</dt>
+                <dd>{formatWon(calculatedInput.monthlyEtcCost)}</dd>
+              </div>
+              <div>
                 <dt>월 고정비</dt>
                 <dd>{formatWon(result.monthlyFixedCost)}</dd>
               </div>
               <div>
                 <dt>월 변동비</dt>
                 <dd>{formatWon(result.monthlyVariableCost)}</dd>
+              </div>
+              <div>
+                <dt>월 운행 유지비</dt>
+                <dd>{formatWon(result.monthlyOperatingCost)}</dd>
               </div>
               <div>
                 <dt>연 운행 유지비</dt>
@@ -359,20 +581,38 @@ export function CarCostCalculator() {
                 <dd>{formatWon(result.monthlyOptionalCost)}</dd>
               </div>
               <div>
+                <dt>월 총 부담</dt>
+                <dd>{formatWon(result.monthlyTotalCost)}</dd>
+              </div>
+              <div>
                 <dt>연 총 부담</dt>
                 <dd>{formatWon(result.annualTotalCost)}</dd>
               </div>
               <div>
+                <dt>1km당 유류비</dt>
+                <dd>{formatWon(result.fuelCostPerKm)}</dd>
+              </div>
+              <div>
                 <dt>1km당 운행 유지비</dt>
                 <dd>{formatWon(result.operatingCostPerKm)}</dd>
+              </div>
+              <div>
+                <dt>1km당 총 부담</dt>
+                <dd>{formatWon(result.totalCostPerKm)}</dd>
               </div>
             </dl>
           </section>
 
           <aside className={styles.notice}>
             <p>
-              할부금 포함: {result.includedLoanPayment ? "예" : "아니오"} ·
-              감가상각 포함: {result.includedDepreciation ? "예" : "아니오"}
+              선택 비용 포함 여부: 할부금{" "}
+              {result.includedLoanPayment ? "포함" : "미포함"}, 감가상각{" "}
+              {result.includedDepreciation ? "포함" : "미포함"}
+            </p>
+            <p>
+              월 총 부담액은 운행 유지비에 선택 비용을 더한 값입니다. 실제
+              지출은 차량 상태, 보험 조건, 유가와 주차 환경에 따라 달라질 수
+              있습니다.
             </p>
           </aside>
         </div>

@@ -160,3 +160,15 @@ test("자동차 유지비 계산기 라우트는 정확한 공개 플래그에�
   assert.doesNotMatch(source, /===\s*"TRUE"|===\s*"yes"|===\s*"1"/);
   assert.match(source, /index:\s*false/);
 });
+
+test("Cloudflare 검증은 자동차 유지비 비공개 산출물 제거를 검사한다", async () => {
+  const [verifySource, pruneSource] = await Promise.all([
+    readFile("scripts/verify-cloudflare-pages.mjs", "utf8"),
+    readFile("scripts/prune-private-calculators.mjs", "utf8"),
+  ]);
+
+  assert.match(verifySource, /out\/calculators\/car-cost/);
+  assert.match(verifySource, /Private calculator pruning verified/);
+  assert.match(pruneSource, /calculators\/car-cost/);
+  assert.match(pruneSource, /calculators\/rent-vs-jeonse/);
+});

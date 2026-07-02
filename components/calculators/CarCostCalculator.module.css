@@ -136,6 +136,7 @@
 .fieldDescription,
 .fieldError,
 .storageNotice,
+.actionMessage,
 .notice {
   color: var(--muted);
   font-size: 0.8rem;
@@ -167,6 +168,16 @@
   font-weight: 800;
 }
 
+.staleNotice {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: #735113;
+  background: #fff4d9;
+  font-size: 0.83rem;
+  font-weight: 800;
+}
+
 .actions {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -194,6 +205,30 @@
   border: 1px solid #cfd6d0;
   color: #3c4b42;
   background: #fff;
+}
+
+.resultActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.resultActions button {
+  min-height: 46px;
+  border: 1px solid #cfd6d0;
+  border-radius: 11px;
+  padding: 0 18px;
+  color: #3c4b42;
+  background: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.actionMessage {
+  min-height: 1.5em;
+  margin: 10px 0 0;
 }
 
 .emptyCard {
@@ -263,8 +298,13 @@
   margin: 0;
 }
 
+.notice p + p {
+  margin-top: 4px;
+}
+
 .calculateButton:focus-visible,
-.resetButton:focus-visible {
+.resetButton:focus-visible,
+.resultActions button:focus-visible {
   outline: 3px solid rgba(35, 97, 68, 0.3);
   outline-offset: 3px;
 }

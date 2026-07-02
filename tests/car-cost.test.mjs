@@ -112,6 +112,30 @@ test("선택 비용 포함 상태에서도 금액 0원을 허용한다", () => {
   assert.equal(errors.length, 0);
 });
 
+test("유류 단가 0원은 유류비와 1km당 유류비를 0원으로 계산한다", () => {
+  const data = assertSuccess(
+    calculateCarCost({ ...baseInput, fuelPricePerL: 0 }),
+  );
+
+  assert.equal(data.monthlyFuelCost, 0);
+  assert.equal(data.annualFuelCost, 0);
+  assert.equal(data.fuelCostPerKm, 0);
+});
+
+test("연 보험료와 연 자동차세를 12개월로 환산한다", () => {
+  const data = assertSuccess(
+    calculateCarCost({
+      ...baseInput,
+      annualInsuranceCost: 1_200_000,
+      annualCarTax: 600_000,
+    }),
+  );
+
+  assert.equal(data.monthlyInsuranceCost, 100_000);
+  assert.equal(data.monthlyCarTax, 50_000);
+  assert.equal(data.monthlyFixedCost, 250_000);
+});
+
 test("월 주행거리 1km 경계를 정상 계산한다", () => {
   const data = assertSuccess(
     calculateCarCost({ ...baseInput, monthlyDistanceKm: 1 }),
