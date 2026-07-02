@@ -19,6 +19,15 @@ const requiredStaticFiles = [
   ],
 ];
 
+const privateCalculatorOutputDirectories = [
+  "out/calculators/roas",
+  "out/calculators/labor-pay",
+  "out/calculators/vat-profit",
+  "out/calculators/parental-leave",
+  "out/calculators/rent-vs-jeonse",
+  "out/calculators/car-cost",
+];
+
 const forbiddenSourcePatterns = [
   {
     pattern: /["']use server["']/,
@@ -116,6 +125,16 @@ async function verifyStaticOutput() {
       html,
       new RegExp(expectedText),
       `${relativePath} does not contain its expected page content.`,
+    );
+  }
+
+  for (const relativePath of privateCalculatorOutputDirectories) {
+    const absolutePath = path.join(projectRoot, relativePath);
+
+    await assert.rejects(
+      stat(absolutePath),
+      { code: "ENOENT" },
+      `${relativePath} must not be included in the default static export.`,
     );
   }
 }

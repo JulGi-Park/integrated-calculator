@@ -127,9 +127,36 @@ test("현재 페이지는 서버 전용 Next.js API에 의존하지 않는다", 
 test("프로덕션 빌드는 Cloudflare Pages 검증을 반드시 실행한다", async () => {
   const packageJson = JSON.parse(await readFile("package.json", "utf8"));
 
+  assert.match(packageJson.scripts.build, /prune:private-calculators/);
   assert.match(packageJson.scripts.build, /verify:cloudflare/);
   assert.equal(
     packageJson.scripts["verify:cloudflare"],
     "node scripts/verify-cloudflare-pages.mjs",
   );
+  assert.equal(
+    packageJson.scripts["prune:private-calculators"],
+    "node scripts/prune-private-calculators.mjs",
+  );
+});
+
+test("자동차 유지비 계산기는 공개 목록과 사이트맵에 노출하지 않는다", async () => {
+  const [listSource, sitemapSource, homeSource] = await Promise.all([
+    readFile("app/calculators/page.tsx", "utf8"),
+    readFile("app/sitemap.ts", "utf8"),
+    readFile("app/page.tsx", "utf8"),
+  ]);
+
+  assert.doesNotMatch(listSource, /car-cost|자동차 유지비 계산기/);
+  assert.doesNotMatch(sitemapSource, /car-cost/);
+  assert.doesNotMatch(homeSource, /car-cost|자동차 유지비 계산기/);
+});
+
+test("자동차 유지비 계산기 라우트는 정확한 공개 플래그에서만 렌더링한다", async () => {
+  const source = await readFile("app/calculators/car-cost/page.tsx", "utf8");
+
+  assert.match(source, /NEXT_PUBLIC_ENABLE_CAR_COST_CALCULATOR/);
+  assert.match(source, /===\s*"true"/);
+  assert.match(source, /notFound\(\)/);
+  assert.doesNotMatch(source, /===\s*"TRUE"|===\s*"yes"|===\s*"1"/);
+  assert.match(source, /index:\s*false/);
 });

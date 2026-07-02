@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && npm run verify:cloudflare",
+    "build": "next build && npm run prune:private-calculators && npm run verify:cloudflare",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "node --import ./tests/register-css.mjs --import tsx --test",
-    "verify:cloudflare": "node scripts/verify-cloudflare-pages.mjs"
+    "verify:cloudflare": "node scripts/verify-cloudflare-pages.mjs",
+    "prune:private-calculators": "node scripts/prune-private-calculators.mjs"
   },
   "dependencies": {
     "next": "16.2.9",
