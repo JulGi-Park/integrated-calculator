@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import {
+  AVERAGE_PRICE_CALCULATOR_FLAG,
+  isAveragePriceCalculatorEnabled,
+} from "../lib/calculators/average-price/visibility.ts";
 
 const routes = [
   ["app/page.tsx", "계산박스 | 생활·금융·근로 계산기 모음"],
@@ -132,4 +136,61 @@ test("프로덕션 빌드는 Cloudflare Pages 검증을 반드시 실행한다",
     packageJson.scripts["verify:cloudflare"],
     "node scripts/verify-cloudflare-pages.mjs",
   );
+});
+
+test("물타기 계산기는 정확히 true 플래그일 때만 공개된다", () => {
+  const privateValues = [undefined, "false", "0", "1", "TRUE", "yes", ""];
+
+  for (const value of privateValues) {
+    const env =
+      typeof value === "undefined"
+        ? {}
+        : { [AVERAGE_PRICE_CALCULATOR_FLAG]: value };
+
+    assert.equal(isAveragePriceCalculatorEnabled(env), false);
+  }
+
+  assert.equal(
+    isAveragePriceCalculatorEnabled({
+      [AVERAGE_PRICE_CALCULATOR_FLAG]: "true",
+    }),
+    true,
+  );
+});
+
+test("물타기 계산기 페이지는 비공개 플래그와 notFound 보호를 사용한다", async () => {
+  const source = await readFile(
+    "app/calculators/average-price/page.tsx",
+    "utf8",
+  );
+
+  assert.match(source, /isAveragePriceCalculatorEnabled\(\)/);
+  assert.match(source, /notFound\(\)/);
+  assert.match(source, /robots:\s*{\s*index:\s*false,\s*follow:\s*false/s);
+});
+
+test("프로덕션 빌드는 비공개 계산기 산출물을 pruning 후 검증한다", async () => {
+  const packageJson = JSON.parse(await readFile("package.json", "utf8"));
+  const pruneSource = await readFile("scripts/prune-private-routes.mjs", "utf8");
+
+  assert.match(packageJson.scripts.build, /prune:private-routes/);
+  assert.match(packageJson.scripts.build, /verify:cloudflare/);
+  assert.equal(
+    packageJson.scripts["prune:private-routes"],
+    "tsx scripts/prune-private-routes.mjs",
+  );
+  assert.match(pruneSource, /out\/calculators\/average-price/);
+  assert.match(pruneSource, /isAveragePriceCalculatorEnabled\(\)/);
+});
+
+test("공개 목록과 sitemap 소스에는 물타기 계산기 링크를 노출하지 않는다", async () => {
+  const [homeSource, listSource, sitemapSource] = await Promise.all([
+    readFile("app/page.tsx", "utf8"),
+    readFile("app/calculators/page.tsx", "utf8"),
+    readFile("app/sitemap.ts", "utf8"),
+  ]);
+
+  const combinedSource = [homeSource, listSource, sitemapSource].join("\n");
+
+  assert.doesNotMatch(combinedSource, /average-price|물타기 계산기/);
 });
