@@ -7,11 +7,11 @@ test("푸터에 저작권 문구와 정책 링크, 연락처가 함께 유지된
 
   assert.match(source, /© 2026 계산박스\. All rights reserved\./);
   for (const path of [
-    "/about",
-    "/contact",
-    "/privacy-policy",
-    "/terms",
-    "/disclaimer",
+    "/about/",
+    "/contact/",
+    "/privacy-policy/",
+    "/terms/",
+    "/disclaimer/",
   ]) {
     assert.match(source, new RegExp(`href: "${path}"`));
   }

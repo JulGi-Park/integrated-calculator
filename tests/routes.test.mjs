@@ -55,7 +55,7 @@ test("연봉 계산기 페이지와 목록 링크가 실제 UI를 제공한다",
   assert.match(pageSource, /SalaryTakeHomeCalculator/);
   assert.match(pageSource, /<h1>연봉 실수령액 계산기<\/h1>/);
   assert.doesNotMatch(pageSource, /계산 기능 준비 중/);
-  assert.match(listSource, /href="\/calculators\/salary"/);
+  assert.match(listSource, /href="\/calculators\/salary\/"/);
 });
 
 test("판매자 마진 페이지는 계산기 UI를 제공한다", async () => {
@@ -77,7 +77,7 @@ test("대출 이자 계산기 페이지와 목록 링크가 실제 UI를 제공�
   assert.match(pageSource, /LoanInterestCalculator/);
   assert.match(pageSource, /<h1>대출 이자 계산기<\/h1>/);
   assert.doesNotMatch(pageSource, /계산 기능 준비 중/);
-  assert.match(listSource, /href="\/calculators\/loan"/);
+  assert.match(listSource, /href="\/calculators\/loan\/"/);
   assert.match(listSource, /대출 이자 계산기/);
 });
 
@@ -91,7 +91,7 @@ test("실업급여 계산기 페이지와 목록 링크가 실제 UI를 제공�
   assert.match(pageSource, /<h1>실업급여 계산기<\/h1>/);
   assert.match(pageSource, /JsonLdScripts/);
   assert.doesNotMatch(pageSource, /계산 기능 준비 중/);
-  assert.match(listSource, /href="\/calculators\/unemployment"/);
+  assert.match(listSource, /href="\/calculators\/unemployment\/"/);
   assert.match(listSource, /실업급여 계산기/);
 });
 
@@ -105,7 +105,7 @@ test("퇴직금 계산기 페이지와 목록 링크가 실제 UI를 제공한�
   assert.match(pageSource, /<h1>퇴직금 계산기<\/h1>/);
   assert.match(pageSource, /JsonLdScripts/);
   assert.doesNotMatch(pageSource, /계산 기능 준비 중/);
-  assert.match(listSource, /href="\/calculators\/severance"/);
+  assert.match(listSource, /href="\/calculators\/severance\/"/);
   assert.match(listSource, /퇴직금 계산기/);
 });
 

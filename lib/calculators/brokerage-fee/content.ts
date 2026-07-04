@@ -152,13 +152,13 @@ export const brokerageFeeBreadcrumbJsonLd = {
       "@type": "ListItem",
       position: 2,
       name: "계산기 목록",
-      item: "https://gyesanbox.kr/calculators",
+      item: "https://gyesanbox.kr/calculators/",
     },
     {
       "@type": "ListItem",
       position: 3,
       name: "부동산 중개보수 계산기",
-      item: "https://gyesanbox.kr/calculators/brokerage-fee",
+      item: "https://gyesanbox.kr/calculators/brokerage-fee/",
     },
   ],
 };

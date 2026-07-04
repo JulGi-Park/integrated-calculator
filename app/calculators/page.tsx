@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "계산박스 계산기 목록",
   description:
     "계산박스에서 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 계산기를 확인하세요.",
+  alternates: {
+    canonical: "https://gyesanbox.kr/calculators/",
+  },
+  openGraph: {
+    url: "https://gyesanbox.kr/calculators/",
+  },
 };
 
 export default function CalculatorsPage() {
@@ -17,9 +22,9 @@ export default function CalculatorsPage() {
       </div>
 
       <div className="calculator-grid" role="list">
-        <Link
+        <a
           className="calculator-card"
-          href="/calculators/loan"
+          href="/calculators/loan/"
           role="listitem"
         >
           <div>
@@ -33,11 +38,11 @@ export default function CalculatorsPage() {
           <span className="calculator-card__arrow" aria-hidden="true">
             →
           </span>
-        </Link>
+        </a>
 
-        <Link
+        <a
           className="calculator-card"
-          href="/calculators/salary"
+          href="/calculators/salary/"
           role="listitem"
         >
           <div>
@@ -51,11 +56,11 @@ export default function CalculatorsPage() {
           <span className="calculator-card__arrow" aria-hidden="true">
             →
           </span>
-        </Link>
+        </a>
 
-        <Link
+        <a
           className="calculator-card"
-          href="/calculators/seller-margin"
+          href="/calculators/seller-margin/"
           role="listitem"
         >
           <div>
@@ -66,11 +71,11 @@ export default function CalculatorsPage() {
           <span className="calculator-card__arrow" aria-hidden="true">
             →
           </span>
-        </Link>
+        </a>
 
-        <Link
+        <a
           className="calculator-card"
-          href="/calculators/severance"
+          href="/calculators/severance/"
           role="listitem"
         >
           <div>
@@ -84,11 +89,11 @@ export default function CalculatorsPage() {
           <span className="calculator-card__arrow" aria-hidden="true">
             →
           </span>
-        </Link>
+        </a>
 
-        <Link
+        <a
           className="calculator-card"
-          href="/calculators/unemployment"
+          href="/calculators/unemployment/"
           role="listitem"
         >
           <div>
@@ -102,7 +107,7 @@ export default function CalculatorsPage() {
           <span className="calculator-card__arrow" aria-hidden="true">
             →
           </span>
-        </Link>
+        </a>
       </div>
     </section>
   );

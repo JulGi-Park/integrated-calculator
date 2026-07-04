@@ -28,7 +28,7 @@ const dataSource = await readFile(
   "utf8",
 );
 
-test("대출 계산기 전용 SEO 메타데이터를 URL 하드코딩 없이 설정한다", () => {
+test("대출 계산기 전용 SEO 메타데이터를 대표 URL 기준으로 설정한다", () => {
   const expectedTitle =
     "대출 이자 계산기 | 원리금균등·원금균등·만기일시상환 비교";
   const expectedDescription =
@@ -40,16 +40,18 @@ test("대출 계산기 전용 SEO 메타데이터를 URL 하드코딩 없이 설
   assert.equal(metadata.openGraph.title, expectedTitle);
   assert.equal(metadata.openGraph.description, expectedDescription);
   assert.equal(metadata.openGraph.type, "website");
+  assert.equal(metadata.openGraph.url, "https://gyesanbox.kr/calculators/loan/");
   assert.equal(metadata.twitter.card, "summary");
   assert.equal(metadata.twitter.title, expectedTitle);
   assert.equal(metadata.twitter.description, expectedDescription);
-  assert.equal(metadata.alternates, undefined);
-  assert.equal(metadata.openGraph.url, undefined);
+  assert.deepEqual(metadata.alternates, {
+    canonical: "https://gyesanbox.kr/calculators/loan/",
+  });
 
   const metadataText = JSON.stringify(metadata);
   assert.doesNotMatch(
     metadataText,
-    /canonical|localhost|127\.0\.0\.1|pages\.dev|example\.com/,
+    /localhost|127\.0\.0\.1|pages\.dev|example\.com|www\.gyesanbox\.kr/,
   );
 });
 
@@ -245,8 +247,8 @@ test("FAQ 8개를 한 곳에서 관리하고 FAQPage와 순서가 일치한다",
 });
 
 test("관련 계산기는 실제 내부 라우트만 링크하고 가짜 링크는 없다", () => {
-  assert.match(contentSource, /href="\/calculators\/salary"/);
-  assert.match(contentSource, /href="\/calculators\/seller-margin"/);
+  assert.match(contentSource, /href="\/calculators\/salary\/"/);
+  assert.match(contentSource, /href="\/calculators\/seller-margin\/"/);
   assert.doesNotMatch(
     contentSource,
     /href="(?:#|javascript:|\/calculators\/(?:retirement|loan-other|coming-soon))/,
@@ -293,8 +295,8 @@ test("WebApplication, BreadcrumbList와 FAQPage JSON-LD가 안전하다", () => 
     loanInterestBreadcrumbJsonLd.itemListElement.map((item) => item.item),
     [
       "https://gyesanbox.kr/",
-      "https://gyesanbox.kr/calculators",
-      "https://gyesanbox.kr/calculators/loan",
+      "https://gyesanbox.kr/calculators/",
+      "https://gyesanbox.kr/calculators/loan/",
     ],
   );
 

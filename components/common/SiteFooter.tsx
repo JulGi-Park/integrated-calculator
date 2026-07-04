@@ -1,11 +1,10 @@
-import Link from "next/link";
 
 const footerLinks = [
-  { href: "/about", label: "소개" },
-  { href: "/contact", label: "문의" },
-  { href: "/privacy-policy", label: "개인정보처리방침" },
-  { href: "/terms", label: "이용약관" },
-  { href: "/disclaimer", label: "면책문구" },
+  { href: "/about/", label: "소개" },
+  { href: "/contact/", label: "문의" },
+  { href: "/privacy-policy/", label: "개인정보처리방침" },
+  { href: "/terms/", label: "이용약관" },
+  { href: "/disclaimer/", label: "면책문구" },
 ] as const;
 
 export function SiteFooter() {
@@ -25,9 +24,9 @@ export function SiteFooter() {
           </p>
           <nav className="site-footer__nav" aria-label="사이트 정책">
             {footerLinks.map((link) => (
-              <Link key={link.href} href={link.href}>
+              <a key={link.href} href={link.href}>
                 {link.label}
-              </Link>
+              </a>
             ))}
           </nav>
         </div>

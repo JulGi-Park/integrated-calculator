@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "계산박스 이용 중 계산 오류, 기준 정보, 사이트 이용 관련 문의는 contact@gyesanbox.kr 로 연락해 주세요.",
   alternates: {
-    canonical: "https://gyesanbox.kr/contact",
+    canonical: "https://gyesanbox.kr/contact/",
   },
 };
 

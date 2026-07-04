@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "계산박스 서비스 이용 조건, 계산 결과 이용 범위, 콘텐츠 이용 제한 및 문의 방법을 안내합니다.",
   alternates: {
-    canonical: "https://gyesanbox.kr/terms",
+    canonical: "https://gyesanbox.kr/terms/",
   },
 };
 

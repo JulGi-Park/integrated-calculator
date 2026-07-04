@@ -12,8 +12,8 @@ const expectedBreadcrumbs = [
     data: sellerMarginBreadcrumbJsonLd,
     items: [
       ["홈", "https://gyesanbox.kr/"],
-      ["계산기 목록", "https://gyesanbox.kr/calculators"],
-      ["판매자 마진 계산기", "https://gyesanbox.kr/calculators/seller-margin"],
+      ["계산기 목록", "https://gyesanbox.kr/calculators/"],
+      ["판매자 마진 계산기", "https://gyesanbox.kr/calculators/seller-margin/"],
     ],
   },
   {
@@ -21,8 +21,8 @@ const expectedBreadcrumbs = [
     data: salaryTakeHomeBreadcrumbJsonLd,
     items: [
       ["홈", "https://gyesanbox.kr/"],
-      ["계산기 목록", "https://gyesanbox.kr/calculators"],
-      ["연봉 실수령액 계산기", "https://gyesanbox.kr/calculators/salary"],
+      ["계산기 목록", "https://gyesanbox.kr/calculators/"],
+      ["연봉 실수령액 계산기", "https://gyesanbox.kr/calculators/salary/"],
     ],
   },
   {
@@ -30,8 +30,8 @@ const expectedBreadcrumbs = [
     data: loanInterestBreadcrumbJsonLd,
     items: [
       ["홈", "https://gyesanbox.kr/"],
-      ["계산기 목록", "https://gyesanbox.kr/calculators"],
-      ["대출 이자 계산기", "https://gyesanbox.kr/calculators/loan"],
+      ["계산기 목록", "https://gyesanbox.kr/calculators/"],
+      ["대출 이자 계산기", "https://gyesanbox.kr/calculators/loan/"],
     ],
   },
   {
@@ -39,8 +39,8 @@ const expectedBreadcrumbs = [
     data: severanceBreadcrumbJsonLd,
     items: [
       ["홈", "https://gyesanbox.kr/"],
-      ["계산기 목록", "https://gyesanbox.kr/calculators"],
-      ["퇴직금 계산기", "https://gyesanbox.kr/calculators/severance"],
+      ["계산기 목록", "https://gyesanbox.kr/calculators/"],
+      ["퇴직금 계산기", "https://gyesanbox.kr/calculators/severance/"],
     ],
   },
   {
@@ -48,8 +48,8 @@ const expectedBreadcrumbs = [
     data: unemploymentBreadcrumbJsonLd,
     items: [
       ["홈", "https://gyesanbox.kr/"],
-      ["계산기 목록", "https://gyesanbox.kr/calculators"],
-      ["실업급여 계산기", "https://gyesanbox.kr/calculators/unemployment"],
+      ["계산기 목록", "https://gyesanbox.kr/calculators/"],
+      ["실업급여 계산기", "https://gyesanbox.kr/calculators/unemployment/"],
     ],
   },
 ];

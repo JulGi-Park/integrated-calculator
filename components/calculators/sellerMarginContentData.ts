@@ -166,13 +166,13 @@ export const sellerMarginBreadcrumbJsonLd = {
       "@type": "ListItem",
       position: 2,
       name: "계산기 목록",
-      item: "https://gyesanbox.kr/calculators",
+      item: "https://gyesanbox.kr/calculators/",
     },
     {
       "@type": "ListItem",
       position: 3,
       name: "판매자 마진 계산기",
-      item: "https://gyesanbox.kr/calculators/seller-margin",
+      item: "https://gyesanbox.kr/calculators/seller-margin/",
     },
   ],
 };

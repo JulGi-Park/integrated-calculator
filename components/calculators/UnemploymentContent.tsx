@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { UNEMPLOYMENT_POLICY_2026 } from "@/lib/calculators/unemployment/policy";
 import {
   unemploymentBasisSummary,
@@ -259,14 +258,14 @@ export function UnemploymentContent() {
         </div>
         <div className={styles.relatedGrid}>
           {unemploymentRelatedCalculators.map(({ href, title, description }) => (
-            <Link
+            <a
               className={`${styles.relatedCard} ${styles.relatedLink}`}
               href={href}
               key={href}
             >
               <h3>{title}</h3>
               <p>{description}</p>
-            </Link>
+            </a>
           ))}
         </div>
       </section>

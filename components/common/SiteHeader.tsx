@@ -11,15 +11,15 @@ export function SiteHeader() {
           <span>계산박스</span>
         </Link>
         <nav aria-label="주요 메뉴">
-          <Link className="nav-link" href="/calculators">
+          <a className="nav-link" href="/calculators/">
             계산기 목록
-          </Link>
-          <Link className="nav-link" href="/about">
+          </a>
+          <a className="nav-link" href="/about/">
             소개
-          </Link>
-          <Link className="nav-link" href="/contact">
+          </a>
+          <a className="nav-link" href="/contact/">
             문의
-          </Link>
+          </a>
         </nav>
       </div>
     </header>

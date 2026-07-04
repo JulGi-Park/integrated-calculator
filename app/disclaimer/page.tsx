@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "계산박스 계산 결과의 참고용 성격, 실제 적용 기준 차이, 공식 기관 확인 필요성을 안내합니다.",
   alternates: {
-    canonical: "https://gyesanbox.kr/disclaimer",
+    canonical: "https://gyesanbox.kr/disclaimer/",
   },
 };
 

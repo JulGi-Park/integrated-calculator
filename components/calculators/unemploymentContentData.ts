@@ -29,7 +29,7 @@ export interface UnemploymentSource {
 }
 
 export interface UnemploymentRelatedCalculator {
-  href: "/calculators/severance" | "/calculators/salary" | "/calculators/loan" | "/calculators/seller-margin";
+  href: "/calculators/severance/" | "/calculators/salary/" | "/calculators/loan/" | "/calculators/seller-margin/";
   title: string;
   description: string;
 }
@@ -322,22 +322,22 @@ export const unemploymentSources: UnemploymentSource[] = [
 
 export const unemploymentRelatedCalculators: UnemploymentRelatedCalculator[] = [
   {
-    href: "/calculators/severance",
+    href: "/calculators/severance/",
     title: "퇴직금 계산기",
     description: "입사일과 퇴직 전 임금으로 예상 퇴직금을 계산합니다.",
   },
   {
-    href: "/calculators/salary",
+    href: "/calculators/salary/",
     title: "연봉 실수령액 계산기",
     description: "4대보험과 간이세액표 기준 실수령액을 확인합니다.",
   },
   {
-    href: "/calculators/loan",
+    href: "/calculators/loan/",
     title: "대출 이자 계산기",
     description: "상환방식별 월 납입액과 총이자를 비교합니다.",
   },
   {
-    href: "/calculators/seller-margin",
+    href: "/calculators/seller-margin/",
     title: "판매자 마진 계산기",
     description: "판매가, 원가, 수수료 기준 순이익과 마진율을 계산합니다.",
   },
@@ -349,7 +349,7 @@ export const unemploymentWebApplicationJsonLd = {
   name: "실업급여 계산기",
   description:
     "월급 또는 1일 평균임금으로 구직급여 상한액·하한액 적용 여부, 수급기간과 예상 총액을 계산하는 참고용 도구입니다.",
-  url: "/calculators/unemployment",
+  url: "/calculators/unemployment/",
   applicationCategory: "FinanceApplication",
   operatingSystem: "Any",
   browserRequirements: "JavaScript가 지원되는 웹 브라우저",
@@ -369,13 +369,13 @@ export const unemploymentBreadcrumbJsonLd = {
       "@type": "ListItem",
       position: 2,
       name: "계산기 목록",
-      item: "https://gyesanbox.kr/calculators",
+      item: "https://gyesanbox.kr/calculators/",
     },
     {
       "@type": "ListItem",
       position: 3,
       name: "실업급여 계산기",
-      item: "https://gyesanbox.kr/calculators/unemployment",
+      item: "https://gyesanbox.kr/calculators/unemployment/",
     },
   ],
 } as const;

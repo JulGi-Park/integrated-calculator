@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 
 const siteUrl = "https://gyesanbox.kr/";
@@ -12,28 +11,28 @@ const socialDescription =
 const calculators = [
   {
     name: "판매자 마진 계산기",
-    href: "/calculators/seller-margin",
-    url: "https://gyesanbox.kr/calculators/seller-margin",
+    href: "/calculators/seller-margin/",
+    url: "https://gyesanbox.kr/calculators/seller-margin/",
   },
   {
     name: "연봉 실수령액 계산기",
-    href: "/calculators/salary",
-    url: "https://gyesanbox.kr/calculators/salary",
+    href: "/calculators/salary/",
+    url: "https://gyesanbox.kr/calculators/salary/",
   },
   {
     name: "대출 이자 계산기",
-    href: "/calculators/loan",
-    url: "https://gyesanbox.kr/calculators/loan",
+    href: "/calculators/loan/",
+    url: "https://gyesanbox.kr/calculators/loan/",
   },
   {
     name: "퇴직금 계산기",
-    href: "/calculators/severance",
-    url: "https://gyesanbox.kr/calculators/severance",
+    href: "/calculators/severance/",
+    url: "https://gyesanbox.kr/calculators/severance/",
   },
   {
     name: "실업급여 계산기",
-    href: "/calculators/unemployment",
-    url: "https://gyesanbox.kr/calculators/unemployment",
+    href: "/calculators/unemployment/",
+    url: "https://gyesanbox.kr/calculators/unemployment/",
   },
 ] as const;
 
@@ -143,10 +142,10 @@ export default function Home() {
           자주 필요한 계산기를 빠르게 찾아보세요. 각 계산기는 입력값 기준의
           예상 결과와 계산 기준, 유의사항을 함께 제공합니다.
         </p>
-        <Link className="button button--primary" href="/calculators">
+        <a className="button button--primary" href="/calculators/">
           계산기 목록 보기
           <span aria-hidden="true">→</span>
-        </Link>
+        </a>
       </section>
 
       <section className="home-calculators" aria-labelledby="home-calculators-title">
@@ -156,9 +155,9 @@ export default function Home() {
         </div>
         <div className="home-calculators__links">
           {calculators.map((calculator) => (
-            <Link key={calculator.href} href={calculator.href}>
+            <a key={calculator.href} href={calculator.href}>
               {calculator.name}
-            </Link>
+            </a>
           ))}
         </div>
       </section>

@@ -13,6 +13,8 @@ const privateOutputPaths = [
   "out/calculators/car-cost",
   "out/calculators/savings",
   "out/calculators/average-price",
+  "out/calculators/card-installment",
+  "out/calculators/overtime-pay",
   "out/calculators/brokerage-fee",
 ];
 

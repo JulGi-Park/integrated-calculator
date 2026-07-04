@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { SEVERANCE_POLICY_2026 } from "@/lib/calculators/severance/policy";
 import {
   severanceCalculationCriteria,
@@ -150,34 +149,34 @@ export function SeveranceContent() {
           <h2 id="related-title">관련 계산기</h2>
         </div>
         <div className={styles.relatedGrid}>
-          <Link
+          <a
             className={`${styles.relatedCard} ${styles.relatedLink}`}
-            href="/calculators/salary"
+            href="/calculators/salary/"
           >
             <h3>연봉 실수령액 계산기</h3>
             <p>급여 공제와 월 예상 실수령액을 함께 확인할 수 있습니다.</p>
-          </Link>
-          <Link
+          </a>
+          <a
             className={`${styles.relatedCard} ${styles.relatedLink}`}
-            href="/calculators/loan"
+            href="/calculators/loan/"
           >
             <h3>대출 이자 계산기</h3>
             <p>월 납입액과 총이자를 상환방식별로 비교해 볼 수 있습니다.</p>
-          </Link>
-          <Link
+          </a>
+          <a
             className={`${styles.relatedCard} ${styles.relatedLink}`}
-            href="/calculators/unemployment"
+            href="/calculators/unemployment/"
           >
             <h3>실업급여 계산기</h3>
             <p>고용보험 가입기간과 임금 기준 예상 구직급여를 계산합니다.</p>
-          </Link>
-          <Link
+          </a>
+          <a
             className={`${styles.relatedCard} ${styles.relatedLink}`}
-            href="/calculators/seller-margin"
+            href="/calculators/seller-margin/"
           >
             <h3>판매자 마진 계산기</h3>
             <p>수수료와 비용을 반영한 주문 기준 예상 순이익을 계산합니다.</p>
-          </Link>
+          </a>
         </div>
       </section>
 
