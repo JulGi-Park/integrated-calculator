@@ -115,10 +115,10 @@ test("페이지 제목과 기준일 안내를 표시한다", () => {
 });
 
 test("계산기 목록에 퇴직금 계산기 링크를 활성화하고 기존 링크를 유지한다", () => {
-  assert.match(listPageSource, /href="\/calculators\/loan"/);
-  assert.match(listPageSource, /href="\/calculators\/salary"/);
-  assert.match(listPageSource, /href="\/calculators\/seller-margin"/);
-  assert.match(listPageSource, /href="\/calculators\/severance"/);
+  assert.match(listPageSource, /href="\/calculators\/loan\/"/);
+  assert.match(listPageSource, /href="\/calculators\/salary\/"/);
+  assert.match(listPageSource, /href="\/calculators\/seller-margin\/"/);
+  assert.match(listPageSource, /href="\/calculators\/severance\/"/);
   assert.match(listPageSource, /퇴직금 계산기/);
 });
 

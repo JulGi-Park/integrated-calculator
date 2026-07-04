@@ -5,12 +5,12 @@ import test from "node:test";
 const pages = [
   {
     file: "app/about/page.tsx",
-    path: "/about",
+    path: "/about/",
     h1: "계산박스 소개",
     title: "계산박스 소개 | 계산박스",
     description:
       "계산박스는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 등 생활·금융·근로 계산기를 제공하는 온라인 계산기 모음입니다.",
-    canonical: "https://gyesanbox.kr/about",
+    canonical: "https://gyesanbox.kr/about/",
     required: [
       "생활·금융·근로 계산기 모음 서비스",
       "판매자 마진 계산기",
@@ -23,12 +23,12 @@ const pages = [
   },
   {
     file: "app/contact/page.tsx",
-    path: "/contact",
+    path: "/contact/",
     h1: "문의",
     title: "문의 | 계산박스",
     description:
       "계산박스 이용 중 계산 오류, 기준 정보, 사이트 이용 관련 문의는 contact@gyesanbox.kr 로 연락해 주세요.",
-    canonical: "https://gyesanbox.kr/contact",
+    canonical: "https://gyesanbox.kr/contact/",
     required: [
       "계산 오류 제보",
       "기준일 또는 공식 출처 오류 제보",
@@ -38,12 +38,12 @@ const pages = [
   },
   {
     file: "app/privacy-policy/page.tsx",
-    path: "/privacy-policy",
+    path: "/privacy-policy/",
     h1: "개인정보처리방침",
     title: "개인정보처리방침 | 계산박스",
     description:
       "계산박스의 개인정보 처리, 쿠키, 광고, 분석 도구 사용 가능성 및 문의 방법을 안내합니다.",
-    canonical: "https://gyesanbox.kr/privacy-policy",
+    canonical: "https://gyesanbox.kr/privacy-policy/",
     required: [
       "로그인, 회원가입, 결제, 운영 DB 저장 기능",
       "서버에 저장하지 않습니다",
@@ -71,12 +71,12 @@ const pages = [
   },
   {
     file: "app/terms/page.tsx",
-    path: "/terms",
+    path: "/terms/",
     h1: "이용약관",
     title: "이용약관 | 계산박스",
     description:
       "계산박스 서비스 이용 조건, 계산 결과 이용 범위, 콘텐츠 이용 제한 및 문의 방법을 안내합니다.",
-    canonical: "https://gyesanbox.kr/terms",
+    canonical: "https://gyesanbox.kr/terms/",
     required: [
       "계산 결과는 입력값과 표시된 기준에 따른 참고용",
       "참고자료로만 활용",
@@ -95,12 +95,12 @@ const pages = [
   },
   {
     file: "app/disclaimer/page.tsx",
-    path: "/disclaimer",
+    path: "/disclaimer/",
     h1: "면책문구",
     title: "면책문구 | 계산박스",
     description:
       "계산박스 계산 결과의 참고용 성격, 실제 적용 기준 차이, 공식 기관 확인 필요성을 안내합니다.",
-    canonical: "https://gyesanbox.kr/disclaimer",
+    canonical: "https://gyesanbox.kr/disclaimer/",
     required: [
       "모든 계산 결과는 참고용",
       "개인 상황, 법령, 기관 기준",
@@ -158,9 +158,9 @@ test("푸터에 정책 페이지 링크와 기존 연락처가 있다", async ()
 test("헤더에서 주요 탐색과 신뢰성 페이지로 이동할 수 있다", async () => {
   const source = await readFile("components/common/SiteHeader.tsx", "utf8");
 
-  assert.match(source, /href="\/calculators"/);
-  assert.match(source, /href="\/about"/);
-  assert.match(source, /href="\/contact"/);
+  assert.match(source, /href="\/calculators\/"/);
+  assert.match(source, /href="\/about\/"/);
+  assert.match(source, /href="\/contact\/"/);
   assert.match(source, /aria-label="주요 메뉴"/);
 });
 

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "계산박스의 개인정보 처리, 쿠키, 광고, 분석 도구 사용 가능성 및 문의 방법을 안내합니다.",
   alternates: {
-    canonical: "https://gyesanbox.kr/privacy-policy",
+    canonical: "https://gyesanbox.kr/privacy-policy/",
   },
 };
 

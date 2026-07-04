@@ -19,6 +19,31 @@ const requiredStaticFiles = [
   ],
 ];
 
+const forbiddenPrivateOutputPaths = [
+  "out/calculators/roas",
+  "out/calculators/labor-pay",
+  "out/calculators/vat-profit",
+  "out/calculators/parental-leave",
+  "out/calculators/rent-vs-jeonse",
+  "out/calculators/car-cost",
+  "out/calculators/savings",
+  "out/calculators/average-price",
+  "out/calculators/card-installment",
+  "out/calculators/overtime-pay",
+  "out/calculators/brokerage-fee",
+  "out/calculators/brokerage-fee.html",
+];
+
+const publicHtmlFilesWithoutPrivateRoutes = [
+  "out/index.html",
+  "out/calculators/index.html",
+  "out/calculators/seller-margin/index.html",
+  "out/calculators/salary/index.html",
+  "out/calculators/loan/index.html",
+  "out/calculators/severance/index.html",
+  "out/calculators/unemployment/index.html",
+];
+
 const forbiddenSourcePatterns = [
   {
     pattern: /["']use server["']/,
@@ -116,6 +141,34 @@ async function verifyStaticOutput() {
       html,
       new RegExp(expectedText),
       `${relativePath} does not contain its expected page content.`,
+    );
+  }
+
+  for (const relativePath of forbiddenPrivateOutputPaths) {
+    try {
+      await stat(path.join(projectRoot, relativePath));
+      assert.fail(`${relativePath} must not be emitted in the default export.`);
+    } catch (error) {
+      if (error && error.code === "ENOENT") {
+        continue;
+      }
+
+      throw error;
+    }
+  }
+
+  const sitemap = await readFile(path.join(projectRoot, "out/sitemap.xml"), "utf8");
+  assert.doesNotMatch(
+    sitemap,
+    /roas|labor-pay|vat-profit|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay/,
+  );
+
+  for (const relativePath of publicHtmlFilesWithoutPrivateRoutes) {
+    const html = await readFile(path.join(projectRoot, relativePath), "utf8");
+
+    assert.doesNotMatch(
+      html,
+      /roas|labor-pay|vat-profit|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|부동산 중개보수 계산기/,
     );
   }
 }

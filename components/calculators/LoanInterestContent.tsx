@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   loanInterestCalculationCriteria,
   loanInterestExampleInputItems,
@@ -192,20 +191,20 @@ export function LoanInterestContent() {
           <h2 id="related-title">관련 계산기</h2>
         </div>
         <div className={styles.relatedGrid}>
-          <Link
+          <a
             className={`${styles.relatedCard} ${styles.relatedLink}`}
-            href="/calculators/salary"
+            href="/calculators/salary/"
           >
             <h3>연봉 실수령액 계산기</h3>
             <p>월 급여 공제와 예상 실수령액을 함께 확인합니다.</p>
-          </Link>
-          <Link
+          </a>
+          <a
             className={`${styles.relatedCard} ${styles.relatedLink}`}
-            href="/calculators/seller-margin"
+            href="/calculators/seller-margin/"
           >
             <h3>판매자 마진 계산기</h3>
             <p>수수료와 비용을 반영한 예상 순이익을 계산합니다.</p>
-          </Link>
+          </a>
         </div>
       </section>
 

@@ -8,17 +8,17 @@ const sitemap = sitemapModule.default;
 
 const expectedUrls = [
   "https://gyesanbox.kr/",
-  "https://gyesanbox.kr/calculators",
-  "https://gyesanbox.kr/calculators/seller-margin",
-  "https://gyesanbox.kr/calculators/salary",
-  "https://gyesanbox.kr/calculators/loan",
-  "https://gyesanbox.kr/calculators/severance",
-  "https://gyesanbox.kr/calculators/unemployment",
-  "https://gyesanbox.kr/about",
-  "https://gyesanbox.kr/contact",
-  "https://gyesanbox.kr/privacy-policy",
-  "https://gyesanbox.kr/terms",
-  "https://gyesanbox.kr/disclaimer",
+  "https://gyesanbox.kr/calculators/",
+  "https://gyesanbox.kr/calculators/seller-margin/",
+  "https://gyesanbox.kr/calculators/salary/",
+  "https://gyesanbox.kr/calculators/loan/",
+  "https://gyesanbox.kr/calculators/severance/",
+  "https://gyesanbox.kr/calculators/unemployment/",
+  "https://gyesanbox.kr/about/",
+  "https://gyesanbox.kr/contact/",
+  "https://gyesanbox.kr/privacy-policy/",
+  "https://gyesanbox.kr/terms/",
+  "https://gyesanbox.kr/disclaimer/",
 ];
 
 test("sitemap은 운영 도메인과 구현 완료 페이지 및 정책 페이지 12개를 포함한다", () => {

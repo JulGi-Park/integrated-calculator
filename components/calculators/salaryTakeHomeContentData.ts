@@ -294,13 +294,13 @@ export const salaryTakeHomeBreadcrumbJsonLd = {
       "@type": "ListItem",
       position: 2,
       name: "계산기 목록",
-      item: "https://gyesanbox.kr/calculators",
+      item: "https://gyesanbox.kr/calculators/",
     },
     {
       "@type": "ListItem",
       position: 3,
       name: "연봉 실수령액 계산기",
-      item: "https://gyesanbox.kr/calculators/salary",
+      item: "https://gyesanbox.kr/calculators/salary/",
     },
   ],
 };

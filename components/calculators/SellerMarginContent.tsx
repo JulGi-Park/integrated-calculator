@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   sellerMarginExampleInput,
   sellerMarginExampleResult,
@@ -129,27 +128,27 @@ export function SellerMarginContent() {
           <h2 id="related-title">관련 계산기</h2>
         </div>
         <div className={styles.relatedGrid}>
-          <Link
+          <a
             className={`${styles.relatedCard} ${styles.relatedLink}`}
-            href="/calculators"
+            href="/calculators/"
           >
             <h3>전체 계산기 목록</h3>
             <p>현재 이용할 수 있는 계산기를 확인합니다.</p>
-          </Link>
-          <Link
+          </a>
+          <a
             className={`${styles.relatedCard} ${styles.relatedLink}`}
-            href="/calculators/loan"
+            href="/calculators/loan/"
           >
             <h3>대출 이자 계산기</h3>
             <p>사업 자금 대출의 월 납입액과 총이자를 비교합니다.</p>
-          </Link>
-          <Link
+          </a>
+          <a
             className={`${styles.relatedCard} ${styles.relatedLink}`}
-            href="/calculators/salary"
+            href="/calculators/salary/"
           >
             <h3>연봉 실수령액 계산기</h3>
             <p>급여 공제와 월 예상 실수령액을 함께 확인합니다.</p>
-          </Link>
+          </a>
         </div>
       </section>
 

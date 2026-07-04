@@ -6,17 +6,17 @@ export const dynamic = "force-static";
 
 const routes = [
   "/",
-  "/calculators",
-  "/calculators/seller-margin",
-  "/calculators/salary",
-  "/calculators/loan",
-  "/calculators/severance",
-  "/calculators/unemployment",
-  "/about",
-  "/contact",
-  "/privacy-policy",
-  "/terms",
-  "/disclaimer",
+  "/calculators/",
+  "/calculators/seller-margin/",
+  "/calculators/salary/",
+  "/calculators/loan/",
+  "/calculators/severance/",
+  "/calculators/unemployment/",
+  "/about/",
+  "/contact/",
+  "/privacy-policy/",
+  "/terms/",
+  "/disclaimer/",
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {

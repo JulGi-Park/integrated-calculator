@@ -15,11 +15,11 @@ const expectedSocialDescription =
   "계산박스는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 등 자주 찾는 계산기를 제공하는 온라인 계산기 모음입니다.";
 
 const calculators = [
-  ["판매자 마진 계산기", "/calculators/seller-margin", "https://gyesanbox.kr/calculators/seller-margin"],
-  ["연봉 실수령액 계산기", "/calculators/salary", "https://gyesanbox.kr/calculators/salary"],
-  ["대출 이자 계산기", "/calculators/loan", "https://gyesanbox.kr/calculators/loan"],
-  ["퇴직금 계산기", "/calculators/severance", "https://gyesanbox.kr/calculators/severance"],
-  ["실업급여 계산기", "/calculators/unemployment", "https://gyesanbox.kr/calculators/unemployment"],
+  ["판매자 마진 계산기", "/calculators/seller-margin/", "https://gyesanbox.kr/calculators/seller-margin/"],
+  ["연봉 실수령액 계산기", "/calculators/salary/", "https://gyesanbox.kr/calculators/salary/"],
+  ["대출 이자 계산기", "/calculators/loan/", "https://gyesanbox.kr/calculators/loan/"],
+  ["퇴직금 계산기", "/calculators/severance/", "https://gyesanbox.kr/calculators/severance/"],
+  ["실업급여 계산기", "/calculators/unemployment/", "https://gyesanbox.kr/calculators/unemployment/"],
 ];
 
 test("홈 메타데이터가 계산박스 운영 도메인 기준 SEO 정보를 가진다", () => {

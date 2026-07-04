@@ -28,9 +28,9 @@ export function PolicyPageLayout({
         <Link className="text-link" href="/">
           홈
         </Link>
-        <Link className="text-link" href="/contact">
+        <a className="text-link" href="/contact/">
           문의
-        </Link>
+        </a>
       </nav>
     </section>
   );

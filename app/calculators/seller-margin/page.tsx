@@ -17,10 +17,14 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  alternates: {
+    canonical: "https://gyesanbox.kr/calculators/seller-margin/",
+  },
   openGraph: {
     title: "판매자 마진 계산기 | 수수료·원가·순이익 계산",
     description:
       "판매단가, 수량, 개당 원가, 할인, 배송비, 플랫폼·결제 수수료와 광고비를 입력해 예상 정산금액과 세전 순이익을 계산합니다.",
+    url: "https://gyesanbox.kr/calculators/seller-margin/",
     type: "website",
   },
 };
@@ -56,9 +60,9 @@ export default function SellerMarginPage() {
       <SellerMarginContent />
 
       <nav className="link-row seller-margin-links" aria-label="페이지 이동">
-        <Link className="text-link" href="/calculators">
+        <a className="text-link" href="/calculators/">
           ← 계산기 목록
-        </Link>
+        </a>
         <Link className="text-link" href="/">
           홈으로
         </Link>

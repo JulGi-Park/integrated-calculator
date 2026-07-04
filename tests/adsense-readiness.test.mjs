@@ -10,17 +10,17 @@ const sourceRoots = ["app", "components", "lib", "public"];
 const sourceExtensions = new Set([".ts", ".tsx", ".txt"]);
 const routeFiles = [
   ["app/page.tsx", "/"],
-  ["app/calculators/page.tsx", "/calculators"],
-  ["app/calculators/seller-margin/page.tsx", "/calculators/seller-margin"],
-  ["app/calculators/salary/page.tsx", "/calculators/salary"],
-  ["app/calculators/loan/page.tsx", "/calculators/loan"],
-  ["app/calculators/severance/page.tsx", "/calculators/severance"],
-  ["app/calculators/unemployment/page.tsx", "/calculators/unemployment"],
-  ["app/about/page.tsx", "/about"],
-  ["app/contact/page.tsx", "/contact"],
-  ["app/privacy-policy/page.tsx", "/privacy-policy"],
-  ["app/terms/page.tsx", "/terms"],
-  ["app/disclaimer/page.tsx", "/disclaimer"],
+  ["app/calculators/page.tsx", "/calculators/"],
+  ["app/calculators/seller-margin/page.tsx", "/calculators/seller-margin/"],
+  ["app/calculators/salary/page.tsx", "/calculators/salary/"],
+  ["app/calculators/loan/page.tsx", "/calculators/loan/"],
+  ["app/calculators/severance/page.tsx", "/calculators/severance/"],
+  ["app/calculators/unemployment/page.tsx", "/calculators/unemployment/"],
+  ["app/about/page.tsx", "/about/"],
+  ["app/contact/page.tsx", "/contact/"],
+  ["app/privacy-policy/page.tsx", "/privacy-policy/"],
+  ["app/terms/page.tsx", "/terms/"],
+  ["app/disclaimer/page.tsx", "/disclaimer/"],
 ];
 
 async function listFiles(dir) {
@@ -66,7 +66,7 @@ test("sitemap URL은 실제 App Router 페이지와 일치한다", () => {
   const routeSet = new Set(routeFiles.map(([, route]) => route));
   const sitemapRoutes = sitemap().map((entry) => {
     const url = new URL(entry.url);
-    return url.pathname === "/" ? "/" : url.pathname.replace(/\/$/, "");
+    return url.pathname;
   });
 
   assert.deepEqual(sitemapRoutes, [...routeSet]);
@@ -82,7 +82,7 @@ test("정적 내부 링크는 실제 라우트만 가리킨다", async () => {
     const matches = source.matchAll(hrefPattern);
 
     for (const match of matches) {
-      const href = match[1].replace(/\/$/, "") || "/";
+      const href = match[1];
       assert.equal(
         routeSet.has(href),
         true,

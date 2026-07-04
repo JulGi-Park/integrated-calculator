@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
 
 export const metadata: Metadata = {
@@ -7,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "계산박스는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 등 생활·금융·근로 계산기를 제공하는 온라인 계산기 모음입니다.",
   alternates: {
-    canonical: "https://gyesanbox.kr/about",
+    canonical: "https://gyesanbox.kr/about/",
   },
 };
 
@@ -53,7 +52,7 @@ export default function AboutPage() {
           서비스 관련 문의는{" "}
           <a href="mailto:contact@gyesanbox.kr">contact@gyesanbox.kr</a> 로
           보내 주세요. 자세한 문의 항목은{" "}
-          <Link href="/contact">문의 페이지</Link>에서 확인할 수 있습니다.
+          <a href="/contact/">문의 페이지</a>에서 확인할 수 있습니다.
         </p>
       </section>
     </PolicyPageLayout>

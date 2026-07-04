@@ -22,9 +22,13 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  alternates: {
+    canonical: "https://gyesanbox.kr/calculators/salary/",
+  },
   openGraph: {
     title,
     description,
+    url: "https://gyesanbox.kr/calculators/salary/",
     type: "website",
   },
   twitter: {
@@ -75,9 +79,9 @@ export default function SalaryTakeHomePage() {
       <SalaryTakeHomeContent />
 
       <nav className="link-row seller-margin-links" aria-label="페이지 이동">
-        <Link className="text-link" href="/calculators">
+        <a className="text-link" href="/calculators/">
           ← 계산기 목록
-        </Link>
+        </a>
         <Link className="text-link" href="/">
           홈으로
         </Link>

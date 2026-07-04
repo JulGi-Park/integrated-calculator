@@ -328,13 +328,13 @@ export const severanceBreadcrumbJsonLd = {
       "@type": "ListItem",
       position: 2,
       name: "계산기 목록",
-      item: "https://gyesanbox.kr/calculators",
+      item: "https://gyesanbox.kr/calculators/",
     },
     {
       "@type": "ListItem",
       position: 3,
       name: "퇴직금 계산기",
-      item: "https://gyesanbox.kr/calculators/severance",
+      item: "https://gyesanbox.kr/calculators/severance/",
     },
   ],
 };
