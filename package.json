@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && npm run verify:cloudflare",
+    "build": "next build && node scripts/prune-private-routes.mjs && npm run verify:cloudflare",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "node --import ./tests/register-css.mjs --import tsx --test",

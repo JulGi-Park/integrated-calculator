@@ -133,3 +133,22 @@ test("프로덕션 빌드는 Cloudflare Pages 검증을 반드시 실행한다",
     "node scripts/verify-cloudflare-pages.mjs",
   );
 });
+
+test("카드 할부 계산기는 true 플래그에서만 렌더링되는 비공개 라우트다", async () => {
+  const source = await readFile(
+    "app/calculators/card-installment/page.tsx",
+    "utf8",
+  );
+
+  assert.match(
+    source,
+    /NEXT_PUBLIC_ENABLE_CARD_INSTALLMENT_CALCULATOR\s*===\s*"true"/,
+  );
+  assert.match(source, /notFound\(\)/);
+  assert.doesNotMatch(
+    source,
+    /NEXT_PUBLIC_ENABLE_CARD_INSTALLMENT_CALCULATOR\s*!==\s*"false"/,
+  );
+  assert.match(source, /CardInstallmentCalculator/);
+  assert.match(source, /robots:\s*{\s*index:\s*false,\s*follow:\s*false/s);
+});

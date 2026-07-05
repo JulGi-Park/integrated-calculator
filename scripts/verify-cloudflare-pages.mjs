@@ -19,6 +19,9 @@ const requiredStaticFiles = [
   ],
 ];
 
+const isCardInstallmentCalculatorEnabled =
+  process.env.NEXT_PUBLIC_ENABLE_CARD_INSTALLMENT_CALCULATOR === "true";
+
 const forbiddenPrivateOutputPaths = [
   "out/calculators/roas",
   "out/calculators/labor-pay",
@@ -28,7 +31,11 @@ const forbiddenPrivateOutputPaths = [
   "out/calculators/car-cost",
   "out/calculators/savings",
   "out/calculators/average-price",
-  "out/calculators/card-installment",
+  ...(
+    isCardInstallmentCalculatorEnabled
+      ? []
+      : ["out/calculators/card-installment"]
+  ),
   "out/calculators/overtime-pay",
   "out/calculators/brokerage-fee",
   "out/calculators/brokerage-fee.html",
