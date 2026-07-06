@@ -14,6 +14,11 @@ const title =
   "2026 연봉 실수령액 계산기 | 월급·4대보험·소득세 계산";
 const description =
   "연봉과 비과세액, 공제대상 가족 수를 입력해 2026년 국민연금·건강보험·고용보험·소득세를 반영한 월급 실수령액을 계산합니다.";
+const ogTitle = "연봉 실수령액 계산기 - 세금 공제 후 실제 월급 확인";
+const ogDescription =
+  "연봉을 입력하면 국민연금, 건강보험, 고용보험, 소득세 등을 반영해 예상 월 실수령액을 확인할 수 있습니다.";
+const ogUrl = "https://gyesanbox.kr/calculators/salary/";
+const ogImage = "https://gyesanbox.kr/og/salary.png";
 
 export const metadata: Metadata = {
   title,
@@ -23,18 +28,27 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: "https://gyesanbox.kr/calculators/salary/",
+    canonical: ogUrl,
   },
   openGraph: {
-    title,
-    description,
-    url: "https://gyesanbox.kr/calculators/salary/",
+    title: ogTitle,
+    description: ogDescription,
+    url: ogUrl,
     type: "website",
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: ogTitle,
+      },
+    ],
   },
   twitter: {
-    card: "summary",
-    title,
-    description,
+    card: "summary_large_image",
+    title: ogTitle,
+    description: ogDescription,
+    images: [ogImage],
   },
 };
 

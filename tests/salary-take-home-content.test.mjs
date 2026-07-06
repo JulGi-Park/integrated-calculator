@@ -36,17 +36,30 @@ test("연봉 계산기 전용 SEO 메타데이터를 대표 URL 기준으로 설
     "2026 연봉 실수령액 계산기 | 월급·4대보험·소득세 계산";
   const expectedDescription =
     "연봉과 비과세액, 공제대상 가족 수를 입력해 2026년 국민연금·건강보험·고용보험·소득세를 반영한 월급 실수령액을 계산합니다.";
+  const expectedOgTitle = "연봉 실수령액 계산기 - 세금 공제 후 실제 월급 확인";
+  const expectedOgDescription =
+    "연봉을 입력하면 국민연금, 건강보험, 고용보험, 소득세 등을 반영해 예상 월 실수령액을 확인할 수 있습니다.";
+  const expectedOgImage = "https://gyesanbox.kr/og/salary.png";
 
   assert.equal(metadata.title, expectedTitle);
   assert.equal(metadata.description, expectedDescription);
   assert.deepEqual(metadata.robots, { index: true, follow: true });
-  assert.equal(metadata.openGraph.title, expectedTitle);
-  assert.equal(metadata.openGraph.description, expectedDescription);
+  assert.equal(metadata.openGraph.title, expectedOgTitle);
+  assert.equal(metadata.openGraph.description, expectedOgDescription);
   assert.equal(metadata.openGraph.type, "website");
   assert.equal(metadata.openGraph.url, "https://gyesanbox.kr/calculators/salary/");
-  assert.equal(metadata.twitter.card, "summary");
-  assert.equal(metadata.twitter.title, expectedTitle);
-  assert.equal(metadata.twitter.description, expectedDescription);
+  assert.deepEqual(metadata.openGraph.images, [
+    {
+      url: expectedOgImage,
+      width: 1200,
+      height: 630,
+      alt: expectedOgTitle,
+    },
+  ]);
+  assert.equal(metadata.twitter.card, "summary_large_image");
+  assert.equal(metadata.twitter.title, expectedOgTitle);
+  assert.equal(metadata.twitter.description, expectedOgDescription);
+  assert.deepEqual(metadata.twitter.images, [expectedOgImage]);
   assert.deepEqual(metadata.alternates, {
     canonical: "https://gyesanbox.kr/calculators/salary/",
   });

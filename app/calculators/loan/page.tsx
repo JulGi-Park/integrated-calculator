@@ -14,6 +14,11 @@ const title =
   "대출 이자 계산기 | 원리금균등·원금균등·만기일시상환 비교";
 const description =
   "대출금액과 연이율, 기간을 입력해 월 납입액과 총이자를 계산하고 원리금균등·원금균등·만기일시상환 결과와 월별 일정을 비교해 보세요.";
+const ogTitle = "대출 이자 계산기 - 원리금·원금균등 상환액 확인";
+const ogDescription =
+  "대출금, 금리, 기간, 상환 방식을 입력하면 월 상환액과 총 이자 부담을 계산할 수 있습니다.";
+const ogUrl = "https://gyesanbox.kr/calculators/loan/";
+const ogImage = "https://gyesanbox.kr/og/loan.png";
 
 export const metadata: Metadata = {
   title,
@@ -23,18 +28,27 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: "https://gyesanbox.kr/calculators/loan/",
+    canonical: ogUrl,
   },
   openGraph: {
-    title,
-    description,
-    url: "https://gyesanbox.kr/calculators/loan/",
+    title: ogTitle,
+    description: ogDescription,
+    url: ogUrl,
     type: "website",
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: ogTitle,
+      },
+    ],
   },
   twitter: {
-    card: "summary",
-    title,
-    description,
+    card: "summary_large_image",
+    title: ogTitle,
+    description: ogDescription,
+    images: [ogImage],
   },
 };
 

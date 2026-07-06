@@ -9,23 +9,45 @@ import {
   sellerMarginWebApplicationJsonLd,
 } from "@/components/calculators/sellerMarginContentData";
 
+const title = "판매자 마진 계산기 | 수수료·원가·순이익 계산";
+const description =
+  "판매단가, 수량, 개당 원가, 할인, 배송비, 플랫폼·결제 수수료와 광고비를 입력해 예상 정산금액과 세전 순이익을 계산합니다.";
+const ogTitle =
+  "판매자 마진 계산기 - 판매가·수수료·원가 기준 순이익 확인";
+const ogDescription =
+  "판매가, 원가, 플랫폼 수수료, 배송비, 광고비를 입력하면 예상 마진율과 순이익을 계산할 수 있습니다.";
+const ogUrl = "https://gyesanbox.kr/calculators/seller-margin/";
+const ogImage = "https://gyesanbox.kr/og/seller-margin.png";
+
 export const metadata: Metadata = {
-  title: "판매자 마진 계산기 | 수수료·원가·순이익 계산",
-  description:
-    "판매단가, 수량, 개당 원가, 할인, 배송비, 플랫폼·결제 수수료와 광고비를 입력해 예상 정산금액과 세전 순이익을 계산합니다.",
+  title,
+  description,
   robots: {
     index: true,
     follow: true,
   },
   alternates: {
-    canonical: "https://gyesanbox.kr/calculators/seller-margin/",
+    canonical: ogUrl,
   },
   openGraph: {
-    title: "판매자 마진 계산기 | 수수료·원가·순이익 계산",
-    description:
-      "판매단가, 수량, 개당 원가, 할인, 배송비, 플랫폼·결제 수수료와 광고비를 입력해 예상 정산금액과 세전 순이익을 계산합니다.",
-    url: "https://gyesanbox.kr/calculators/seller-margin/",
+    title: ogTitle,
+    description: ogDescription,
+    url: ogUrl,
     type: "website",
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: ogTitle,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: ogTitle,
+    description: ogDescription,
+    images: [ogImage],
   },
 };
 

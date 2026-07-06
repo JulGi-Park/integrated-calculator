@@ -14,6 +14,11 @@ const title =
   "실업급여 계산기 2026 | 구직급여 상한액·하한액·수급기간 예상";
 const description =
   "실업급여 계산기로 퇴직 전 임금 기준 1일 구직급여액, 상한액·하한액 적용 여부, 고용보험 가입기간별 수급기간과 예상 총액을 확인하세요. 실제 지급 여부는 퇴직 사유, 이직확인서, 실업인정 절차에 따라 달라질 수 있습니다.";
+const ogTitle = "실업급여 계산기 - 구직급여 예상 금액·수급기간 확인";
+const ogDescription =
+  "퇴사 전 임금과 고용보험 가입 기간을 기준으로 실업급여 예상 금액과 수급기간을 확인할 수 있습니다.";
+const ogUrl = "https://gyesanbox.kr/calculators/unemployment/";
+const ogImage = "https://gyesanbox.kr/og/unemployment.png";
 
 export const metadata: Metadata = {
   title,
@@ -23,18 +28,27 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: "https://gyesanbox.kr/calculators/unemployment/",
+    canonical: ogUrl,
   },
   openGraph: {
-    title,
-    description,
-    url: "https://gyesanbox.kr/calculators/unemployment/",
+    title: ogTitle,
+    description: ogDescription,
+    url: ogUrl,
     type: "website",
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: ogTitle,
+      },
+    ],
   },
   twitter: {
-    card: "summary",
-    title,
-    description,
+    card: "summary_large_image",
+    title: ogTitle,
+    description: ogDescription,
+    images: [ogImage],
   },
 };
 

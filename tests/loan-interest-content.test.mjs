@@ -33,17 +33,30 @@ test("대출 계산기 전용 SEO 메타데이터를 대표 URL 기준으로 설
     "대출 이자 계산기 | 원리금균등·원금균등·만기일시상환 비교";
   const expectedDescription =
     "대출금액과 연이율, 기간을 입력해 월 납입액과 총이자를 계산하고 원리금균등·원금균등·만기일시상환 결과와 월별 일정을 비교해 보세요.";
+  const expectedOgTitle = "대출 이자 계산기 - 원리금·원금균등 상환액 확인";
+  const expectedOgDescription =
+    "대출금, 금리, 기간, 상환 방식을 입력하면 월 상환액과 총 이자 부담을 계산할 수 있습니다.";
+  const expectedOgImage = "https://gyesanbox.kr/og/loan.png";
 
   assert.equal(metadata.title, expectedTitle);
   assert.equal(metadata.description, expectedDescription);
   assert.deepEqual(metadata.robots, { index: true, follow: true });
-  assert.equal(metadata.openGraph.title, expectedTitle);
-  assert.equal(metadata.openGraph.description, expectedDescription);
+  assert.equal(metadata.openGraph.title, expectedOgTitle);
+  assert.equal(metadata.openGraph.description, expectedOgDescription);
   assert.equal(metadata.openGraph.type, "website");
   assert.equal(metadata.openGraph.url, "https://gyesanbox.kr/calculators/loan/");
-  assert.equal(metadata.twitter.card, "summary");
-  assert.equal(metadata.twitter.title, expectedTitle);
-  assert.equal(metadata.twitter.description, expectedDescription);
+  assert.deepEqual(metadata.openGraph.images, [
+    {
+      url: expectedOgImage,
+      width: 1200,
+      height: 630,
+      alt: expectedOgTitle,
+    },
+  ]);
+  assert.equal(metadata.twitter.card, "summary_large_image");
+  assert.equal(metadata.twitter.title, expectedOgTitle);
+  assert.equal(metadata.twitter.description, expectedOgDescription);
+  assert.deepEqual(metadata.twitter.images, [expectedOgImage]);
   assert.deepEqual(metadata.alternates, {
     canonical: "https://gyesanbox.kr/calculators/loan/",
   });

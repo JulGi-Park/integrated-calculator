@@ -13,6 +13,11 @@ import { SEVERANCE_POLICY_2026 } from "@/lib/calculators/severance/policy";
 const title = "퇴직금 계산기 | 평균임금·통상임금 기준 예상 퇴직금 계산";
 const description =
   "입사일, 퇴직일, 퇴직 전 3개월 임금과 상여금·연차수당을 입력해 평균임금·통상임금 기준 예상 퇴직금을 계산합니다.";
+const ogTitle = "퇴직금 계산기 - 평균임금 기준 예상 퇴직금 확인";
+const ogDescription =
+  "입사일, 퇴사일, 임금 정보를 입력하면 평균임금 기준의 예상 퇴직금을 계산할 수 있습니다.";
+const ogUrl = "https://gyesanbox.kr/calculators/severance/";
+const ogImage = "https://gyesanbox.kr/og/severance.png";
 
 export const metadata: Metadata = {
   title,
@@ -22,18 +27,27 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: "https://gyesanbox.kr/calculators/severance/",
+    canonical: ogUrl,
   },
   openGraph: {
-    title,
-    description,
-    url: "https://gyesanbox.kr/calculators/severance/",
+    title: ogTitle,
+    description: ogDescription,
+    url: ogUrl,
     type: "website",
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: ogTitle,
+      },
+    ],
   },
   twitter: {
-    card: "summary",
-    title,
-    description,
+    card: "summary_large_image",
+    title: ogTitle,
+    description: ogDescription,
+    images: [ogImage],
   },
 };
 
