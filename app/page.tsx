@@ -52,7 +52,7 @@ const servicePrinciples = [
   {
     title: "운영 문의 창구",
     description:
-      "계산 오류, 기준 변경, 출처 수정 요청은 contact@gyesanbox.kr 로 확인할 수 있습니다.",
+      "계산 오류, 기준 변경, 출처 수정 요청은 문의 페이지에서 확인할 수 있습니다.",
   },
 ] as const;
 
@@ -109,10 +109,9 @@ export default function Home() {
       "@type": "Organization",
       name: "계산박스",
       url: siteUrl,
-      email: "contact@gyesanbox.kr",
       contactPoint: {
         "@type": "ContactPoint",
-        email: "contact@gyesanbox.kr",
+        url: `${siteUrl}contact/`,
         contactType: "customer support",
         availableLanguage: "ko",
       },

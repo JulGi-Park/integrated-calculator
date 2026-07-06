@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ContactEmail } from "@/components/common/ContactEmail";
 import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
 
 const ogTitle = "면책사항 - 계산박스";
@@ -74,13 +75,19 @@ export default function DisclaimerPage() {
         <h2>문의</h2>
         <p>
           기준 오류나 계산 이상이 의심되는 경우{" "}
-          <a href="mailto:contact@gyesanbox.kr">contact@gyesanbox.kr</a> 로
+          <a href="/contact/">
+            <ContactEmail />
+          </a>
+          로
           알려 주세요.
         </p>
         <p>
           계산박스는 공식 기준과 출처를 확인해 콘텐츠를 작성하려고 노력합니다.
           저작권 또는 권리 침해 소지가 있는 내용이 있다면{" "}
-          <a href="mailto:contact@gyesanbox.kr">contact@gyesanbox.kr</a> 로
+          <a href="/contact/">
+            <ContactEmail />
+          </a>
+          로
           알려 주시면 확인 후 조치하겠습니다.
         </p>
         <p>시행일: 2026년 6월 25일</p>

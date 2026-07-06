@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ContactEmail } from "@/components/common/ContactEmail";
 import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
 
 const ogTitle = "문의하기 - 계산박스";
@@ -10,7 +11,7 @@ const ogImage = "https://gyesanbox.kr/og/contact.png";
 export const metadata: Metadata = {
   title: "문의 | 계산박스",
   description:
-    "계산박스 이용 중 계산 오류, 기준 정보, 사이트 이용 관련 문의는 contact@gyesanbox.kr 로 연락해 주세요.",
+    "계산박스 이용 중 계산 오류, 기준 정보, 사이트 이용 관련 문의 방법을 안내합니다.",
   alternates: {
     canonical: ogUrl,
   },
@@ -46,7 +47,7 @@ export default function ContactPage() {
       <section>
         <h2>공식 문의 이메일</h2>
         <p>
-          <a href="mailto:contact@gyesanbox.kr">contact@gyesanbox.kr</a>
+          <ContactEmail />
         </p>
       </section>
 

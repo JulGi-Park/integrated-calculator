@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ContactEmail } from "@/components/common/ContactEmail";
 import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
 
 const ogTitle = "이용약관 - 계산박스";
@@ -84,7 +85,10 @@ export default function TermsPage() {
         </p>
         <p>
           저작권 침해 또는 권리 침해 신고는{" "}
-          <a href="mailto:contact@gyesanbox.kr">contact@gyesanbox.kr</a> 로
+          <a href="/contact/">
+            <ContactEmail />
+          </a>
+          로
           접수해 주세요.
         </p>
       </section>
@@ -94,7 +98,10 @@ export default function TermsPage() {
         <p>
           계산박스는 사전 고지 없이 서비스의 일부를 변경하거나 중단할 수
           있습니다. 이용 관련 문의는{" "}
-          <a href="mailto:contact@gyesanbox.kr">contact@gyesanbox.kr</a> 로
+          <a href="/contact/">
+            <ContactEmail />
+          </a>
+          로
           보내 주세요.
         </p>
         <p>시행일: 2026년 6월 25일</p>

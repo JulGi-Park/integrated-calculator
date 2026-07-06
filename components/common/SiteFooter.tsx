@@ -1,4 +1,6 @@
 
+import { ContactEmail } from "@/components/common/ContactEmail";
+
 const footerLinks = [
   { href: "/about/", label: "소개" },
   { href: "/contact/", label: "문의" },
@@ -15,8 +17,8 @@ export function SiteFooter() {
           <p>계산박스</p>
           <p>
             문의:{" "}
-            <a className="site-footer__link" href="mailto:contact@gyesanbox.kr">
-              contact@gyesanbox.kr
+            <a className="site-footer__link" href="/contact/">
+              <ContactEmail />
             </a>
           </p>
           <p className="site-footer__copyright">

@@ -27,7 +27,7 @@ const pages = [
     h1: "문의",
     title: "문의 | 계산박스",
     description:
-      "계산박스 이용 중 계산 오류, 기준 정보, 사이트 이용 관련 문의는 contact@gyesanbox.kr 로 연락해 주세요.",
+      "계산박스 이용 중 계산 오류, 기준 정보, 사이트 이용 관련 문의 방법을 안내합니다.",
     canonical: "https://gyesanbox.kr/contact/",
     required: [
       "계산 오류 제보",
@@ -127,7 +127,7 @@ test("정책 페이지는 H1, SEO metadata, canonical과 연락처를 가진다"
     assert.match(source, new RegExp(`title:\\s*"${page.title}"`));
     assert.match(source, new RegExp(page.description.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     assert.match(source, new RegExp(page.canonical.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-    assert.match(source, /contact@gyesanbox\.kr/);
+    assert.match(source, /ContactEmail/);
 
     for (const text of page.required) {
       assert.match(source, new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
@@ -135,11 +135,11 @@ test("정책 페이지는 H1, SEO metadata, canonical과 연락처를 가진다"
   }
 });
 
-test("정책 페이지의 이메일 링크는 mailto를 사용한다", async () => {
+test("정책 페이지는 Cloudflare 이메일 보호 대상 mailto 링크를 사용하지 않는다", async () => {
   for (const page of pages) {
     const source = await readFile(page.file, "utf8");
 
-    assert.match(source, /href="mailto:contact@gyesanbox\.kr"/);
+    assert.doesNotMatch(source, /mailto:contact@gyesanbox\.kr|contact@gyesanbox\.kr/);
   }
 });
 
@@ -149,8 +149,8 @@ test("푸터에 정책 페이지 링크와 기존 연락처가 있다", async ()
   for (const page of pages) {
     assert.match(source, new RegExp(`href: "${page.path}"`));
   }
-  assert.match(source, /mailto:contact@gyesanbox\.kr/);
-  assert.match(source, /contact@gyesanbox\.kr/);
+  assert.match(source, /href="\/contact\/"/);
+  assert.match(source, /<ContactEmail \/>/);
   assert.match(source, /© 2026 계산박스\. All rights reserved\./);
   assert.match(source, /계산 결과는 참고용입니다/);
 });

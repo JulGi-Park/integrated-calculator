@@ -15,7 +15,8 @@ test("푸터에 저작권 문구와 정책 링크, 연락처가 함께 유지된
   ]) {
     assert.match(source, new RegExp(`href: "${path}"`));
   }
-  assert.match(source, /mailto:contact@gyesanbox\.kr/);
+  assert.match(source, /href="\/contact\/"/);
+  assert.match(source, /<ContactEmail \/>/);
 });
 
 test("문의 페이지는 권리 침해 신고와 출처 수정 요청을 안내한다", async () => {
@@ -23,7 +24,7 @@ test("문의 페이지는 권리 침해 신고와 출처 수정 요청을 안내
 
   assert.match(source, /저작권 침해 또는 권리 침해 신고/);
   assert.match(source, /출처 오류 또는 인용 정보 수정 요청/);
-  assert.match(source, /mailto:contact@gyesanbox\.kr/);
+  assert.match(source, /ContactEmail/);
 });
 
 test("이용약관은 저작권과 콘텐츠 이용 제한을 명확히 안내한다", async () => {
@@ -48,5 +49,5 @@ test("면책문구는 권리 침해 신고 안내를 포함한다", async () => 
   assert.match(source, /공식 기준과 출처를 확인해 콘텐츠를 작성/);
   assert.match(source, /저작권 또는 권리 침해 소지/);
   assert.match(source, /확인 후 조치/);
-  assert.match(source, /mailto:contact@gyesanbox\.kr/);
+  assert.match(source, /ContactEmail/);
 });

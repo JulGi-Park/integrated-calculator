@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ContactEmail } from "@/components/common/ContactEmail";
 import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
 
 const ogTitle = "개인정보처리방침 - 계산박스";
@@ -107,7 +108,10 @@ export default function PrivacyPolicyPage() {
         <p>
           서비스 기능이나 사용하는 외부 도구가 변경되면 개인정보처리방침도
           수정될 수 있습니다. 개인정보 관련 문의는{" "}
-          <a href="mailto:contact@gyesanbox.kr">contact@gyesanbox.kr</a> 로
+          <a href="/contact/">
+            <ContactEmail />
+          </a>
+          로
           보내 주세요.
         </p>
         <p>시행일: 2026년 6월 25일</p>

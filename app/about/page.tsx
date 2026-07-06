@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ContactEmail } from "@/components/common/ContactEmail";
 import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
 
 const ogTitle = "계산박스 소개 - 생활 계산을 쉽게";
@@ -76,7 +77,10 @@ export default function AboutPage() {
         <h2>운영 연락처</h2>
         <p>
           서비스 관련 문의는{" "}
-          <a href="mailto:contact@gyesanbox.kr">contact@gyesanbox.kr</a> 로
+          <a href="/contact/">
+            <ContactEmail />
+          </a>
+          로
           보내 주세요. 자세한 문의 항목은{" "}
           <a href="/contact/">문의 페이지</a>에서 확인할 수 있습니다.
         </p>
