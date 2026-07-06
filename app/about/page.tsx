@@ -1,12 +1,38 @@
 import type { Metadata } from "next";
 import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
 
+const ogTitle = "계산박스 소개 - 생활 계산을 쉽게";
+const ogDescription =
+  "계산박스는 실생활에 필요한 계산을 쉽고 빠르게 돕는 웹서비스입니다.";
+const ogUrl = "https://gyesanbox.kr/about/";
+const ogImage = "https://gyesanbox.kr/og/about.png";
+
 export const metadata: Metadata = {
   title: "계산박스 소개 | 계산박스",
   description:
     "계산박스는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 등 생활·금융·근로 계산기를 제공하는 온라인 계산기 모음입니다.",
   alternates: {
-    canonical: "https://gyesanbox.kr/about/",
+    canonical: ogUrl,
+  },
+  openGraph: {
+    title: ogTitle,
+    description: ogDescription,
+    url: ogUrl,
+    type: "website",
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: ogTitle,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: ogTitle,
+    description: ogDescription,
+    images: [ogImage],
   },
 };
 

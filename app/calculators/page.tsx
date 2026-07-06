@@ -1,14 +1,37 @@
 import type { Metadata } from "next";
 
+const ogTitle = "계산기 모음 - 연봉·대출·퇴직금·실업급여 계산";
+const ogDescription =
+  "계산박스에서 제공하는 생활 계산기 목록입니다. 필요한 계산기를 선택해 빠르게 확인해보세요.";
+const ogUrl = "https://gyesanbox.kr/calculators/";
+const ogImage = "https://gyesanbox.kr/og/calculators.png";
+
 export const metadata: Metadata = {
   title: "계산박스 계산기 목록",
   description:
     "계산박스에서 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 계산기를 확인하세요.",
   alternates: {
-    canonical: "https://gyesanbox.kr/calculators/",
+    canonical: ogUrl,
   },
   openGraph: {
-    url: "https://gyesanbox.kr/calculators/",
+    title: ogTitle,
+    description: ogDescription,
+    url: ogUrl,
+    type: "website",
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: ogTitle,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: ogTitle,
+    description: ogDescription,
+    images: [ogImage],
   },
 };
 

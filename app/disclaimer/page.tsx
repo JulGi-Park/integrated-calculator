@@ -1,12 +1,38 @@
 import type { Metadata } from "next";
 import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
 
+const ogTitle = "면책사항 - 계산박스";
+const ogDescription =
+  "계산박스의 계산 결과와 정보 제공 범위에 대한 면책 안내 페이지입니다.";
+const ogUrl = "https://gyesanbox.kr/disclaimer/";
+const ogImage = "https://gyesanbox.kr/og/policy.png";
+
 export const metadata: Metadata = {
   title: "면책문구 | 계산박스",
   description:
     "계산박스 계산 결과의 참고용 성격, 실제 적용 기준 차이, 공식 기관 확인 필요성을 안내합니다.",
   alternates: {
-    canonical: "https://gyesanbox.kr/disclaimer/",
+    canonical: ogUrl,
+  },
+  openGraph: {
+    title: ogTitle,
+    description: ogDescription,
+    url: ogUrl,
+    type: "website",
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: ogTitle,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: ogTitle,
+    description: ogDescription,
+    images: [ogImage],
   },
 };
 

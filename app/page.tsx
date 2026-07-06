@@ -5,8 +5,10 @@ const siteUrl = "https://gyesanbox.kr/";
 const homeTitle = "계산박스 | 생활·금융·근로 계산기 모음";
 const homeDescription =
   "계산박스는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 등 생활·금융·근로 계산을 한 곳에서 확인할 수 있는 온라인 계산기 모음입니다.";
-const socialDescription =
-  "계산박스는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 등 자주 찾는 계산기를 제공하는 온라인 계산기 모음입니다.";
+const ogTitle = "계산박스 - 생활 계산기 모음";
+const ogDescription =
+  "연봉, 대출, 퇴직금, 실업급여 등 실생활에 필요한 계산기를 한곳에서 확인할 수 있습니다.";
+const ogImage = "https://gyesanbox.kr/og/home.png";
 
 const calculators = [
   {
@@ -70,17 +72,26 @@ export const metadata: Metadata = {
     canonical: siteUrl,
   },
   openGraph: {
-    title: homeTitle,
-    description: socialDescription,
+    title: ogTitle,
+    description: ogDescription,
     url: siteUrl,
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: ogTitle,
+      },
+    ],
     siteName: "계산박스",
     type: "website",
     locale: "ko_KR",
   },
   twitter: {
-    card: "summary",
-    title: homeTitle,
-    description: socialDescription,
+    card: "summary_large_image",
+    title: ogTitle,
+    description: ogDescription,
+    images: [ogImage],
   },
 };
 

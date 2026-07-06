@@ -1,12 +1,38 @@
 import type { Metadata } from "next";
 import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
 
+const ogTitle = "문의하기 - 계산박스";
+const ogDescription =
+  "계산박스 서비스 관련 문의와 제안은 문의 페이지에서 확인할 수 있습니다.";
+const ogUrl = "https://gyesanbox.kr/contact/";
+const ogImage = "https://gyesanbox.kr/og/contact.png";
+
 export const metadata: Metadata = {
   title: "문의 | 계산박스",
   description:
     "계산박스 이용 중 계산 오류, 기준 정보, 사이트 이용 관련 문의는 contact@gyesanbox.kr 로 연락해 주세요.",
   alternates: {
-    canonical: "https://gyesanbox.kr/contact/",
+    canonical: ogUrl,
+  },
+  openGraph: {
+    title: ogTitle,
+    description: ogDescription,
+    url: ogUrl,
+    type: "website",
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: ogTitle,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: ogTitle,
+    description: ogDescription,
+    images: [ogImage],
   },
 };
 

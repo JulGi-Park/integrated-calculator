@@ -1,12 +1,37 @@
 import type { Metadata } from "next";
 import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
 
+const ogTitle = "이용약관 - 계산박스";
+const ogDescription = "계산박스 서비스 이용약관 안내 페이지입니다.";
+const ogUrl = "https://gyesanbox.kr/terms/";
+const ogImage = "https://gyesanbox.kr/og/policy.png";
+
 export const metadata: Metadata = {
   title: "이용약관 | 계산박스",
   description:
     "계산박스 서비스 이용 조건, 계산 결과 이용 범위, 콘텐츠 이용 제한 및 문의 방법을 안내합니다.",
   alternates: {
-    canonical: "https://gyesanbox.kr/terms/",
+    canonical: ogUrl,
+  },
+  openGraph: {
+    title: ogTitle,
+    description: ogDescription,
+    url: ogUrl,
+    type: "website",
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: ogTitle,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: ogTitle,
+    description: ogDescription,
+    images: [ogImage],
   },
 };
 

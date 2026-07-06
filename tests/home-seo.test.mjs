@@ -11,8 +11,10 @@ const metadata = homeModule.metadata;
 const expectedTitle = "계산박스 | 생활·금융·근로 계산기 모음";
 const expectedDescription =
   "계산박스는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 등 생활·금융·근로 계산을 한 곳에서 확인할 수 있는 온라인 계산기 모음입니다.";
-const expectedSocialDescription =
-  "계산박스는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 등 자주 찾는 계산기를 제공하는 온라인 계산기 모음입니다.";
+const expectedOgTitle = "계산박스 - 생활 계산기 모음";
+const expectedOgDescription =
+  "연봉, 대출, 퇴직금, 실업급여 등 실생활에 필요한 계산기를 한곳에서 확인할 수 있습니다.";
+const expectedOgImage = "https://gyesanbox.kr/og/home.png";
 
 const calculators = [
   ["판매자 마진 계산기", "/calculators/seller-margin/", "https://gyesanbox.kr/calculators/seller-margin/"],
@@ -35,15 +37,24 @@ test("홈 메타데이터가 계산박스 운영 도메인 기준 SEO 정보를 
     "실업급여 계산기",
   ]);
   assert.equal(metadata.alternates.canonical, "https://gyesanbox.kr/");
-  assert.equal(metadata.openGraph.title, expectedTitle);
-  assert.equal(metadata.openGraph.description, expectedSocialDescription);
+  assert.equal(metadata.openGraph.title, expectedOgTitle);
+  assert.equal(metadata.openGraph.description, expectedOgDescription);
   assert.equal(metadata.openGraph.url, "https://gyesanbox.kr/");
+  assert.deepEqual(metadata.openGraph.images, [
+    {
+      url: expectedOgImage,
+      width: 1200,
+      height: 630,
+      alt: expectedOgTitle,
+    },
+  ]);
   assert.equal(metadata.openGraph.siteName, "계산박스");
   assert.equal(metadata.openGraph.type, "website");
   assert.equal(metadata.openGraph.locale, "ko_KR");
-  assert.equal(metadata.twitter.card, "summary");
-  assert.equal(metadata.twitter.title, expectedTitle);
-  assert.equal(metadata.twitter.description, expectedSocialDescription);
+  assert.equal(metadata.twitter.card, "summary_large_image");
+  assert.equal(metadata.twitter.title, expectedOgTitle);
+  assert.equal(metadata.twitter.description, expectedOgDescription);
+  assert.deepEqual(metadata.twitter.images, [expectedOgImage]);
 });
 
 test("공통 metadataBase가 계산박스 운영 도메인을 기준으로 한다", async () => {

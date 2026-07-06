@@ -1,12 +1,37 @@
 import type { Metadata } from "next";
 import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
 
+const ogTitle = "개인정보처리방침 - 계산박스";
+const ogDescription = "계산박스의 개인정보처리방침 안내 페이지입니다.";
+const ogUrl = "https://gyesanbox.kr/privacy-policy/";
+const ogImage = "https://gyesanbox.kr/og/policy.png";
+
 export const metadata: Metadata = {
   title: "개인정보처리방침 | 계산박스",
   description:
     "계산박스의 개인정보 처리, 쿠키, 광고, 분석 도구 사용 가능성 및 문의 방법을 안내합니다.",
   alternates: {
-    canonical: "https://gyesanbox.kr/privacy-policy/",
+    canonical: ogUrl,
+  },
+  openGraph: {
+    title: ogTitle,
+    description: ogDescription,
+    url: ogUrl,
+    type: "website",
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: ogTitle,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: ogTitle,
+    description: ogDescription,
+    images: [ogImage],
   },
 };
 
