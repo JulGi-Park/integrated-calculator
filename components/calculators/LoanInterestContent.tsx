@@ -15,6 +15,40 @@ import styles from "./LoanInterestContent.module.css";
 export function LoanInterestContent() {
   return (
     <div className={styles.content}>
+      <section className={styles.section} aria-labelledby="use-case-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="use-case-title">언제 쓰는 계산기인가요?</h2>
+          <p>
+            대출 상담 전 월별 상환 부담을 미리 비교하거나, 같은 대출금액에서
+            상환방식에 따라 총이자와 현금흐름이 어떻게 달라지는지 확인할 때
+            사용합니다.
+          </p>
+        </div>
+        <div className={styles.cardGrid}>
+          <article className={styles.infoCard}>
+            <h3>입력값 안내</h3>
+            <p>
+              대출금액은 빌리는 원금, 연이율은 명목 연 금리, 기간은 상환 개월
+              수를 입력합니다. 거치기간이나 중도상환은 별도 반영하지 않습니다.
+            </p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>자주 틀리는 부분</h3>
+            <p>
+              첫 달 부담이 낮은 방식이 전체 이자까지 낮다는 뜻은 아닙니다.
+              만기일시상환은 마지막 달 원금 부담을 반드시 함께 봐야 합니다.
+            </p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>사용자 우선 안내</h3>
+            <p>
+              계산기는 상환 구조를 이해하도록 돕는 참고 도구이며, 특정 대출
+              상품이나 상환방식을 추천하지 않습니다.
+            </p>
+          </article>
+        </div>
+      </section>
+
       <section className={styles.section} aria-labelledby="quick-compare-title">
         <div className={styles.sectionHeading}>
           <h2 id="quick-compare-title">상환방식 빠른 비교</h2>

@@ -10,6 +10,41 @@ import styles from "./SellerMarginContent.module.css";
 export function SellerMarginContent() {
   return (
     <div className={styles.content}>
+      <section className={styles.section} aria-labelledby="use-case-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="use-case-title">언제 쓰는 계산기인가요?</h2>
+          <p>
+            온라인 판매자가 주문 1건 또는 특정 판매 묶음의 가격 구조를 점검할
+            때 사용합니다. 판매가가 충분해 보여도 원가, 할인, 배송비, 플랫폼
+            수수료와 결제 수수료를 함께 넣으면 실제 남는 금액이 달라질 수
+            있습니다.
+          </p>
+        </div>
+        <div className={styles.interpretationGrid}>
+          <article className={styles.infoCard}>
+            <h3>입력값 안내</h3>
+            <p>
+              판매단가와 수량은 매출 기준, 개당 원가와 배송비는 판매자가
+              부담하는 비용 기준으로 입력합니다.
+            </p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>자주 틀리는 부분</h3>
+            <p>
+              고객에게 받은 배송비와 판매자가 부담한 배송비를 같은 칸에 넣으면
+              정산금액과 비용이 섞여 결과가 왜곡됩니다.
+            </p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>사용자 우선 안내</h3>
+            <p>
+              계산기는 가격 결정의 근거를 정리하도록 돕는 참고 도구이며,
+              광고비 집행이나 판매 전략을 권유하지 않습니다.
+            </p>
+          </article>
+        </div>
+      </section>
+
       <section className={styles.section} aria-labelledby="interpretation-title">
         <div className={styles.sectionHeading}>
           <h2 id="interpretation-title">결과를 이렇게 해석하세요</h2>

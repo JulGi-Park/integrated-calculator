@@ -41,7 +41,10 @@ export default function CalculatorsPage() {
       <div className="page-heading">
         <p className="page-heading__eyebrow">Calculators</p>
         <h1>계산기 목록</h1>
-        <p>필요한 계산기를 선택해 시작하세요.</p>
+        <p>
+          현재 공개 운영 중인 계산기 5개만 모았습니다. 각 계산기는 입력값,
+          계산 기준, 결과 해석과 주의사항을 함께 제공합니다.
+        </p>
       </div>
 
       <div className="calculator-grid" role="list">
@@ -56,6 +59,10 @@ export default function CalculatorsPage() {
             <p>
               원리금균등·원금균등·만기일시상환의 이자와 월별 일정을
               비교합니다.
+            </p>
+            <p>
+              대표 입력값: 대출금액, 연이율, 기간 · 결과: 월 납입액,
+              총이자, 상환 일정
             </p>
           </div>
           <span className="calculator-card__arrow" aria-hidden="true">
@@ -75,6 +82,10 @@ export default function CalculatorsPage() {
               2026년 기준 4대보험과 간이세액표를 적용한 예상 실수령액을
               확인합니다.
             </p>
+            <p>
+              대표 입력값: 연봉, 월 비과세액, 가족 수 · 결과: 월 실수령액,
+              공제 항목별 금액
+            </p>
           </div>
           <span className="calculator-card__arrow" aria-hidden="true">
             →
@@ -90,6 +101,10 @@ export default function CalculatorsPage() {
             <span className="calculator-card__category">사업</span>
             <h2>판매자 마진 계산기</h2>
             <p>판매 비용을 바탕으로 마진과 순이익을 확인하는 계산기입니다.</p>
+            <p>
+              대표 입력값: 판매가, 수량, 원가, 수수료, 배송비 · 결과:
+              정산금액, 순이익, 순이익률
+            </p>
           </div>
           <span className="calculator-card__arrow" aria-hidden="true">
             →
@@ -108,6 +123,10 @@ export default function CalculatorsPage() {
               입사일과 퇴직 전 임금을 바탕으로 법정 퇴직금 예상액과 대상
               여부를 확인합니다.
             </p>
+            <p>
+              대표 입력값: 입사일, 퇴직일, 임금총액, 상여금 · 결과:
+              평균임금, 예상 퇴직금
+            </p>
           </div>
           <span className="calculator-card__arrow" aria-hidden="true">
             →
@@ -125,6 +144,10 @@ export default function CalculatorsPage() {
             <p>
               월급 또는 1일 평균임금과 고용보험 가입기간으로 예상 구직급여를
               계산합니다.
+            </p>
+            <p>
+              대표 입력값: 임금, 가입기간, 나이 구간, 퇴직 사유 · 결과:
+              1일 급여액, 지급일수, 총액
             </p>
           </div>
           <span className="calculator-card__arrow" aria-hidden="true">

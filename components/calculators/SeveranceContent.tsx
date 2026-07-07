@@ -19,6 +19,41 @@ function formatKoreanDate(value: string): string {
 export function SeveranceContent() {
   return (
     <div className={styles.content}>
+      <section className={styles.section} aria-labelledby="use-case-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="use-case-title">언제 쓰는 계산기인가요?</h2>
+          <p>
+            퇴사 전후에 법정 퇴직금의 기본 산식과 예상 금액을 확인하고 싶을
+            때 사용합니다. 계속근로기간, 주당 소정근로시간, 평균임금 산정
+            자료를 함께 보아야 하므로 입력 조건을 정확히 정리하는 것이
+            중요합니다.
+          </p>
+        </div>
+        <div className={styles.interpretationGrid}>
+          <article className={styles.infoCard}>
+            <h3>입력값 안내</h3>
+            <p>
+              퇴직일은 마지막 근무일 다음 날을 입력하고, 퇴직 전 3개월 임금과
+              최근 1년 상여금·연차수당은 세전 금액 기준으로 입력합니다.
+            </p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>자주 틀리는 부분</h3>
+            <p>
+              평균임금 산정기간, 통상임금 해당 여부, 제외기간, 퇴직연금 처리
+              방식은 사업장별 확인이 필요합니다.
+            </p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>사용자 우선 안내</h3>
+            <p>
+              결과는 예상 퇴직금을 이해하기 위한 참고값이며, 체불이나 분쟁
+              판단은 고용노동부 상담 또는 전문가 확인이 필요합니다.
+            </p>
+          </article>
+        </div>
+      </section>
+
       <section className={styles.section} aria-labelledby="interpretation-title">
         <div className={styles.sectionHeading}>
           <h2 id="interpretation-title">결과를 이렇게 해석하세요</h2>

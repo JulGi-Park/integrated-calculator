@@ -23,6 +23,41 @@ export function SalaryTakeHomeContent() {
 
   return (
     <div className={styles.content}>
+      <section className={styles.section} aria-labelledby="use-case-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="use-case-title">언제 쓰는 계산기인가요?</h2>
+          <p>
+            연봉 제안, 이직 검토, 월 예산 계획처럼 세전 연봉이 실제 월급으로
+            어느 정도 바뀌는지 가늠할 때 사용합니다. 입력값은 일반 근로자의
+            예상 공제액을 계산하기 위한 조건이며 개인별 급여명세서와 다를 수
+            있습니다.
+          </p>
+        </div>
+        <div className={styles.interpretationGrid}>
+          <article className={styles.infoCard}>
+            <h3>입력값 안내</h3>
+            <p>
+              연봉은 퇴직금을 제외한 세전 금액, 월 비과세액은 급여명세서에
+              매월 비과세로 표시되는 금액을 입력합니다.
+            </p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>자주 틀리는 부분</h3>
+            <p>
+              공제대상 가족 수는 본인을 포함하며, 자녀 수는 간이세액표 기준의
+              요건을 만족하는 자녀만 입력해야 합니다.
+            </p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>사용자 우선 안내</h3>
+            <p>
+              결과는 급여 협상이나 생활비 계획을 돕기 위한 참고값이며, 회사의
+              확정 급여명세서나 세무 신고 자료를 대신하지 않습니다.
+            </p>
+          </article>
+        </div>
+      </section>
+
       <section className={styles.section} aria-labelledby="interpretation-title">
         <div className={styles.sectionHeading}>
           <h2 id="interpretation-title">결과를 이렇게 해석하세요</h2>

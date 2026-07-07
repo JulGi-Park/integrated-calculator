@@ -15,26 +15,36 @@ const calculators = [
     name: "판매자 마진 계산기",
     href: "/calculators/seller-margin/",
     url: "https://gyesanbox.kr/calculators/seller-margin/",
+    description:
+      "판매단가, 원가, 배송비, 수수료를 넣어 주문 기준 정산금액과 세전 순이익을 확인합니다.",
   },
   {
     name: "연봉 실수령액 계산기",
     href: "/calculators/salary/",
     url: "https://gyesanbox.kr/calculators/salary/",
+    description:
+      "연봉, 비과세액, 공제대상 가족 수를 바탕으로 월 예상 실수령액과 공제 내역을 계산합니다.",
   },
   {
     name: "대출 이자 계산기",
     href: "/calculators/loan/",
     url: "https://gyesanbox.kr/calculators/loan/",
+    description:
+      "대출금액, 연이율, 기간을 입력해 상환방식별 월 납입액과 총이자를 비교합니다.",
   },
   {
     name: "퇴직금 계산기",
     href: "/calculators/severance/",
     url: "https://gyesanbox.kr/calculators/severance/",
+    description:
+      "입사일, 퇴직일, 임금 정보를 기준으로 평균임금과 예상 퇴직금을 계산합니다.",
   },
   {
     name: "실업급여 계산기",
     href: "/calculators/unemployment/",
     url: "https://gyesanbox.kr/calculators/unemployment/",
+    description:
+      "퇴직 전 임금과 고용보험 가입기간으로 예상 구직급여액과 소정급여일수를 확인합니다.",
   },
 ] as const;
 
@@ -43,6 +53,11 @@ const servicePrinciples = [
     title: "계산 기준 공개",
     description:
       "각 계산기 본문에 계산식, 기준일, 자동 반영되지 않는 항목을 함께 정리합니다.",
+  },
+  {
+    title: "브라우저 중심 계산",
+    description:
+      "입력값은 계산 결과를 보여주기 위해 브라우저에서 처리되며, 로그인이나 서버 저장 없이 이용할 수 있습니다.",
   },
   {
     title: "참고용 결과 안내",
@@ -149,8 +164,10 @@ export default function Home() {
         <h1>계산박스</h1>
         <p className="hero__description">
           판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여처럼
-          자주 필요한 계산기를 빠르게 찾아보세요. 각 계산기는 입력값 기준의
-          예상 결과와 계산 기준, 유의사항을 함께 제공합니다.
+          자주 필요한 무료 계산 도구를 빠르게 찾아보세요. 각 계산기는
+          입력값 기준의 예상 결과와 계산 기준, 입력값 설명, 유의사항을 함께
+          제공하며 실제 지급·청구·정산 금액과 차이가 있을 수 있음을
+          분명히 안내합니다.
         </p>
         <a className="button button--primary" href="/calculators/">
           계산기 목록 보기
@@ -165,8 +182,11 @@ export default function Home() {
         </div>
         <div className="home-calculators__links">
           {calculators.map((calculator) => (
-            <a key={calculator.href} href={calculator.href}>
-              {calculator.name}
+            <a className="calculator-card" key={calculator.href} href={calculator.href}>
+              <div>
+                <h3>{calculator.name}</h3>
+                <p>{calculator.description}</p>
+              </div>
             </a>
           ))}
         </div>

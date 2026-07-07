@@ -22,6 +22,41 @@ function formatKoreanDate(value: string): string {
 export function UnemploymentContent() {
   return (
     <div className={styles.content}>
+      <section className={styles.section} aria-labelledby="use-case-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="use-case-title">언제 쓰는 계산기인가요?</h2>
+          <p>
+            퇴사 후 구직급여 예상 금액과 지급일수를 미리 가늠하고, 신청 전
+            확인해야 할 고용보험 이력과 퇴직 사유를 정리할 때 사용합니다.
+            실제 수급 여부는 계산 결과가 아니라 고용센터 심사와 실업인정
+            절차로 결정됩니다.
+          </p>
+        </div>
+        <div className={styles.interpretationGrid}>
+          <article className={styles.infoCard}>
+            <h3>입력값 안내</h3>
+            <p>
+              월급 기준은 월급을 30으로 나눈 간편 추정이며, 퇴직 전 1일
+              평균임금을 알고 있다면 직접 입력 방식이 더 적합합니다.
+            </p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>자주 틀리는 부분</h3>
+            <p>
+              고용보험 가입 개월 수만으로 피보험 단위기간 180일 충족을
+              단정할 수 없고, 자발적 퇴사는 증빙과 고용센터 판단이 필요합니다.
+            </p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>사용자 우선 안내</h3>
+            <p>
+              계산기는 금액 구조를 이해하도록 돕는 참고 도구이며, 수급자격이나
+              지급일을 확정하지 않습니다.
+            </p>
+          </article>
+        </div>
+      </section>
+
       <section className={styles.section} aria-labelledby="precheck-title">
         <div className={styles.sectionHeading}>
           <h2 id="precheck-title">실업급여 계산 전 먼저 확인할 항목</h2>
