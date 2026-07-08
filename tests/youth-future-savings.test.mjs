@@ -1,0 +1,206 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import test from "node:test";
+import {
+  calculateYouthFutureSavings,
+  isYouthFutureSavingsEnabled,
+  YOUTH_FUTURE_SAVINGS_POLICY,
+} from "../lib/calculators/youth-future-savings/index.ts";
+import {
+  youthFutureSavingsFaqJsonLd,
+  youthFutureSavingsFaqs,
+} from "../components/calculators/youthFutureSavingsContentData.ts";
+
+test("청년미래적금 대표 계산 케이스를 계산한다", () => {
+  const response = calculateYouthFutureSavings({
+    monthlyDeposit: 500_000,
+    termMonths: 36,
+    annualInterestRate: 7,
+    contributionType: "standard",
+    taxType: "taxFree",
+  });
+
+  assert.equal(response.success, true);
+
+  if (!response.success) {
+    return;
+  }
+
+  assert.equal(response.data.totalPrincipal, 18_000_000);
+  assert.equal(response.data.grossInterest, 1_942_500);
+  assert.equal(response.data.interestTax, 0);
+  assert.equal(response.data.taxSaving, 299_145);
+  assert.equal(response.data.governmentContribution, 1_080_000);
+  assert.equal(response.data.maturityAmount, 21_022_500);
+  assert.equal(response.data.averageMonthlyBenefit, 83_958);
+});
+
+test("일반과세와 우대형 정부기여금을 구분한다", () => {
+  const response = calculateYouthFutureSavings({
+    monthlyDeposit: 500_000,
+    termMonths: 36,
+    annualInterestRate: 7,
+    contributionType: "preferred",
+    taxType: "taxable",
+  });
+
+  assert.equal(response.success, true);
+
+  if (!response.success) {
+    return;
+  }
+
+  assert.equal(response.data.governmentContribution, 2_160_000);
+  assert.equal(response.data.interestTax, 299_145);
+  assert.equal(response.data.taxSaving, 0);
+  assert.equal(response.data.maturityAmount, 21_803_355);
+});
+
+test("직접 입력 정부기여금을 계산한다", () => {
+  const rateResponse = calculateYouthFutureSavings({
+    monthlyDeposit: 200_000,
+    termMonths: 12,
+    annualInterestRate: 5,
+    contributionType: "customRate",
+    customContributionRate: 10,
+    taxType: "taxFree",
+  });
+  const monthlyResponse = calculateYouthFutureSavings({
+    monthlyDeposit: 200_000,
+    termMonths: 12,
+    annualInterestRate: 5,
+    contributionType: "customMonthly",
+    customMonthlyContribution: 25_000,
+    taxType: "taxFree",
+  });
+
+  assert.equal(rateResponse.success, true);
+  assert.equal(monthlyResponse.success, true);
+
+  if (rateResponse.success) {
+    assert.equal(rateResponse.data.governmentContribution, 240_000);
+  }
+  if (monthlyResponse.success) {
+    assert.equal(monthlyResponse.data.governmentContribution, 300_000);
+  }
+});
+
+test("입력 오류와 경계값을 방어한다", () => {
+  const response = calculateYouthFutureSavings({
+    monthlyDeposit: 500_001,
+    termMonths: 37,
+    annualInterestRate: 31,
+    contributionType: "customRate",
+    customContributionRate: -1,
+    taxType: "taxFree",
+  });
+
+  assert.equal(response.success, false);
+
+  if (response.success) {
+    return;
+  }
+
+  assert.deepEqual(
+    response.errors.map((error) => error.code),
+    [
+      "MONTHLY_DEPOSIT_EXCEEDS_LIMIT",
+      "TERM_EXCEEDS_LIMIT",
+      "RATE_EXCEEDS_LIMIT",
+      "MUST_BE_NON_NEGATIVE",
+    ],
+  );
+});
+
+test("NaN과 Infinity 입력을 거부한다", () => {
+  const response = calculateYouthFutureSavings({
+    monthlyDeposit: Number.NaN,
+    termMonths: Number.POSITIVE_INFINITY,
+    annualInterestRate: 7,
+    contributionType: "standard",
+    taxType: "taxFree",
+  });
+
+  assert.equal(response.success, false);
+
+  if (!response.success) {
+    assert.match(
+      response.errors.map((error) => error.message).join(" "),
+      /숫자|개월 수/,
+    );
+  }
+});
+
+test("비공개 플래그는 정확히 문자열 true에서만 활성화된다", () => {
+  const originalValue =
+    process.env[YOUTH_FUTURE_SAVINGS_POLICY.flagName];
+
+  try {
+    for (const value of ["TRUE", "yes", "1", "0", "false", ""]) {
+      process.env[YOUTH_FUTURE_SAVINGS_POLICY.flagName] = value;
+      assert.equal(isYouthFutureSavingsEnabled(), false);
+    }
+
+    delete process.env[YOUTH_FUTURE_SAVINGS_POLICY.flagName];
+    assert.equal(isYouthFutureSavingsEnabled(), false);
+
+    process.env[YOUTH_FUTURE_SAVINGS_POLICY.flagName] = "true";
+    assert.equal(isYouthFutureSavingsEnabled(), true);
+  } finally {
+    if (originalValue === undefined) {
+      delete process.env[YOUTH_FUTURE_SAVINGS_POLICY.flagName];
+    } else {
+      process.env[YOUTH_FUTURE_SAVINGS_POLICY.flagName] = originalValue;
+    }
+  }
+});
+
+test("라우트는 비공개 플래그와 notFound 가드를 가진다", async () => {
+  const source = await readFile(
+    "app/calculators/youth-future-savings/page.tsx",
+    "utf8",
+  );
+
+  assert.match(source, /isYouthFutureSavingsEnabled/);
+  assert.match(source, /notFound\(\)/);
+  assert.match(source, /index:\s*false/);
+});
+
+test("sitemap, 목록, 공개 페이지에는 청년미래적금 계산기를 노출하지 않는다", async () => {
+  const files = [
+    "app/sitemap.ts",
+    "app/page.tsx",
+    "app/calculators/page.tsx",
+    "app/calculators/salary/page.tsx",
+    "app/calculators/loan/page.tsx",
+    "app/calculators/seller-margin/page.tsx",
+    "app/calculators/severance/page.tsx",
+    "app/calculators/unemployment/page.tsx",
+  ];
+
+  const sources = await Promise.all(files.map((file) => readFile(file, "utf8")));
+
+  for (const source of sources) {
+    assert.doesNotMatch(source, /youth-future-savings|청년미래적금 계산기/);
+  }
+});
+
+test("Cloudflare 검증은 청년미래적금 산출물을 비공개 산출물로 차단한다", async () => {
+  const source = await readFile("scripts/verify-cloudflare-pages.mjs", "utf8");
+
+  assert.match(source, /out\/calculators\/youth-future-savings/);
+  assert.match(source, /youth-future-savings/);
+});
+
+test("FAQ 화면 데이터와 FAQPage JSON-LD 데이터가 일치한다", () => {
+  assert.deepEqual(
+    youthFutureSavingsFaqJsonLd.mainEntity.map((item) => ({
+      question: item.name,
+      answer: item.acceptedAnswer.text,
+    })),
+    youthFutureSavingsFaqs.map((faq) => ({
+      question: faq.question,
+      answer: faq.answer,
+    })),
+  );
+});

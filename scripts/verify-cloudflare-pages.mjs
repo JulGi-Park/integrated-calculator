@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readdir, readFile, stat } from "node:fs/promises";
+import { readdir, readFile, rm, stat } from "node:fs/promises";
 import path from "node:path";
 
 const projectRoot = process.cwd();
@@ -32,6 +32,8 @@ const forbiddenPrivateOutputPaths = [
   "out/calculators/overtime-pay",
   "out/calculators/brokerage-fee",
   "out/calculators/brokerage-fee.html",
+  "out/calculators/youth-future-savings",
+  "out/calculators/youth-future-savings.html",
 ];
 
 const publicHtmlFilesWithoutPrivateRoutes = [
@@ -160,7 +162,7 @@ async function verifyStaticOutput() {
   const sitemap = await readFile(path.join(projectRoot, "out/sitemap.xml"), "utf8");
   assert.doesNotMatch(
     sitemap,
-    /roas|labor-pay|vat-profit|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay/,
+    /roas|labor-pay|vat-profit|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings/,
   );
 
   for (const relativePath of publicHtmlFilesWithoutPrivateRoutes) {
@@ -168,13 +170,33 @@ async function verifyStaticOutput() {
 
     assert.doesNotMatch(
       html,
-      /roas|labor-pay|vat-profit|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|부동산 중개보수 계산기/,
+      /roas|labor-pay|vat-profit|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|부동산 중개보수 계산기|청년미래적금 계산기/,
     );
+  }
+}
+
+async function prunePrivateStaticOutput() {
+  const allowedRoot = path.resolve(projectRoot, "out", "calculators");
+
+  for (const relativePath of forbiddenPrivateOutputPaths) {
+    const absolutePath = path.resolve(projectRoot, relativePath);
+
+    if (
+      absolutePath !== allowedRoot &&
+      !absolutePath.startsWith(`${allowedRoot}${path.sep}`)
+    ) {
+      throw new Error(
+        `Refusing to prune outside calculators output: ${relativePath}`,
+      );
+    }
+
+    await rm(absolutePath, { recursive: true, force: true });
   }
 }
 
 await verifyNextConfig();
 await verifySourceCompatibility();
+await prunePrivateStaticOutput();
 await verifyStaticOutput();
 
 console.log("Cloudflare Pages static export verification passed.");
