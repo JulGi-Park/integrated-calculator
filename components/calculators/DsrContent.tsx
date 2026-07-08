@@ -87,8 +87,8 @@ export function DsrContent() {
           ))}
         </ul>
         <p className={styles.muted}>
-          계산 결과는 참고용이며 대출 가능 확정이나 승인 보장을 의미하지
-          않습니다.
+          계산 결과는 참고용이며 대출 실행이나 금융기관 심사 통과를 단정할
+          수 없습니다.
         </p>
       </section>
     </div>

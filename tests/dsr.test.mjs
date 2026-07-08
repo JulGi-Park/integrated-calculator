@@ -182,3 +182,20 @@ test("공식 출처와 기준일, 면책 문구를 콘텐츠에 포함한다", a
   assert.match(constantsSource, /금융위원회/);
   assert.match(contentSource, /실제 금융기관 심사 결과와 다를 수 있습니다/);
 });
+
+test("DSR 콘텐츠와 결과 해석은 대출 승인 확정 표현을 사용하지 않는다", async () => {
+  const files = [
+    "app/calculators/dsr/page.tsx",
+    "components/calculators/DsrCalculator.tsx",
+    "components/calculators/DsrContent.tsx",
+    "components/calculators/dsrContentData.ts",
+    "lib/calculators/dsr/calculateDsr.ts",
+  ];
+  const source = (await Promise.all(files.map((file) => readFile(file, "utf8"))))
+    .join("\n");
+
+  assert.doesNotMatch(
+    source,
+    /대출 가능 확정|승인 가능|승인 보장|무조건 가능|은행 심사와 동일/,
+  );
+});
