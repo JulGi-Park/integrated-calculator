@@ -56,6 +56,78 @@ test("일반과세와 우대형 정부기여금을 구분한다", () => {
   assert.equal(response.data.maturityAmount, 21_803_355);
 });
 
+test("금융위원회 공식 예시와 현재 단순 계산식의 차이를 구분한다", () => {
+  const cases = [
+    {
+      input: {
+        monthlyDeposit: 500_000,
+        termMonths: 36,
+        annualInterestRate: 7,
+        contributionType: "standard",
+        taxType: "taxFree",
+      },
+      officialApproxMaturityAmount: 21_100_000,
+      expectedMaturityAmount: 21_022_500,
+      expectedGrossInterest: 1_942_500,
+    },
+    {
+      input: {
+        monthlyDeposit: 500_000,
+        termMonths: 36,
+        annualInterestRate: 7,
+        contributionType: "preferred",
+        taxType: "taxFree",
+      },
+      officialApproxMaturityAmount: 22_270_000,
+      expectedMaturityAmount: 22_102_500,
+      expectedGrossInterest: 1_942_500,
+    },
+    {
+      input: {
+        monthlyDeposit: 500_000,
+        termMonths: 36,
+        annualInterestRate: 8,
+        contributionType: "standard",
+        taxType: "taxFree",
+      },
+      officialApproxMaturityAmount: 21_380_000,
+      expectedMaturityAmount: 21_300_000,
+      expectedGrossInterest: 2_220_000,
+    },
+    {
+      input: {
+        monthlyDeposit: 500_000,
+        termMonths: 36,
+        annualInterestRate: 8,
+        contributionType: "preferred",
+        taxType: "taxFree",
+      },
+      officialApproxMaturityAmount: 22_550_000,
+      expectedMaturityAmount: 22_380_000,
+      expectedGrossInterest: 2_220_000,
+    },
+  ];
+
+  for (const {
+    input,
+    officialApproxMaturityAmount,
+    expectedMaturityAmount,
+    expectedGrossInterest,
+  } of cases) {
+    const response = calculateYouthFutureSavings(input);
+
+    assert.equal(response.success, true);
+
+    if (!response.success) {
+      continue;
+    }
+
+    assert.equal(response.data.maturityAmount, expectedMaturityAmount);
+    assert.equal(response.data.grossInterest, expectedGrossInterest);
+    assert.notEqual(response.data.maturityAmount, officialApproxMaturityAmount);
+  }
+});
+
 test("직접 입력 정부기여금을 계산한다", () => {
   const rateResponse = calculateYouthFutureSavings({
     monthlyDeposit: 200_000,
@@ -203,4 +275,15 @@ test("FAQ 화면 데이터와 FAQPage JSON-LD 데이터가 일치한다", () => 
       answer: faq.answer,
     })),
   );
+});
+
+test("화면 설명은 공식 예시와 다른 단순 계산 기준을 명시한다", async () => {
+  const source = await readFile(
+    "components/calculators/youthFutureSavingsContentData.ts",
+    "utf8",
+  );
+
+  assert.match(source, /정부기여금의 지급 시점과 별도 이자 효과를 반영하지 않습니다/);
+  assert.match(source, /보도자료의 예시는 약식 표기/);
+  assert.match(source, /월 납입 원금의 단리 예상 이자와 정부기여금 원금을 분리/);
 });
