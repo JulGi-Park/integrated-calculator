@@ -34,6 +34,8 @@ const forbiddenPrivateOutputPaths = [
   "out/calculators/brokerage-fee.html",
   "out/calculators/youth-future-savings",
   "out/calculators/youth-future-savings.html",
+  "out/calculators/dsr",
+  "out/calculators/dsr.html",
 ];
 
 const publicHtmlFilesWithoutPrivateRoutes = [
@@ -162,7 +164,7 @@ async function verifyStaticOutput() {
   const sitemap = await readFile(path.join(projectRoot, "out/sitemap.xml"), "utf8");
   assert.doesNotMatch(
     sitemap,
-    /roas|labor-pay|vat-profit|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings/,
+    /roas|labor-pay|vat-profit|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|\/calculators\/dsr/,
   );
 
   for (const relativePath of publicHtmlFilesWithoutPrivateRoutes) {
@@ -170,7 +172,7 @@ async function verifyStaticOutput() {
 
     assert.doesNotMatch(
       html,
-      /roas|labor-pay|vat-profit|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|부동산 중개보수 계산기|청년미래적금 계산기/,
+      /roas|labor-pay|vat-profit|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|\/calculators\/dsr|부동산 중개보수 계산기|청년미래적금 계산기|DSR 계산기 2026/,
     );
   }
 }
