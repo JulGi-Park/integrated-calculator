@@ -104,5 +104,16 @@ export function validateWorkChildIncentiveInput(
     });
   }
 
+  if (
+    input.householdType === "singleIncome" &&
+    isFiniteNumber(input.spouseSalary) &&
+    input.spouseSalary >= 3_000_000
+  ) {
+    errors.push({
+      field: "spouseSalary",
+      message: "배우자 총급여액 등 300만원 이상이면 맞벌이가구 기준을 확인해 주세요.",
+    });
+  }
+
   return errors;
 }

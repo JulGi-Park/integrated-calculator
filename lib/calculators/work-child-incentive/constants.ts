@@ -4,7 +4,7 @@ export const WORK_CHILD_INCENTIVE_POLICY = {
   year: 2026,
   incomeYear: 2025,
   verifiedAt: "2026-07-08",
-  flagName: "NEXT_PUBLIC_ENABLE_WORK_CHILD_INCENTIVE_CALCULATOR",
+  flagName: "NEXT_PUBLIC_ENABLE_WORK_CHILD_INCENTIVE",
   workIncomeLimits: {
     single: 22_000_000,
     singleIncome: 32_000_000,

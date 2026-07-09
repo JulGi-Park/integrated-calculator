@@ -166,6 +166,33 @@ test("NaN, Infinity, 0, 음수, 과도한 입력값을 방어한다", () => {
   }
 });
 
+test("배우자 급여 기준과 가구 유형 불일치를 방어한다", () => {
+  const dualIncomeResponse = calculateWorkChildIncentive({
+    ...baseInput,
+    householdType: "dualIncome",
+    spouseSalary: 2_999_999,
+  });
+  const singleIncomeResponse = calculateWorkChildIncentive({
+    ...baseInput,
+    householdType: "singleIncome",
+    spouseSalary: 3_000_000,
+  });
+
+  assert.equal(dualIncomeResponse.success, false);
+  assert.equal(singleIncomeResponse.success, false);
+
+  if (!dualIncomeResponse.success && !singleIncomeResponse.success) {
+    assert.match(
+      dualIncomeResponse.errors.map((error) => error.message).join(" "),
+      /300만원 이상/,
+    );
+    assert.match(
+      singleIncomeResponse.errors.map((error) => error.message).join(" "),
+      /맞벌이가구 기준/,
+    );
+  }
+});
+
 test("계산 결과는 음수가 되지 않는다", () => {
   const result = calculate({
     totalIncome: 69_900_000,
@@ -183,6 +210,11 @@ test("비공개 플래그는 정확히 문자열 true에서만 활성화된다",
   const originalValue = process.env[WORK_CHILD_INCENTIVE_POLICY.flagName];
 
   try {
+    assert.equal(
+      WORK_CHILD_INCENTIVE_POLICY.flagName,
+      "NEXT_PUBLIC_ENABLE_WORK_CHILD_INCENTIVE",
+    );
+
     for (const value of ["TRUE", "yes", "1", "0", "false", ""]) {
       process.env[WORK_CHILD_INCENTIVE_POLICY.flagName] = value;
       assert.equal(isWorkChildIncentiveCalculatorEnabled(), false);
@@ -260,7 +292,7 @@ test("공식 출처와 기준일, 면책 문구를 콘텐츠에 포함한다", a
   assert.match(contentSource, /실제 지급 여부와 지급액은 국세청 심사 결과에 따라 달라질 수 있습니다/);
 });
 
-test("확정 지급으로 오해될 수 있는 표현을 사용하지 않는다", async () => {
+test("확정성으로 오해될 수 있는 표현을 사용하지 않는다", async () => {
   const files = [
     "app/calculators/work-child-incentive/page.tsx",
     "components/calculators/WorkChildIncentiveCalculator.tsx",
@@ -269,9 +301,19 @@ test("확정 지급으로 오해될 수 있는 표현을 사용하지 않는다"
     "lib/calculators/work-child-incentive/calculateWorkChildIncentive.ts",
   ];
   const source = (await Promise.all(files.map((file) => readFile(file, "utf8")))).join("\n");
+  const forbiddenPatterns = [
+    ["지급", "확정"].join("\\s*"),
+    ["신청", "가능", "확정"].join("\\s*"),
+    "무조건\\s*받을\\s*수\\s*있음",
+    "받을\\s*수\\s*있습니다",
+    ["확정", "지급액"].join("\\s*"),
+    ["국세청", "지급액과", "동일"].join("\\s*"),
+    ["심사", "통과"].join("\\s*"),
+    "보" + "장",
+  ];
 
   assert.doesNotMatch(
     source,
-    /지급 확정|신청 가능 확정|무조건 받을 수 있음|받을 수 있습니다/,
+    new RegExp(forbiddenPatterns.join("|")),
   );
 });
