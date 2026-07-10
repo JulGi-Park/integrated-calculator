@@ -11,6 +11,8 @@ import {
   sellerMarginFaqJsonLd,
   sellerMarginFaqs,
   sellerMarginFormulas,
+  sellerMarginPolicyCheckedAt,
+  sellerMarginSources,
   sellerMarginWebApplicationJsonLd,
 } from "../components/calculators/sellerMarginContentData.ts";
 import { calculateSellerMargin } from "../lib/calculators/seller-margin/seller-margin.ts";
@@ -51,6 +53,8 @@ test("실제 엔진과 일치하는 12개 계산식을 모두 표시한다", () 
   assert.match(contentSource, /sellerMarginFormulas\.map/);
   assert.match(contentSource, /각 수수료를 원 단위로 반올림/);
   assert.match(contentSource, /비율은 소수점 둘째 자리까지/);
+  assert.equal(sellerMarginPolicyCheckedAt, "2026년 6월 18일");
+  assert.match(contentSource, /기준 확인일은/);
 });
 
 test("고정 계산 예시 입력과 결과를 화면에 정확히 표시한다", () => {
@@ -112,7 +116,30 @@ test("결과 해석, 제외 항목과 면책 문구를 정적으로 표시한다
   }
 
   assert.match(contentSource, /sellerMarginExclusions\.map/);
+  assert.match(contentSource, /실제 정산·신고 금액과 달라지는 이유/);
+  assert.match(contentSource, /플랫폼 정산 기준/);
+  assert.match(contentSource, /세금 신고 기준/);
+  assert.match(contentSource, /비용 배분 기준/);
   assert.match(contentSource, /세무 신고나 회계 판단을 위한 확정 자료가/);
+});
+
+test("판매자 마진 페이지는 공식 참고 출처와 확인 기준일을 제공한다", () => {
+  assert.equal(sellerMarginSources.length, 3);
+  assert.match(contentSource, /sellerMarginSources\.map/);
+  assert.match(contentSource, /참고 출처/);
+  assert.match(contentSource, /판매 플랫폼별 수수료와 정산 내역/);
+
+  for (const source of sellerMarginSources) {
+    assert.ok(source.organization.length > 0);
+    assert.ok(source.criterion.length > 0);
+    assert.equal(source.checkedAt, sellerMarginPolicyCheckedAt);
+    assert.match(source.href, /^https:\/\//);
+  }
+
+  assert.deepEqual(
+    sellerMarginSources.map(({ organization }) => organization),
+    ["국세청", "국세청", "공정거래위원회"],
+  );
 });
 
 test("화면에 FAQ 8개와 동일한 질문·답변을 표시한다", () => {

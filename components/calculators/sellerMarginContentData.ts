@@ -14,6 +14,16 @@ export interface SellerMarginFaq {
   answer: string;
 }
 
+export interface SellerMarginSource {
+  organization: string;
+  title: string;
+  criterion: string;
+  checkedAt: string;
+  href: string;
+}
+
+export const sellerMarginPolicyCheckedAt = "2026년 6월 18일";
+
 export const sellerMarginExampleInput: SellerMarginContentItem[] = [
   { label: "판매단가", value: "5,000원" },
   { label: "판매수량", value: "100개" },
@@ -139,6 +149,33 @@ export const sellerMarginFaqs: SellerMarginFaq[] = [
     question: "적자 결과가 나오는 이유는 무엇인가요?",
     answer:
       "예상 정산금액보다 상품 원가, 판매자 부담 배송비, 광고비와 기타 비용의 합계가 크면 적자로 표시됩니다. 입력한 할인금액과 수수료율이 높아져도 예상 순이익이 감소할 수 있습니다.",
+  },
+];
+
+export const sellerMarginSources: SellerMarginSource[] = [
+  {
+    organization: "국세청",
+    title: "부가가치세 기본정보",
+    criterion:
+      "판매 마진 계산 결과에 부가가치세 신고·납부와 과세유형별 세액 계산이 자동 반영되지 않는다는 안내",
+    checkedAt: sellerMarginPolicyCheckedAt,
+    href: "https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7693&mi=2272",
+  },
+  {
+    organization: "국세청",
+    title: "종합소득세 기본정보",
+    criterion:
+      "사업소득 계산은 수입금액과 필요경비, 장부 기장 여부 등에 따라 달라질 수 있다는 안내",
+    checkedAt: sellerMarginPolicyCheckedAt,
+    href: "https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7664&mi=2224",
+  },
+  {
+    organization: "공정거래위원회",
+    title: "통신판매사업자 정보공개",
+    criterion:
+      "온라인 판매 사업자의 사업자 정보와 플랫폼 거래 환경을 별도로 확인해야 한다는 안내",
+    checkedAt: sellerMarginPolicyCheckedAt,
+    href: "https://www.ftc.go.kr/www/selectBizCommList.do?key=254",
   },
 ];
 

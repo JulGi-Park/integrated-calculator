@@ -4,6 +4,8 @@ import {
   sellerMarginExclusions,
   sellerMarginFaqs,
   sellerMarginFormulas,
+  sellerMarginPolicyCheckedAt,
+  sellerMarginSources,
 } from "./sellerMarginContentData";
 import styles from "./SellerMarginContent.module.css";
 
@@ -82,7 +84,8 @@ export function SellerMarginContent() {
           <h2 id="formula-title">계산 기준과 계산식</h2>
           <p>
             수수료율은 퍼센트 단위로 입력하며, 각 수수료를 원 단위로 반올림한
-            뒤 정산금액과 순이익을 계산합니다.
+            뒤 정산금액과 순이익을 계산합니다. 기준 확인일은{" "}
+            {sellerMarginPolicyCheckedAt}입니다.
           </p>
         </div>
         <dl className={styles.formulaList}>
@@ -144,6 +147,41 @@ export function SellerMarginContent() {
         </ul>
       </section>
 
+      <section className={styles.section} aria-labelledby="difference-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="difference-title">실제 정산·신고 금액과 달라지는 이유</h2>
+          <p>
+            이 계산기는 주문 단위의 세전 예상 순이익을 계산합니다. 실제 플랫폼
+            정산액, 부가가치세 신고, 종합소득세 또는 법인세 신고 금액은 서로
+            다른 기준을 사용하므로 결과가 같지 않을 수 있습니다.
+          </p>
+        </div>
+        <div className={styles.interpretationGrid}>
+          <article className={styles.infoCard}>
+            <h3>플랫폼 정산 기준</h3>
+            <p>
+              카테고리별 수수료, 쿠폰 분담, 광고 상품, 반품·환불, 정산 보류와
+              정산 주기에 따라 실제 지급액이 달라질 수 있습니다.
+            </p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>세금 신고 기준</h3>
+            <p>
+              부가가치세, 종합소득세, 법인세는 매출·매입·필요경비와 사업자
+              유형을 따로 판단하므로 이 계산기의 순이익과 직접 일치하지
+              않습니다.
+            </p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>비용 배분 기준</h3>
+            <p>
+              광고비, 포장비, 보관료처럼 주문별로 나누기 어려운 비용은 사용자가
+              정한 배분 방식에 따라 입력값과 결과가 달라집니다.
+            </p>
+          </article>
+        </div>
+      </section>
+
       <section className={styles.section} aria-labelledby="faq-title">
         <div className={styles.sectionHeading}>
           <h2 id="faq-title">자주 묻는 질문</h2>
@@ -156,6 +194,33 @@ export function SellerMarginContent() {
             </details>
           ))}
         </div>
+      </section>
+
+      <section className={styles.section} aria-labelledby="sources-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="sources-title">참고 출처</h2>
+          <p>
+            {sellerMarginPolicyCheckedAt}에 아래 공식 기관 자료를 확인했습니다.
+            판매 플랫폼별 수수료와 정산 내역은 각 플랫폼 판매자센터의 최신
+            공지를 함께 확인해야 합니다.
+          </p>
+        </div>
+        <ul className={styles.sourceList}>
+          {sellerMarginSources.map(
+            ({ organization, title, criterion, checkedAt, href }) => (
+              <li key={href}>
+                <div>
+                  <strong>{organization}</strong>
+                  <span>{criterion}</span>
+                  <span>확인 기준일: {checkedAt}</span>
+                </div>
+                <a href={href} target="_blank" rel="noopener noreferrer">
+                  {title} 원문 보기
+                </a>
+              </li>
+            ),
+          )}
+        </ul>
       </section>
 
       <section className={styles.section} aria-labelledby="related-title">
