@@ -10,6 +10,10 @@ const routes = [
     "판매자 마진 계산기 | 수수료·원가·순이익 계산",
   ],
   [
+    "app/calculators/vat-profit/page.tsx",
+    "부가세 계산기 | 공급가액·합계금액 부가가치세 계산",
+  ],
+  [
     "app/calculators/salary/page.tsx",
     "2026 연봉 실수령액 계산기 | 월급·4대보험·소득세 계산",
   ],
@@ -104,6 +108,22 @@ test("판매자 마진 페이지는 계산기 UI를 제공한다", async () => {
 
   assert.match(source, /SellerMarginCalculator/);
   assert.doesNotMatch(source, /계산 기능 준비 중/);
+});
+
+test("부가세 계산기 페이지와 목록 링크가 실제 UI를 제공한다", async () => {
+  const [pageSource, listSource, sellerMarginContent] = await Promise.all([
+    readFile("app/calculators/vat-profit/page.tsx", "utf8"),
+    readFile("app/calculators/page.tsx", "utf8"),
+    readFile("components/calculators/SellerMarginContent.tsx", "utf8"),
+  ]);
+
+  assert.match(pageSource, /VatProfitCalculator/);
+  assert.match(pageSource, /<h1>부가세 계산기<\/h1>/);
+  assert.match(pageSource, /JsonLdScripts/);
+  assert.doesNotMatch(pageSource, /notFound\(\)|계산 기능 준비 중/);
+  assert.match(listSource, /href="\/calculators\/vat-profit\/"/);
+  assert.match(listSource, /부가세 계산기/);
+  assert.match(sellerMarginContent, /href="\/calculators\/vat-profit\/"/);
 });
 
 test("대출 이자 계산기 페이지와 목록 링크가 실제 UI를 제공한다", async () => {

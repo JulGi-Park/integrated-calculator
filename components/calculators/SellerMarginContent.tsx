@@ -237,10 +237,10 @@ export function SellerMarginContent() {
           </a>
           <a
             className={`${styles.relatedCard} ${styles.relatedLink}`}
-            href="/calculators/loan/"
+            href="/calculators/vat-profit/"
           >
-            <h3>대출 이자 계산기</h3>
-            <p>사업 자금 대출의 월 납입액과 총이자를 비교합니다.</p>
+            <h3>부가세 계산기</h3>
+            <p>공급가액과 매입세액 기준 예상 부가세를 따로 확인합니다.</p>
           </a>
           <a
             className={`${styles.relatedCard} ${styles.relatedLink}`}

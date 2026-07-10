@@ -14,6 +14,10 @@ const requiredStaticFiles = [
     "판매 조건을 입력하세요",
   ],
   [
+    "out/calculators/vat-profit/index.html",
+    "부가세 계산기",
+  ],
+  [
     "out/calculators/unemployment/index.html",
     "실업급여 계산기",
   ],
@@ -29,7 +33,6 @@ const requiredStaticFiles = [
 
 const forbiddenPrivateOutputPaths = [
   "out/calculators/roas",
-  "out/calculators/vat-profit",
   "out/calculators/dsr",
   "out/calculators/parental-leave",
   "out/calculators/rent-vs-jeonse",
@@ -48,6 +51,7 @@ const publicHtmlFilesWithoutPrivateRoutes = [
   "out/index.html",
   "out/calculators/index.html",
   "out/calculators/seller-margin/index.html",
+  "out/calculators/vat-profit/index.html",
   "out/calculators/salary/index.html",
   "out/calculators/loan/index.html",
   "out/calculators/severance/index.html",
@@ -172,7 +176,7 @@ async function verifyStaticOutput() {
   const sitemap = await readFile(path.join(projectRoot, "out/sitemap.xml"), "utf8");
   assert.doesNotMatch(
     sitemap,
-    /roas|vat-profit|dsr|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|work-child-incentive/,
+    /roas|dsr|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|work-child-incentive/,
   );
 
   for (const relativePath of publicHtmlFilesWithoutPrivateRoutes) {
@@ -180,7 +184,7 @@ async function verifyStaticOutput() {
 
     assert.doesNotMatch(
       html,
-      /roas|vat-profit|dsr|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|work-child-incentive|부동산 중개보수 계산기/,
+      /roas|dsr|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|work-child-incentive|부동산 중개보수 계산기/,
     );
   }
 }

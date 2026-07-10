@@ -4,10 +4,10 @@ import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 const siteUrl = "https://gyesanbox.kr/";
 const homeTitle = "계산박스 | 생활·금융·근로 계산기 모음";
 const homeDescription =
-  "계산박스는 판매자 마진, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여 등 급여·금융·사업 계산을 한 곳에서 확인할 수 있는 참고용 계산 서비스입니다.";
+  "계산박스는 판매자 마진, 부가세, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여 등 급여·금융·사업 계산을 한 곳에서 확인할 수 있는 참고용 계산 서비스입니다.";
 const ogTitle = "계산박스 - 생활 계산기 모음";
 const ogDescription =
-  "연봉, 4대보험, 주휴수당, 대출, 퇴직금, 실업급여 등 실생활에 필요한 계산기를 한곳에서 확인할 수 있습니다.";
+  "부가세, 연봉, 4대보험, 주휴수당, 대출, 퇴직금, 실업급여 등 실생활에 필요한 계산기를 한곳에서 확인할 수 있습니다.";
 const ogImage = "https://gyesanbox.kr/og/home.png";
 
 const calculators = [
@@ -17,6 +17,13 @@ const calculators = [
     url: "https://gyesanbox.kr/calculators/seller-margin/",
     description:
       "판매가, 원가, 수수료, 배송비를 기준으로 주문별 예상 마진과 세전 순이익을 확인할 때 사용합니다.",
+  },
+  {
+    name: "부가세 계산기",
+    href: "/calculators/vat-profit/",
+    url: "https://gyesanbox.kr/calculators/vat-profit/",
+    description:
+      "공급가액 또는 합계금액을 기준으로 매출세액과 매입세액 차감 후 예상 납부세액을 확인할 때 사용합니다.",
   },
   {
     name: "연봉 실수령액 계산기",
@@ -97,6 +104,7 @@ export const metadata: Metadata = {
     "계산박스",
     "계산기",
     "판매자 마진 계산기",
+    "부가세 계산기",
     "연봉 실수령액 계산기",
     "4대보험 계산기",
     "주휴수당 계산기",
@@ -184,7 +192,7 @@ export default function Home() {
         <div className="hero__eyebrow">생활과 사업에 필요한 계산을 한곳에서</div>
         <h1>계산박스</h1>
         <p className="hero__description">
-          판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여처럼
+          판매자 마진, 부가세, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여처럼
           자주 필요한 무료 계산 도구를 빠르게 찾아보세요. 각 계산기는
           입력값 기준의 예상 결과와 계산 기준, 입력값 설명, 유의사항을 함께
           제공합니다. 입력한 값은 서버에 저장하지 않으며, 결과는 실제

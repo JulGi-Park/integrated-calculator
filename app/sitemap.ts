@@ -8,6 +8,7 @@ const routes = [
   "/",
   "/calculators/",
   "/calculators/seller-margin/",
+  "/calculators/vat-profit/",
   "/calculators/salary/",
   "/calculators/social-insurance/",
   "/calculators/labor-pay/",
