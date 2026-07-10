@@ -10,6 +10,7 @@ const routes = [
   "/calculators/seller-margin/",
   "/calculators/salary/",
   "/calculators/social-insurance/",
+  "/calculators/labor-pay/",
   "/calculators/loan/",
   "/calculators/severance/",
   "/calculators/unemployment/",

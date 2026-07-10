@@ -197,6 +197,13 @@ export function SalaryTakeHomeContent() {
           </a>
           <a
             className={`${styles.relatedCard} ${styles.relatedLink}`}
+            href="/calculators/labor-pay/"
+          >
+            <h3>주휴수당 계산기</h3>
+            <p>시급과 소정근로시간 기준 예상 주휴수당을 계산합니다.</p>
+          </a>
+          <a
+            className={`${styles.relatedCard} ${styles.relatedLink}`}
             href="/calculators/severance/"
           >
             <h3>퇴직금 계산기</h3>

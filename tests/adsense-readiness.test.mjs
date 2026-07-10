@@ -14,6 +14,7 @@ const routeFiles = [
   ["app/calculators/seller-margin/page.tsx", "/calculators/seller-margin/"],
   ["app/calculators/salary/page.tsx", "/calculators/salary/"],
   ["app/calculators/social-insurance/page.tsx", "/calculators/social-insurance/"],
+  ["app/calculators/labor-pay/page.tsx", "/calculators/labor-pay/"],
   ["app/calculators/loan/page.tsx", "/calculators/loan/"],
   ["app/calculators/severance/page.tsx", "/calculators/severance/"],
   ["app/calculators/unemployment/page.tsx", "/calculators/unemployment/"],

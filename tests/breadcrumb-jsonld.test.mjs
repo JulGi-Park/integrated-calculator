@@ -5,6 +5,7 @@ import { salaryTakeHomeBreadcrumbJsonLd } from "../components/calculators/salary
 import { sellerMarginBreadcrumbJsonLd } from "../components/calculators/sellerMarginContentData.ts";
 import { severanceBreadcrumbJsonLd } from "../components/calculators/severanceContentData.ts";
 import { socialInsuranceBreadcrumbJsonLd } from "../components/calculators/socialInsuranceContentData.ts";
+import { laborPayBreadcrumbJsonLd } from "../components/calculators/laborPayContentData.ts";
 import { unemploymentBreadcrumbJsonLd } from "../components/calculators/unemploymentContentData.ts";
 
 const expectedBreadcrumbs = [
@@ -42,6 +43,15 @@ const expectedBreadcrumbs = [
       ["홈", "https://gyesanbox.kr/"],
       ["계산기 목록", "https://gyesanbox.kr/calculators/"],
       ["2026 4대보험 계산기", "https://gyesanbox.kr/calculators/social-insurance/"],
+    ],
+  },
+  {
+    name: "labor-pay",
+    data: laborPayBreadcrumbJsonLd,
+    items: [
+      ["홈", "https://gyesanbox.kr/"],
+      ["계산기 목록", "https://gyesanbox.kr/calculators/"],
+      ["주휴수당 계산기", "https://gyesanbox.kr/calculators/labor-pay/"],
     ],
   },
   {

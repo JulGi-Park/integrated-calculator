@@ -1,0 +1,434 @@
+.calculator {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+  gap: 24px;
+  align-items: start;
+  min-width: 0;
+}
+
+.formCard,
+.resultCard {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 18px 50px rgba(35, 57, 43, 0.06);
+}
+
+.formCard,
+.resultCard {
+  padding: 28px;
+}
+
+.resultCard {
+  position: sticky;
+  top: 24px;
+}
+
+.cardHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 24px;
+  min-width: 0;
+}
+
+.cardHeading h2,
+.cardHeading p {
+  margin: 0;
+}
+
+.cardHeading h2 {
+  font-size: 1.55rem;
+}
+
+.cardHeading > p {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.step {
+  margin-bottom: 6px !important;
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 16px;
+}
+
+.field {
+  min-width: 0;
+}
+
+.field:is(fieldset) {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.fieldFull {
+  grid-column: 1 / -1;
+}
+
+.field label,
+.fieldLegend {
+  display: block;
+  margin-bottom: 7px;
+  color: #38433c;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.inputShell {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  border: 1px solid #cfd6d0;
+  border-radius: 11px;
+  background: #fff;
+}
+
+.inputShell:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(35, 97, 68, 0.12);
+}
+
+.inputShellError {
+  border-color: #b33c35;
+}
+
+.inputShell input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  padding: 11px 4px 11px 13px;
+  color: var(--text);
+  background: transparent;
+  font: inherit;
+}
+
+.inputShell span {
+  flex: 0 0 auto;
+  padding: 0 13px 0 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.segmentButton,
+.smallButton,
+.calculateButton,
+.resetButton,
+.textButton {
+  border-radius: 11px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.segmentButton {
+  min-height: 44px;
+  border: 1px solid #cfd6d0;
+  color: #445047;
+  background: #fff;
+  white-space: normal;
+}
+
+.segmentButtonActive {
+  border-color: var(--accent);
+  color: #fff;
+  background: var(--accent);
+}
+
+.helper {
+  margin: 7px 2px 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.fieldError {
+  margin: 6px 2px 0;
+  color: #9f302b;
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  color: #38433c;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.checkboxRow input {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.calculateButton,
+.resetButton,
+.smallButton,
+.textButton {
+  min-height: 48px;
+  border: 0;
+  padding: 0 18px;
+}
+
+.calculateButton {
+  color: #fff;
+  background: var(--accent);
+}
+
+.resetButton,
+.smallButton,
+.textButton {
+  border: 1px solid #cfd6d0;
+  color: #445047;
+  background: #fff;
+}
+
+.smallButton {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.resultLive {
+  min-height: 420px;
+}
+
+.emptyResult {
+  display: grid;
+  min-height: 300px;
+  place-content: center;
+  justify-items: center;
+  color: var(--muted);
+  text-align: center;
+}
+
+.emptyResult p {
+  max-width: 100%;
+  margin: 14px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.emptyResult span {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border-radius: 18px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.staleNotice,
+.warning {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.staleNotice {
+  color: #735113;
+  background: #fff4d9;
+}
+
+.warning {
+  color: #7b3c09;
+  background: #fff0dd;
+}
+
+.primaryResult {
+  padding: 24px;
+  border-radius: 16px;
+  background: #f2f6f3;
+}
+
+.status {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.eligible {
+  color: #17603e;
+  background: #dceee3;
+}
+
+.ineligible {
+  color: #982f2a;
+  background: #f8e1df;
+}
+
+.primaryResult p {
+  margin: 20px 0 2px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.primaryResult strong {
+  display: block;
+  font-size: 2rem;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.resultList,
+.detailList {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0 0;
+}
+
+.resultList div,
+.detailList div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #edf1ee;
+}
+
+.resultList dt,
+.detailList dt {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.resultList dd,
+.detailList dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  text-align: right;
+  font-weight: 800;
+}
+
+.reasonList {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding-left: 18px;
+  color: #7a2f2a;
+  font-size: 0.84rem;
+}
+
+.resultActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.actionMessage {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 860px) {
+  .calculator {
+    grid-template-columns: 1fr;
+  }
+
+  .resultCard {
+    position: static;
+  }
+}
+
+@media (max-width: 560px) {
+  .formCard,
+  .resultCard {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .fieldGrid,
+  .actions,
+  .resultActions,
+  .segmented {
+    grid-template-columns: 1fr;
+  }
+
+  .cardHeading {
+    display: block;
+  }
+
+  .cardHeading > p {
+    margin-top: 8px;
+  }
+
+  .inputShell {
+    min-height: 52px;
+  }
+
+  .segmentButton,
+  .calculateButton,
+  .resetButton,
+  .smallButton,
+  .textButton {
+    min-height: 52px;
+  }
+
+  .resultLive {
+    min-height: 300px;
+  }
+
+  .primaryResult {
+    padding: 20px;
+  }
+
+  .primaryResult strong {
+    font-size: 1.75rem;
+  }
+
+  .resultList div,
+  .detailList div {
+    display: grid;
+    gap: 4px;
+  }
+
+  .resultList dd,
+  .detailList dd {
+    text-align: left;
+  }
+}
+
+@media (max-width: 420px) {
+  .formCard,
+  .resultCard {
+    padding: 18px;
+  }
+}
