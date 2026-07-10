@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const ogTitle = "계산기 모음 - 연봉·4대보험·주휴수당·대출 계산";
+const ogTitle = "계산기 모음 - 부가세·연봉·4대보험·대출 계산";
 const ogDescription =
   "계산박스에서 제공하는 생활 계산기 목록입니다. 필요한 계산기를 선택해 빠르게 확인해보세요.";
 const ogUrl = "https://gyesanbox.kr/calculators/";
@@ -9,7 +9,7 @@ const ogImage = "https://gyesanbox.kr/og/calculators.png";
 export const metadata: Metadata = {
   title: "계산박스 계산기 목록",
   description:
-    "계산박스에서 급여·근로, 금융, 사업·판매 목적에 맞는 판매자 마진, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여 계산기를 확인하세요.",
+    "계산박스에서 급여·근로, 금융, 사업·판매 목적에 맞는 판매자 마진, 부가세, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여 계산기를 확인하세요.",
   alternates: {
     canonical: ogUrl,
   },
@@ -42,7 +42,7 @@ export default function CalculatorsPage() {
         <p className="page-heading__eyebrow">Calculators</p>
         <h1>계산기 목록</h1>
         <p>
-          현재 공개 운영 중인 계산기 7개만 모았습니다. 각 계산기는 입력값,
+          현재 공개 운영 중인 계산기 8개만 모았습니다. 각 계산기는 입력값,
           계산 기준, 결과 해석과 주의사항을 함께 제공합니다.
         </p>
       </div>
@@ -58,7 +58,7 @@ export default function CalculatorsPage() {
         </article>
         <article>
           <h2>사업·판매</h2>
-          <p>판매자 마진은 판매가와 비용을 넣어 주문 또는 상품 단위의 예상 수익성을 점검할 때 사용합니다.</p>
+          <p>판매자 마진과 부가세는 판매 조건, 공급가액, 매입세액을 나누어 점검할 때 사용합니다.</p>
         </article>
       </div>
 
@@ -141,6 +141,28 @@ export default function CalculatorsPage() {
             <p>
               대표 입력값: 판매가, 수량, 원가, 수수료, 배송비 · 결과:
               정산금액, 순이익, 순이익률
+            </p>
+          </div>
+          <span className="calculator-card__arrow" aria-hidden="true">
+            →
+          </span>
+        </a>
+
+        <a
+          className="calculator-card"
+          href="/calculators/vat-profit/"
+          role="listitem"
+        >
+          <div>
+            <span className="calculator-card__category">사업</span>
+            <h2>부가세 계산기</h2>
+            <p>
+              공급가액 또는 합계금액으로 매출세액과 예상 납부세액을
+              계산합니다.
+            </p>
+            <p>
+              대표 입력값: 매출 금액, 입력 기준, 매입세액 · 결과: 공급가액,
+              매출세액, 예상 납부세액
             </p>
           </div>
           <span className="calculator-card__arrow" aria-hidden="true">
