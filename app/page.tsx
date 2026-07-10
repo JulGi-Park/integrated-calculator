@@ -4,7 +4,7 @@ import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 const siteUrl = "https://gyesanbox.kr/";
 const homeTitle = "계산박스 | 생활·금융·근로 계산기 모음";
 const homeDescription =
-  "계산박스는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 등 생활·금융·근로 계산을 한 곳에서 확인할 수 있는 온라인 계산기 모음입니다.";
+  "계산박스는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 등 급여·금융·사업 계산을 한 곳에서 확인할 수 있는 참고용 계산 서비스입니다.";
 const ogTitle = "계산박스 - 생활 계산기 모음";
 const ogDescription =
   "연봉, 대출, 퇴직금, 실업급여 등 실생활에 필요한 계산기를 한곳에서 확인할 수 있습니다.";
@@ -16,35 +16,35 @@ const calculators = [
     href: "/calculators/seller-margin/",
     url: "https://gyesanbox.kr/calculators/seller-margin/",
     description:
-      "판매단가, 원가, 배송비, 수수료를 넣어 주문 기준 정산금액과 세전 순이익을 확인합니다.",
+      "판매가, 원가, 수수료, 배송비를 기준으로 주문별 예상 마진과 세전 순이익을 확인할 때 사용합니다.",
   },
   {
     name: "연봉 실수령액 계산기",
     href: "/calculators/salary/",
     url: "https://gyesanbox.kr/calculators/salary/",
     description:
-      "연봉, 비과세액, 공제대상 가족 수를 바탕으로 월 예상 실수령액과 공제 내역을 계산합니다.",
+      "연봉 또는 월급 기준으로 예상 공제액과 월 실수령액을 비교할 때 사용합니다.",
   },
   {
     name: "대출 이자 계산기",
     href: "/calculators/loan/",
     url: "https://gyesanbox.kr/calculators/loan/",
     description:
-      "대출금액, 연이율, 기간을 입력해 상환방식별 월 납입액과 총이자를 비교합니다.",
+      "원금, 금리, 기간, 상환 방식에 따른 예상 월 상환액과 총이자를 확인할 때 사용합니다.",
   },
   {
     name: "퇴직금 계산기",
     href: "/calculators/severance/",
     url: "https://gyesanbox.kr/calculators/severance/",
     description:
-      "입사일, 퇴직일, 임금 정보를 기준으로 평균임금과 예상 퇴직금을 계산합니다.",
+      "근속기간과 평균임금을 바탕으로 예상 퇴직금과 계산 기준을 확인할 때 사용합니다.",
   },
   {
     name: "실업급여 계산기",
     href: "/calculators/unemployment/",
     url: "https://gyesanbox.kr/calculators/unemployment/",
     description:
-      "퇴직 전 임금과 고용보험 가입기간으로 예상 구직급여액과 소정급여일수를 확인합니다.",
+      "고용보험 가입기간과 임금 정보를 바탕으로 예상 지급액과 지급 기간을 참고할 때 사용합니다.",
   },
 ] as const;
 
@@ -52,7 +52,12 @@ const servicePrinciples = [
   {
     title: "계산 기준 공개",
     description:
-      "각 계산기 본문에 계산식, 기준일, 자동 반영되지 않는 항목을 함께 정리합니다.",
+      "각 계산기 본문에 계산식, 적용 기준일, 자동 반영되지 않는 항목을 가능한 범위에서 정리합니다.",
+  },
+  {
+    title: "공식 기준 확인",
+    description:
+      "공식 기관 자료나 공신력 있는 기준을 확인하고, 법령·요율·세율 변경이 확인되면 설명과 기준일을 갱신합니다.",
   },
   {
     title: "브라우저 중심 계산",
@@ -166,8 +171,8 @@ export default function Home() {
           판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여처럼
           자주 필요한 무료 계산 도구를 빠르게 찾아보세요. 각 계산기는
           입력값 기준의 예상 결과와 계산 기준, 입력값 설명, 유의사항을 함께
-          제공하며 실제 지급·청구·정산 금액과 차이가 있을 수 있음을
-          분명히 안내합니다.
+          제공합니다. 입력한 값은 서버에 저장하지 않으며, 결과는 실제
+          지급액·세금·대출 심사·정산 결과와 다를 수 있는 참고값입니다.
         </p>
         <a className="button button--primary" href="/calculators/">
           계산기 목록 보기

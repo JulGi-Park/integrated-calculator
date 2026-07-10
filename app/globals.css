@@ -316,6 +316,32 @@ a:focus-visible {
   gap: 20px;
 }
 
+.calculator-guide {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.calculator-guide article {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.calculator-guide h2 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.calculator-guide p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 .calculator-card {
   display: flex;
   min-height: 240px;
@@ -526,6 +552,10 @@ a:focus-visible {
   }
 
   .calculator-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .calculator-guide {
     grid-template-columns: 1fr;
   }
 

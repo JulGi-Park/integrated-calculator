@@ -107,15 +107,18 @@ test("AdSense 전역 스크립트는 루트 레이아웃에서 한 번만 삽입
   assert.deepEqual(usages, ["app/layout.tsx"]);
 });
 
-test("ads.txt는 공개 publisher ID와 AdSense 기본 client가 일치한다", async () => {
-  const [adsTxt, adsenseSource] = await Promise.all([
+test("ads.txt는 공개 publisher ID를 유지하고 AdSense client는 환경변수만 사용한다", async () => {
+  const [adsTxt, adsenseSource, componentSource] = await Promise.all([
     readFile("public/ads.txt", "utf8"),
     readFile("lib/adsense.ts", "utf8"),
+    readFile("components/ads/AdSenseScript.tsx", "utf8"),
   ]);
 
   assert.match(adsTxt.trim(), /^google\.com, pub-\d{16}, DIRECT, f08c47fec0942fa0$/);
-  const publisherId = adsTxt.match(/pub-\d{16}/)?.[0];
-  assert.ok(publisherId);
-  assert.match(adsenseSource, new RegExp(`ca-${publisherId}`));
+  assert.match(adsenseSource, /process\.env\.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT/);
+  assert.match(componentSource, /getConfiguredAdSenseClient/);
+  assert.doesNotMatch(adsenseSource, /ca-pub-\d{16}/);
+  assert.doesNotMatch(componentSource, /ca-pub-\d{16}/);
+  assert.doesNotMatch(adsenseSource, /G-YMJFLPRFMV/);
   assert.doesNotMatch(adsTxt, /pub-0{16}|pub-1234567890123456/);
 });

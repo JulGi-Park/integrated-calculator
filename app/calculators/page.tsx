@@ -9,7 +9,7 @@ const ogImage = "https://gyesanbox.kr/og/calculators.png";
 export const metadata: Metadata = {
   title: "계산박스 계산기 목록",
   description:
-    "계산박스에서 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 계산기를 확인하세요.",
+    "계산박스에서 급여·근로, 금융, 사업·판매 목적에 맞는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 계산기를 확인하세요.",
   alternates: {
     canonical: ogUrl,
   },
@@ -45,6 +45,21 @@ export default function CalculatorsPage() {
           현재 공개 운영 중인 계산기 5개만 모았습니다. 각 계산기는 입력값,
           계산 기준, 결과 해석과 주의사항을 함께 제공합니다.
         </p>
+      </div>
+
+      <div className="calculator-guide" aria-label="계산기 선택 안내">
+        <article>
+          <h2>급여·근로</h2>
+          <p>연봉 실수령액, 퇴직금, 실업급여처럼 근로 조건과 제도 기준을 함께 확인해야 할 때 사용합니다.</p>
+        </article>
+        <article>
+          <h2>금융</h2>
+          <p>대출 이자는 원금, 금리, 기간, 상환 방식별 부담을 비교할 때 먼저 확인하기 좋습니다.</p>
+        </article>
+        <article>
+          <h2>사업·판매</h2>
+          <p>판매자 마진은 판매가와 비용을 넣어 주문 또는 상품 단위의 예상 수익성을 점검할 때 사용합니다.</p>
+        </article>
       </div>
 
       <div className="calculator-grid" role="list">

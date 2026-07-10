@@ -10,7 +10,7 @@ const metadata = homeModule.metadata;
 
 const expectedTitle = "계산박스 | 생활·금융·근로 계산기 모음";
 const expectedDescription =
-  "계산박스는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 등 생활·금융·근로 계산을 한 곳에서 확인할 수 있는 온라인 계산기 모음입니다.";
+  "계산박스는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 등 급여·금융·사업 계산을 한 곳에서 확인할 수 있는 참고용 계산 서비스입니다.";
 const expectedOgTitle = "계산박스 - 생활 계산기 모음";
 const expectedOgDescription =
   "연봉, 대출, 퇴직금, 실업급여 등 실생활에 필요한 계산기를 한곳에서 확인할 수 있습니다.";
@@ -72,6 +72,8 @@ test("홈 화면에서 구현 완료 계산기 5개로 이동할 수 있다", ()
   assert.match(html, /계산박스/);
   assert.match(html, /각 계산기는 입력값 기준의\s*예상 결과와 계산 기준/);
   assert.match(html, /계산 기준 공개/);
+  assert.match(html, /공식 기준 확인/);
+  assert.match(html, /입력한 값은 서버에 저장하지 않으며/);
   assert.match(html, /참고용 결과 안내/);
   assert.match(html, /운영 문의 창구/);
   for (const [name, href] of calculators) {

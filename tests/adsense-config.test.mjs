@@ -4,7 +4,6 @@ import { renderToStaticMarkup } from "react-dom/server";
 import test from "node:test";
 import { AdSenseScript } from "../components/ads/AdSenseScript.tsx";
 import {
-  ADSENSE_CLIENT,
   getConfiguredAdSenseClient,
   getValidAdSenseClient,
   hasValidAdSenseClient,
@@ -40,19 +39,25 @@ test("AdSense client 검증은 실제 형식의 ca-pub ID만 허용한다", () =
   assert.equal(hasValidAdSenseClient(client), true);
 });
 
-test("AdSense 설정값은 제공된 실제 publisher ID를 기본값으로 사용한다", () => {
-  assert.equal(ADSENSE_CLIENT, "ca-pub-4273771596550595");
-  assert.equal(getConfiguredAdSenseClient(undefined), ADSENSE_CLIENT);
-  assert.equal(getConfiguredAdSenseClient(""), ADSENSE_CLIENT);
-  assert.equal(getConfiguredAdSenseClient("pub-123"), ADSENSE_CLIENT);
-  assert.equal(getConfiguredAdSenseClient("G-YMJFLPRFMV"), ADSENSE_CLIENT);
+test("AdSense 설정값은 환경변수 형식이 유효할 때만 사용한다", () => {
+  assert.equal(getConfiguredAdSenseClient(undefined), null);
+  assert.equal(getConfiguredAdSenseClient(""), null);
+  assert.equal(getConfiguredAdSenseClient("pub-123"), null);
+  assert.equal(getConfiguredAdSenseClient("G-YMJFLPRFMV"), null);
   assert.equal(getConfiguredAdSenseClient("ca-pub-1234567890123456"), "ca-pub-1234567890123456");
 });
 
-test("AdSenseScript는 기본 publisher ID로 전역 연결 스크립트를 렌더링한다", () => {
-  const markup = renderToStaticMarkup(React.createElement(AdSenseScript));
+test("AdSenseScript는 유효한 publisher ID로 전역 연결 스크립트를 렌더링한다", () => {
+  const markup = renderToStaticMarkup(
+    React.createElement(AdSenseScript, { client: "ca-pub-1234567890123456" }),
+  );
 
   assert.match(markup, /pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/);
-  assert.match(markup, /client=ca-pub-4273771596550595/);
+  assert.match(markup, /client=ca-pub-1234567890123456/);
   assert.match(markup, /crossorigin="anonymous"/);
+});
+
+test("AdSenseScript는 환경변수가 없거나 잘못되면 빈 스크립트를 렌더링하지 않는다", () => {
+  assert.equal(renderToStaticMarkup(React.createElement(AdSenseScript)), "");
+  assert.equal(renderToStaticMarkup(React.createElement(AdSenseScript, { client: "G-YMJFLPRFMV" })), "");
 });
