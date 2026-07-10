@@ -9,12 +9,13 @@ const pages = [
     h1: "계산박스 소개",
     title: "계산박스 소개 | 계산박스",
     description:
-      "계산박스는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 등 생활·금융·근로 계산기를 제공하는 온라인 계산기 모음입니다.",
+      "계산박스는 판매자 마진, 연봉 실수령액, 4대보험, 대출 이자, 퇴직금, 실업급여 등 생활·금융·근로 계산기를 제공하는 온라인 계산기 모음입니다.",
     canonical: "https://gyesanbox.kr/about/",
     required: [
       "생활·금융·근로 계산기 모음 서비스",
       "판매자 마진 계산기",
       "연봉 실수령액 계산기",
+      "4대보험 계산기",
       "대출 이자 계산기",
       "퇴직금 계산기",
       "실업급여 계산기",
@@ -164,7 +165,7 @@ test("헤더에서 주요 탐색과 신뢰성 페이지로 이동할 수 있다"
   assert.match(source, /aria-label="주요 메뉴"/);
 });
 
-test("홈 JSON-LD ItemList는 계산기 5개만 유지한다", async () => {
+test("홈 JSON-LD ItemList는 공개 계산기만 유지한다", async () => {
   const source = await readFile("app/page.tsx", "utf8");
 
   for (const page of pages) {

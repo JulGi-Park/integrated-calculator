@@ -190,10 +190,10 @@ export function SalaryTakeHomeContent() {
         <div className={styles.relatedGrid}>
           <a
             className={`${styles.relatedCard} ${styles.relatedLink}`}
-            href="/calculators/seller-margin/"
+            href="/calculators/social-insurance/"
           >
-            <h3>판매자 마진 계산기</h3>
-            <p>판매 수수료와 비용을 반영한 예상 순이익을 계산합니다.</p>
+            <h3>4대보험 계산기</h3>
+            <p>월급 기준 국민연금, 건강보험, 고용보험 공제액을 계산합니다.</p>
           </a>
           <a
             className={`${styles.relatedCard} ${styles.relatedLink}`}

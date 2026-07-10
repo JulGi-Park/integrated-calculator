@@ -14,6 +14,10 @@ const routes = [
     "2026 연봉 실수령액 계산기 | 월급·4대보험·소득세 계산",
   ],
   [
+    "app/calculators/social-insurance/page.tsx",
+    "4대보험 계산기 2026 - 국민연금·건강보험·고용보험 공제액 계산",
+  ],
+  [
     "app/calculators/loan/page.tsx",
     "대출 이자 계산기 | 원리금균등·원금균등·만기일시상환 비교",
   ],
@@ -47,11 +51,30 @@ test("연봉 계산기 페이지와 목록 링크가 실제 UI를 제공한다",
     readFile("app/calculators/salary/page.tsx", "utf8"),
     readFile("app/calculators/page.tsx", "utf8"),
   ]);
+  const contentSource = await readFile(
+    "components/calculators/SalaryTakeHomeContent.tsx",
+    "utf8",
+  );
 
   assert.match(pageSource, /SalaryTakeHomeCalculator/);
   assert.match(pageSource, /<h1>연봉 실수령액 계산기<\/h1>/);
   assert.doesNotMatch(pageSource, /계산 기능 준비 중/);
   assert.match(listSource, /href="\/calculators\/salary\/"/);
+  assert.match(contentSource, /href="\/calculators\/social-insurance\/"/);
+});
+
+test("4대보험 계산기 페이지와 목록 링크가 실제 UI를 제공한다", async () => {
+  const [pageSource, listSource] = await Promise.all([
+    readFile("app/calculators/social-insurance/page.tsx", "utf8"),
+    readFile("app/calculators/page.tsx", "utf8"),
+  ]);
+
+  assert.match(pageSource, /SocialInsuranceCalculator/);
+  assert.match(pageSource, /<h1>2026 4대보험 계산기<\/h1>/);
+  assert.match(pageSource, /JsonLdScripts/);
+  assert.doesNotMatch(pageSource, /notFound\(\)|계산 기능 준비 중/);
+  assert.match(listSource, /href="\/calculators\/social-insurance\/"/);
+  assert.match(listSource, /4대보험 계산기/);
 });
 
 test("판매자 마진 페이지는 계산기 UI를 제공한다", async () => {

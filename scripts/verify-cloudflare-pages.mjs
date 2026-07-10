@@ -17,12 +17,17 @@ const requiredStaticFiles = [
     "out/calculators/unemployment/index.html",
     "실업급여 계산기",
   ],
+  [
+    "out/calculators/social-insurance/index.html",
+    "2026 4대보험 계산기",
+  ],
 ];
 
 const forbiddenPrivateOutputPaths = [
   "out/calculators/roas",
   "out/calculators/labor-pay",
   "out/calculators/vat-profit",
+  "out/calculators/dsr",
   "out/calculators/parental-leave",
   "out/calculators/rent-vs-jeonse",
   "out/calculators/car-cost",
@@ -30,6 +35,8 @@ const forbiddenPrivateOutputPaths = [
   "out/calculators/average-price",
   "out/calculators/card-installment",
   "out/calculators/overtime-pay",
+  "out/calculators/youth-future-savings",
+  "out/calculators/work-child-incentive",
   "out/calculators/brokerage-fee",
   "out/calculators/brokerage-fee.html",
 ];
@@ -42,6 +49,7 @@ const publicHtmlFilesWithoutPrivateRoutes = [
   "out/calculators/loan/index.html",
   "out/calculators/severance/index.html",
   "out/calculators/unemployment/index.html",
+  "out/calculators/social-insurance/index.html",
 ];
 
 const forbiddenSourcePatterns = [
@@ -160,7 +168,7 @@ async function verifyStaticOutput() {
   const sitemap = await readFile(path.join(projectRoot, "out/sitemap.xml"), "utf8");
   assert.doesNotMatch(
     sitemap,
-    /roas|labor-pay|vat-profit|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay/,
+    /roas|labor-pay|vat-profit|dsr|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|work-child-incentive/,
   );
 
   for (const relativePath of publicHtmlFilesWithoutPrivateRoutes) {
@@ -168,7 +176,7 @@ async function verifyStaticOutput() {
 
     assert.doesNotMatch(
       html,
-      /roas|labor-pay|vat-profit|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|부동산 중개보수 계산기/,
+      /roas|labor-pay|vat-profit|dsr|parental-leave|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|work-child-incentive|부동산 중개보수 계산기/,
     );
   }
 }

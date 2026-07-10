@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const ogTitle = "계산기 모음 - 연봉·대출·퇴직금·실업급여 계산";
+const ogTitle = "계산기 모음 - 연봉·4대보험·대출·퇴직금 계산";
 const ogDescription =
   "계산박스에서 제공하는 생활 계산기 목록입니다. 필요한 계산기를 선택해 빠르게 확인해보세요.";
 const ogUrl = "https://gyesanbox.kr/calculators/";
@@ -9,7 +9,7 @@ const ogImage = "https://gyesanbox.kr/og/calculators.png";
 export const metadata: Metadata = {
   title: "계산박스 계산기 목록",
   description:
-    "계산박스에서 급여·근로, 금융, 사업·판매 목적에 맞는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 계산기를 확인하세요.",
+    "계산박스에서 급여·근로, 금융, 사업·판매 목적에 맞는 판매자 마진, 연봉 실수령액, 4대보험, 대출 이자, 퇴직금, 실업급여 계산기를 확인하세요.",
   alternates: {
     canonical: ogUrl,
   },
@@ -42,7 +42,7 @@ export default function CalculatorsPage() {
         <p className="page-heading__eyebrow">Calculators</p>
         <h1>계산기 목록</h1>
         <p>
-          현재 공개 운영 중인 계산기 5개만 모았습니다. 각 계산기는 입력값,
+          현재 공개 운영 중인 계산기 6개만 모았습니다. 각 계산기는 입력값,
           계산 기준, 결과 해석과 주의사항을 함께 제공합니다.
         </p>
       </div>
@@ -50,7 +50,7 @@ export default function CalculatorsPage() {
       <div className="calculator-guide" aria-label="계산기 선택 안내">
         <article>
           <h2>급여·근로</h2>
-          <p>연봉 실수령액, 퇴직금, 실업급여처럼 근로 조건과 제도 기준을 함께 확인해야 할 때 사용합니다.</p>
+          <p>연봉 실수령액, 4대보험, 퇴직금, 실업급여처럼 근로 조건과 제도 기준을 함께 확인해야 할 때 사용합니다.</p>
         </article>
         <article>
           <h2>금융</h2>
@@ -100,6 +100,28 @@ export default function CalculatorsPage() {
             <p>
               대표 입력값: 연봉, 월 비과세액, 가족 수 · 결과: 월 실수령액,
               공제 항목별 금액
+            </p>
+          </div>
+          <span className="calculator-card__arrow" aria-hidden="true">
+            →
+          </span>
+        </a>
+
+        <a
+          className="calculator-card"
+          href="/calculators/social-insurance/"
+          role="listitem"
+        >
+          <div>
+            <span className="calculator-card__category">급여</span>
+            <h2>4대보험 계산기</h2>
+            <p>
+              월 급여와 비과세 금액으로 국민연금, 건강보험, 장기요양보험,
+              고용보험 근로자 부담액을 계산합니다.
+            </p>
+            <p>
+              대표 입력값: 월 급여, 비과세 금액 · 결과: 보험별 공제액,
+              총 공제액, 공제 후 참고 금액
             </p>
           </div>
           <span className="calculator-card__arrow" aria-hidden="true">

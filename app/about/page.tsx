@@ -11,7 +11,7 @@ const ogImage = "https://gyesanbox.kr/og/about.png";
 export const metadata: Metadata = {
   title: "계산박스 소개 | 계산박스",
   description:
-    "계산박스는 판매자 마진, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여 등 생활·금융·근로 계산기를 제공하는 온라인 계산기 모음입니다.",
+    "계산박스는 판매자 마진, 연봉 실수령액, 4대보험, 대출 이자, 퇴직금, 실업급여 등 생활·금융·근로 계산기를 제공하는 온라인 계산기 모음입니다.",
   alternates: {
     canonical: ogUrl,
   },
@@ -59,6 +59,7 @@ export default function AboutPage() {
         <ul>
           <li>판매자 마진 계산기</li>
           <li>연봉 실수령액 계산기</li>
+          <li>4대보험 계산기</li>
           <li>대출 이자 계산기</li>
           <li>퇴직금 계산기</li>
           <li>실업급여 계산기</li>

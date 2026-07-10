@@ -4,6 +4,7 @@ import { loanInterestBreadcrumbJsonLd } from "../components/calculators/loanInte
 import { salaryTakeHomeBreadcrumbJsonLd } from "../components/calculators/salaryTakeHomeContentData.ts";
 import { sellerMarginBreadcrumbJsonLd } from "../components/calculators/sellerMarginContentData.ts";
 import { severanceBreadcrumbJsonLd } from "../components/calculators/severanceContentData.ts";
+import { socialInsuranceBreadcrumbJsonLd } from "../components/calculators/socialInsuranceContentData.ts";
 import { unemploymentBreadcrumbJsonLd } from "../components/calculators/unemploymentContentData.ts";
 
 const expectedBreadcrumbs = [
@@ -32,6 +33,15 @@ const expectedBreadcrumbs = [
       ["홈", "https://gyesanbox.kr/"],
       ["계산기 목록", "https://gyesanbox.kr/calculators/"],
       ["대출 이자 계산기", "https://gyesanbox.kr/calculators/loan/"],
+    ],
+  },
+  {
+    name: "social-insurance",
+    data: socialInsuranceBreadcrumbJsonLd,
+    items: [
+      ["홈", "https://gyesanbox.kr/"],
+      ["계산기 목록", "https://gyesanbox.kr/calculators/"],
+      ["2026 4대보험 계산기", "https://gyesanbox.kr/calculators/social-insurance/"],
     ],
   },
   {
