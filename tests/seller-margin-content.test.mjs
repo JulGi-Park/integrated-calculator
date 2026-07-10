@@ -124,7 +124,7 @@ test("결과 해석, 제외 항목과 면책 문구를 정적으로 표시한다
 });
 
 test("판매자 마진 페이지는 공식 참고 출처와 확인 기준일을 제공한다", () => {
-  assert.equal(sellerMarginSources.length, 3);
+  assert.equal(sellerMarginSources.length, 2);
   assert.match(contentSource, /sellerMarginSources\.map/);
   assert.match(contentSource, /참고 출처/);
   assert.match(contentSource, /판매 플랫폼별 수수료와 정산 내역/);
@@ -138,7 +138,7 @@ test("판매자 마진 페이지는 공식 참고 출처와 확인 기준일을 
 
   assert.deepEqual(
     sellerMarginSources.map(({ organization }) => organization),
-    ["국세청", "국세청", "공정거래위원회"],
+    ["국세청", "국세청"],
   );
 });
 

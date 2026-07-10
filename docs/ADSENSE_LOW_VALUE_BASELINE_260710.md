@@ -9,9 +9,57 @@
 ## 운영 기준선
 
 - 기준 커밋: `53c4cb251747e80f3e41e08d31ddfe2ea1e26c44`
+- 기준 브랜치: `main`
+- 검수 대상 작업 브랜치: `codex/adsense-low-value-content-audit-260710`
 - 확인 시각: 2026-07-10 13:19 KST
-- 공개 URL 12개: 모두 200
-- 비공개 계산기 URL 15개: 모두 404, soft 404 없음
+- 확인 범위: 운영 HTTP/HTML, sitemap/robots/ads.txt, 정적 export 산출물 기준
+- 브라우저 시각 검수: 미실시
+- Cloudflare Production 환경변수 실제 값: 관리자 화면 직접 확인 안 함
+
+### 공개 URL 12개
+
+일반 공개 페이지 7개:
+
+- `https://gyesanbox.kr/`
+- `https://gyesanbox.kr/calculators/`
+- `https://gyesanbox.kr/about/`
+- `https://gyesanbox.kr/contact/`
+- `https://gyesanbox.kr/privacy-policy/`
+- `https://gyesanbox.kr/terms/`
+- `https://gyesanbox.kr/disclaimer/`
+
+공개 계산기 5개:
+
+- `https://gyesanbox.kr/calculators/seller-margin/`
+- `https://gyesanbox.kr/calculators/salary/`
+- `https://gyesanbox.kr/calculators/loan/`
+- `https://gyesanbox.kr/calculators/severance/`
+- `https://gyesanbox.kr/calculators/unemployment/`
+
+위 12개는 운영 HTTP 응답 200, 공개 HTML 접근 가능, 계산기 고유 콘텐츠 노출을 확인한 기준선이다.
+
+### 비공개 계산기 URL 15개
+
+운영 HTTP 요청 기준 최종 404, sitemap 미포함, 공개 HTML 내부 링크 미발견, production export HTML 미생성을 확인한 기준선이다.
+
+- `https://gyesanbox.kr/calculators/social-insurance/`
+- `https://gyesanbox.kr/calculators/labor-pay/`
+- `https://gyesanbox.kr/calculators/overtime-pay/`
+- `https://gyesanbox.kr/calculators/vat-profit/`
+- `https://gyesanbox.kr/calculators/dsr/`
+- `https://gyesanbox.kr/calculators/roas/`
+- `https://gyesanbox.kr/calculators/parental-leave/`
+- `https://gyesanbox.kr/calculators/rent-vs-jeonse/`
+- `https://gyesanbox.kr/calculators/car-cost/`
+- `https://gyesanbox.kr/calculators/savings/`
+- `https://gyesanbox.kr/calculators/average-price/`
+- `https://gyesanbox.kr/calculators/brokerage-fee/`
+- `https://gyesanbox.kr/calculators/card-installment/`
+- `https://gyesanbox.kr/calculators/youth-future-savings/`
+- `https://gyesanbox.kr/calculators/work-child-incentive/`
+
+### 시스템 파일과 스크립트
+
 - sitemap.xml: 200, 공개 URL 12개만 포함
 - robots.txt: 200, wildcard 전체 차단 없음, apex sitemap 유지
 - ads.txt: 200, 기존 Google publisher 항목 유지
@@ -19,6 +67,11 @@
 - AdSense: 공개 HTML별 script 1회 감지, 중복 없음
 - Cloudflare email protection 관련 문자열: 공개 HTML에서 미감지
 - `www.gyesanbox.kr` 및 `http://gyesanbox.kr`: 공개 HTML에서 미감지
+- 정적 export pruning: 기본 production build 산출물에서 비공개 계산기 HTML 미생성
+- 기능 플래그: 비공개 계산기는 strict `"true"` 외 값에서 공개하지 않는 정책 유지
+- 사용자 제공 정보: AdSense 관리자 화면의 반려 상태와 사유
+- 직접 확인 정보: 저장소 코드, 운영 HTML 문자열, HTTP 응답, 정적 export 산출물
+- 확인하지 않은 항목: AdSense 관리자 화면 내부 재검토 가능 조건, Cloudflare 관리자 화면의 환경변수 실제 값, 브라우저 렌더링 육안 검수
 
 ## 공개 계산기 5개 콘텐츠 감사
 
@@ -26,7 +79,7 @@
 
 - 강점: 주문 단위 예시, 12개 계산식, 제외 항목, FAQ, 관련 계산기 링크가 있음.
 - 보강 필요: 공식 참고 출처와 세금 신고 기준 차이 설명이 상대적으로 약했음.
-- 조치: 부가가치세, 종합소득세, 통신판매사업자 정보공개 관련 공식 출처와 실제 정산·신고 금액 차이 설명을 추가.
+- 조치: 부가가치세, 종합소득세 공식 출처와 실제 정산·신고 금액 차이 설명을 추가.
 
 ### 연봉 실수령액 계산기
 

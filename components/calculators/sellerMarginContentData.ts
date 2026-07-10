@@ -155,7 +155,7 @@ export const sellerMarginFaqs: SellerMarginFaq[] = [
 export const sellerMarginSources: SellerMarginSource[] = [
   {
     organization: "국세청",
-    title: "부가가치세 기본정보",
+    title: "부가가치세 개요",
     criterion:
       "판매 마진 계산 결과에 부가가치세 신고·납부와 과세유형별 세액 계산이 자동 반영되지 않는다는 안내",
     checkedAt: sellerMarginPolicyCheckedAt,
@@ -163,19 +163,11 @@ export const sellerMarginSources: SellerMarginSource[] = [
   },
   {
     organization: "국세청",
-    title: "종합소득세 기본정보",
+    title: "종합소득세 개요",
     criterion:
       "사업소득 계산은 수입금액과 필요경비, 장부 기장 여부 등에 따라 달라질 수 있다는 안내",
     checkedAt: sellerMarginPolicyCheckedAt,
     href: "https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7664&mi=2224",
-  },
-  {
-    organization: "공정거래위원회",
-    title: "통신판매사업자 정보공개",
-    criterion:
-      "온라인 판매 사업자의 사업자 정보와 플랫폼 거래 환경을 별도로 확인해야 한다는 안내",
-    checkedAt: sellerMarginPolicyCheckedAt,
-    href: "https://www.ftc.go.kr/www/selectBizCommList.do?key=254",
   },
 ];
 
