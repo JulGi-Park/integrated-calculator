@@ -62,7 +62,7 @@ test("공식 고정 사례 1: 월 과세급여 300만원·가족 1명의 전체 
     estimatedMonthlyTakeHome: 2_626_698,
     estimatedAnnualTakeHome: 31_520_376,
     policyYear: 2026,
-    policyVerifiedAt: "2026-06-19",
+    policyVerifiedAt: "2026-07-11",
   });
 });
 
@@ -89,7 +89,7 @@ test("공식 고정 사례 2: 비과세 20만원·가족 3명·자녀 1명", () 
     estimatedMonthlyTakeHome: 4_323_225,
     estimatedAnnualTakeHome: 51_878_700,
     policyYear: 2026,
-    policyVerifiedAt: "2026-06-19",
+    policyVerifiedAt: "2026-07-11",
   });
 });
 
@@ -106,17 +106,17 @@ test("공식 고정 사례 3: 월 과세급여 1천만원·가족 2명·자녀 2
   assert.deepEqual(data, {
     monthlyGrossSalary: 10_000_000,
     monthlyTaxableSalary: 10_000_000,
-    nationalPension: 302_570,
+    nationalPension: 313_020,
     healthInsurance: 359_500,
     longTermCareInsurance: 47_240,
     employmentInsurance: 90_000,
     incomeTax: 1_385_740,
     localIncomeTax: 138_570,
-    totalMonthlyDeductions: 2_323_620,
-    estimatedMonthlyTakeHome: 7_676_380,
-    estimatedAnnualTakeHome: 92_116_560,
+    totalMonthlyDeductions: 2_334_070,
+    estimatedMonthlyTakeHome: 7_665_930,
+    estimatedAnnualTakeHome: 91_991_160,
     policyYear: 2026,
-    policyVerifiedAt: "2026-06-19",
+    policyVerifiedAt: "2026-07-11",
   });
 });
 
@@ -140,27 +140,48 @@ test("비과세액은 월 과세급여와 보험료를 낮춘다", () => {
   assert.ok(withNonTax.incomeTax < withoutNonTax.incomeTax);
 });
 
-test("국민연금 기준소득월액 하한 40만원을 적용한다", () => {
+test("국민연금 기준소득월액 하한 미만과 동일 입력에 41만원을 적용한다", () => {
   const data = assertSuccess(
     calculateSalaryTakeHome({
       ...baseInput,
-      annualSalary: 1_200_000,
+      annualSalary: 4_908_000,
     }),
   );
 
-  assert.equal(data.monthlyTaxableSalary, 100_000);
-  assert.equal(data.nationalPension, 19_000);
+  assert.equal(data.monthlyTaxableSalary, 409_000);
+  assert.equal(data.nationalPension, 19_470);
+
+  const atMinimum = assertSuccess(
+    calculateSalaryTakeHome({ ...baseInput, annualSalary: 4_920_000 }),
+  );
+  assert.equal(atMinimum.monthlyTaxableSalary, 410_000);
+  assert.equal(atMinimum.nationalPension, 19_470);
 });
 
-test("국민연금 기준소득월액 상한 637만원을 적용한다", () => {
+test("국민연금 기준소득월액 하한 직상과 상한 경계를 적용한다", () => {
+  const aboveMinimum = assertSuccess(
+    calculateSalaryTakeHome({ ...baseInput, annualSalary: 4_932_000 }),
+  );
+  assert.equal(aboveMinimum.monthlyTaxableSalary, 411_000);
+  assert.equal(aboveMinimum.nationalPension, 19_520);
+
+  const atMaximum = assertSuccess(
+    calculateSalaryTakeHome({ ...baseInput, annualSalary: 79_080_000 }),
+  );
+  assert.equal(atMaximum.monthlyTaxableSalary, 6_590_000);
+  assert.equal(atMaximum.nationalPension, 313_020);
+});
+
+test("국민연금 기준소득월액 상한 초과 시 공제액을 313,020원으로 고정한다", () => {
   const data = assertSuccess(
     calculateSalaryTakeHome({
       ...baseInput,
-      annualSalary: 120_000_000,
+      annualSalary: 79_092_000,
     }),
   );
 
-  assert.equal(data.nationalPension, 302_570);
+  assert.equal(data.monthlyTaxableSalary, 6_591_000);
+  assert.equal(data.nationalPension, 313_020);
 });
 
 test("공제대상가족 수가 늘면 간이세액표 소득세가 감소한다", () => {
@@ -386,7 +407,7 @@ test("계산 결과에 정책 연도와 기준일을 포함한다", () => {
   const data = assertSuccess(calculateSalaryTakeHome(baseInput));
 
   assert.equal(data.policyYear, 2026);
-  assert.equal(data.policyVerifiedAt, "2026-06-19");
+  assert.equal(data.policyVerifiedAt, "2026-07-11");
 });
 
 test("계산 함수는 입력 객체를 변경하지 않는다", () => {

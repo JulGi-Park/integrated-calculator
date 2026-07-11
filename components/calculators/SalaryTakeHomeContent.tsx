@@ -110,15 +110,15 @@ export function SalaryTakeHomeContent() {
             </div>
           ))}
         </dl>
-        <aside className={styles.policyNotice} aria-label="국민연금 변경 안내">
+        <aside className={styles.policyNotice} aria-label="국민연금 적용 기준">
           <strong>국민연금 기준소득월액 적용 안내</strong>
           <p>
             현재 하한 {formatWon(policy.nationalPension.standardMonthlyIncomeMinimum)},
             상한 {formatWon(policy.nationalPension.standardMonthlyIncomeMaximum)}
             을 {formatKoreanDate(policy.nationalPension.ceilingEffectiveFrom)}부터{" "}
             {formatKoreanDate(policy.nationalPension.ceilingEffectiveTo)}까지
-            적용합니다. 2026년 7월 1일부터 기준이 변경될 예정이지만 현재
-            계산에는 이후 기준을 미리 적용하지 않으며 자동 반영되지 않습니다.
+            적용합니다. 기준소득월액 상·하한은 매년 7월부터 1년간 적용되므로,
+            다음 적용 기간의 기준은 국민연금공단 최신 안내를 확인해 주세요.
           </p>
         </aside>
       </section>

@@ -1,23 +1,23 @@
 /**
  * 2026년 연봉·월급 실수령액 계산 정책
  *
- * 확인일: 2026-06-19
+ * 확인일: 2026-07-11
  * 상세 출처와 연도 변경 절차:
  * docs/SALARY_TAKE_HOME_POLICY_2026.md
  */
 export const SALARY_TAKE_HOME_POLICY_2026 = {
   year: 2026,
-  verifiedAt: "2026-06-19",
+  verifiedAt: "2026-07-11",
   maximumAnnualSalary: 10_000_000_000,
   nationalPension: {
     totalRateBasisPoints: 950,
     employeeRateBasisPoints: 475,
-    standardMonthlyIncomeMinimum: 400_000,
-    standardMonthlyIncomeMaximum: 6_370_000,
+    standardMonthlyIncomeMinimum: 410_000,
+    standardMonthlyIncomeMaximum: 6_590_000,
     standardMonthlyIncomeUnit: 1_000,
     contributionTruncationUnit: 10,
-    ceilingEffectiveFrom: "2025-07-01",
-    ceilingEffectiveTo: "2026-06-30",
+    ceilingEffectiveFrom: "2026-07-01",
+    ceilingEffectiveTo: "2027-06-30",
   },
   healthInsurance: {
     totalRateBasisPoints: 719,

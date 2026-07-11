@@ -77,16 +77,6 @@ function formatKoreanDate(value: string): string {
   return `${year}년 ${month}월 ${day}일`;
 }
 
-function getNextDate(value: string): string {
-  const [year, month, day] = value.split("-").map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day + 1));
-  return [
-    date.getUTCFullYear(),
-    String(date.getUTCMonth() + 1).padStart(2, "0"),
-    String(date.getUTCDate()).padStart(2, "0"),
-  ].join("-");
-}
-
 function parseInputs(
   input: SalaryTakeHomeRawInputs,
 ): Record<string, unknown> {
@@ -374,9 +364,6 @@ export function SalaryTakeHomeCalculator() {
   const pensionEffectiveTo = formatKoreanDate(
     policy.nationalPension.ceilingEffectiveTo,
   );
-  const pensionChangeDate = formatKoreanDate(
-    getNextDate(policy.nationalPension.ceilingEffectiveTo),
-  );
 
   return (
     <>
@@ -386,7 +373,6 @@ export function SalaryTakeHomeCalculator() {
           하한 {formatWon(policy.nationalPension.standardMonthlyIncomeMinimum)},
           상한 {formatWon(policy.nationalPension.standardMonthlyIncomeMaximum)}
           을 {pensionEffectiveFrom}부터 {pensionEffectiveTo}까지 적용합니다.
-          {pensionChangeDate}부터 변경 기준이 적용될 예정입니다.
         </p>
       </aside>
 

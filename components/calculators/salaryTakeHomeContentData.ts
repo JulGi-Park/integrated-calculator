@@ -219,23 +219,17 @@ export const salaryTakeHomeFaqs: SalaryTakeHomeFaq[] = [
     answer: `국민연금은 월 소득 전체에 계속 비례하지 않고 현재 적용 중인 기준소득월액 상한 ${formatWon(policy.nationalPension.standardMonthlyIncomeMaximum)}까지만 산정 기준에 반영합니다. 이 상한은 ${formatKoreanDate(policy.nationalPension.ceilingEffectiveFrom)}부터 ${formatKoreanDate(policy.nationalPension.ceilingEffectiveTo)}까지의 기준입니다.`,
   },
   {
-    question: "2026년 7월 국민연금 기준이 변경되면 자동 반영되나요?",
-    answer: `자동 반영되지 않습니다. 현재 계산기는 ${formatKoreanDate(policy.verifiedAt)}에 확인한 기준과 ${formatKoreanDate(policy.nationalPension.ceilingEffectiveTo)}까지 적용되는 상·하한을 사용합니다. ${formatKoreanDate("2026-07-01")} 이후에는 공식 기준을 다시 확인해 코드와 정책 데이터를 갱신해야 합니다.`,
+    question: "현재 국민연금 기준소득월액 상·하한은 언제까지 적용되나요?",
+    answer: `현재 계산기는 ${formatKoreanDate(policy.verifiedAt)}에 확인한 기준을 사용합니다. 기준소득월액 하한과 상한은 ${formatKoreanDate(policy.nationalPension.ceilingEffectiveFrom)}부터 ${formatKoreanDate(policy.nationalPension.ceilingEffectiveTo)}까지 적용됩니다. 이후 기준은 국민연금공단의 최신 안내를 다시 확인해야 합니다.`,
   },
 ];
 
 export const salaryTakeHomeSources: SalaryTakeHomeSource[] = [
   {
     organization: "국민연금공단",
-    title: "2026년 보험료율 안내",
-    criterion: "국민연금 보험료율과 근로자 부담률",
-    href: "https://www.nps.or.kr/pnsgdnc/nscvrgdata/getOHAE0002M1.do?menuId=MN24000898&pstId=ZZ202500000000001465",
-  },
-  {
-    organization: "국민연금공단",
-    title: "2025년 7월 기준소득월액 상·하한 반영 자료",
-    criterion: "현재 적용 중인 기준소득월액 상한·하한과 적용 기간",
-    href: "https://www.nps.or.kr/pnsinfo/databbs/getOHAF0272M1Detail.do?menuId=MN24001000&pstId=ZZ202500000000000352",
+    title: "연금보험료 금액 및 보험료율",
+    criterion: "2026년 기준소득월액 상한·하한, 적용 기간과 사업장가입자 근로자 부담률",
+    href: "https://www.nps.or.kr/pnsinfo/ntpsklg/getOHAF0038M0.do?menuId=MN24001113&tab=tab5",
   },
   {
     organization: "국민건강보험공단",
