@@ -16,6 +16,10 @@ import type {
   UnemploymentValidationError,
   UnemploymentWageInputType,
 } from "@/lib/calculators/unemployment/types";
+import {
+  buildUnemploymentResultText,
+  UNEMPLOYMENT_RESULT_CANONICAL_URL,
+} from "./unemploymentClientUtils";
 import styles from "./UnemploymentCalculator.module.css";
 
 type RawInputs = {
@@ -136,6 +140,8 @@ export function UnemploymentCalculator() {
   const [input, setInput] = useState<RawInputs>(initialInputs);
   const [errors, setErrors] = useState<UnemploymentValidationError[]>([]);
   const [result, setResult] = useState<UnemploymentResult | null>(null);
+  const [calculatedInput, setCalculatedInput] = useState<RawInputs | null>(null);
+  const [actionMessage, setActionMessage] = useState("");
   const wageInputRef = useRef<HTMLInputElement>(null);
   const insuredMonthsRef = useRef<HTMLInputElement>(null);
 
@@ -154,6 +160,8 @@ export function UnemploymentCalculator() {
     });
     setErrors([]);
     setResult(null);
+    setCalculatedInput(null);
+    setActionMessage("");
   }
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -167,6 +175,7 @@ export function UnemploymentCalculator() {
       [field]: nextValue,
     });
     setErrors([]);
+    setActionMessage("");
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -177,6 +186,8 @@ export function UnemploymentCalculator() {
     if (!response.success) {
       setErrors(response.errors);
       setResult(null);
+      setCalculatedInput(null);
+      setActionMessage("");
 
       const firstError = response.errors[0];
       if (firstError?.field === "wageAmount") {
@@ -189,13 +200,107 @@ export function UnemploymentCalculator() {
 
     setErrors([]);
     setResult(response.data);
+    setCalculatedInput(input);
+    setActionMessage("");
   }
 
   function handleReset() {
     setInput(initialInputs);
     setErrors([]);
     setResult(null);
+    setCalculatedInput(null);
+    setActionMessage("");
     wageInputRef.current?.focus();
+  }
+
+  async function copyWithFallback(text: string): Promise<boolean> {
+    try {
+      await globalThis.navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function getCurrentResultText(): string | null {
+    if (
+      !result ||
+      !calculatedInput ||
+      errors.length > 0 ||
+      !calculatedInput.ageGroup ||
+      !calculatedInput.leavingReason
+    ) {
+      return null;
+    }
+
+    return buildUnemploymentResultText(
+      {
+        wageInputType: result.wageInputType,
+        wageAmount: calculatedInput.wageAmount,
+        insuredMonths: calculatedInput.insuredMonths,
+        ageGroup: calculatedInput.ageGroup,
+        leavingReason: calculatedInput.leavingReason,
+      },
+      result,
+    );
+  }
+
+  async function handleCopy() {
+    setActionMessage("");
+    const text = getCurrentResultText();
+
+    if (!text) {
+      setActionMessage("최신 계산 결과가 없습니다. 다시 계산해 주세요.");
+      return;
+    }
+
+    const copied = await copyWithFallback(text);
+    setActionMessage(
+      copied
+        ? "계산 결과를 복사했습니다."
+        : "결과를 복사하지 못했습니다. 다시 시도해 주세요.",
+    );
+  }
+
+  async function handleShare() {
+    setActionMessage("");
+    const text = getCurrentResultText();
+
+    if (!text) {
+      setActionMessage("최신 계산 결과가 없습니다. 다시 계산해 주세요.");
+      return;
+    }
+
+    if (typeof globalThis.navigator.share !== "function") {
+      const copied = await copyWithFallback(text);
+      setActionMessage(
+        copied
+          ? "공유를 지원하지 않아 결과를 복사했습니다."
+          : "공유를 지원하지 않고 결과 복사에도 실패했습니다. 다시 시도해 주세요.",
+      );
+      return;
+    }
+
+    try {
+      await globalThis.navigator.share({
+        title: "실업급여 계산 결과",
+        text,
+        url: UNEMPLOYMENT_RESULT_CANONICAL_URL,
+      });
+      setActionMessage("계산 결과를 공유했습니다.");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        setActionMessage("");
+        return;
+      }
+
+      const copied = await copyWithFallback(text);
+      setActionMessage(
+        copied
+          ? "결과를 공유하지 못해 결과를 복사했습니다."
+          : "결과를 공유하지 못했습니다. 결과 복사를 이용해 주세요.",
+      );
+    }
   }
 
   const wageAmountErrors = errorsByField.wageAmount ?? [];
@@ -513,6 +618,18 @@ export function UnemploymentCalculator() {
 
                 <p className={styles.disclaimer}>
                   {result.disclaimer} {UNEMPLOYMENT_POLICY_2026.sourceNote}
+                </p>
+
+                <div className={styles.resultActions}>
+                  <button type="button" onClick={handleCopy}>
+                    결과 복사
+                  </button>
+                  <button type="button" onClick={handleShare}>
+                    공유
+                  </button>
+                </div>
+                <p className={styles.actionMessage} aria-live="polite">
+                  {actionMessage}
                 </p>
               </div>
             )}
