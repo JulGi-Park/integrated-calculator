@@ -9,7 +9,7 @@ const ogImage = "https://gyesanbox.kr/og/calculators.png";
 export const metadata: Metadata = {
   title: "계산박스 계산기 목록",
   description:
-    "계산박스에서 급여·근로, 금융, 사업·판매 목적에 맞는 판매자 마진, 부가세, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여 계산기를 확인하세요.",
+    "계산박스에서 급여·근로, 금융, 사업·판매 목적에 맞는 판매자 마진, 부가세, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여, 육아휴직급여 계산기를 확인하세요.",
   alternates: {
     canonical: ogUrl,
   },
@@ -42,7 +42,7 @@ export default function CalculatorsPage() {
         <p className="page-heading__eyebrow">Calculators</p>
         <h1>계산기 목록</h1>
         <p>
-          현재 공개 운영 중인 계산기 8개만 모았습니다. 각 계산기는 입력값,
+          현재 공개 운영 중인 계산기 9개만 모았습니다. 각 계산기는 입력값,
           계산 기준, 결과 해석과 주의사항을 함께 제공합니다.
         </p>
       </div>
@@ -229,6 +229,28 @@ export default function CalculatorsPage() {
             <p>
               대표 입력값: 임금, 가입기간, 나이 구간, 퇴직 사유 · 결과:
               1일 급여액, 지급일수, 총액
+            </p>
+          </div>
+          <span className="calculator-card__arrow" aria-hidden="true">
+            →
+          </span>
+        </a>
+
+        <a
+          className="calculator-card"
+          href="/calculators/parental-leave/"
+          role="listitem"
+        >
+          <div>
+            <span className="calculator-card__category">급여</span>
+            <h2>육아휴직급여 계산기</h2>
+            <p>
+              월 통상임금과 휴직 기간, 특례 조건으로 월별 예상 급여와 총액을
+              계산합니다.
+            </p>
+            <p>
+              대표 입력값: 월 통상임금, 사용 개월 수, 특례 조건 · 결과:
+              월별 예상액, 상·하한 적용, 총 예상액
             </p>
           </div>
           <span className="calculator-card__arrow" aria-hidden="true">

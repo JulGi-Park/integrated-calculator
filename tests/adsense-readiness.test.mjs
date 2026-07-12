@@ -19,6 +19,7 @@ const routeFiles = [
   ["app/calculators/loan/page.tsx", "/calculators/loan/"],
   ["app/calculators/severance/page.tsx", "/calculators/severance/"],
   ["app/calculators/unemployment/page.tsx", "/calculators/unemployment/"],
+  ["app/calculators/parental-leave/page.tsx", "/calculators/parental-leave/"],
   ["app/about/page.tsx", "/about/"],
   ["app/contact/page.tsx", "/contact/"],
   ["app/privacy-policy/page.tsx", "/privacy-policy/"],

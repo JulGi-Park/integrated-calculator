@@ -4,10 +4,10 @@ import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 const siteUrl = "https://gyesanbox.kr/";
 const homeTitle = "계산박스 | 생활·금융·근로 계산기 모음";
 const homeDescription =
-  "계산박스는 판매자 마진, 부가세, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여 등 급여·금융·사업 계산을 한 곳에서 확인할 수 있는 참고용 계산 서비스입니다.";
+  "계산박스는 판매자 마진, 부가세, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여, 육아휴직급여 등 급여·금융·사업 계산을 한 곳에서 확인할 수 있는 참고용 계산 서비스입니다.";
 const ogTitle = "계산박스 - 생활 계산기 모음";
 const ogDescription =
-  "부가세, 연봉, 4대보험, 주휴수당, 대출, 퇴직금, 실업급여 등 실생활에 필요한 계산기를 한곳에서 확인할 수 있습니다.";
+  "부가세, 연봉, 4대보험, 주휴수당, 대출, 퇴직금, 실업급여, 육아휴직급여 등 실생활에 필요한 계산기를 한곳에서 확인할 수 있습니다.";
 const ogImage = "https://gyesanbox.kr/og/home.png";
 
 const calculators = [
@@ -67,6 +67,13 @@ const calculators = [
     description:
       "고용보험 가입기간과 임금 정보를 바탕으로 예상 지급액과 지급 기간을 참고할 때 사용합니다.",
   },
+  {
+    name: "육아휴직급여 계산기",
+    href: "/calculators/parental-leave/",
+    url: "https://gyesanbox.kr/calculators/parental-leave/",
+    description:
+      "월 통상임금과 휴직 기간, 특례 조건을 기준으로 월별 예상 육아휴직급여와 총액을 확인할 때 사용합니다.",
+  },
 ] as const;
 
 const servicePrinciples = [
@@ -111,6 +118,7 @@ export const metadata: Metadata = {
     "대출 이자 계산기",
     "퇴직금 계산기",
     "실업급여 계산기",
+    "육아휴직급여 계산기",
   ],
   alternates: {
     canonical: siteUrl,
