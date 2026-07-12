@@ -9,17 +9,20 @@ const pages = [
     h1: "계산박스 소개",
     title: "계산박스 소개 | 계산박스",
     description:
-      "계산박스는 판매자 마진, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여 등 생활·금융·근로 계산기를 제공하는 온라인 계산기 모음입니다.",
+      "계산박스는 판매자 마진, 부가세, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여, 육아휴직급여, 전세·월세 비교 등 생활·금융·근로·사업·판매·주거 계산기를 제공하는 온라인 계산기 모음입니다.",
     canonical: "https://gyesanbox.kr/about/",
     required: [
-      "생활·금융·근로 계산기 모음 서비스",
+      "생활·금융·근로·사업·판매·주거 계산기 모음 서비스",
       "판매자 마진 계산기",
       "연봉 실수령액 계산기",
-      "4대보험 계산기",
-      "주휴수당 계산기",
       "대출 이자 계산기",
       "퇴직금 계산기",
       "실업급여 계산기",
+      "2026 4대보험 계산기",
+      "주휴수당 계산기",
+      "부가세 계산기",
+      "육아휴직급여 계산기",
+      "전세 vs 월세 계산기",
       "계산 결과는 참고용",
     ],
   },
@@ -52,17 +55,10 @@ const pages = [
       "localStorage",
       "Google AdSense",
       "Google Analytics 4",
-      "Google Search Console",
       "제3자 광고 사업자",
-      "사용자의 이전 방문",
-      "방문한 이력을 바탕으로 광고",
       "맞춤 광고",
-      "개인 맞춤 광고를 관리",
       "쿠키",
-      "웹 비콘",
       "IP 주소",
-      "제3자 광고 및 쿠키",
-      "Google AdSense 등 제3자 광고 서비스를 사용할 수",
       "유사 기술",
       "브라우저 설정",
       "Google 광고 설정",
@@ -135,6 +131,47 @@ test("정책 페이지는 H1, SEO metadata, canonical과 연락처를 가진다"
       assert.match(source, new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     }
   }
+});
+
+test("소개 페이지는 공개 계산기 10개만 최신 URL로 안내한다", async () => {
+  const source = await readFile("app/about/page.tsx", "utf8");
+  const publicRoutes = [
+    "/calculators/seller-margin/",
+    "/calculators/salary/",
+    "/calculators/loan/",
+    "/calculators/severance/",
+    "/calculators/unemployment/",
+    "/calculators/social-insurance/",
+    "/calculators/labor-pay/",
+    "/calculators/vat-profit/",
+    "/calculators/parental-leave/",
+    "/calculators/rent-vs-jeonse/",
+  ];
+  assert.equal((source.match(/href="\/calculators\//g) ?? []).length, 10);
+  for (const route of publicRoutes) assert.match(source, new RegExp(`href="${route}"`));
+  for (const privateSlug of [
+    "roas",
+    "savings",
+    "average-price",
+    "card-installment",
+    "brokerage-fee",
+    "car-cost",
+    "overtime-pay",
+    "youth-future-savings",
+    "dsr",
+    "work-child-incentive",
+  ]) {
+    assert.doesNotMatch(source, new RegExp(`/calculators/${privateSlug}`));
+  }
+});
+
+test("개인정보처리방침은 실제 분석·광고 목적을 구분하고 임시 표현과 중복 섹션을 사용하지 않는다", async () => {
+  const source = await readFile("app/privacy-policy/page.tsx", "utf8");
+  assert.match(source, /사이트 이용 현황을 파악하고 서비스를 개선하기 위해 Google/);
+  assert.match(source, /Google AdSense는 페이지에 광고를 제공하고/);
+  assert.doesNotMatch(source, /초기 MVP|Google Search Console|제3자 광고 및 쿠키/);
+  assert.equal((source.match(/<h2>분석·광고와 쿠키<\/h2>/g) ?? []).length, 1);
+  assert.doesNotMatch(source, /사용할 수 있습니다|향후 적용될 경우|광고 서비스가 적용될 경우/);
 });
 
 test("정책 페이지는 Cloudflare 이메일 보호 대상 mailto 링크를 사용하지 않는다", async () => {

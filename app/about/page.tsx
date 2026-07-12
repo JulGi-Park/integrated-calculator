@@ -11,7 +11,7 @@ const ogImage = "https://gyesanbox.kr/og/about.png";
 export const metadata: Metadata = {
   title: "계산박스 소개 | 계산박스",
   description:
-    "계산박스는 판매자 마진, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여 등 생활·금융·근로 계산기를 제공하는 온라인 계산기 모음입니다.",
+    "계산박스는 판매자 마진, 부가세, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여, 육아휴직급여, 전세·월세 비교 등 생활·금융·근로·사업·판매·주거 계산기를 제공하는 온라인 계산기 모음입니다.",
   alternates: {
     canonical: ogUrl,
   },
@@ -42,7 +42,7 @@ export default function AboutPage() {
     <PolicyPageLayout
       eyebrow="About"
       title="계산박스 소개"
-      description="계산박스는 대한민국 사용자를 위한 생활·금융·근로 계산기 모음 서비스입니다."
+      description="계산박스는 대한민국 사용자를 위한 생활·금융·근로·사업·판매·주거 계산기 모음 서비스입니다."
     >
       <section>
         <h2>서비스 목적</h2>
@@ -57,13 +57,16 @@ export default function AboutPage() {
       <section>
         <h2>현재 제공 중인 계산기</h2>
         <ul>
-          <li>판매자 마진 계산기</li>
-          <li>연봉 실수령액 계산기</li>
-          <li>4대보험 계산기</li>
-          <li>주휴수당 계산기</li>
-          <li>대출 이자 계산기</li>
-          <li>퇴직금 계산기</li>
-          <li>실업급여 계산기</li>
+          <li><a href="/calculators/seller-margin/">판매자 마진 계산기</a></li>
+          <li><a href="/calculators/salary/">연봉 실수령액 계산기</a></li>
+          <li><a href="/calculators/loan/">대출 이자 계산기</a></li>
+          <li><a href="/calculators/severance/">퇴직금 계산기</a></li>
+          <li><a href="/calculators/unemployment/">실업급여 계산기</a></li>
+          <li><a href="/calculators/social-insurance/">2026 4대보험 계산기</a></li>
+          <li><a href="/calculators/labor-pay/">주휴수당 계산기</a></li>
+          <li><a href="/calculators/vat-profit/">부가세 계산기</a></li>
+          <li><a href="/calculators/parental-leave/">육아휴직급여 계산기</a></li>
+          <li><a href="/calculators/rent-vs-jeonse/">전세 vs 월세 계산기</a></li>
         </ul>
       </section>
 
