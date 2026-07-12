@@ -16,6 +16,7 @@ const routes = [
   "/calculators/severance/",
   "/calculators/unemployment/",
   "/calculators/parental-leave/",
+  "/calculators/rent-vs-jeonse/",
   "/about/",
   "/contact/",
   "/privacy-policy/",

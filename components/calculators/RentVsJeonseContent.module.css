@@ -1,0 +1,258 @@
+.content {
+  display: grid;
+  gap: 24px;
+  margin-top: 28px;
+}
+
+.section,
+.disclaimer {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 18px 50px rgba(35, 57, 43, 0.06);
+}
+
+.section {
+  padding: 30px;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+}
+
+.sectionHeading h2,
+.sectionHeading p {
+  margin: 0;
+}
+
+.sectionHeading h2 {
+  font-size: clamp(1.3rem, 3vw, 1.75rem);
+}
+
+.sectionHeading p {
+  max-width: 390px;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.6;
+  text-align: right;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.infoCard,
+.exampleCard {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #e1e6e2;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.infoCard h3,
+.exampleCard h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+.infoCard p,
+.exampleCard p {
+  margin: 0;
+  color: #4f5c54;
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.pointList,
+.exclusionList,
+.sourceList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pointList {
+  display: grid;
+  gap: 10px;
+}
+
+.pointList li,
+.exclusionList li {
+  position: relative;
+  padding-left: 16px;
+  color: #4f5c54;
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.pointList li::before,
+.exclusionList li::before {
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  content: "•";
+}
+
+.exampleGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 16px;
+}
+
+.exampleCard dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.exampleCard dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.exampleCard dt {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.exampleCard dd {
+  margin: 0;
+  text-align: right;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.exclusionList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px 18px;
+}
+
+.faqList {
+  display: grid;
+  gap: 10px;
+}
+
+.faqList details {
+  border: 1px solid #e1e6e2;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.faqList summary {
+  cursor: pointer;
+  padding: 16px 18px;
+  color: #344039;
+  font-weight: 800;
+}
+
+.faqList p {
+  margin: 0;
+  padding: 0 18px 16px;
+  color: #566159;
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.sourceList {
+  display: grid;
+  gap: 12px;
+}
+
+.sourceList li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #e1e6e2;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.sourceList div {
+  display: grid;
+  gap: 4px;
+}
+
+.sourceList strong {
+  color: #344039;
+}
+
+.sourceList span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.sourceList a {
+  flex: 0 0 auto;
+  color: var(--accent-dark);
+  font-weight: 800;
+}
+
+.relatedLink {
+  display: grid;
+  gap: 8px;
+  max-width: 420px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: inherit;
+  background: #fff;
+  text-decoration: none;
+}
+
+.relatedLink:hover {
+  border-color: var(--accent);
+}
+
+.relatedLink span {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.disclaimer {
+  padding: 22px 26px;
+  color: #566159;
+  font-size: 0.86rem;
+  line-height: 1.8;
+}
+
+@media (max-width: 900px) {
+  .cardGrid,
+  .exampleGrid,
+  .exclusionList {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .section,
+  .disclaimer {
+    padding: 22px;
+    border-radius: 18px;
+  }
+
+  .sectionHeading {
+    display: block;
+  }
+
+  .sectionHeading p {
+    margin-top: 8px;
+    text-align: left;
+  }
+
+  .sourceList li {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

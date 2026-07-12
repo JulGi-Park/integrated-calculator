@@ -9,7 +9,7 @@ const ogImage = "https://gyesanbox.kr/og/calculators.png";
 export const metadata: Metadata = {
   title: "계산박스 계산기 목록",
   description:
-    "계산박스에서 급여·근로, 금융, 사업·판매 목적에 맞는 판매자 마진, 부가세, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여, 육아휴직급여 계산기를 확인하세요.",
+    "계산박스에서 급여·근로, 금융, 주거, 사업·판매 목적에 맞는 판매자 마진, 부가세, 연봉 실수령액, 대출 이자, 육아휴직급여, 전세·월세 비교 계산기를 확인하세요.",
   alternates: {
     canonical: ogUrl,
   },
@@ -42,7 +42,7 @@ export default function CalculatorsPage() {
         <p className="page-heading__eyebrow">Calculators</p>
         <h1>계산기 목록</h1>
         <p>
-          현재 공개 운영 중인 계산기 9개만 모았습니다. 각 계산기는 입력값,
+          현재 공개 운영 중인 계산기 10개만 모았습니다. 각 계산기는 입력값,
           계산 기준, 결과 해석과 주의사항을 함께 제공합니다.
         </p>
       </div>
@@ -54,7 +54,7 @@ export default function CalculatorsPage() {
         </article>
         <article>
           <h2>금융</h2>
-          <p>대출 이자는 원금, 금리, 기간, 상환 방식별 부담을 비교할 때 먼저 확인하기 좋습니다.</p>
+          <p>대출 이자와 전세·월세 비교는 자금 조달 조건과 거주기간 부담을 함께 살펴볼 때 사용합니다.</p>
         </article>
         <article>
           <h2>사업·판매</h2>
@@ -83,6 +83,23 @@ export default function CalculatorsPage() {
           <span className="calculator-card__arrow" aria-hidden="true">
             →
           </span>
+        </a>
+
+        <a
+          className="calculator-card"
+          href="/calculators/rent-vs-jeonse/"
+          role="listitem"
+        >
+          <div>
+            <span className="calculator-card__category">주거</span>
+            <h2>전세 vs 월세 비교 계산기</h2>
+            <p>전세대출 이자와 보증금 기회비용, 월세·관리비를 함께 비교합니다.</p>
+            <p>
+              대표 입력값: 보증금, 대출금리, 월세, 관리비, 거주기간 · 결과:
+              월 부담, 총비용, 조건부 비교
+            </p>
+          </div>
+          <span className="calculator-card__arrow" aria-hidden="true">→</span>
         </a>
 
         <a

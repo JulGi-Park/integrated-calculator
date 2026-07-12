@@ -26,6 +26,10 @@ const requiredStaticFiles = [
     "육아휴직급여 계산기",
   ],
   [
+    "out/calculators/rent-vs-jeonse/index.html",
+    "전세 vs 월세 비교 계산기",
+  ],
+  [
     "out/calculators/social-insurance/index.html",
     "2026 4대보험 계산기",
   ],
@@ -38,7 +42,6 @@ const requiredStaticFiles = [
 const forbiddenPrivateOutputPaths = [
   "out/calculators/roas",
   "out/calculators/dsr",
-  "out/calculators/rent-vs-jeonse",
   "out/calculators/car-cost",
   "out/calculators/savings",
   "out/calculators/average-price",
@@ -62,6 +65,7 @@ const publicHtmlFilesWithoutPrivateRoutes = [
   "out/calculators/social-insurance/index.html",
   "out/calculators/labor-pay/index.html",
   "out/calculators/parental-leave/index.html",
+  "out/calculators/rent-vs-jeonse/index.html",
 ];
 
 const forbiddenSourcePatterns = [
@@ -180,7 +184,7 @@ async function verifyStaticOutput() {
   const sitemap = await readFile(path.join(projectRoot, "out/sitemap.xml"), "utf8");
   assert.doesNotMatch(
     sitemap,
-    /roas|dsr|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|work-child-incentive/,
+    /roas|dsr|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|work-child-incentive/,
   );
 
   for (const relativePath of publicHtmlFilesWithoutPrivateRoutes) {
@@ -188,7 +192,7 @@ async function verifyStaticOutput() {
 
     assert.doesNotMatch(
       html,
-      /roas|dsr|rent-vs-jeonse|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|work-child-incentive|부동산 중개보수 계산기/,
+      /roas|dsr|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|work-child-incentive|부동산 중개보수 계산기/,
     );
   }
 }

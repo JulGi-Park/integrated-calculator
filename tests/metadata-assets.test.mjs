@@ -10,7 +10,7 @@ const publicPageMetadataCases = [
     modulePath: "../app/page.tsx",
     title: "계산박스 - 생활 계산기 모음",
     description:
-      "부가세, 연봉, 4대보험, 주휴수당, 대출, 퇴직금, 실업급여, 육아휴직급여 등 실생활에 필요한 계산기를 한곳에서 확인할 수 있습니다.",
+      "부가세, 연봉, 대출, 퇴직금, 육아휴직급여, 전세·월세 비교 등 실생활에 필요한 계산기를 한곳에서 확인할 수 있습니다.",
   },
   {
     path: "/calculators/",
@@ -205,6 +205,21 @@ test("육아휴직급여 계산기는 검증된 공용 OG 이미지를 사용한
   const pageModule = await import("../app/calculators/parental-leave/page.tsx");
   const metadata = pageModule.metadata;
   const url = "https://gyesanbox.kr/calculators/parental-leave/";
+  const image = "https://gyesanbox.kr/og-default.png";
+
+  assert.equal(metadata.alternates.canonical, url);
+  assert.equal(metadata.openGraph.url, url);
+  assert.deepEqual(metadata.openGraph.images, [
+    { url: image, width: 1200, height: 630, alt: metadata.title },
+  ]);
+  assert.equal(metadata.twitter.card, "summary_large_image");
+  assert.deepEqual(metadata.twitter.images, [image]);
+});
+
+test("전세 vs 월세 계산기는 검증된 공용 OG 이미지를 사용한다", async () => {
+  const pageModule = await import("../app/calculators/rent-vs-jeonse/page.tsx");
+  const metadata = pageModule.metadata;
+  const url = "https://gyesanbox.kr/calculators/rent-vs-jeonse/";
   const image = "https://gyesanbox.kr/og-default.png";
 
   assert.equal(metadata.alternates.canonical, url);
