@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import methodologyModule from "../app/methodology/page.tsx";
+import updatesModule from "../app/updates/page.tsx";
 
 const pages = [
   {
@@ -214,7 +218,7 @@ test("홈 JSON-LD ItemList는 공개 계산기만 유지한다", async () => {
 
 test("방법론·변경 이력 페이지는 공개 SEO와 JSON-LD를 갖는다", async () => {
   for (const [file, path, title, required] of [
-    ["app/methodology/page.tsx", "/methodology/", "계산 방법론 | 계산박스", ["공식 출처 우선순위", "기준일은 자료를 확인한 날짜", "경계값", "브라우저 중심"]],
+    ["app/methodology/page.tsx", "/methodology/", "계산 방법론 | 계산박스", ["공식 출처 우선순위", "기준일은 자료를 확인한 날짜", "합계금액 10,000원", "하한 41만원", "14시간과 15시간", "NaN", "Infinity", "브라우저 중심", "개인별 세무·노무·금융 상담"]],
     ["app/updates/page.tsx", "/updates/", "계산기 변경 이력 | 계산박스", ["2026년 7월 10일", "2026년 7월 11일", "2026년 7월 12일", "상세 페이지 보기"]],
   ]) {
     const source = await readFile(file, "utf8");
@@ -228,6 +232,85 @@ test("방법론·변경 이력 페이지는 공개 SEO와 JSON-LD를 갖는다",
     assert.match(source, /WebPage/);
     for (const text of required) assert.match(source, new RegExp(text));
   }
+});
+
+test("방법론은 실제 계산기 경계 사례를 설명하고 변경 이력은 방문자 언어를 사용한다", async () => {
+  const [methodology, updates] = await Promise.all([
+    readFile("app/methodology/page.tsx", "utf8"),
+    readFile("app/updates/page.tsx", "utf8"),
+  ]);
+
+  for (const text of [
+    "공급가액을 원 단위로 반올림",
+    "회차 이자가 정확히 0.5원",
+    "상한 초과 입력",
+    "주휴시간이 8시간",
+    "600개월",
+    "재현 입력을 테스트에 남기고",
+  ]) assert.match(methodology, new RegExp(text));
+
+  assert.doesNotMatch(
+    updates,
+    /정적 검증 대상|정책 모듈|클라이언트 유틸리티|운영 canonical|about·contact/,
+  );
+});
+
+test("신규 페이지는 H1 하나와 파싱 가능한 WebPage·BreadcrumbList JSON-LD를 렌더링한다", () => {
+  for (const Page of [methodologyModule.default, updatesModule.default]) {
+    const html = renderToStaticMarkup(React.createElement(Page));
+    const scripts = [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g)]
+      .map((match) => JSON.parse(match[1]));
+
+    assert.equal((html.match(/<h1/g) ?? []).length, 1);
+    assert.deepEqual(
+      scripts.map((item) => item["@type"]),
+      ["BreadcrumbList", "WebPage"],
+    );
+    assert.equal(scripts[0].itemListElement.length, 2);
+    assert.equal(scripts[0].itemListElement[0].item, "https://gyesanbox.kr/");
+    assert.match(scripts[1].url, /^https:\/\/gyesanbox\.kr\/(?:methodology|updates)\/$/);
+  }
+});
+
+test("신규 핵심 본문은 기존 페이지와 35자 이상 완전 중복 문장을 사용하지 않는다", async () => {
+  const calculatorDirs = await readdir("app/calculators", { withFileTypes: true });
+  const calculatorPageFiles = calculatorDirs
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => `app/calculators/${entry.name}/page.tsx`);
+  const componentFiles = (await readdir("components/calculators"))
+    .filter((name) => /Content\.tsx$/.test(name))
+    .map((name) => `components/calculators/${name}`);
+  const comparisonFiles = [
+    "app/about/page.tsx",
+    "app/disclaimer/page.tsx",
+    ...calculatorPageFiles,
+    ...componentFiles,
+  ];
+
+  const extractSentences = (source) => [...source.matchAll(/<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/g)]
+    .flatMap((match) => match[1]
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\{[\s\S]*?\}/g, " ")
+      .split(/[.!?]/))
+    .map((sentence) => sentence.replace(/\s+/g, ""))
+    .filter((sentence) => sentence.length >= 35);
+
+  const methodology = await readFile("app/methodology/page.tsx", "utf8");
+  const methodologySentences = new Set(extractSentences(methodology));
+  const existingSources = await Promise.all(comparisonFiles.map((file) => readFile(file, "utf8")));
+  const existingSentences = new Set(existingSources.flatMap(extractSentences));
+
+  for (const sentence of methodologySentences) {
+    assert.equal(existingSentences.has(sentence), false, `중복 문장: ${sentence}`);
+  }
+
+  const updates = await readFile("app/updates/page.tsx", "utf8");
+  const longLiterals = [...updates.matchAll(/"([^"\n]{35,})"/g)].map((match) => match[1]);
+  assert.equal(new Set(longLiterals).size, longLiterals.length);
+  assert.doesNotMatch(
+    `${methodology}\n${updates}`,
+    /정확한 정보를 제공합니다|공식 자료를 참고합니다|지속적으로 업데이트합니다|신뢰할 수 있는 결과를 제공합니다|사용자 편의를 위해 노력합니다|TODO|placeholder|lorem ipsum|준비 중|곧 공개|초기 MVP/i,
+  );
 });
 
 test("소개·문의·홈은 방법론과 변경 이력을 연결하고 비공개 계산기를 노출하지 않는다", async () => {
