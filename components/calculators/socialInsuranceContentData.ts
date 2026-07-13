@@ -23,6 +23,12 @@ function formatWon(value: number): string {
   return `${value.toLocaleString("ko-KR")}원`;
 }
 
+function formatRate(value: number): string {
+  return `${(value * 100).toLocaleString("ko-KR", {
+    maximumFractionDigits: 3,
+  })}%`;
+}
+
 function formatKoreanDate(value: string): string {
   const [year, month, day] = value.split("-").map(Number);
   return `${year}년 ${month}월 ${day}일`;
@@ -91,19 +97,19 @@ export const socialInsuranceCriteria = [
   },
   {
     title: "국민연금",
-    description: `근로자 부담률 ${policy.nationalPension.employeeRate * 100}%를 적용합니다. 신고 소득월액은 1,000원 미만을 버린 뒤 기준소득월액 ${formatWon(policy.nationalPension.standardMonthlyIncomeMinimum)}~${formatWon(policy.nationalPension.standardMonthlyIncomeMaximum)} 범위를 적용하고, 근로자 부담액은 10원 미만을 버립니다. 적용 기간은 ${formatKoreanDate(policy.nationalPension.effectiveFrom)}부터 ${formatKoreanDate(policy.nationalPension.effectiveTo)}까지입니다.`,
+    description: `근로자 부담률 ${formatRate(policy.nationalPension.employeeRate)}를 적용합니다. 신고 소득월액은 1,000원 미만을 버린 뒤 기준소득월액 ${formatWon(policy.nationalPension.standardMonthlyIncomeMinimum)}~${formatWon(policy.nationalPension.standardMonthlyIncomeMaximum)} 범위를 적용하고, 근로자 부담액은 10원 미만을 버립니다. 적용 기간은 ${formatKoreanDate(policy.nationalPension.effectiveFrom)}부터 ${formatKoreanDate(policy.nationalPension.effectiveTo)}까지입니다.`,
   },
   {
     title: "건강보험",
-    description: `2026년 직장가입자 총 보험료율 ${policy.healthInsurance.totalRate * 100}% 중 근로자 부담분 ${policy.healthInsurance.employeeRate * 100}%를 과세기준급여에 적용합니다.`,
+    description: `2026년 직장가입자 총 보험료율 ${formatRate(policy.healthInsurance.totalRate)} 중 근로자 부담분 ${formatRate(policy.healthInsurance.employeeRate)}를 과세기준급여에 적용합니다.`,
   },
   {
     title: "장기요양보험",
-    description: `장기요양보험료는 건강보험료와 별도로 표시되는 공제이며, 본 계산기는 근로자 건강보험료 × ${policy.longTermCareInsurance.healthInsuranceRate * 100}% 방식으로 계산합니다.`,
+    description: `장기요양보험료는 건강보험료와 별도로 표시되는 공제이며, 본 계산기는 근로자 건강보험료 × ${formatRate(policy.longTermCareInsurance.healthInsuranceRate)} 방식으로 계산합니다.`,
   },
   {
     title: "고용보험",
-    description: `실업급여 계정 근로자 부담률 ${policy.employmentInsurance.unemploymentBenefitEmployeeRate * 100}%를 적용합니다. 고용안정·직업능력개발 계정은 사업주 부담이므로 근로자 공제액에는 넣지 않습니다.`,
+    description: `실업급여 계정 근로자 부담률 ${formatRate(policy.employmentInsurance.unemploymentBenefitEmployeeRate)}를 적용합니다. 고용안정·직업능력개발 계정은 사업주 부담이므로 근로자 공제액에는 넣지 않습니다.`,
   },
   {
     title: "산재보험",
