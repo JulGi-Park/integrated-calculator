@@ -91,7 +91,7 @@ export const socialInsuranceCriteria = [
   },
   {
     title: "국민연금",
-    description: `근로자 부담률 ${policy.nationalPension.employeeRate * 100}%를 적용합니다. 기준소득월액은 ${formatWon(policy.nationalPension.standardMonthlyIncomeMinimum)}~${formatWon(policy.nationalPension.standardMonthlyIncomeMaximum)} 범위로 제한하며, 적용 기간은 ${formatKoreanDate(policy.nationalPension.effectiveFrom)}부터 ${formatKoreanDate(policy.nationalPension.effectiveTo)}까지입니다.`,
+    description: `근로자 부담률 ${policy.nationalPension.employeeRate * 100}%를 적용합니다. 신고 소득월액은 1,000원 미만을 버린 뒤 기준소득월액 ${formatWon(policy.nationalPension.standardMonthlyIncomeMinimum)}~${formatWon(policy.nationalPension.standardMonthlyIncomeMaximum)} 범위를 적용하고, 근로자 부담액은 10원 미만을 버립니다. 적용 기간은 ${formatKoreanDate(policy.nationalPension.effectiveFrom)}부터 ${formatKoreanDate(policy.nationalPension.effectiveTo)}까지입니다.`,
   },
   {
     title: "건강보험",

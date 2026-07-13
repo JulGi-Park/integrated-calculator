@@ -6,6 +6,7 @@ import {
   calculateSocialInsurance,
   validateSocialInsuranceInput,
 } from "../lib/calculators/social-insurance/calculate.ts";
+import { calculateSalaryTakeHome } from "../lib/calculators/salary-take-home/salary-take-home.ts";
 import {
   SOCIAL_INSURANCE_POLICY_2026,
 } from "../lib/calculators/social-insurance/constants.ts";
@@ -13,8 +14,10 @@ import {
   socialInsuranceFaqJsonLd,
   socialInsuranceFaqs,
   socialInsuranceExamples,
+  socialInsuranceCriteria,
   socialInsuranceSources,
 } from "../components/calculators/socialInsuranceContentData.ts";
+import { buildSocialInsuranceResultText } from "../components/calculators/socialInsuranceClientUtils.ts";
 
 const baseInput = {
   monthlySalary: 3_000_000,
@@ -112,10 +115,90 @@ test("국민연금 하한과 상한을 적용한다", () => {
 
   assert.equal(minimum.pensionBase, 410_000);
   assert.equal(minimum.pensionBaseStatus, "minimum");
-  assert.equal(minimum.employeePension, 19_475);
+  assert.equal(minimum.employeePension, 19_470);
   assert.equal(maximum.pensionBase, 6_590_000);
   assert.equal(maximum.pensionBaseStatus, "maximum");
-  assert.equal(maximum.employeePension, 313_025);
+  assert.equal(maximum.employeePension, 313_020);
+});
+
+test("국민연금 기준소득월액은 1,000원 미만, 근로자 부담액은 10원 미만을 절사한다", () => {
+  const cases = [
+    [409_999, 410_000, 19_470],
+    [410_000, 410_000, 19_470],
+    [410_999, 410_000, 19_470],
+    [411_000, 411_000, 19_520],
+    [6_000_000, 6_000_000, 285_000],
+    [6_000_999, 6_000_000, 285_000],
+    [6_370_000, 6_370_000, 302_570],
+    [6_370_001, 6_370_000, 302_570],
+    [6_370_999, 6_370_000, 302_570],
+    [6_371_000, 6_371_000, 302_620],
+    [6_500_000, 6_500_000, 308_750],
+    [6_590_000, 6_590_000, 313_020],
+    [6_590_001, 6_590_000, 313_020],
+    [7_000_000, 6_590_000, 313_020],
+  ];
+
+  for (const [monthlySalary, pensionBase, employeePension] of cases) {
+    const data = assertSuccess(
+      calculateSocialInsurance({ monthlySalary, nonTaxableAmount: 0 }),
+    );
+    assert.equal(data.pensionBase, pensionBase, `${monthlySalary}원 기준소득월액`);
+    assert.equal(data.employeePension, employeePension, `${monthlySalary}원 근로자 부담액`);
+  }
+});
+
+test("국민연금 절사 변경은 다른 근로자 부담 보험료를 바꾸지 않고 총액·복사 출력에 반영한다", () => {
+  const input = { monthlySalary: 6_590_000, nonTaxableAmount: 0 };
+  const data = assertSuccess(calculateSocialInsurance(input));
+
+  assert.equal(data.employeePension, 313_020);
+  assert.equal(data.employeeHealthInsurance, 236_911);
+  assert.equal(data.employeeLongTermCare, 31_130);
+  assert.equal(data.employeeEmploymentInsurance, 59_310);
+  assert.equal(data.totalEmployeeContribution, 640_371);
+  assert.equal(data.afterContributionAmount, 5_949_629);
+  assert.match(buildSocialInsuranceResultText(input, data), /국민연금: 313,020원/);
+  assert.match(buildSocialInsuranceResultText(input, data), /총 공제액: 640,371원/);
+});
+
+test("국민연금 절사 기준 설명과 계산기 결과 영역은 같은 근로자 부담 결과를 사용한다", async () => {
+  const source = await readFile(
+    "components/calculators/SocialInsuranceCalculator.tsx",
+    "utf8",
+  );
+  const pensionCriterion = socialInsuranceCriteria.find(
+    ({ title }) => title === "국민연금",
+  );
+
+  assert.match(pensionCriterion.description, /1,000원 미만을 버린 뒤/);
+  assert.match(pensionCriterion.description, /10원 미만을 버립니다/);
+  assert.match(source, /<dt>국민연금<\/dt>\s*<dd>\{formatWon\(result\.employeePension\)\}<\/dd>/);
+  assert.match(source, /<strong>\{formatWon\(result\.totalEmployeeContribution\)\}<\/strong>/);
+});
+
+test("대표 기준소득월액의 국민연금 근로자 부담액은 연봉 계산기와 일치한다", () => {
+  const monthlyIncomes = [410_000, 6_000_000, 6_370_000, 6_500_000, 6_590_000, 7_000_000];
+
+  for (const monthlyIncome of monthlyIncomes) {
+    const socialInsurance = assertSuccess(
+      calculateSocialInsurance({ monthlySalary: monthlyIncome, nonTaxableAmount: 0 }),
+    );
+    const salaryTakeHome = assertSuccess(
+      calculateSalaryTakeHome({
+        annualSalary: monthlyIncome * 12,
+        monthlyNonTaxableAmount: 0,
+        dependentCount: 1,
+        childCount: 0,
+      }),
+    );
+
+    assert.equal(
+      socialInsurance.employeePension,
+      salaryTakeHome.nationalPension,
+      `${monthlyIncome}원 국민연금 부담액`,
+    );
+  }
 });
 
 test("총 공제액과 공제 후 참고 금액이 개별 항목 합계와 일치한다", () => {

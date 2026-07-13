@@ -63,6 +63,21 @@ function roundWon(value: number): number {
   return Math.round(value);
 }
 
+function floorToUnit(value: number, unit: number): number {
+  return Math.floor(value / unit) * unit;
+}
+
+function calculatePensionBase(taxableMonthlyPay: number): number {
+  const { standardMonthlyIncomeMinimum, standardMonthlyIncomeMaximum } =
+    SOCIAL_INSURANCE_POLICY_2026.nationalPension;
+  const reportedMonthlyIncome = floorToUnit(taxableMonthlyPay, 1_000);
+
+  return Math.min(
+    standardMonthlyIncomeMaximum,
+    Math.max(standardMonthlyIncomeMinimum, reportedMonthlyIncome),
+  );
+}
+
 export function validateSocialInsuranceInput(
   input: unknown,
 ): SocialInsuranceValidationError[] {
@@ -199,15 +214,10 @@ export function calculateSocialInsurance(
   const policy = SOCIAL_INSURANCE_POLICY_2026;
   const taxableMonthlyPay =
     normalizedInput.monthlySalary - normalizedInput.nonTaxableAmount;
-  const pensionBase = Math.min(
-    policy.nationalPension.standardMonthlyIncomeMaximum,
-    Math.max(
-      policy.nationalPension.standardMonthlyIncomeMinimum,
-      taxableMonthlyPay,
-    ),
-  );
-  const employeePension = roundWon(
+  const pensionBase = calculatePensionBase(taxableMonthlyPay);
+  const employeePension = floorToUnit(
     pensionBase * policy.nationalPension.employeeRate,
+    10,
   );
   const employeeHealthInsurance = roundWon(
     taxableMonthlyPay * policy.healthInsurance.employeeRate,
