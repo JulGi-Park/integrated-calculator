@@ -22,6 +22,8 @@ const routeFiles = [
   ["app/calculators/parental-leave/page.tsx", "/calculators/parental-leave/"],
   ["app/calculators/rent-vs-jeonse/page.tsx", "/calculators/rent-vs-jeonse/"],
   ["app/about/page.tsx", "/about/"],
+  ["app/methodology/page.tsx", "/methodology/"],
+  ["app/updates/page.tsx", "/updates/"],
   ["app/contact/page.tsx", "/contact/"],
   ["app/privacy-policy/page.tsx", "/privacy-policy/"],
   ["app/terms/page.tsx", "/terms/"],

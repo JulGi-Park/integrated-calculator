@@ -211,3 +211,34 @@ test("홈 JSON-LD ItemList는 공개 계산기만 유지한다", async () => {
   }
   assert.match(source, /calculators\.map/);
 });
+
+test("방법론·변경 이력 페이지는 공개 SEO와 JSON-LD를 갖는다", async () => {
+  for (const [file, path, title, required] of [
+    ["app/methodology/page.tsx", "/methodology/", "계산 방법론 | 계산박스", ["공식 출처 우선순위", "기준일은 자료를 확인한 날짜", "경계값", "브라우저 중심"]],
+    ["app/updates/page.tsx", "/updates/", "계산기 변경 이력 | 계산박스", ["2026년 7월 10일", "2026년 7월 11일", "2026년 7월 12일", "상세 페이지 보기"]],
+  ]) {
+    const source = await readFile(file, "utf8");
+    assert.equal((source.match(/<h1/g) ?? []).length, 0);
+    assert.match(source, new RegExp(`const title = "${title}"`));
+    assert.match(source, new RegExp(`canonical = "https://gyesanbox.kr${path}"`));
+    assert.match(source, /description =/);
+    assert.match(source, /openGraph:/);
+    assert.match(source, /twitter:/);
+    assert.match(source, /BreadcrumbList/);
+    assert.match(source, /WebPage/);
+    for (const text of required) assert.match(source, new RegExp(text));
+  }
+});
+
+test("소개·문의·홈은 방법론과 변경 이력을 연결하고 비공개 계산기를 노출하지 않는다", async () => {
+  const sources = await Promise.all([
+    readFile("app/page.tsx", "utf8"),
+    readFile("app/about/page.tsx", "utf8"),
+    readFile("app/contact/page.tsx", "utf8"),
+  ]);
+  assert.match(sources[0], /href="\/methodology\/"/);
+  assert.match(sources[1], /href="\/methodology\/"/);
+  assert.match(sources[1], /href="\/updates\/"/);
+  assert.match(sources[2], /href="\/methodology\/"/);
+  assert.doesNotMatch(sources.join("\n"), /\/calculators\/(?:roas|savings|average-price|card-installment|brokerage-fee|car-cost|overtime-pay|youth-future-savings|dsr|work-child-incentive)\//);
+});

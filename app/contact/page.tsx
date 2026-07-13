@@ -83,6 +83,10 @@ export default function ContactPage() {
           판단한 기준, 공식 출처 주소 또는 자료명, 자료의 발표일이나 시행일을
           함께 적어 주세요.
         </p>
+        <p>
+          계산 기준을 확인하는 방법은 <a href="/methodology/">계산 방법론</a>에
+          정리되어 있습니다.
+        </p>
       </section>
 
       <section>

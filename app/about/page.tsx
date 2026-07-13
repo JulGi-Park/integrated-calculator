@@ -119,6 +119,15 @@ export default function AboutPage() {
           급여명세서 원본처럼 민감한 개인정보는 보내지 않는 것이 좋습니다.
         </p>
       </section>
+
+      <section>
+        <h2>운영 방식 더 보기</h2>
+        <p>
+          기준을 조사하고 계산식을 검수·갱신하는 자세한 방법은{" "}
+          <a href="/methodology/">계산 방법론</a>에서, 확인 가능한 공개 변경은{" "}
+          <a href="/updates/">변경 이력</a>에서 확인할 수 있습니다.
+        </p>
+      </section>
     </PolicyPageLayout>
   );
 }

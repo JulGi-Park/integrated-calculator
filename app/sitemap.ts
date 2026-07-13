@@ -18,6 +18,8 @@ const routes = [
   "/calculators/parental-leave/",
   "/calculators/rent-vs-jeonse/",
   "/about/",
+  "/methodology/",
+  "/updates/",
   "/contact/",
   "/privacy-policy/",
   "/terms/",

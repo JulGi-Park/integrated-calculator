@@ -20,25 +20,35 @@ const expectedUrls = [
   "https://gyesanbox.kr/calculators/parental-leave/",
   "https://gyesanbox.kr/calculators/rent-vs-jeonse/",
   "https://gyesanbox.kr/about/",
+  "https://gyesanbox.kr/methodology/",
+  "https://gyesanbox.kr/updates/",
   "https://gyesanbox.kr/contact/",
   "https://gyesanbox.kr/privacy-policy/",
   "https://gyesanbox.kr/terms/",
   "https://gyesanbox.kr/disclaimer/",
 ];
 
-test("sitemap은 운영 도메인과 구현 완료 페이지 및 정책 페이지 17개를 포함한다", () => {
+test("sitemap은 운영 도메인과 구현 완료 페이지 및 정책 페이지 19개를 포함한다", () => {
   const entries = sitemap();
 
   assert.deepEqual(
     entries.map((entry) => entry.url),
     expectedUrls,
   );
-  assert.equal(entries.length, 17);
+  assert.equal(entries.length, 19);
 
   for (const entry of entries) {
     assert.equal(entry.url.startsWith("https://gyesanbox.kr"), true);
     assert.doesNotMatch(entry.url, /pages\.dev|localhost|127\.0\.0\.1|example\.com/);
   }
+});
+
+test("sitemap은 비공개 계산기 10개를 포함하지 않는다", () => {
+  const urls = sitemap().map((entry) => entry.url).join("\n");
+  assert.doesNotMatch(
+    urls,
+    /roas|savings|average-price|card-installment|brokerage-fee|car-cost|overtime-pay|youth-future-savings|dsr|work-child-incentive/,
+  );
 });
 
 test("robots는 주요 페이지 색인을 막지 않고 운영 sitemap을 가리킨다", () => {

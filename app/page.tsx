@@ -252,6 +252,11 @@ export default function Home() {
             </article>
           ))}
         </div>
+        <p className="home-principles__link">
+          <a className="text-link" href="/methodology/">
+            계산 방법론과 검수 절차 보기 →
+          </a>
+        </p>
       </section>
     </>
   );
