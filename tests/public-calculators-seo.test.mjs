@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
 import { PUBLIC_CALCULATOR_SEO, PUBLIC_CALCULATOR_SEO_SOURCE_NOTE } from "../lib/seo/publicCalculatorSeo.ts";
 
@@ -74,6 +74,20 @@ test("공개 계산기 대표 이미지 10개는 1200x630 PNG이며 파일 해�
     hashes.add(createHash("sha256").update(buffer).digest("hex"));
   }
   assert.equal(hashes.size, 10);
+});
+
+test("신규 대표 이미지 5개는 400KB 이하로 유지한다", async () => {
+  const newImagePaths = [
+    "public/og/social-insurance-hero.png",
+    "public/og/labor-pay-hero.png",
+    "public/og/vat-profit-hero.png",
+    "public/og/parental-leave-hero.png",
+    "public/og/rent-vs-jeonse-hero.png",
+  ];
+
+  for (const imagePath of newImagePaths) {
+    assert.ok((await stat(imagePath)).size <= 400 * 1024, imagePath);
+  }
 });
 
 test("본문 대표 이미지는 원본 비율을 유지하고 데스크톱에서 계산 입력을 과도하게 밀지 않는다", async () => {
