@@ -42,6 +42,13 @@ test("콘텐츠 데이터에 기준일, 공식 출처, FAQ, 면책 문구가 준
     assert.match(source.url, /^https:\/\//);
     assert.ok(source.supports.length > 0);
   }
+  const ntsSource = vatProfitOfficialSources.find(
+    (source) => source.organization === "국세청",
+  );
+  assert.ok(ntsSource);
+  assert.equal(new URL(ntsSource.url).hostname, "www.nts.go.kr");
+  assert.match(ntsSource.url, /cntntsId=7693/);
+  assert.notEqual(ntsSource.url, "https://www.nts.go.kr/");
   assert.ok(vatProfitFaqs.length >= 8);
   assert.match(contentSource, /공식 출처/);
   assert.match(contentSource, /target="_blank"/);

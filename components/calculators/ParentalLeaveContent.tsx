@@ -34,8 +34,15 @@ export function ParentalLeaveContent() {
 
       <section className={styles.section} aria-labelledby="special-policy-title">
         <div className={styles.sectionHeading}>
-          <h2 id="special-policy-title">특례 계산 구조화 상태</h2>
+          <h2 id="special-policy-title">특례 적용 범위와 계산 방식</h2>
           <p>{parentalLeaveSpecialPolicySummary}</p>
+          <p>
+            일반 육아휴직급여, 부모 함께 육아휴직제 6+6, 한부모 특례 중
+            사용자가 선택한 계산 모드와 조건을 기준으로 예상액을 계산합니다.
+            계산기가 가장 유리한 특례를 임의로 확정하거나 자격을 판정하지
+            않으며, 실제 지급 여부는 고용24 또는 관할 기관에서 확인해야
+            합니다.
+          </p>
           <p>
             특례가 중복될 수 있는 경우에는 고용센터 확인이 필요합니다. 이
             계산기는 임의로 더 유리한 특례를 자동 선택하지 않습니다.
@@ -47,8 +54,9 @@ export function ParentalLeaveContent() {
         <div className={styles.sectionHeading}>
           <h2 id="criteria-title">구간별 계산 기준</h2>
           <p>
-            현재 계산기는 일반 육아휴직급여만 계산하며, 월별 구간에 따라 지급률,
-            상한액, 하한액을 적용합니다.
+            일반 육아휴직급여는 월별 구간에 따라 지급률, 상한액, 하한액을
+            적용합니다. 6+6 또는 한부모 특례 모드를 선택하면 선택한 조건에
+            맞는 특례 예상액과 일반 기준 구간을 구분해 표시합니다.
           </p>
         </div>
         <div className={styles.tableScroll}>

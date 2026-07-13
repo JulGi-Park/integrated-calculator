@@ -11,7 +11,7 @@ export const vatProfitOfficialSources = [
   {
     organization: "국세청",
     title: "부가가치세 안내",
-    url: "https://www.nts.go.kr/",
+    url: "https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7693&mi=2272",
     supports: "신고, 납부, 과세유형별 안내 확인",
   },
 ] as const;
