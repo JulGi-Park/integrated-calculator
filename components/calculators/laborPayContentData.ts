@@ -16,8 +16,8 @@ export const laborPayOfficialSources = [
   },
   {
     organization: "고용노동부 고객상담센터",
-    title: "주휴수당 지급기준",
-    url: "https://1350.moel.go.kr/rtmview.do?id=1000059852",
+    title: "주휴수당 및 근로계약 안내",
+    url: "https://www.moel.go.kr/mainpop2.do",
     supports: "4주 평균 1주 소정근로시간 15시간 이상과 개근 요건",
   },
   {

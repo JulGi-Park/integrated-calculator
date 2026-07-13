@@ -41,6 +41,16 @@ test("콘텐츠 데이터에 기준일, 공식 출처, FAQ, 면책 문구가 준
     assert.match(source.url, /^https:\/\//);
     assert.ok(source.supports.length > 0);
   }
+  const laborContractSource = laborPayOfficialSources.find(
+    (source) => source.title === "주휴수당 및 근로계약 안내",
+  );
+  assert.ok(laborContractSource);
+  assert.equal(new URL(laborContractSource.url).hostname, "www.moel.go.kr");
+  assert.equal(laborContractSource.url, "https://www.moel.go.kr/mainpop2.do");
+  assert.notEqual(
+    laborContractSource.url,
+    "https://1350.moel.go.kr/rtmview.do?id=1000059852",
+  );
   assert.ok(laborPayFaqs.length >= 9);
   assert.match(contentSource, /공식 출처/);
   assert.match(contentSource, /target="_blank"/);
