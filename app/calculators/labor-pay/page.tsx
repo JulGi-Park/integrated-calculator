@@ -2,23 +2,25 @@ import type { Metadata } from "next";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { LaborPayCalculator } from "@/components/calculators/LaborPayCalculator";
 import { LaborPayContent } from "@/components/calculators/LaborPayContent";
+import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
 import {
   laborPayBaseDate,
   laborPayBreadcrumbJsonLd,
   laborPayFaqJsonLd,
   laborPayWebApplicationJsonLd,
 } from "@/components/calculators/laborPayContentData";
+import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
 
-const canonical = "https://gyesanbox.kr/calculators/labor-pay/";
+const seo = PUBLIC_CALCULATOR_SEO["labor-pay"];
+const { title, description } = seo;
+const canonical = `https://gyesanbox.kr${seo.path}`;
 const ogTitle = "주휴수당 계산기 2026 - 알바 주휴수당과 주급 계산";
-const ogDescription =
-  "2026년 최저임금과 근로기준법 기준을 참고해 시급제·단시간 근로자의 예상 주휴시간, 주휴수당, 주휴 포함 주급을 계산합니다.";
-const ogImage = "https://gyesanbox.kr/og/calculators.png";
+const ogDescription = description;
+const ogImage = seo.image;
 
 export const metadata: Metadata = {
-  title: "주휴수당 계산기 2026 - 알바 주휴수당과 주급 계산 | 계산박스",
-  description:
-    "2026년 최저임금과 근로기준법 기준을 참고해 시급제·단시간 근로자의 예상 주휴시간, 주휴수당, 주휴 포함 주급을 계산합니다.",
+  title,
+  description,
   robots: {
     index: true,
     follow: true,
@@ -50,7 +52,7 @@ export const metadata: Metadata = {
 
 export default function LaborPayPage() {
   const jsonLdItems = [
-    laborPayWebApplicationJsonLd,
+    { ...laborPayWebApplicationJsonLd, image: ogImage },
     laborPayBreadcrumbJsonLd,
     laborPayFaqJsonLd,
   ];
@@ -93,6 +95,8 @@ export default function LaborPayPage() {
         `}
       </style>
       <JsonLdScripts items={jsonLdItems} />
+
+      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
 
       <div className="page-heading labor-pay-heading">
         <p className="page-heading__eyebrow">Labor pay</p>

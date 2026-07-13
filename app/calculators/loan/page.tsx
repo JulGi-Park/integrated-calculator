@@ -3,22 +3,22 @@ import Link from "next/link";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { LoanInterestCalculator } from "@/components/calculators/LoanInterestCalculator";
 import { LoanInterestContent } from "@/components/calculators/LoanInterestContent";
+import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
 import {
   loanInterestBreadcrumbJsonLd,
   loanInterestFaqJsonLd,
   loanInterestPolicySummary,
   loanInterestWebApplicationJsonLd,
 } from "@/components/calculators/loanInterestContentData";
+import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
 
-const title =
-  "대출 이자 계산기 | 원리금균등·원금균등·만기일시상환 비교";
-const description =
-  "대출금액과 연이율, 기간을 입력해 월 납입액과 총이자를 계산하고 원리금균등·원금균등·만기일시상환 결과와 월별 일정을 비교해 보세요.";
+const seo = PUBLIC_CALCULATOR_SEO.loan;
+const { title, description } = seo;
 const ogTitle = "대출 이자 계산기 - 원리금·원금균등 상환액 확인";
 const ogDescription =
   "대출금, 금리, 기간, 상환 방식을 입력하면 월 상환액과 총 이자 부담을 계산할 수 있습니다.";
-const ogUrl = "https://gyesanbox.kr/calculators/loan/";
-const ogImage = "https://gyesanbox.kr/og/loan.png";
+const ogUrl = `https://gyesanbox.kr${seo.path}`;
+const ogImage = seo.image;
 
 export const metadata: Metadata = {
   title,
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
 
 export default function LoanInterestPage() {
   const jsonLdItems = [
-    loanInterestWebApplicationJsonLd,
+    { ...loanInterestWebApplicationJsonLd, image: ogImage },
     loanInterestBreadcrumbJsonLd,
     loanInterestFaqJsonLd,
   ];
@@ -62,6 +62,8 @@ export default function LoanInterestPage() {
   return (
     <section className="page-section">
       <JsonLdScripts items={jsonLdItems} />
+
+      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
 
       <div className="page-heading seller-margin-heading">
         <p className="page-heading__eyebrow">Loan repayment</p>

@@ -361,7 +361,7 @@ test("소셜 보험 계산기 페이지는 공개 메타데이터와 계산기 U
   assert.match(source, /<h1>2026 4대보험 계산기<\/h1>/);
   assert.equal(
     metadata.title,
-    "4대보험 계산기 2026 - 국민연금·건강보험·고용보험 공제액 계산",
+    "4대보험 계산기 2026 | 국민연금·건강보험 공제액 계산",
   );
   assert.deepEqual(metadata.robots, { index: true, follow: true });
   assert.deepEqual(metadata.alternates, {

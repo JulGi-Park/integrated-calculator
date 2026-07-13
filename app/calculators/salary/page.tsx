@@ -3,22 +3,22 @@ import Link from "next/link";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { SalaryTakeHomeCalculator } from "@/components/calculators/SalaryTakeHomeCalculator";
 import { SalaryTakeHomeContent } from "@/components/calculators/SalaryTakeHomeContent";
+import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
 import {
   salaryTakeHomeBreadcrumbJsonLd,
   salaryTakeHomeFaqJsonLd,
   salaryTakeHomeWebApplicationJsonLd,
 } from "@/components/calculators/salaryTakeHomeContentData";
 import { SALARY_TAKE_HOME_POLICY_2026 } from "@/lib/calculators/salary-take-home/policy";
+import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
 
-const title =
-  "2026 연봉 실수령액 계산기 | 월급·4대보험·소득세 계산";
-const description =
-  "연봉과 비과세액, 공제대상 가족 수를 입력해 2026년 국민연금·건강보험·고용보험·소득세를 반영한 월급 실수령액을 계산합니다.";
+const seo = PUBLIC_CALCULATOR_SEO.salary;
+const { title, description } = seo;
 const ogTitle = "연봉 실수령액 계산기 - 세금 공제 후 실제 월급 확인";
 const ogDescription =
   "연봉을 입력하면 국민연금, 건강보험, 고용보험, 소득세 등을 반영해 예상 월 실수령액을 확인할 수 있습니다.";
-const ogUrl = "https://gyesanbox.kr/calculators/salary/";
-const ogImage = "https://gyesanbox.kr/og/salary.png";
+const ogUrl = `https://gyesanbox.kr${seo.path}`;
+const ogImage = seo.image;
 
 export const metadata: Metadata = {
   title,
@@ -59,7 +59,7 @@ function formatKoreanDate(value: string) {
 
 export default function SalaryTakeHomePage() {
   const jsonLdItems = [
-    salaryTakeHomeWebApplicationJsonLd,
+    { ...salaryTakeHomeWebApplicationJsonLd, image: ogImage },
     salaryTakeHomeBreadcrumbJsonLd,
     salaryTakeHomeFaqJsonLd,
   ];
@@ -67,6 +67,8 @@ export default function SalaryTakeHomePage() {
   return (
     <section className="page-section salary-page">
       <JsonLdScripts items={jsonLdItems} />
+
+      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
 
       <div className="page-heading seller-margin-heading">
         <p className="page-heading__eyebrow">Salary take-home</p>

@@ -3,21 +3,22 @@ import Link from "next/link";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { SeveranceCalculator } from "@/components/calculators/SeveranceCalculator";
 import { SeveranceContent } from "@/components/calculators/SeveranceContent";
+import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
 import {
   severanceBreadcrumbJsonLd,
   severanceFaqJsonLd,
   severanceWebApplicationJsonLd,
 } from "@/components/calculators/severanceContentData";
 import { SEVERANCE_POLICY_2026 } from "@/lib/calculators/severance/policy";
+import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
 
-const title = "퇴직금 계산기 | 평균임금·통상임금 기준 예상 퇴직금 계산";
-const description =
-  "입사일, 퇴직일, 퇴직 전 3개월 임금과 상여금·연차수당을 입력해 평균임금·통상임금 기준 예상 퇴직금을 계산합니다.";
+const seo = PUBLIC_CALCULATOR_SEO.severance;
+const { title, description } = seo;
 const ogTitle = "퇴직금 계산기 - 평균임금 기준 예상 퇴직금 확인";
 const ogDescription =
   "입사일, 퇴사일, 임금 정보를 입력하면 평균임금 기준의 예상 퇴직금을 계산할 수 있습니다.";
-const ogUrl = "https://gyesanbox.kr/calculators/severance/";
-const ogImage = "https://gyesanbox.kr/og/severance.png";
+const ogUrl = `https://gyesanbox.kr${seo.path}`;
+const ogImage = seo.image;
 
 export const metadata: Metadata = {
   title,
@@ -58,7 +59,7 @@ function formatKoreanDate(value: string) {
 
 export default function SeverancePage() {
   const jsonLdItems = [
-    severanceWebApplicationJsonLd,
+    { ...severanceWebApplicationJsonLd, image: ogImage },
     severanceBreadcrumbJsonLd,
     severanceFaqJsonLd,
   ];
@@ -66,6 +67,8 @@ export default function SeverancePage() {
   return (
     <section className="page-section">
       <JsonLdScripts items={jsonLdItems} />
+
+      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
 
       <div className="page-heading seller-margin-heading">
         <p className="page-heading__eyebrow">Severance pay</p>

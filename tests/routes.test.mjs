@@ -19,11 +19,11 @@ const routes = [
   ],
   [
     "app/calculators/social-insurance/page.tsx",
-    "4대보험 계산기 2026 - 국민연금·건강보험·고용보험 공제액 계산",
+    "4대보험 계산기 2026 | 국민연금·건강보험 공제액 계산",
   ],
   [
     "app/calculators/labor-pay/page.tsx",
-    "주휴수당 계산기 2026 - 알바 주휴수당과 주급 계산 | 계산박스",
+    "주휴수당 계산기 2026 | 알바 주휴수당과 주급 계산",
   ],
   [
     "app/calculators/loan/page.tsx",
@@ -56,11 +56,8 @@ const routes = [
 
 test("필수 페이지에 고유한 메타데이터 제목이 있다", async () => {
   for (const [file, title] of routes) {
-    const source = await readFile(file, "utf8");
-    assert.match(
-      source,
-      new RegExp(`(?:title:\\s*"${title}"|const\\s+title\\s*=\\s*"${title}")`),
-    );
+    const pageModule = await import(`../${file}`);
+    assert.equal(pageModule.metadata.title, title);
   }
 });
 

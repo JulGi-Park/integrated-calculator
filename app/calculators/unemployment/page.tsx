@@ -3,22 +3,22 @@ import Link from "next/link";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { UnemploymentCalculator } from "@/components/calculators/UnemploymentCalculator";
 import { UnemploymentContent } from "@/components/calculators/UnemploymentContent";
+import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
 import {
   unemploymentBreadcrumbJsonLd,
   unemploymentFaqJsonLd,
   unemploymentWebApplicationJsonLd,
 } from "@/components/calculators/unemploymentContentData";
 import { UNEMPLOYMENT_POLICY_2026 } from "@/lib/calculators/unemployment/policy";
+import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
 
-const title =
-  "실업급여 계산기 2026 | 구직급여 상한액·하한액·수급기간 예상";
-const description =
-  "실업급여 계산기로 퇴직 전 임금 기준 1일 구직급여액, 상한액·하한액 적용 여부, 고용보험 가입기간별 수급기간과 예상 총액을 확인하세요. 실제 지급 여부는 퇴직 사유, 이직확인서, 실업인정 절차에 따라 달라질 수 있습니다.";
+const seo = PUBLIC_CALCULATOR_SEO.unemployment;
+const { title, description } = seo;
 const ogTitle = "실업급여 계산기 - 구직급여 예상 금액·수급기간 확인";
 const ogDescription =
   "퇴사 전 임금과 고용보험 가입 기간을 기준으로 실업급여 예상 금액과 수급기간을 확인할 수 있습니다.";
-const ogUrl = "https://gyesanbox.kr/calculators/unemployment/";
-const ogImage = "https://gyesanbox.kr/og/unemployment.png";
+const ogUrl = `https://gyesanbox.kr${seo.path}`;
+const ogImage = seo.image;
 
 export const metadata: Metadata = {
   title,
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
 
 export default function UnemploymentPage() {
   const jsonLdItems = [
-    unemploymentWebApplicationJsonLd,
+    { ...unemploymentWebApplicationJsonLd, image: ogImage },
     unemploymentBreadcrumbJsonLd,
     unemploymentFaqJsonLd,
   ];
@@ -62,6 +62,8 @@ export default function UnemploymentPage() {
   return (
     <section className="page-section">
       <JsonLdScripts items={jsonLdItems} />
+
+      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
 
       <div className="page-heading seller-margin-heading">
         <p className="page-heading__eyebrow">Unemployment benefit</p>

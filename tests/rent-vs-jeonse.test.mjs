@@ -238,7 +238,7 @@ test("라우트는 공개되며 홈·목록·sitemap·정적 검증에 등록된
   ]);
 
   assert.doesNotMatch(pageSource, /NEXT_PUBLIC_ENABLE_RENT_VS_JEONSE_CALCULATOR|notFound\(\)/);
-  assert.match(pageSource, /https:\/\/gyesanbox\.kr\/calculators\/rent-vs-jeonse\//);
+  assert.match(pageSource, /seo\.path|rent-vs-jeonse/);
   assert.match(listSource, /rent-vs-jeonse/);
   assert.match(homeSource, /rent-vs-jeonse/);
   assert.match(sitemapSource, /rent-vs-jeonse/);

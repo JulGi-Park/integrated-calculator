@@ -3,19 +3,20 @@ import Link from "next/link";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { SocialInsuranceCalculator } from "@/components/calculators/SocialInsuranceCalculator";
 import { SocialInsuranceContent } from "@/components/calculators/SocialInsuranceContent";
+import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
 import {
   socialInsuranceBreadcrumbJsonLd,
   socialInsuranceFaqJsonLd,
   socialInsuranceWebApplicationJsonLd,
 } from "@/components/calculators/socialInsuranceContentData";
 import { SOCIAL_INSURANCE_POLICY_2026 } from "@/lib/calculators/social-insurance/constants";
+import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
 
-const title =
-  "4대보험 계산기 2026 - 국민연금·건강보험·고용보험 공제액 계산";
-const description =
-  "2026년 기준 국민연금, 건강보험, 장기요양보험, 고용보험 근로자 부담 공제액을 월급과 비과세 금액으로 계산합니다.";
+const seo = PUBLIC_CALCULATOR_SEO["social-insurance"];
+const { title, description } = seo;
+const ogTitle = "4대보험 계산기 2026 - 국민연금·건강보험·고용보험 공제액 계산";
 const canonical = "https://gyesanbox.kr/calculators/social-insurance/";
-const ogImage = "https://gyesanbox.kr/og/calculators.png";
+const ogImage = seo.image;
 
 export const metadata: Metadata = {
   title,
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
     canonical,
   },
   openGraph: {
-    title,
+    title: ogTitle,
     description,
     url: canonical,
     type: "website",
@@ -37,13 +38,13 @@ export const metadata: Metadata = {
         url: ogImage,
         width: 1200,
         height: 630,
-        alt: title,
+        alt: ogTitle,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title,
+    title: ogTitle,
     description,
     images: [ogImage],
   },
@@ -56,7 +57,7 @@ function formatKoreanDate(value: string): string {
 
 export default function SocialInsurancePage() {
   const jsonLdItems = [
-    socialInsuranceWebApplicationJsonLd,
+    { ...socialInsuranceWebApplicationJsonLd, image: ogImage },
     socialInsuranceBreadcrumbJsonLd,
     socialInsuranceFaqJsonLd,
   ];
@@ -64,6 +65,8 @@ export default function SocialInsurancePage() {
   return (
     <section className="page-section salary-page">
       <JsonLdScripts items={jsonLdItems} />
+
+      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
 
       <div className="page-heading seller-margin-heading">
         <p className="page-heading__eyebrow">Social insurance</p>

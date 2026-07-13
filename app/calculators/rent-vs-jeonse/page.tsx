@@ -2,40 +2,43 @@ import type { Metadata } from "next";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { RentVsJeonseCalculator } from "@/components/calculators/RentVsJeonseCalculator";
 import { RentVsJeonseContent } from "@/components/calculators/RentVsJeonseContent";
+import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
 import {
   rentVsJeonseBreadcrumbJsonLd,
   rentVsJeonseFaqJsonLd,
   rentVsJeonseWebApplicationJsonLd,
 } from "@/components/calculators/rentVsJeonseContentData";
+import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
 
-const title = "전세 vs 월세 비교 계산기 | 전세대출 이자·월세 부담 비교";
-const description =
-  "전세대출 이자, 월세, 관리비, 보증금 기회비용을 입력해 전세와 월세의 월 부담과 거주기간 총비용을 비교해 보세요.";
+const seo = PUBLIC_CALCULATOR_SEO["rent-vs-jeonse"];
+const { title, description } = seo;
+const canonical = `https://gyesanbox.kr${seo.path}`;
 
 export const metadata: Metadata = {
   title,
   description,
+  robots: { index: true, follow: true },
   alternates: {
-    canonical: "https://gyesanbox.kr/calculators/rent-vs-jeonse/",
+    canonical,
   },
   openGraph: {
     title,
     description,
-    url: "https://gyesanbox.kr/calculators/rent-vs-jeonse/",
+    url: canonical,
     type: "website",
-    images: [{ url: "https://gyesanbox.kr/og-default.png", width: 1200, height: 630, alt: title }],
+    images: [{ url: seo.image, width: 1200, height: 630, alt: title }],
   },
   twitter: {
     card: "summary_large_image",
     title,
     description,
-    images: ["https://gyesanbox.kr/og-default.png"],
+    images: [seo.image],
   },
 };
 
 export default function RentVsJeonsePage() {
   const jsonLdItems = [
-    rentVsJeonseWebApplicationJsonLd,
+    { ...rentVsJeonseWebApplicationJsonLd, image: seo.image },
     rentVsJeonseBreadcrumbJsonLd,
     rentVsJeonseFaqJsonLd,
   ];
@@ -43,6 +46,8 @@ export default function RentVsJeonsePage() {
   return (
     <section className="page-section">
       <JsonLdScripts items={jsonLdItems} />
+
+      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
 
       <div className="page-heading seller-margin-heading">
         <p className="page-heading__eyebrow">Housing cost comparison</p>

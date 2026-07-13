@@ -2,23 +2,25 @@ import type { Metadata } from "next";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { VatProfitCalculator } from "@/components/calculators/VatProfitCalculator";
 import { VatProfitContent } from "@/components/calculators/VatProfitContent";
+import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
 import {
   vatProfitBaseDate,
   vatProfitBreadcrumbJsonLd,
   vatProfitFaqJsonLd,
   vatProfitWebApplicationJsonLd,
 } from "@/components/calculators/vatProfitContentData";
+import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
 
-const canonical = "https://gyesanbox.kr/calculators/vat-profit/";
+const seo = PUBLIC_CALCULATOR_SEO["vat-profit"];
+const { title, description } = seo;
+const canonical = `https://gyesanbox.kr${seo.path}`;
 const ogTitle = "부가세 계산기 - 공급가액·합계금액 부가가치세 계산";
-const ogDescription =
-  "공급가액 또는 부가세 포함 합계금액을 입력해 매출세액, 합계금액, 매입세액 차감 후 예상 납부세액을 계산합니다.";
-const ogImage = "https://gyesanbox.kr/og/calculators.png";
+const ogDescription = description;
+const ogImage = seo.image;
 
 export const metadata: Metadata = {
-  title: "부가세 계산기 | 공급가액·합계금액 부가가치세 계산",
-  description:
-    "공급가액 또는 부가세 포함 합계금액을 입력해 매출세액, 합계금액, 매입세액 차감 후 예상 납부세액을 계산합니다.",
+  title,
+  description,
   robots: {
     index: true,
     follow: true,
@@ -50,7 +52,7 @@ export const metadata: Metadata = {
 
 export default function VatProfitPage() {
   const jsonLdItems = [
-    vatProfitWebApplicationJsonLd,
+    { ...vatProfitWebApplicationJsonLd, image: ogImage },
     vatProfitBreadcrumbJsonLd,
     vatProfitFaqJsonLd,
   ];
@@ -58,6 +60,8 @@ export default function VatProfitPage() {
   return (
     <section className="page-section">
       <JsonLdScripts items={jsonLdItems} />
+
+      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
 
       <div className="page-heading">
         <p className="page-heading__eyebrow">VAT</p>

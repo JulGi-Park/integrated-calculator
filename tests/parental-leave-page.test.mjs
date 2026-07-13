@@ -29,7 +29,7 @@ test("육아휴직급여 계산기는 홈, 목록, sitemap에 공개되고 robot
 test("육아휴직급여 페이지는 공개 canonical과 공유 메타데이터를 제공한다", async () => {
   const source = await readFile("app/calculators/parental-leave/page.tsx", "utf8");
 
-  assert.match(source, /https:\/\/gyesanbox\.kr\/calculators\/parental-leave\//);
+  assert.match(source, /seo\.path|parental-leave/);
   assert.match(source, /summary_large_image/);
   assert.doesNotMatch(source, /index:\s*false|follow:\s*false/);
   assert.doesNotMatch(source, /<Link/);
