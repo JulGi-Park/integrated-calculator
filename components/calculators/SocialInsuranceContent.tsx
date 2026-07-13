@@ -70,6 +70,10 @@ export function SocialInsuranceContent() {
       <section className={styles.contentSection}>
         <h2>관련 계산기</h2>
         <div className={styles.relatedGrid}>
+          <a className={styles.relatedCard} href="/guides/national-pension-july-2026/">
+            <h3>국민연금 공제 변화 가이드</h3>
+            <p>상한 변경과 기준소득월액 정기결정으로 공제액이 달라지는 이유를 확인합니다.</p>
+          </a>
           <a className={styles.relatedCard} href="/calculators/salary/">
             <h3>연봉 실수령액 계산기</h3>
             <p>

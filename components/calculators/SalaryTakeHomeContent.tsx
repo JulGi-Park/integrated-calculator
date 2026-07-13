@@ -190,6 +190,13 @@ export function SalaryTakeHomeContent() {
         <div className={styles.relatedGrid}>
           <a
             className={`${styles.relatedCard} ${styles.relatedLink}`}
+            href="/guides/national-pension-july-2026/"
+          >
+            <h3>국민연금 공제 변화 가이드</h3>
+            <p>2026년 7월 공제액 변화의 원인과 급여명세서 확인 순서를 안내합니다.</p>
+          </a>
+          <a
+            className={`${styles.relatedCard} ${styles.relatedLink}`}
             href="/calculators/social-insurance/"
           >
             <h3>4대보험 계산기</h3>

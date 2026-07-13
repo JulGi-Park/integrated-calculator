@@ -258,6 +258,27 @@ export default function Home() {
           </a>
         </p>
       </section>
+
+      <section className="home-calculators" aria-labelledby="home-guides-title">
+        <div>
+          <p className="page-heading__eyebrow">Guides</p>
+          <h2 id="home-guides-title">계산 결과를 이해하는 가이드</h2>
+        </div>
+        <div className="home-calculators__links">
+          <a className="calculator-card" href="/guides/national-pension-july-2026/">
+            <div>
+              <h3>국민연금 공제액이 달라진 이유 확인하기</h3>
+              <p>
+                2026년 7월 상한 변경, 정기결정과 급여명세서의 신고 기준을
+                구분해 공제액 변화 원인을 살펴봅니다.
+              </p>
+            </div>
+          </a>
+        </div>
+        <p className="home-principles__link">
+          <a className="text-link" href="/guides/">가이드 전체 보기 →</a>
+        </p>
+      </section>
     </>
   );
 }

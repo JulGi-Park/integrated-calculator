@@ -24,6 +24,8 @@ const routeFiles = [
   ["app/about/page.tsx", "/about/"],
   ["app/methodology/page.tsx", "/methodology/"],
   ["app/updates/page.tsx", "/updates/"],
+  ["app/guides/page.tsx", "/guides/"],
+  ["app/guides/national-pension-july-2026/page.tsx", "/guides/national-pension-july-2026/"],
   ["app/contact/page.tsx", "/contact/"],
   ["app/privacy-policy/page.tsx", "/privacy-policy/"],
   ["app/terms/page.tsx", "/terms/"],

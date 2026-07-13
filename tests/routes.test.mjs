@@ -48,6 +48,8 @@ const routes = [
   ["app/about/page.tsx", "계산박스 소개 | 계산박스"],
   ["app/methodology/page.tsx", "계산 방법론 | 계산박스"],
   ["app/updates/page.tsx", "계산기 변경 이력 | 계산박스"],
+  ["app/guides/page.tsx", "생활·근로 기준 가이드 | 계산박스"],
+  ["app/guides/national-pension-july-2026/page.tsx", "2026년 7월 국민연금 공제액이 달라진 이유 | 계산박스 가이드"],
   ["app/contact/page.tsx", "문의 | 계산박스"],
   ["app/privacy-policy/page.tsx", "개인정보처리방침 | 계산박스"],
   ["app/terms/page.tsx", "이용약관 | 계산박스"],

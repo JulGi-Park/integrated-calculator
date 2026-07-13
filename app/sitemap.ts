@@ -20,6 +20,8 @@ const routes = [
   "/about/",
   "/methodology/",
   "/updates/",
+  "/guides/",
+  "/guides/national-pension-july-2026/",
   "/contact/",
   "/privacy-policy/",
   "/terms/",
