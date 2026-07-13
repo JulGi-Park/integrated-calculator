@@ -203,6 +203,8 @@ test("헤더에서 주요 탐색과 신뢰성 페이지로 이동할 수 있다"
 
   assert.match(source, /href="\/calculators\/"/);
   assert.match(source, /href="\/about\/"/);
+  assert.match(source, /href="\/methodology\/"/);
+  assert.match(source, /href="\/updates\/"/);
   assert.match(source, /href="\/contact\/"/);
   assert.match(source, /aria-label="주요 메뉴"/);
 });

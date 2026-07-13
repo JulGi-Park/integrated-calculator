@@ -17,6 +17,12 @@ export function SiteHeader() {
           <a className="nav-link" href="/about/">
             소개
           </a>
+          <a className="nav-link" href="/methodology/">
+            계산 방법론
+          </a>
+          <a className="nav-link" href="/updates/">
+            변경 이력
+          </a>
           <a className="nav-link" href="/contact/">
             문의
           </a>
