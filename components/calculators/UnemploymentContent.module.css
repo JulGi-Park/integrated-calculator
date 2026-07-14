@@ -244,6 +244,82 @@
   font-size: 0.88rem;
 }
 
+.reasonDetails {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.reasonDetails summary {
+  padding: 17px 20px;
+  color: var(--accent-strong);
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.reasonSummary {
+  scroll-margin-top: 24px;
+}
+
+.reasonDetails summary:hover {
+  color: var(--foreground);
+}
+
+.reasonDetails summary:focus-visible,
+.faqList summary:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent-strong) 45%, white);
+  outline-offset: 3px;
+}
+
+.reasonDetailsBody {
+  display: grid;
+  gap: 28px;
+  padding: 4px 20px 24px;
+  border-top: 1px solid var(--line);
+}
+
+.reasonDetailsBody article {
+  min-width: 0;
+}
+
+.reasonDetailsBody h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.reasonDetailsBody h4 {
+  margin: 16px 0 8px;
+  font-size: 0.9rem;
+}
+
+.reasonDetailsBody p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+
+.reasonDetailsBody ul,
+.reasonDetailsBody ol {
+  display: grid;
+  gap: 7px;
+  margin: 10px 0 0;
+  padding-left: 22px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.reasonDetailsBody li {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .relatedCard {
   display: block;
 }
