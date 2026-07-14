@@ -263,6 +263,13 @@ export const unemploymentFaqs: UnemploymentFaq[] = [
 
 export const unemploymentSources: UnemploymentSource[] = [
   {
+    organization: "국가법령정보센터",
+    title: "고용보험법 시행규칙 제101조·별표 2",
+    checkedAt: unemploymentPolicyCheckedAt,
+    href: "https://www.law.go.kr/법령/고용보험법시행규칙",
+    criterion: "자발적 이직의 수급자격 제한 및 정당한 이직 사유 기준",
+  },
+  {
     organization: "고용24",
     title: "실업급여(상용직) 정책/제도 안내",
     checkedAt: unemploymentPolicyCheckedAt,
