@@ -169,6 +169,10 @@ export default function Home() {
       "@type": "Organization",
       name: "계산박스",
       url: siteUrl,
+      sameAs: [
+        "https://www.instagram.com/gyesanbox/",
+        "https://www.threads.com/@gyesanbox",
+      ],
       contactPoint: {
         "@type": "ContactPoint",
         url: `${siteUrl}contact/`,
