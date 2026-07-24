@@ -355,12 +355,12 @@ export function ParentalLeaveCalculator() {
               )}
             </div>
 
-            <div className={styles.disabledOption} aria-label="특례 구조화 안내">
-              <strong>특례 구조화 안내</strong>
+            <div className={styles.disabledOption} aria-label="특례 적용 안내">
+              <strong>특례 적용 안내</strong>
               <p>
-                특례 입력은 비공개 검토용입니다. 입력 부족이나 중복 특례를
-                확정 계산처럼 보이지 않도록 결과 카드에서 보완 항목과 fallback
-                구간을 분리합니다.
+                특례 조건이 충분하지 않거나 여러 특례가 겹치면, 일반
+                육아휴직급여 기준으로 계산한 구간과 확인할 항목을 따로
+                보여줍니다.
               </p>
             </div>
 
@@ -609,7 +609,7 @@ export function ParentalLeaveCalculator() {
                     </dd>
                   </div>
                   <div>
-                    <dt>fallback 구간</dt>
+                    <dt>일반 기준 적용 구간 수</dt>
                     <dd>
                       {result.fallbackRanges.length > 0
                         ? `${result.fallbackRanges.length}개`
@@ -656,8 +656,8 @@ export function ParentalLeaveCalculator() {
                       </div>
                     )}
                     {result.fallbackRanges.length > 0 && (
-                      <div className={styles.noticeBox} aria-label="fallback 구간">
-                        <strong>일반 계산 fallback 구간</strong>
+                      <div className={styles.noticeBox} aria-label="일반 기준 적용 구간">
+                        <strong>일반 기준 적용 구간</strong>
                         <ul>
                           {result.fallbackRanges.map((range) => (
                             <li key={`${range.fromMonth}-${range.toMonth}`}>

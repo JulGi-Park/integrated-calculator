@@ -127,7 +127,7 @@ export function SalaryTakeHomeContent() {
         <div className={styles.sectionHeading}>
           <h2 id="example-title">계산 예시</h2>
           <p>
-            아래 금액은 고정 입력을 현재 계산 엔진에 적용해 빌드 시 생성한
+            아래 금액은 고정한 연봉·부양가족·비과세 조건으로 계산한 예시
             결과입니다.
           </p>
         </div>

@@ -94,7 +94,7 @@ export function SeveranceContent() {
         <div className={styles.sectionHeading}>
           <h2 id="formula-title">계산식</h2>
           <p>
-            현재 엔진은 평균임금과 통상임금을 비교한 뒤 법정 산식에 맞춰 예상
+            계산기는 평균임금과 통상임금을 비교한 뒤 법정 산식에 맞춰 예상
             퇴직금을 계산합니다.
           </p>
         </div>
@@ -110,7 +110,8 @@ export function SeveranceContent() {
           <strong>반올림 기준</strong>
           <p>
             1일 평균임금은 1전 단위 올림, 최종 퇴직금은 원 단위 반올림으로
-            표시합니다. 이는 현재 구현된 엔진과 화면 결과에 동일하게 적용됩니다.
+            표시합니다. 이 기준은 화면의 모든 예상 계산 결과에 동일하게
+            적용됩니다.
           </p>
         </aside>
       </section>
@@ -119,9 +120,9 @@ export function SeveranceContent() {
         <div className={styles.sectionHeading}>
           <h2 id="example-title">공식 예제 기준 계산 예시</h2>
           <p>
-            고용노동부 공식 예제 기준 현재 엔진 결과는 7,868,434원입니다.
-            아래 예시는 같은 입력값과 계산 흐름을 정적 빌드 시점에 고정해
-            보여줍니다.
+            고용노동부 공식 예제의 입력 조건으로 계산한 예상 퇴직금은
+            7,868,434원입니다. 아래에서 사용한 임금과 근속기간, 계산 결과를
+            함께 확인할 수 있습니다.
           </p>
         </div>
         <div className={styles.exampleGrid}>

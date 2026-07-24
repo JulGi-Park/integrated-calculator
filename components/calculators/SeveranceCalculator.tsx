@@ -472,7 +472,7 @@ export function SeveranceCalculator() {
         <strong>입력 전 확인</strong>
         <p>
           퇴직일은 마지막 근무일이 아니라 다음 날입니다. 퇴직 전 3개월
-          임금총액은 엔진 계약상 단일 총액으로 입력합니다.
+          임금총액은 해당 기간의 세전 임금을 합산해 한 번에 입력합니다.
         </p>
       </aside>
 

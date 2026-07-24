@@ -141,7 +141,7 @@ export const socialInsuranceFaqs: SocialInsuranceFaq[] = [
   {
     question: "국민연금은 왜 월급 전체로 계산되지 않나요?",
     answer:
-      "국민연금은 기준소득월액 하한과 상한이 있습니다. 2026년 7월 7일 확인 기준으로 410,000원보다 낮으면 410,000원, 6,590,000원보다 높으면 6,590,000원을 기준으로 계산합니다.",
+      `국민연금은 기준소득월액 하한과 상한이 있습니다. ${formatKoreanDate(policy.verifiedAt)}에 확인한 기준으로 410,000원보다 낮으면 410,000원, 6,590,000원보다 높으면 6,590,000원을 기준으로 계산합니다. 이 상·하한은 ${formatKoreanDate(policy.nationalPension.effectiveFrom)}부터 ${formatKoreanDate(policy.nationalPension.effectiveTo)}까지 적용됩니다.`,
   },
   {
     question: "건강보험료와 장기요양보험료는 어떻게 다른가요?",

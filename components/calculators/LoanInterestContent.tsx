@@ -131,10 +131,10 @@ export function LoanInterestContent() {
 
       <section className={styles.section} aria-labelledby="example-title">
         <div className={styles.sectionHeading}>
-          <h2 id="example-title">엔진 기반 계산 예시</h2>
+          <h2 id="example-title">계산 조건 예시</h2>
           <p>
-            아래 예시는 고정 입력값을 현재 계산 엔진에 적용해 정적 빌드 시
-            생성한 결과입니다.
+            아래 예시는 대출 원금, 연이율, 기간과 상환방식을 고정해 계산한
+            월 납입액과 총이자입니다.
           </p>
         </div>
         <div className={styles.exampleGrid}>

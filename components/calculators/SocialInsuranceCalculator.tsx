@@ -323,7 +323,7 @@ export function SocialInsuranceCalculator() {
   return (
     <>
       <aside className={styles.policyNotice} aria-label="4대보험 적용 기준">
-        <strong>2026년 7월 7일 확인 기준</strong>
+        <strong>기준 확인일: {formatKoreanDate(policy.verifiedAt)}</strong>
         <p>
           국민연금은 {formatWon(policy.nationalPension.standardMonthlyIncomeMinimum)}
           ~{formatWon(policy.nationalPension.standardMonthlyIncomeMaximum)} 기준소득월액
