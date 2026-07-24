@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { LaborPayCalculator } from "@/components/calculators/LaborPayCalculator";
 import { LaborPayContent } from "@/components/calculators/LaborPayContent";
-import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
+import { CompactCalculatorHero } from "@/components/common/CompactCalculatorHero";
 import {
   laborPayBaseDate,
   laborPayBreadcrumbJsonLd,
@@ -96,23 +96,26 @@ export default function LaborPayPage() {
       </style>
       <JsonLdScripts items={jsonLdItems} />
 
-      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
-
-      <div className="page-heading labor-pay-heading">
-        <p className="page-heading__eyebrow">Labor pay</p>
-        <h1>주휴수당 계산기</h1>
-        <p>
+      <CompactCalculatorHero
+        className="labor-pay-heading"
+        eyebrow="Labor pay"
+        title="주휴수당 계산기"
+        description={
+          <>
           근무시간, 시급, 개근 여부를 입력해 예상 주휴수당과 주휴 포함
           주급을 계산하는 계산기입니다.
-        </p>
-        <div className="seller-margin-meta">
+          </>
+        }
+        meta={
+          <>
           <span>계산 기준일: {laborPayBaseDate}</span>
           <span>
             계산 결과는 입력값 기준 참고용이며 실제 임금 판단과 다를 수
             있습니다.
           </span>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <LaborPayCalculator />
       <LaborPayContent />

@@ -32,7 +32,7 @@ const jsonLdSource = await readFile(
 const source = `${pageSource}\n${contentSource}\n${jsonLdSource}`;
 
 test("페이지 상단에 고유 H1, 설명, 기준일과 예상값 안내가 있다", () => {
-  assert.equal((pageSource.match(/<h1/g) ?? []).length, 1);
+  assert.equal((pageSource.match(/<CompactCalculatorHero\b/g) ?? []).length, 1);
   assert.match(pageSource, /판매자 마진 계산기/);
   assert.match(
     pageSource,

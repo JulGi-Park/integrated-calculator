@@ -76,7 +76,7 @@ test("연봉 계산기 전용 SEO 메타데이터를 대표 URL 기준으로 설
 });
 
 test("페이지 상단은 H1 하나와 정책 연도·기준일·예상값 안내를 표시한다", () => {
-  assert.equal((pageSource.match(/<h1/g) ?? []).length, 1);
+  assert.equal((pageSource.match(/<CompactCalculatorHero\b/g) ?? []).length, 1);
   assert.match(pageSource, /연봉 실수령액 계산기/);
   assert.match(pageSource, /적용 정책:/);
   assert.match(pageSource, /기준 확인일:/);

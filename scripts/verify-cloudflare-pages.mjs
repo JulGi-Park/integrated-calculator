@@ -68,6 +68,19 @@ const publicHtmlFilesWithoutPrivateRoutes = [
   "out/calculators/rent-vs-jeonse/index.html",
 ];
 
+const publicCalculatorHeroPages = [
+  ["out/calculators/seller-margin/index.html", "/og/seller-margin.png"],
+  ["out/calculators/salary/index.html", "/og/salary.png"],
+  ["out/calculators/loan/index.html", "/og/loan.png"],
+  ["out/calculators/severance/index.html", "/og/severance.png"],
+  ["out/calculators/unemployment/index.html", "/og/unemployment.png"],
+  ["out/calculators/social-insurance/index.html", "/og/social-insurance-hero.png"],
+  ["out/calculators/labor-pay/index.html", "/og/labor-pay-hero.png"],
+  ["out/calculators/vat-profit/index.html", "/og/vat-profit-hero.png"],
+  ["out/calculators/parental-leave/index.html", "/og/parental-leave-hero.png"],
+  ["out/calculators/rent-vs-jeonse/index.html", "/og/rent-vs-jeonse-hero.png"],
+];
+
 const forbiddenSourcePatterns = [
   {
     pattern: /["']use server["']/,
@@ -193,6 +206,53 @@ async function verifyStaticOutput() {
     assert.doesNotMatch(
       html,
       /roas|dsr|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|work-child-incentive|부동산 중개보수 계산기/,
+    );
+  }
+
+  for (const [relativePath, imagePath] of publicCalculatorHeroPages) {
+    const html = await readFile(path.join(projectRoot, relativePath), "utf8");
+    const [head = "", body = ""] = html.split(/<\/head>/i);
+    const escapedImagePath = imagePath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    assert.equal(
+      (body.match(/<h1\b/gi) ?? []).length,
+      1,
+      `${relativePath} must render exactly one H1.`,
+    );
+    assert.match(
+      head,
+      /property="og:image"/i,
+      `${relativePath} must retain its Open Graph image metadata.`,
+    );
+    assert.match(
+      head,
+      /name="twitter:image"/i,
+      `${relativePath} must retain its Twitter image metadata.`,
+    );
+    assert.match(
+      head,
+      new RegExp(escapedImagePath, "i"),
+      `${relativePath} must retain the original shared image URL.`,
+    );
+    assert.doesNotMatch(
+      body,
+      new RegExp(`<img\\b[^>]*(?:${escapedImagePath})`, "i"),
+      `${relativePath} must not render its OG image in the page body.`,
+    );
+    assert.doesNotMatch(
+      body,
+      /data-ad-slot|class=["'][^"']*adsbygoogle/i,
+      `${relativePath} must not render an advertising unit or placeholder.`,
+    );
+    assert.equal(
+      (html.match(/<script\b[^>]*googletagmanager\.com\/gtag\/js\?id=G-YMJFLPRFMV[^>]*>/gi) ?? []).length,
+      1,
+      `${relativePath} must retain exactly one GA4 script.`,
+    );
+    assert.equal(
+      (html.match(/<script\b[^>]*pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-4273771596550595[^>]*>/gi) ?? []).length,
+      1,
+      `${relativePath} must retain exactly one AdSense script.`,
     );
   }
 }

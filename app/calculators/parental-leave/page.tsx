@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { ParentalLeaveCalculator } from "@/components/calculators/ParentalLeaveCalculator";
 import { ParentalLeaveContent } from "@/components/calculators/ParentalLeaveContent";
-import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
+import { CompactCalculatorHero } from "@/components/common/CompactCalculatorHero";
 import {
   parentalLeaveBreadcrumbJsonLd,
   parentalLeaveFaqJsonLd,
@@ -48,21 +48,24 @@ export default function ParentalLeavePage() {
     <section className="page-section">
       <JsonLdScripts items={jsonLdItems} />
 
-      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
-
-      <div className="page-heading seller-margin-heading">
-        <p className="page-heading__eyebrow">Parental leave benefit</p>
-        <h1>육아휴직급여 계산기</h1>
-        <p>
+      <CompactCalculatorHero
+        className="seller-margin-heading"
+        eyebrow="Parental leave benefit"
+        title="육아휴직급여 계산기"
+        description={
+          <>
           월 통상임금과 육아휴직 사용 개월 수를 입력해 일반 육아휴직급여의
           월별 예상액과 총 예상 수령액을 확인합니다.
-        </p>
-        <div className="seller-margin-meta">
+          </>
+        }
+        meta={
+          <>
           <span>2026년 현행 기준</span>
           <span>계산 기준일: {PARENTAL_LEAVE_POLICY_2026.basisDate}</span>
           <span>확정 지급액이 아닌 예상값입니다.</span>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <ParentalLeaveCalculator />
       <ParentalLeaveContent />

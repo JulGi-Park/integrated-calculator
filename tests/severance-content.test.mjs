@@ -70,7 +70,7 @@ test("퇴직금 계산기 전용 SEO 메타데이터를 대표 URL 기준으로 
 });
 
 test("페이지 상단은 H1 하나와 공식 예제·기준일·예상값 안내를 표시한다", () => {
-  assert.equal((pageSource.match(/<h1/g) ?? []).length, 1);
+  assert.equal((pageSource.match(/<CompactCalculatorHero\b/g) ?? []).length, 1);
   assert.match(pageSource, /퇴직금 계산기/);
   assert.match(pageSource, /공식 예제 7,868,434원 재현/);
   assert.match(pageSource, /기준 확인일:/);

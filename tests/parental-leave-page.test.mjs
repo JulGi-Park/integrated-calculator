@@ -6,7 +6,8 @@ test("육아휴직급여 페이지는 공개 계산기 UI와 구조화 데이터
   const source = await readFile("app/calculators/parental-leave/page.tsx", "utf8");
 
   assert.doesNotMatch(source, /isParentalLeaveCalculatorEnabled|notFound\(\)/);
-  assert.match(source, /<h1>육아휴직급여 계산기<\/h1>/);
+  assert.match(source, /<CompactCalculatorHero/);
+  assert.match(source, /title="육아휴직급여 계산기"/);
   assert.match(source, /계산 기준일/);
   assert.match(source, /확정 지급액이 아닌 예상값/);
   assert.match(source, /JsonLdScripts/);

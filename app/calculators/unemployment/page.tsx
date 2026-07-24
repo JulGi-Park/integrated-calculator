@@ -3,7 +3,7 @@ import Link from "next/link";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { UnemploymentCalculator } from "@/components/calculators/UnemploymentCalculator";
 import { UnemploymentContent } from "@/components/calculators/UnemploymentContent";
-import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
+import { CompactCalculatorHero } from "@/components/common/CompactCalculatorHero";
 import {
   unemploymentBreadcrumbJsonLd,
   unemploymentFaqJsonLd,
@@ -63,21 +63,24 @@ export default function UnemploymentPage() {
     <section className="page-section">
       <JsonLdScripts items={jsonLdItems} />
 
-      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
-
-      <div className="page-heading seller-margin-heading">
-        <p className="page-heading__eyebrow">Unemployment benefit</p>
-        <h1>실업급여 계산기</h1>
-        <p>
+      <CompactCalculatorHero
+        className="seller-margin-heading"
+        eyebrow="Unemployment benefit"
+        title="실업급여 계산기"
+        description={
+          <>
           월급 또는 1일 평균임금과 고용보험 가입기간을 입력해 예상 구직급여와
           소정급여일수를 확인합니다.
-        </p>
-        <div className="seller-margin-meta">
+          </>
+        }
+        meta={
+          <>
           <span>예상 계산</span>
           <span>기준일: {UNEMPLOYMENT_POLICY_2026.basisDate}</span>
           <span>실제 수급 여부는 고용센터 판단에 따라 달라질 수 있습니다.</span>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <UnemploymentCalculator />
       <UnemploymentContent />

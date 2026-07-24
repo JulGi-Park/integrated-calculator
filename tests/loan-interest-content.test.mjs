@@ -69,8 +69,8 @@ test("대출 계산기 전용 SEO 메타데이터를 대표 URL 기준으로 설
 });
 
 test("대출 페이지 상단은 H1 하나와 고정 안내를 유지한다", () => {
-  assert.equal((pageSource.match(/<h1/g) ?? []).length, 1);
-  assert.match(pageSource, /<h1>대출 이자 계산기<\/h1>/);
+  assert.equal((pageSource.match(/<CompactCalculatorHero\b/g) ?? []).length, 1);
+  assert.match(pageSource, /title="대출 이자 계산기"/);
   assert.match(pageSource, /원 단위 예상 계산/);
   assert.match(pageSource, /실제 대출 가능\s+범위를 뜻하지 않습니다/);
 });

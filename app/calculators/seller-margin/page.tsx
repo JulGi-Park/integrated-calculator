@@ -3,7 +3,7 @@ import Link from "next/link";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { SellerMarginCalculator } from "@/components/calculators/SellerMarginCalculator";
 import { SellerMarginContent } from "@/components/calculators/SellerMarginContent";
-import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
+import { CompactCalculatorHero } from "@/components/common/CompactCalculatorHero";
 import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
 import {
   sellerMarginBreadcrumbJsonLd,
@@ -63,23 +63,26 @@ export default function SellerMarginPage() {
     <section className="page-section seller-margin-page">
       <JsonLdScripts items={jsonLdItems} />
 
-      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
-
-      <div className="page-heading seller-margin-heading">
-        <p className="page-heading__eyebrow">Seller margin</p>
-        <h1>판매자 마진 계산기</h1>
-        <p>
+      <CompactCalculatorHero
+        className="seller-margin-heading"
+        eyebrow="Seller margin"
+        title="판매자 마진 계산기"
+        description={
+          <>
           판매단가, 수량, 원가, 수수료와 비용을 입력해 주문 기준 예상
           정산금액과 순이익을 계산할 수 있습니다.
-        </p>
-        <div className="seller-margin-meta">
+          </>
+        }
+        meta={
+          <>
           <span>계산 기준일: 2026년 6월 18일</span>
           <span>
             계산 결과는 입력값을 기준으로 산출한 세전 예상값이며 실제 플랫폼
             정산액과 다를 수 있습니다.
           </span>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <SellerMarginCalculator />
       <SellerMarginContent />

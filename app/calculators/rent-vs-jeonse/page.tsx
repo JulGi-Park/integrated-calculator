@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { RentVsJeonseCalculator } from "@/components/calculators/RentVsJeonseCalculator";
 import { RentVsJeonseContent } from "@/components/calculators/RentVsJeonseContent";
-import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
+import { CompactCalculatorHero } from "@/components/common/CompactCalculatorHero";
 import {
   rentVsJeonseBreadcrumbJsonLd,
   rentVsJeonseFaqJsonLd,
@@ -47,18 +47,19 @@ export default function RentVsJeonsePage() {
     <section className="page-section">
       <JsonLdScripts items={jsonLdItems} />
 
-      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
-
-      <div className="page-heading seller-margin-heading">
-        <p className="page-heading__eyebrow">Housing cost comparison</p>
-        <h1>전세 vs 월세 비교 계산기</h1>
-        <p>{description}</p>
-        <div className="seller-margin-meta">
+      <CompactCalculatorHero
+        className="seller-margin-heading"
+        eyebrow="Housing cost comparison"
+        title="전세 vs 월세 비교 계산기"
+        description={description}
+        meta={
+          <>
           <span>참고용 예상 계산</span>
           <span>기준일: 2026-07-12</span>
           <span>입력한 가정에 따른 예상 비교입니다.</span>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <RentVsJeonseCalculator />
       <RentVsJeonseContent />

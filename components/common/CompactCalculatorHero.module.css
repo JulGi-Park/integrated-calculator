@@ -1,0 +1,28 @@
+.hero {
+  max-width: 760px;
+  margin-bottom: 28px;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 4.4vw, 3.25rem);
+  line-height: 1.12;
+}
+
+.description {
+  margin: 12px 0 0;
+  color: var(--muted);
+}
+
+.meta {
+  margin-top: 14px;
+}
+
+@media (max-width: 560px) {
+  .hero {
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-size: clamp(1.9rem, 9vw, 2.5rem);
+  }
+}

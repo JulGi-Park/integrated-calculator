@@ -108,7 +108,7 @@ async function settleMount() {
 }
 
 test("페이지 제목과 기준일 안내를 표시한다", () => {
-  assert.equal((pageSource.match(/<h1/g) ?? []).length, 1);
+  assert.equal((pageSource.match(/<CompactCalculatorHero\b/g) ?? []).length, 1);
   assert.match(pageSource, /퇴직금 계산기/);
   assert.match(pageSource, /기준 확인일:/);
   assert.match(pageSource, /예상 금액이며 실제 지급액과 다를 수 있습니다/);

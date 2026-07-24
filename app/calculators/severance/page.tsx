@@ -3,7 +3,7 @@ import Link from "next/link";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { SeveranceCalculator } from "@/components/calculators/SeveranceCalculator";
 import { SeveranceContent } from "@/components/calculators/SeveranceContent";
-import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
+import { CompactCalculatorHero } from "@/components/common/CompactCalculatorHero";
 import {
   severanceBreadcrumbJsonLd,
   severanceFaqJsonLd,
@@ -68,23 +68,26 @@ export default function SeverancePage() {
     <section className="page-section">
       <JsonLdScripts items={jsonLdItems} />
 
-      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
-
-      <div className="page-heading seller-margin-heading">
-        <p className="page-heading__eyebrow">Severance pay</p>
-        <h1>퇴직금 계산기</h1>
-        <p>
+      <CompactCalculatorHero
+        className="seller-margin-heading"
+        eyebrow="Severance pay"
+        title="퇴직금 계산기"
+        description={
+          <>
           입사일과 퇴직 전 임금 정보를 입력해 법정 퇴직금의 예상 금액과
           평균임금 산정 내역을 확인할 수 있습니다.
-        </p>
-        <div className="seller-margin-meta">
+          </>
+        }
+        meta={
+          <>
           <span>공식 예제 7,868,434원 재현</span>
           <span>
             기준 확인일: {formatKoreanDate(SEVERANCE_POLICY_2026.verifiedAt)}
           </span>
           <span>계산 결과는 예상 금액이며 실제 지급액과 다를 수 있습니다.</span>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <SeveranceCalculator />
       <SeveranceContent />

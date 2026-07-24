@@ -3,7 +3,7 @@ import Link from "next/link";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { SalaryTakeHomeCalculator } from "@/components/calculators/SalaryTakeHomeCalculator";
 import { SalaryTakeHomeContent } from "@/components/calculators/SalaryTakeHomeContent";
-import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
+import { CompactCalculatorHero } from "@/components/common/CompactCalculatorHero";
 import {
   salaryTakeHomeBreadcrumbJsonLd,
   salaryTakeHomeFaqJsonLd,
@@ -68,16 +68,18 @@ export default function SalaryTakeHomePage() {
     <section className="page-section salary-page">
       <JsonLdScripts items={jsonLdItems} />
 
-      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
-
-      <div className="page-heading seller-margin-heading">
-        <p className="page-heading__eyebrow">Salary take-home</p>
-        <h1>연봉 실수령액 계산기</h1>
-        <p>
+      <CompactCalculatorHero
+        className="seller-margin-heading"
+        eyebrow="Salary take-home"
+        title="연봉 실수령액 계산기"
+        description={
+          <>
           연봉과 비과세액, 공제대상 가족 수를 입력해 월·연간 예상
           실수령액과 공제 내역을 확인할 수 있습니다.
-        </p>
-        <div className="seller-margin-meta">
+          </>
+        }
+        meta={
+          <>
           <span>
             적용 정책: {SALARY_TAKE_HOME_POLICY_2026.year}년
           </span>
@@ -88,8 +90,9 @@ export default function SalaryTakeHomePage() {
           <span>
             퇴직금과 비정기 상여를 제외한 일반 근로자의 예상값입니다.
           </span>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <SalaryTakeHomeCalculator />
       <SalaryTakeHomeContent />

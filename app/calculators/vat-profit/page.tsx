@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { VatProfitCalculator } from "@/components/calculators/VatProfitCalculator";
 import { VatProfitContent } from "@/components/calculators/VatProfitContent";
-import { CalculatorHeroImage } from "@/components/common/CalculatorHeroImage";
+import { CompactCalculatorHero } from "@/components/common/CompactCalculatorHero";
 import {
   vatProfitBaseDate,
   vatProfitBreadcrumbJsonLd,
@@ -61,23 +61,25 @@ export default function VatProfitPage() {
     <section className="page-section">
       <JsonLdScripts items={jsonLdItems} />
 
-      <CalculatorHeroImage src={seo.imagePath} alt={seo.imageAlt} />
-
-      <div className="page-heading">
-        <p className="page-heading__eyebrow">VAT</p>
-        <h1>부가세 계산기</h1>
-        <p>
+      <CompactCalculatorHero
+        eyebrow="VAT"
+        title="부가세 계산기"
+        description={
+          <>
           공급가액 또는 부가세 포함 합계금액을 입력해 매출세액과 예상
           납부세액을 계산하는 계산기입니다.
-        </p>
-        <div className="seller-margin-meta">
+          </>
+        }
+        meta={
+          <>
           <span>계산 기준일: {vatProfitBaseDate}</span>
           <span>
             계산 결과는 일반과세자 기본 세율 10% 기준 참고용이며 실제 신고
             결과와 다를 수 있습니다.
           </span>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <VatProfitCalculator />
       <VatProfitContent />
