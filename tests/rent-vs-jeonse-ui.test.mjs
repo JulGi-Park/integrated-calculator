@@ -224,6 +224,32 @@ test("클립보드 Promise reject 시 성공 상태를 남기지 않고 실패�
   assert.equal(screen.queryByText("결과를 클립보드에 복사했습니다."), null);
 });
 
+test("클립보드 API 미지원 시 성공 상태 없이 실패를 안내한다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+
+  await user.click(screen.getByRole("button", { name: "계산하기" }));
+  delete navigator.clipboard;
+  fireEvent.click(screen.getByRole("button", { name: "결과 복사" }));
+
+  assert.ok(await screen.findByText("복사하지 못했습니다. 다시 시도해 주세요."));
+  assert.equal(screen.queryByText("결과를 클립보드에 복사했습니다."), null);
+  assert.ok(screen.getByText("결과 요약"));
+});
+
+test("writeText가 Promise가 아닌 값을 반환하면 복사 성공으로 처리하지 않는다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+
+  await user.click(screen.getByRole("button", { name: "계산하기" }));
+  setClipboard(() => "copied");
+  fireEvent.click(screen.getByRole("button", { name: "결과 복사" }));
+
+  assert.ok(await screen.findByText("복사하지 못했습니다. 다시 시도해 주세요."));
+  assert.equal(screen.queryByText("결과를 클립보드에 복사했습니다."), null);
+  assert.ok(screen.getByText("결과 요약"));
+});
+
 test("Web Share와 미지원 복사 fallback, AbortError 취소를 처리한다", async () => {
   let sharedData;
   Object.defineProperty(navigator, "share", {

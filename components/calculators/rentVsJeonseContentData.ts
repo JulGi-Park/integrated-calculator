@@ -118,11 +118,11 @@ export const rentVsJeonseSources: RentVsJeonseSource[] = [
     href: "https://www.bok.or.kr/portal/bbs/P0000559/view.do?menuNo=200690&nttId=10098188",
   },
   {
-    organization: "한국부동산원·LH 임대차분쟁조정위원회",
-    title: "전월세전환 계산기",
-    criterion: "보증금을 월차임으로 전환할 때 참고하는 공식 계산 도구",
+    organization: "한국부동산원",
+    title: "전월세전환율 산식 및 용어해설",
+    criterion: "전월세전환율의 정의·산식과 실거래 기반 산출 방식",
     verifiedAt: "2026년 7월 12일",
-    href: "https://www.hldcc.or.kr/",
+    href: "https://www.reb.or.kr/reb/cm/cntnts/cntntsView.do?cntntsId=1190&mi=9808",
   },
 ];
 

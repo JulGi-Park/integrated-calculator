@@ -100,6 +100,18 @@ function getErrorMessage(error: SellerMarginValidationError) {
       ? labels[error.field as SellerMarginInputField]
       : "입력값";
 
+  function getTopicParticle(word: string) {
+    const lastCharacter = word.at(-1);
+    if (!lastCharacter) {
+      return "은";
+    }
+
+    const codePoint = lastCharacter.charCodeAt(0) - 0xac00;
+    return codePoint >= 0 && codePoint <= 11171 && codePoint % 28 === 0
+      ? "는"
+      : "은";
+  }
+
   switch (error.code) {
     case "INVALID_NUMBER":
       return `${label} 값을 숫자로 입력해 주세요.`;
@@ -110,13 +122,13 @@ function getErrorMessage(error: SellerMarginValidationError) {
     case "MUST_BE_INTEGER":
       return error.field === "quantity"
         ? "판매수량은 정수로 입력해 주세요."
-        : `${label}은 원 단위 정수로 입력해 주세요.`;
+        : `${label}${getTopicParticle(label)} 원 단위 정수로 입력해 주세요.`;
     case "MUST_BE_SAFE_INTEGER":
       return `${label} 값이 안전한 정수 범위를 벗어났습니다.`;
     case "MUST_BE_NON_NEGATIVE":
       return `${label} 값은 0 이상이어야 합니다.`;
     case "AMOUNT_EXCEEDS_LIMIT":
-      return `${label}은 10,000,000,000원 이하여야 합니다.`;
+      return `${label}${getTopicParticle(label)} 10,000,000,000원 이하여야 합니다.`;
     case "QUANTITY_EXCEEDS_LIMIT":
       return "판매수량은 1,000,000개 이하여야 합니다.";
     case "CALCULATION_EXCEEDS_SAFE_RANGE":

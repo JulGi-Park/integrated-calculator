@@ -266,6 +266,16 @@ test("2차 콘텐츠는 계산 기준, 예시, FAQ, 출처와 면책 문구를 �
     rentVsJeonseSources.every((source) => source.verifiedAt === "2026년 7월 12일"),
   );
   assert.deepEqual(
+    rentVsJeonseSources.at(-1),
+    {
+      organization: "한국부동산원",
+      title: "전월세전환율 산식 및 용어해설",
+      criterion: "전월세전환율의 정의·산식과 실거래 기반 산출 방식",
+      verifiedAt: "2026년 7월 12일",
+      href: "https://www.reb.or.kr/reb/cm/cntnts/cntntsView.do?cntntsId=1190&mi=9808",
+    },
+  );
+  assert.deepEqual(
     rentVsJeonseFaqJsonLd.mainEntity.map((item) => item.name),
     rentVsJeonseFaqs.map(({ question }) => question),
   );

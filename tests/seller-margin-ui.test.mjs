@@ -257,6 +257,7 @@ test("초대형 판매단가 오류는 직전 결과와 결과 동작을 모두 
   await user.click(screen.getByRole("button", { name: "계산하기" }));
 
   assert.ok(screen.getByText(/상품 판매단가 값이 안전한 정수 범위를 벗어났습니다/));
+  assert.equal(screen.queryByText(/상품 판매단가은/), null);
   assert.equal(screen.queryByText("예상 순이익"), null);
   assert.equal(screen.queryByRole("button", { name: "결과 복사" }), null);
   assert.equal(screen.queryByRole("button", { name: "공유" }), null);
