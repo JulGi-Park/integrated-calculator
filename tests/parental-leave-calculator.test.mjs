@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   calculateParentalLeaveBenefit,
   PARENTAL_LEAVE_POLICY_2026,
+  PARENTAL_LEAVE_SERVICE_LIMITS,
   validateParentalLeaveInput,
 } from "../lib/calculators/parental-leave/parentalLeave.ts";
 import { calculateParentalLeaveWithSpecialPolicy } from "../lib/calculators/parental-leave/parentalLeaveSpecialRules.ts";
@@ -204,6 +205,34 @@ test("입력값 검증은 누락, 숫자 아님, 음수, 0, 소수, 범위 초�
     }),
     "leaveMonths",
     "MONTHS_EXCEEDS_LIMIT",
+  );
+});
+
+test("월 통상임금의 서비스 상한과 안전 정수 범위를 검증한다", () => {
+  assertHasError(
+    calculateParentalLeaveBenefit({
+      monthlyOrdinaryWage: Number.MAX_SAFE_INTEGER + 1,
+      leaveMonths: 1,
+    }),
+    "monthlyOrdinaryWage",
+    "MUST_BE_SAFE_INTEGER",
+  );
+  assertHasError(
+    calculateParentalLeaveBenefit({
+      monthlyOrdinaryWage: 999_999_999_999_999_999,
+      leaveMonths: 1,
+    }),
+    "monthlyOrdinaryWage",
+    "MUST_BE_SAFE_INTEGER",
+  );
+  assertHasError(
+    calculateParentalLeaveBenefit({
+      monthlyOrdinaryWage:
+        PARENTAL_LEAVE_SERVICE_LIMITS.maximumMonthlyOrdinaryWage + 1,
+      leaveMonths: 1,
+    }),
+    "monthlyOrdinaryWage",
+    "AMOUNT_EXCEEDS_LIMIT",
   );
 });
 

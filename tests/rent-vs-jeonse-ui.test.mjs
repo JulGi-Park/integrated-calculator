@@ -25,7 +25,7 @@ Object.defineProperties(globalThis, {
   },
 });
 
-const { cleanup, render, screen, within } = await import(
+const { cleanup, fireEvent, render, screen, within } = await import(
   "@testing-library/react"
 );
 const userEvent = (await import("@testing-library/user-event")).default;
@@ -64,6 +64,19 @@ async function replaceValue(user, label, value) {
   }
 
   return input;
+}
+
+function setClipboard(writeText) {
+  const clipboard = { writeText };
+
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: clipboard,
+  });
+  Object.defineProperty(window.navigator, "clipboard", {
+    configurable: true,
+    value: clipboard,
+  });
 }
 
 test("전세 vs 월세 계산기는 필수 입력과 계산 전 안내를 표시한다", () => {
@@ -142,6 +155,14 @@ test("월세가 더 저렴한 경우와 거의 같은 경우의 해석 문구가
 
   assert.ok(screen.getByText("입력값 기준 두 선택지의 총비용이 거의 같습니다"));
   assert.match(screen.getByText(/민감도를 확인/).textContent, /민감도/);
+
+  let copiedText = "";
+  setClipboard(async (text) => {
+    copiedText = text;
+  });
+  fireEvent.click(screen.getByRole("button", { name: "결과 복사" }));
+  assert.ok(await screen.findByText("결과를 클립보드에 복사했습니다."));
+  assert.match(copiedText, /전세보증금: 0원/);
 });
 
 test("본문 콘텐츠는 FAQ, 출처, 면책 문구를 화면에 표시한다", () => {
@@ -162,31 +183,45 @@ test("본문 콘텐츠는 FAQ, 출처, 면책 문구를 화면에 표시한다",
 });
 
 test("계산 후 복사 문자열은 화면 결과와 기준일을 포함하고 다시 계산로 초기화한다", async () => {
-  Object.defineProperty(navigator, "clipboard", {
-    configurable: true,
-    value: { writeText: async () => {} },
-  });
+  let copiedText = "";
   const user = userEvent.setup();
+  const writeText = async (text) => {
+    copiedText = text;
+  };
   renderCalculator();
 
   assert.equal(screen.queryByRole("button", { name: "결과 복사" }), null);
   await user.click(screen.getByRole("button", { name: "계산하기" }));
-  await user.click(screen.getByRole("button", { name: "결과 복사" }));
+  setClipboard(writeText);
+  fireEvent.click(screen.getByRole("button", { name: "결과 복사" }));
 
   assert.ok(await screen.findByText("결과를 클립보드에 복사했습니다."));
 
   const defaultCase = getDefaultRentVsJeonseInput();
-  const copiedText = buildRentVsJeonseResultText(
+  const expectedText = buildRentVsJeonseResultText(
     defaultCase,
     compareRentVsJeonse(defaultCase),
   );
-  assert.match(copiedText, /전세 월 환산 부담: 900,000원/);
-  assert.match(copiedText, /월세 월 부담: 1,125,000원/);
-  assert.match(copiedText, /기준일: 2026-07-12/);
+  assert.equal(copiedText, expectedText);
+  assert.match(copiedText, /전세 총비용: /);
+  assert.match(copiedText, /월세 총비용: /);
+  assert.match(copiedText, /비교 결과: /);
   assert.doesNotMatch(copiedText, /NaN|Infinity|undefined|localhost|127\.0\.0\.1/);
   await user.click(screen.getByRole("button", { name: "다시 계산" }));
   assert.ok(screen.getByText("계산 전입니다"));
   assert.equal(screen.queryByRole("button", { name: "결과 복사" }), null);
+});
+
+test("클립보드 Promise reject 시 성공 상태를 남기지 않고 실패를 안내한다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+
+  await user.click(screen.getByRole("button", { name: "계산하기" }));
+  setClipboard(async () => Promise.reject(new Error("denied")));
+  fireEvent.click(screen.getByRole("button", { name: "결과 복사" }));
+
+  assert.ok(await screen.findByText("복사하지 못했습니다. 다시 시도해 주세요."));
+  assert.equal(screen.queryByText("결과를 클립보드에 복사했습니다."), null);
 });
 
 test("Web Share와 미지원 복사 fallback, AbortError 취소를 처리한다", async () => {

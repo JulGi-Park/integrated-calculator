@@ -52,13 +52,15 @@ const fieldLabels: Record<ParentalLeaveInputField, string> = {
 };
 
 function formatAmountInput(value: string): string {
-  const digitsOnly = value.replace(/\D/g, "");
+  const normalized = value.replaceAll(",", "");
+  const sign = normalized.startsWith("-") ? "-" : "";
+  const digitsOnly = normalized.replace(/\D/g, "");
 
   if (digitsOnly === "") {
-    return "";
+    return sign;
   }
 
-  return Number(digitsOnly).toLocaleString("ko-KR");
+  return `${sign}${Number(digitsOnly).toLocaleString("ko-KR")}`;
 }
 
 function parseNumberInput(value: string): number | undefined {

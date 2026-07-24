@@ -65,7 +65,11 @@ export type SellerMarginValidationErrorCode =
   | "INVALID_NUMBER"
   | "MUST_BE_POSITIVE"
   | "MUST_BE_INTEGER"
+  | "MUST_BE_SAFE_INTEGER"
   | "MUST_BE_NON_NEGATIVE"
+  | "AMOUNT_EXCEEDS_LIMIT"
+  | "QUANTITY_EXCEEDS_LIMIT"
+  | "CALCULATION_EXCEEDS_SAFE_RANGE"
   | "RATE_OUT_OF_RANGE"
   | "DISCOUNT_EXCEEDS_PRODUCT_SALES"
   | "ZERO_DENOMINATOR";
@@ -108,10 +112,25 @@ const nonNegativeAmountFields: SellerMarginInputField[] = [
   "otherCost",
 ];
 
+const amountFields: SellerMarginInputField[] = [
+  "unitPrice",
+  ...nonNegativeAmountFields,
+];
+
 const rateFields: SellerMarginInputField[] = [
   "platformFeeRate",
   "paymentFeeRate",
 ];
+
+/**
+ * 법정·플랫폼 정책값이 아닌 서비스 입력 제한입니다.
+ * 다른 금액형 공개 계산기와 같은 100억원 한도를 사용해 일반적인 주문 입력은
+ * 충분히 허용하면서, 브라우저 숫자 정밀도 밖의 금액은 계산 전에 차단합니다.
+ */
+export const SELLER_MARGIN_SERVICE_LIMITS = {
+  maximumAmount: 10_000_000_000,
+  maximumQuantity: 1_000_000,
+} as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -119,6 +138,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
+}
+
+function isSafeIntegerProduct(left: number, right: number): boolean {
+  return Number.isSafeInteger(left * right);
 }
 
 function hasFiniteInputFields(
@@ -190,6 +213,37 @@ export function validateSellerMarginInput(
     }
   }
 
+  for (const field of amountFields) {
+    const value = input[field];
+
+    if (!isFiniteNumber(value)) {
+      continue;
+    }
+
+    if (!Number.isInteger(value)) {
+      addError(
+        errors,
+        field,
+        "MUST_BE_INTEGER",
+        `${field} 값은 원 단위 정수여야 합니다.`,
+      );
+    } else if (!Number.isSafeInteger(value)) {
+      addError(
+        errors,
+        field,
+        "MUST_BE_SAFE_INTEGER",
+        `${field} 값이 안전한 정수 범위를 벗어났습니다.`,
+      );
+    } else if (value > SELLER_MARGIN_SERVICE_LIMITS.maximumAmount) {
+      addError(
+        errors,
+        field,
+        "AMOUNT_EXCEEDS_LIMIT",
+        `${field} 값은 ${SELLER_MARGIN_SERVICE_LIMITS.maximumAmount.toLocaleString("ko-KR")}원 이하여야 합니다.`,
+      );
+    }
+  }
+
   if (isFiniteNumber(input.unitPrice) && input.unitPrice <= 0) {
     addError(
       errors,
@@ -215,6 +269,20 @@ export function validateSellerMarginInput(
         "quantity",
         "MUST_BE_INTEGER",
         "판매수량은 정수여야 합니다.",
+      );
+    } else if (!Number.isSafeInteger(input.quantity)) {
+      addError(
+        errors,
+        "quantity",
+        "MUST_BE_SAFE_INTEGER",
+        "판매수량이 안전한 정수 범위를 벗어났습니다.",
+      );
+    } else if (input.quantity > SELLER_MARGIN_SERVICE_LIMITS.maximumQuantity) {
+      addError(
+        errors,
+        "quantity",
+        "QUANTITY_EXCEEDS_LIMIT",
+        `판매수량은 ${SELLER_MARGIN_SERVICE_LIMITS.maximumQuantity.toLocaleString("ko-KR")}개 이하여야 합니다.`,
       );
     }
   }
@@ -252,9 +320,38 @@ export function validateSellerMarginInput(
     unitPrice > 0 &&
     isFiniteNumber(quantity) &&
     quantity >= 1 &&
-    Number.isInteger(quantity);
+    Number.isInteger(quantity) &&
+    Number.isSafeInteger(unitPrice) &&
+    Number.isSafeInteger(quantity) &&
+    unitPrice <= SELLER_MARGIN_SERVICE_LIMITS.maximumAmount &&
+    quantity <= SELLER_MARGIN_SERVICE_LIMITS.maximumQuantity;
 
   if (canCalculateProductSales) {
+    if (!isSafeIntegerProduct(unitPrice, quantity)) {
+      addError(
+        errors,
+        "unitPrice",
+        "CALCULATION_EXCEEDS_SAFE_RANGE",
+        "상품 판매단가와 판매수량의 곱이 안전한 정수 범위를 넘습니다.",
+      );
+      return errors;
+    }
+
+    if (
+      isFiniteNumber(input.unitProductCost) &&
+      Number.isSafeInteger(input.unitProductCost) &&
+      input.unitProductCost <= SELLER_MARGIN_SERVICE_LIMITS.maximumAmount &&
+      !isSafeIntegerProduct(input.unitProductCost, quantity)
+    ) {
+      addError(
+        errors,
+        "unitProductCost",
+        "CALCULATION_EXCEEDS_SAFE_RANGE",
+        "상품 1개당 원가와 판매수량의 곱이 안전한 정수 범위를 넘습니다.",
+      );
+      return errors;
+    }
+
     const productSalesAmount = roundToWon(unitPrice * quantity);
 
     if (
@@ -288,6 +385,15 @@ export function validateSellerMarginInput(
           input.sellerDiscount +
           input.customerShippingFee,
       );
+
+      if (!Number.isSafeInteger(paymentAmount)) {
+        addError(
+          errors,
+          "unitPrice",
+          "CALCULATION_EXCEEDS_SAFE_RANGE",
+          "결제금액이 안전한 정수 범위를 넘습니다.",
+        );
+      }
 
       if (paymentAmount === 0) {
         addError(

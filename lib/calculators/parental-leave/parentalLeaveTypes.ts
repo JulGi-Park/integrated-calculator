@@ -36,7 +36,9 @@ export type ParentalLeaveValidationCode =
   | "REQUIRED"
   | "INVALID_NUMBER"
   | "MUST_BE_INTEGER"
+  | "MUST_BE_SAFE_INTEGER"
   | "MUST_BE_POSITIVE"
+  | "AMOUNT_EXCEEDS_LIMIT"
   | "MONTHS_UNDER_MINIMUM"
   | "MONTHS_EXCEEDS_LIMIT";
 

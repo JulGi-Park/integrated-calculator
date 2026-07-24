@@ -18,6 +18,14 @@ export type {
   ParentalLeaveValidationError,
 } from "./parentalLeaveTypes";
 
+/**
+ * 지급 상한과 별개인 서비스 입력 제한입니다. 다른 금액형 공개 계산기와 같은
+ * 100억원을 적용해 비현실적 초대형 입력과 숫자 정밀도 손실을 막습니다.
+ */
+export const PARENTAL_LEAVE_SERVICE_LIMITS = {
+  maximumMonthlyOrdinaryWage: 10_000_000_000,
+} as const;
+
 function isBlank(value: unknown): boolean {
   return value === undefined || value === null || value === "";
 }
@@ -70,12 +78,28 @@ export function validateParentalLeaveInput(
           "월 통상임금은 원 단위 정수로 입력해 주세요.",
         ),
       );
+    } else if (!Number.isSafeInteger(wage)) {
+      errors.push(
+        buildError(
+          "monthlyOrdinaryWage",
+          "MUST_BE_SAFE_INTEGER",
+          "월 통상임금이 안전한 정수 범위를 벗어났습니다.",
+        ),
+      );
     } else if (wage <= 0) {
       errors.push(
         buildError(
           "monthlyOrdinaryWage",
           "MUST_BE_POSITIVE",
           "월 통상임금은 1원 이상이어야 합니다.",
+        ),
+      );
+    } else if (wage > PARENTAL_LEAVE_SERVICE_LIMITS.maximumMonthlyOrdinaryWage) {
+      errors.push(
+        buildError(
+          "monthlyOrdinaryWage",
+          "AMOUNT_EXCEEDS_LIMIT",
+          `월 통상임금은 ${PARENTAL_LEAVE_SERVICE_LIMITS.maximumMonthlyOrdinaryWage.toLocaleString("ko-KR")}원 이하여야 합니다.`,
         ),
       );
     }

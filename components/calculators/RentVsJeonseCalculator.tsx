@@ -357,19 +357,34 @@ export function RentVsJeonseCalculator() {
   }
 
   async function handleCopy() {
-    if (!result || !calculatedInput) return;
+    setFeedback("");
+
+    if (!result || !calculatedInput) {
+      setFeedback("복사할 계산 결과가 없습니다. 다시 계산해 주세요.");
+      return;
+    }
 
     try {
-      if (!navigator.clipboard?.writeText) {
-        setFeedback("복사 기능을 사용할 수 없습니다.");
+      const clipboard = window.navigator.clipboard;
+
+      if (typeof clipboard?.writeText !== "function") {
+        setFeedback("복사하지 못했습니다. 다시 시도해 주세요.");
         return;
       }
-      await navigator.clipboard.writeText(
+
+      const writeResult = clipboard.writeText(
         buildRentVsJeonseResultText(calculatedInput, result),
       );
+
+      if (!writeResult || typeof writeResult.then !== "function") {
+        setFeedback("복사하지 못했습니다. 다시 시도해 주세요.");
+        return;
+      }
+
+      await writeResult;
       setFeedback("결과를 클립보드에 복사했습니다.");
     } catch {
-      setFeedback("복사에 실패했습니다. 브라우저 권한을 확인해 주세요.");
+      setFeedback("복사하지 못했습니다. 다시 시도해 주세요.");
     }
   }
 

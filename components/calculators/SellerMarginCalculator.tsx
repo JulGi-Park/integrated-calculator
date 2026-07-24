@@ -108,9 +108,19 @@ function getErrorMessage(error: SellerMarginValidationError) {
         ? "판매수량은 1 이상이어야 합니다."
         : "상품 판매단가는 0보다 커야 합니다.";
     case "MUST_BE_INTEGER":
-      return "판매수량은 정수로 입력해 주세요.";
+      return error.field === "quantity"
+        ? "판매수량은 정수로 입력해 주세요."
+        : `${label}은 원 단위 정수로 입력해 주세요.`;
+    case "MUST_BE_SAFE_INTEGER":
+      return `${label} 값이 안전한 정수 범위를 벗어났습니다.`;
     case "MUST_BE_NON_NEGATIVE":
       return `${label} 값은 0 이상이어야 합니다.`;
+    case "AMOUNT_EXCEEDS_LIMIT":
+      return `${label}은 10,000,000,000원 이하여야 합니다.`;
+    case "QUANTITY_EXCEEDS_LIMIT":
+      return "판매수량은 1,000,000개 이하여야 합니다.";
+    case "CALCULATION_EXCEEDS_SAFE_RANGE":
+      return error.message;
     case "RATE_OUT_OF_RANGE":
       return `${label} 값은 0% 이상 100% 이하여야 합니다.`;
     case "DISCOUNT_EXCEEDS_PRODUCT_SALES":

@@ -87,6 +87,30 @@ test("일반 계산만 사용하면 기존 기본 계산 결과와 mapper 결과
   assert.equal(screen.queryByText("보완 입력"), null);
 });
 
+test("음수 및 초대형 월 통상임금은 양수로 바꾸지 않고 결과 동작을 숨긴다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+
+  const wageInput = screen.getByLabelText("월 통상임금");
+  await user.type(wageInput, "-1");
+  await user.type(screen.getByLabelText("육아휴직 사용 개월 수"), "1");
+  assert.equal(wageInput.value, "-1");
+  await user.click(screen.getByRole("button", { name: "육아휴직급여 계산하기" }));
+
+  assert.ok(screen.getAllByText("월 통상임금은 1원 이상이어야 합니다.").length >= 1);
+  assert.equal(screen.queryByText("총 예상 수령액"), null);
+  assert.equal(screen.queryByRole("button", { name: "결과 복사" }), null);
+  assert.equal(screen.queryByRole("button", { name: "결과 공유" }), null);
+
+  await user.clear(wageInput);
+  await user.type(wageInput, "999999999999999999");
+  await user.click(screen.getByRole("button", { name: "육아휴직급여 계산하기" }));
+  assert.ok(
+    screen.getAllByText("월 통상임금이 안전한 정수 범위를 벗어났습니다.").length >= 1,
+  );
+  assert.equal(screen.queryByText("총 예상 수령액"), null);
+});
+
 test("6+6 특례 입력 부족은 missingInputs 안내를 결과 카드에 표시한다", async () => {
   const user = userEvent.setup();
   renderCalculator();

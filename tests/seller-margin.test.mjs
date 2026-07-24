@@ -4,6 +4,7 @@ import {
   calculateSellerMargin,
   roundToDecimalPlaces,
   roundToWon,
+  SELLER_MARGIN_SERVICE_LIMITS,
   validateSellerMarginInput,
 } from "../lib/calculators/seller-margin/seller-margin.ts";
 
@@ -212,6 +213,53 @@ test("판매단가가 0원이면 계산하지 않는다", () => {
   const response = calculateSellerMargin({ ...baseInput, unitPrice: 0 });
 
   assertHasError(response, "unitPrice", "MUST_BE_POSITIVE");
+});
+
+test("금액 입력의 서비스 상한과 안전 정수 범위를 검증한다", () => {
+  const maximumAmount = SELLER_MARGIN_SERVICE_LIMITS.maximumAmount;
+
+  assert.equal(
+    validateSellerMarginInput({ ...baseInput, unitPrice: maximumAmount }).length,
+    0,
+  );
+  assertHasError(
+    calculateSellerMargin({ ...baseInput, unitPrice: maximumAmount + 1 }),
+    "unitPrice",
+    "AMOUNT_EXCEEDS_LIMIT",
+  );
+  assertHasError(
+    calculateSellerMargin({ ...baseInput, unitPrice: Number.MAX_SAFE_INTEGER + 1 }),
+    "unitPrice",
+    "MUST_BE_SAFE_INTEGER",
+  );
+  assertHasError(
+    calculateSellerMargin({ ...baseInput, unitPrice: 999_999_999_999_999_999 }),
+    "unitPrice",
+    "MUST_BE_SAFE_INTEGER",
+  );
+});
+
+test("범위 내 입력이라도 판매단가 또는 원가와 수량의 곱이 안전 정수를 넘으면 거부한다", () => {
+  const safeRangeButUnsafeProduct = {
+    ...baseInput,
+    unitPrice: SELLER_MARGIN_SERVICE_LIMITS.maximumAmount,
+    quantity: SELLER_MARGIN_SERVICE_LIMITS.maximumQuantity,
+  };
+
+  assertHasError(
+    calculateSellerMargin(safeRangeButUnsafeProduct),
+    "unitPrice",
+    "CALCULATION_EXCEEDS_SAFE_RANGE",
+  );
+  assertHasError(
+    calculateSellerMargin({
+      ...safeRangeButUnsafeProduct,
+      unitPrice: 1,
+      unitProductCost: SELLER_MARGIN_SERVICE_LIMITS.maximumAmount,
+    }),
+    "unitProductCost",
+    "CALCULATION_EXCEEDS_SAFE_RANGE",
+  );
 });
 
 for (const field of [
