@@ -192,7 +192,11 @@ export function UnemploymentCalculator() {
     const field = event.currentTarget.name as keyof RawInputs;
     const rawValue = event.currentTarget.value;
     const nextValue =
-      field === "wageAmount" ? formatAmountInput(rawValue) : rawValue;
+      field === "wageAmount"
+        ? formatAmountInput(rawValue)
+        : field === "scheduledDailyHours"
+          ? (Number(rawValue) as UnemploymentScheduledDailyHours)
+          : rawValue;
 
     setInput({
       ...input,

@@ -6,6 +6,11 @@ const dom = new JSDOM("<!doctype html><html><body></body></html>", {
   url: "http://localhost/calculators/unemployment/",
 });
 
+Object.defineProperty(dom.window, "CSS", {
+  value: { escape: (value) => String(value) },
+  configurable: true,
+});
+
 Object.defineProperties(globalThis, {
   window: { value: dom.window, configurable: true },
   document: { value: dom.window.document, configurable: true },
@@ -16,6 +21,10 @@ Object.defineProperties(globalThis, {
   DOMException: { value: dom.window.DOMException, configurable: true },
   getComputedStyle: {
     value: dom.window.getComputedStyle.bind(dom.window),
+    configurable: true,
+  },
+  CSS: {
+    value: { escape: (value) => String(value) },
     configurable: true,
   },
   IS_REACT_ACT_ENVIRONMENT: {
@@ -168,6 +177,16 @@ test("초기화는 입력과 결과를 비운다", async () => {
   assert.equal(getRadio(/월급 기준 간편 입력/).checked, true);
   assert.equal(getRadio(/8시간 이상/).checked, true);
   assert.equal(screen.queryByText("11,888,640원"), null);
+
+  await user.click(screen.getByText("5시간", { selector: "strong" }));
+  assert.equal(getRadio(/^5시간/).checked, true);
+  await user.type(screen.getByLabelText("월급 금액"), "800000");
+  await user.type(screen.getByLabelText("고용보험 가입기간"), "36");
+  await user.click(getRadio(/50세 미만/));
+  await user.click(getRadio(/비자발적 퇴사/));
+  await user.click(screen.getByRole("button", { name: "실업급여 계산하기" }));
+  assert.ok(await screen.findByText("7,430,400원"));
+  assert.ok(screen.getAllByText("41,280원").length >= 1);
 });
 
 test("계산 전에는 복사·공유 버튼을 표시하지 않고 계산 후에는 표시한다", async () => {
@@ -306,7 +325,9 @@ test("소정근로시간 변경 후 재계산과 복사는 최신 하한액을 �
 
   await calculateStandardResult(user, { wageAmount: "800000" });
   assert.ok(await screen.findByText("11,888,640원"));
-  await user.click(getRadio(/^6시간/));
+  await user.click(screen.getByText("6시간", { selector: "strong" }));
+  assert.equal(getRadio(/^6시간/).checked, true);
+  assert.equal(getRadio(/8시간 이상/).checked, false);
   await user.click(screen.getByRole("button", { name: "실업급여 계산하기" }));
   assert.ok(await screen.findByText("8,916,480원"));
   assert.ok(screen.getAllByText("49,536원").length >= 1);
@@ -314,6 +335,24 @@ test("소정근로시간 변경 후 재계산과 복사는 최신 하한액을 �
   assert.match(copiedText, /1일 소정근로시간: 6시간/);
   assert.match(copiedText, /2026년 적용 하한액: 49,536원/);
   assert.doesNotMatch(copiedText, /2026년 적용 하한액: 66,048원/);
+});
+
+test("소정근로시간은 표시 영역 클릭과 키보드 이동 후 선택 상태를 유지한다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+
+  await user.click(screen.getByText("4시간 이하", { selector: "strong" }));
+  assert.equal(getRadio(/4시간 이하/).checked, true);
+  assert.equal(getRadio(/8시간 이상/).checked, false);
+
+  screen.getByLabelText("월급 금액").focus();
+  await user.tab();
+  assert.equal(document.activeElement, getRadio(/4시간 이하/));
+
+  await user.keyboard("{ArrowRight}{ArrowRight}");
+  assert.equal(document.activeElement, getRadio(/^6시간/));
+  assert.equal(getRadio(/^6시간/).checked, true);
+  assert.equal(getRadio(/4시간 이하/).checked, false);
 });
 
 test("복사 문자열 생성은 비정상 숫자와 개발 URL을 거부한다", () => {
