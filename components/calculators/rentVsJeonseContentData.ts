@@ -23,9 +23,9 @@ export const rentVsJeonseCriteria = [
 ] as const;
 
 export const rentVsJeonseLegalReferencePoints = [
-  "기준일: 2026-07-12",
+  "사이트 기준 확인일: 2026-07-27 / 한국은행 기준금리 결정일: 2026-07-16",
   "법정 참고 구조는 연 10%와 한국은행 기준금리 + 시행령상 가산 이율 중 낮은 비율입니다.",
-  "기본값은 한국은행 기준금리 2.50%, 시행령상 가산 이율 2.00%, 법정 상한율 10.00%, 기본 참고 전환율 4.50%입니다.",
+  "기본값은 한국은행 기준금리 2.75%, 시행령상 가산 이율 2.00%, 법정 상한율 10.00%, 기본 참고 전환율 4.75%입니다.",
   "기준금리는 변동될 수 있으므로 입력 영역에서 직접 수정해 계산할 수 있습니다.",
   "전월세전환율 설명은 참고용이며, 실제 계약·증액 제한·분쟁 판단을 확정하지 않습니다.",
 ] as const;
@@ -81,7 +81,7 @@ export const rentVsJeonseFaqs: RentVsJeonseFaq[] = [
   {
     question: "전월세전환율은 법적으로 확정된 값인가요?",
     answer:
-      "이 페이지의 전월세전환율은 기준일 현재 법정 상한 구조를 반영한 참고값입니다. 실제 계약, 증액 제한, 분쟁 판단은 공식 기관이나 전문가 확인이 필요합니다.",
+      "이 페이지의 기본 참고 전환율은 2026년 7월 27일 확인 시점에 2026년 7월 16일 한국은행 기준금리 결정과 법정 상한 구조를 반영한 값입니다. 실제 계약, 증액 제한, 분쟁 판단은 공식 기관이나 전문가 확인이 필요합니다.",
   },
   {
     question: "계산 결과가 실제 계약에서 그대로 적용되나요?",
@@ -100,28 +100,28 @@ export const rentVsJeonseSources: RentVsJeonseSource[] = [
     organization: "국가법령정보센터",
     title: "주택임대차보호법 제7조의2",
     criterion: "차임 등 증감청구권과 전월세전환 관련 법률 기준",
-    verifiedAt: "2026년 7월 12일",
+    verifiedAt: "2026년 7월 27일",
     href: "https://www.law.go.kr/LSW/lsLinkCommonInfo.do?ancYnChk=&chrClsCd=&lsJoLnkSeq=1031475575",
   },
   {
     organization: "국가법령정보센터",
     title: "주택임대차보호법 시행령 제9조",
     criterion: "월차임 전환 시 산정률 기준",
-    verifiedAt: "2026년 7월 12일",
+    verifiedAt: "2026년 7월 27일",
     href: "https://www.law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lspttninfSeq=130111",
   },
   {
     organization: "한국은행",
-    title: "한국은행 기준금리 추이",
-    criterion: "전월세전환율 참고 계산에 쓰는 기준금리 확인",
-    verifiedAt: "2026년 7월 12일",
-    href: "https://www.bok.or.kr/portal/bbs/P0000559/view.do?menuNo=200690&nttId=10098188",
+    title: "통화정책방향(2026.7.16)",
+    criterion: "2026년 7월 16일 기준금리 2.75% 결정 확인",
+    verifiedAt: "2026년 7월 27일",
+    href: "https://www.bok.or.kr/portal/bbs/P0000559/view.do?depth=200690&menuNo=200690&nttId=11062942&programType=newsData&relate=Y",
   },
   {
     organization: "한국부동산원",
     title: "전월세전환율 산식 및 용어해설",
     criterion: "전월세전환율의 정의·산식과 실거래 기반 산출 방식",
-    verifiedAt: "2026년 7월 12일",
+    verifiedAt: "2026년 7월 27일",
     href: "https://www.reb.or.kr/reb/cm/cntnts/cntntsView.do?cntntsId=1190&mi=9808",
   },
 ];
@@ -178,9 +178,10 @@ export const rentVsJeonseFaqJsonLd: JsonLdItem = {
 
 export const rentVsJeonsePolicySummary = {
   referenceDate: RENT_VS_JEONSE_LEGAL_REFERENCE.referenceDate,
-  referenceDateText: "2026년 7월 12일",
-  baseRate: "2.50%",
+  referenceDateText: "2026년 7월 27일",
+  officialDecisionDateText: "2026년 7월 16일",
+  baseRate: "2.75%",
   legalAdditionalRate: "2.00%",
   maxLegalRate: "10.00%",
-  legalReferenceRate: "4.50%",
+  legalReferenceRate: "4.75%",
 };

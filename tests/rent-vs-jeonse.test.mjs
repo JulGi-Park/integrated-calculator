@@ -64,14 +64,14 @@ test("기본 계산: 전세와 월세의 월 부담, 총비용, 차이, 보증�
   assert.equal(result.legalReferenceRate, 4.5);
 });
 
-test("법정 참고 전환율: 기준금리와 가산 이율의 합과 상한 중 낮은 값을 사용한다", () => {
+test("법정 참고 전환율: 현행 기본값과 가산 이율의 합, 상한 중 낮은 값을 사용한다", () => {
   assert.equal(
     calculateLegalReferenceRate({
-      baseRate: 2.5,
+      baseRate: 2.75,
       legalAdditionalRate: 2,
       maxLegalRate: 10,
     }),
-    4.5,
+    4.75,
   );
   assert.equal(
     calculateLegalReferenceRate({
@@ -197,16 +197,22 @@ test("입력값 검증: 필수 오류 케이스를 반환한다", () => {
   assertHasError({ ...baseInput, monthlyRent: Number.POSITIVE_INFINITY }, "monthlyRent", "INVALID_NUMBER");
 });
 
-test("기본값과 공식 기준 문구는 2026-07-12 참고값을 포함한다", () => {
+test("기본값과 공식 기준 문구는 2026-07-27 확인일과 2026-07-16 결정일을 포함한다", () => {
   const input = getDefaultRentVsJeonseInput();
   const result = assertSuccess(calculateRentVsJeonse(input));
 
-  assert.equal(input.baseRate, 2.5);
+  assert.equal(input.baseRate, 2.75);
   assert.equal(input.legalAdditionalRate, 2);
   assert.equal(input.maxLegalRate, 10);
-  assert.equal(result.legalReferenceRate, 4.5);
-  assert.equal(RENT_VS_JEONSE_LEGAL_REFERENCE.referenceDate, "2026-07-12");
-  assert.match(result.referenceNotice, /2026-07-12 기준 참고값/);
+  assert.equal(input.conversionRate, 4.75);
+  assert.equal(result.legalReferenceRate, 4.75);
+  assert.equal(result.jeonseTotalCost, 21_600_000);
+  assert.equal(result.monthlyRentTotalCost, 27_000_000);
+  assert.equal(result.depositDifferenceMonthlyRentEquivalent, 989_583);
+  assert.equal(RENT_VS_JEONSE_LEGAL_REFERENCE.referenceDate, "2026-07-27");
+  assert.equal(RENT_VS_JEONSE_LEGAL_REFERENCE.officialDecisionDate, "2026-07-16");
+  assert.match(result.referenceNotice, /사이트 기준 확인일은 2026-07-27/);
+  assert.match(result.referenceNotice, /한국은행 기준금리 결정일은 2026-07-16/);
   assert.match(result.disclaimer, /참고용 예상 계산/);
 });
 
@@ -263,7 +269,7 @@ test("2차 콘텐츠는 계산 기준, 예시, FAQ, 출처와 면책 문구를 �
   assert.ok(rentVsJeonseFaqs.length >= 6);
   assert.equal(rentVsJeonseSources.length, 4);
   assert.ok(
-    rentVsJeonseSources.every((source) => source.verifiedAt === "2026년 7월 12일"),
+    rentVsJeonseSources.every((source) => source.verifiedAt === "2026년 7월 27일"),
   );
   assert.deepEqual(
     rentVsJeonseSources.at(-1),
@@ -271,8 +277,18 @@ test("2차 콘텐츠는 계산 기준, 예시, FAQ, 출처와 면책 문구를 �
       organization: "한국부동산원",
       title: "전월세전환율 산식 및 용어해설",
       criterion: "전월세전환율의 정의·산식과 실거래 기반 산출 방식",
-      verifiedAt: "2026년 7월 12일",
+      verifiedAt: "2026년 7월 27일",
       href: "https://www.reb.or.kr/reb/cm/cntnts/cntntsView.do?cntntsId=1190&mi=9808",
+    },
+  );
+  assert.deepEqual(
+    rentVsJeonseSources.find((source) => source.organization === "한국은행"),
+    {
+      organization: "한국은행",
+      title: "통화정책방향(2026.7.16)",
+      criterion: "2026년 7월 16일 기준금리 2.75% 결정 확인",
+      verifiedAt: "2026년 7월 27일",
+      href: "https://www.bok.or.kr/portal/bbs/P0000559/view.do?depth=200690&menuNo=200690&nttId=11062942&programType=newsData&relate=Y",
     },
   );
   assert.deepEqual(

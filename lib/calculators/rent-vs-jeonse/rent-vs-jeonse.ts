@@ -1,14 +1,15 @@
 export const RENT_VS_JEONSE_LEGAL_REFERENCE = {
-  baseRate: 2.5,
+  baseRate: 2.75,
   legalAdditionalRate: 2,
   maxLegalRate: 10,
-  referenceDate: "2026-07-12",
+  referenceDate: "2026-07-27",
+  officialDecisionDate: "2026-07-16",
   notice:
-    "2026-07-12 기준 참고값이며, 한국은행 기준금리 변동 시 직접 수정해 계산해야 합니다.",
+    "사이트 기준 확인일은 2026-07-27이며, 한국은행 기준금리 결정일은 2026-07-16입니다. 기준금리 변동 시 직접 수정해 계산해야 합니다.",
   sources: [
     "주택임대차보호법 제7조의2",
     "주택임대차보호법 시행령 제9조",
-    "한국은행 기준금리 추이",
+    "한국은행 통화정책방향(2026.7.16)",
     "한국부동산원 전월세전환율 산식 및 용어해설",
   ],
 } as const;
@@ -169,7 +170,7 @@ export function getDefaultRentVsJeonseInput(): RentVsJeonseInput {
     monthlyMaintenanceFee: 100_000,
     opportunityRate: 3,
     residenceMonths: 24,
-    conversionRate: 4.5,
+    conversionRate: calculateLegalReferenceRate(RENT_VS_JEONSE_LEGAL_REFERENCE),
     baseRate: RENT_VS_JEONSE_LEGAL_REFERENCE.baseRate,
     legalAdditionalRate: RENT_VS_JEONSE_LEGAL_REFERENCE.legalAdditionalRate,
     maxLegalRate: RENT_VS_JEONSE_LEGAL_REFERENCE.maxLegalRate,

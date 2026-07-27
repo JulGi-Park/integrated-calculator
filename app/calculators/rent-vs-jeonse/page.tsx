@@ -55,7 +55,8 @@ export default function RentVsJeonsePage() {
         meta={
           <>
           <span>참고용 예상 계산</span>
-          <span>기준일: 2026-07-12</span>
+          <span>사이트 기준 확인일: 2026-07-27</span>
+          <span>한국은행 기준금리 결정일: 2026-07-16</span>
           <span>입력한 가정에 따른 예상 비교입니다.</span>
           </>
         }

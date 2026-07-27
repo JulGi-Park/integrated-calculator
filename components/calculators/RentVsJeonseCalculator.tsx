@@ -112,14 +112,14 @@ const groups: Array<{
         label: "한국은행 기준금리",
         unit: "%",
         inputMode: "decimal",
-        description: "2026-07-02 기본값은 2.50%입니다.",
+        description: "2026-07-16 결정 기준 기본값은 2.75%입니다.",
       },
       {
         name: "legalAdditionalRate",
         label: "시행령상 가산 이율",
         unit: "%",
         inputMode: "decimal",
-        description: "2026-07-02 기본값은 2.00%입니다.",
+        description: "2026-07-27 확인 기준 기본값은 2.00%입니다.",
       },
       {
         name: "maxLegalRate",
@@ -256,7 +256,10 @@ export function buildRentVsJeonseResultText(
     `월세 총비용: ${formatWon(result.monthlyRentTotalCost)}`,
     `총비용 차이: ${formatWon(result.totalCostDifference)}`,
     `비교 결과: ${getCheaperLabel(result.cheaperOption)}`,
-    `기준일: ${RENT_VS_JEONSE_LEGAL_REFERENCE.referenceDate}`,
+    `한국은행 기준금리: ${formatRate(input.baseRate)} (결정일: ${RENT_VS_JEONSE_LEGAL_REFERENCE.officialDecisionDate})`,
+    `시행령상 가산 이율: ${formatRate(input.legalAdditionalRate)} · 법정 상한율: ${formatRate(input.maxLegalRate)}`,
+    `법정 참고 전환율: ${formatRate(result.legalReferenceRate)}`,
+    `사이트 기준 확인일: ${RENT_VS_JEONSE_LEGAL_REFERENCE.referenceDate}`,
     "입력값 기준 참고용 예상 비교이며 실제 계약 비용과 다를 수 있습니다.",
   ].join("\n");
 }

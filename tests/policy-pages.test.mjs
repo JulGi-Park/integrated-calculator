@@ -221,7 +221,7 @@ test("홈 JSON-LD ItemList는 공개 계산기만 유지한다", async () => {
 test("방법론·변경 이력 페이지는 공개 SEO와 JSON-LD를 갖는다", async () => {
   for (const [file, path, title, required] of [
     ["app/methodology/page.tsx", "/methodology/", "계산 방법론 | 계산박스", ["공식 출처 우선순위", "기준일은 자료를 확인한 날짜", "합계금액 10,000원", "하한 41만원", "14시간과 15시간", "NaN", "Infinity", "브라우저 중심", "개인별 세무·노무·금융 상담"]],
-    ["app/updates/page.tsx", "/updates/", "계산기 변경 이력 | 계산박스", ["2026년 6월 19일", "2026년 6월 22일", "2026년 6월 25일", "2026년 7월 10일", "2026년 7월 11일", "2026년 7월 12일", "2026년 7월 13일", "상세 페이지 보기"]],
+    ["app/updates/page.tsx", "/updates/", "계산기 변경 이력 | 계산박스", ["2026년 6월 19일", "2026년 6월 22일", "2026년 6월 25일", "2026년 7월 10일", "2026년 7월 11일", "2026년 7월 12일", "2026년 7월 13일", "2026년 7월 27일", "상세 페이지 보기"]],
   ]) {
     const source = await readFile(file, "utf8");
     assert.equal((source.match(/<h1/g) ?? []).length, 0);
@@ -298,14 +298,17 @@ test("변경 이력은 공개 계산기 10개와 검증된 주요 변경만 올�
   }
 });
 
-test("변경 이력은 4대보험 7월 13일 변경과 최신순 정렬을 유지한다", () => {
+test("변경 이력은 전세·월세 7월 27일 변경과 최신순 정렬을 유지한다", () => {
   const html = renderToStaticMarkup(React.createElement(updatesModule.default));
   const dates = [...html.matchAll(/확인·적용 날짜:<\/strong> (\d{4})년 (\d{1,2})월 (\d{1,2})일/g)]
     .map(([, year, month, day]) => Date.UTC(Number(year), Number(month) - 1, Number(day)));
 
   assert.ok(dates.length > 0);
-  assert.equal(dates[0], Date.UTC(2026, 6, 13));
+  assert.equal(dates[0], Date.UTC(2026, 6, 27));
   assert.deepEqual(dates, [...dates].sort((a, b) => b - a));
+  assert.match(html, /전세 vs 월세 비교 계산기 기준금리·전환율/);
+  assert.match(html, /기준금리 기본값을 연 2\.50%에서 2\.75%/);
+  assert.match(html, /법정 참고 전환율을 연 4\.50%에서 4\.75%/);
   assert.match(html, /4대보험 국민연금 절사·보험료율 표시/);
   assert.match(html, /신고 소득월액 1,000원 미만 절사/);
   assert.match(html, /근로자 국민연금 보험료 10원 미만 절사/);

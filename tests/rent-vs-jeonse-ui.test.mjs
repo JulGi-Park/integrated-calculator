@@ -173,7 +173,7 @@ test("본문 콘텐츠는 FAQ, 출처, 면책 문구를 화면에 표시한다",
   assert.ok(screen.getByRole("heading", { name: "자주 묻는 질문" }));
   assert.ok(screen.getAllByText(/전세 vs 월세 비교 계산기는 무엇을 비교하나요/).length >= 1);
   assert.ok(screen.getByText("주택임대차보호법 제7조의2"));
-  assert.ok(screen.getByText("한국은행 기준금리 추이"));
+  assert.ok(screen.getByText("통화정책방향(2026.7.16)"));
 
   const disclaimer = screen.getByLabelText("계산 결과 안내");
   assert.match(
@@ -206,6 +206,10 @@ test("계산 후 복사 문자열은 화면 결과와 기준일을 포함하고 
   assert.match(copiedText, /전세 총비용: /);
   assert.match(copiedText, /월세 총비용: /);
   assert.match(copiedText, /비교 결과: /);
+  assert.match(copiedText, /한국은행 기준금리: 2.75% \(결정일: 2026-07-16\)/);
+  assert.match(copiedText, /시행령상 가산 이율: 2.00% · 법정 상한율: 10.00%/);
+  assert.match(copiedText, /법정 참고 전환율: 4.75%/);
+  assert.match(copiedText, /사이트 기준 확인일: 2026-07-27/);
   assert.doesNotMatch(copiedText, /NaN|Infinity|undefined|localhost|127\.0\.0\.1/);
   await user.click(screen.getByRole("button", { name: "다시 계산" }));
   assert.ok(screen.getByText("계산 전입니다"));

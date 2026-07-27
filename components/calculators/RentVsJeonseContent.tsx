@@ -31,7 +31,8 @@ export function RentVsJeonseContent() {
         <div className={styles.sectionHeading}>
           <h2 id="legal-rate-title">법정 전월세전환율 참고</h2>
           <p>
-            {rentVsJeonsePolicySummary.referenceDateText} 기준 참고값입니다.
+            사이트 기준 확인일은 {rentVsJeonsePolicySummary.referenceDateText}이며,
+            한국은행 기준금리 결정일은 {rentVsJeonsePolicySummary.officialDecisionDateText}입니다.
             기준금리 변동 시 입력값을 직접 바꿔 계산해야 합니다.
           </p>
         </div>
@@ -137,7 +138,7 @@ export function RentVsJeonseContent() {
       <section className={styles.section} aria-labelledby="sources-title">
         <div className={styles.sectionHeading}>
           <h2 id="sources-title">공식 출처</h2>
-          <p>{rentVsJeonsePolicySummary.referenceDateText} 기준으로 정리했습니다.</p>
+          <p>사이트 기준 확인일 {rentVsJeonsePolicySummary.referenceDateText} 기준으로 정리했습니다.</p>
         </div>
         <ul className={styles.sourceList}>
           {rentVsJeonseSources.map(
