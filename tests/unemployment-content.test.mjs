@@ -9,6 +9,7 @@ import { UnemploymentContent } from "../components/calculators/UnemploymentConte
 import {
   unemploymentBreadcrumbJsonLd,
   unemploymentCriteriaRows,
+  unemploymentDirectAnswerItems,
   unemploymentExampleInput,
   unemploymentExampleResultItems,
   unemploymentExcludedItems,
@@ -100,6 +101,7 @@ test("페이지 상단은 H1 하나와 계산기, 본문 콘텐츠, JSON-LD 세 
 
 test("주요 본문 섹션을 모두 렌더링한다", () => {
   const headings = [
+    "2026년 실업급여 핵심 기준",
     "실업급여 계산 전 먼저 확인할 항목",
     "2026년 실업급여 계산 기준",
     "1일 구직급여액 계산 방식",
@@ -118,6 +120,7 @@ test("주요 본문 섹션을 모두 렌더링한다", () => {
   }
 
   assert.equal(unemploymentInterpretationCards.length, 4);
+  assert.equal(unemploymentDirectAnswerItems.length, 4);
   assert.ok(unemploymentExcludedItems.length >= 6);
   assert.match(renderedContent, /신청 전 체크리스트/);
 });
@@ -207,12 +210,12 @@ test("FAQ 8개를 데이터 파일에서 관리하고 FAQPage JSON-LD와 일치�
   const expectedQuestions = [
     "실업급여 계산기는 실제 지급액과 같은가요?",
     "월급만 알아도 실업급여를 계산할 수 있나요?",
-    "상한액과 하한액은 왜 적용되나요?",
-    "고용보험 가입기간이 6개월이면 바로 받을 수 있나요?",
+    "2026년 실업급여 하루 상한액과 하한액은 얼마인가요?",
+    "급여기초 임금일액 113,500원은 실제로 받는 하루 실업급여인가요?",
     "자발적 퇴사도 실업급여를 받을 수 있나요?",
-    "계약만료와 권고사직은 어떻게 보나요?",
-    "이직확인서가 처리되지 않으면 어떻게 되나요?",
-    "실업인정은 계산 결과와 어떤 관계가 있나요?",
+    "실업급여 지급일수는 어떻게 계산하나요?",
+    "월급이 80만원이면 하한액이 바로 적용되나요?",
+    "이직확인서와 실업인정은 계산 결과와 어떤 관계가 있나요?",
   ];
 
   assert.deepEqual(

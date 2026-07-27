@@ -3,6 +3,7 @@ import {
   unemploymentBasisSummary,
   unemploymentChecklist,
   unemploymentCriteriaRows,
+  unemploymentDirectAnswerItems,
   unemploymentExampleInputItems,
   unemploymentExampleResultItems,
   unemploymentExcludedItems,
@@ -22,6 +23,25 @@ function formatKoreanDate(value: string): string {
 export function UnemploymentContent() {
   return (
     <div className={styles.content}>
+      <section className={styles.section} aria-labelledby="direct-answer-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="direct-answer-title">2026년 실업급여 핵심 기준</h2>
+          <p>
+            금액은 1일 평균임금, 상한액·하한액과 소정급여일수로 예상합니다.
+            아래 기준은 현재 계산기에 반영한 금액·입력 방식 안내이며, 실제
+            수급자격은 공식 절차에서 별도로 확인해야 합니다.
+          </p>
+        </div>
+        <div className={styles.interpretationGrid}>
+          {unemploymentDirectAnswerItems.map(({ title, description }) => (
+            <article className={styles.infoCard} key={title}>
+              <h3>{title}</h3>
+              <p>{description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className={styles.section} aria-labelledby="use-case-title">
         <div className={styles.sectionHeading}>
           <h2 id="use-case-title">언제 쓰는 계산기인가요?</h2>
@@ -110,7 +130,9 @@ export function UnemploymentContent() {
           <h2 id="formula-title">1일 구직급여액 계산 방식</h2>
           <p>
             현재 계산기는 월급 기준 입력 시 월급을 30으로 나누어 1일 평균임금을
-            추정하고, 직접 입력 시 입력한 1일 평균임금을 그대로 사용합니다.
+            추정하고, 직접 입력 시 입력한 1일 평균임금을 그대로 사용합니다. 그
+            다음 60%를 적용하고 상한액·하한액 범위 안에서 1일 예상 금액을
+            표시합니다.
           </p>
         </div>
         <dl className={styles.criteriaList}>
@@ -538,7 +560,9 @@ export function UnemploymentContent() {
           <h2 id="sources-title">공식 출처</h2>
           <p>
             {formatKoreanDate(UNEMPLOYMENT_POLICY_2026.basisDate)} 기준으로
-            아래 공식 기관 자료를 확인했습니다.
+            아래 공식 기관 자료를 확인했습니다. 금액 산식·상한은 고용노동부와
+            법령 원문, 하한 산식은 최저임금 고시, 실제 신청 절차는 고용24 자료를
+            함께 확인하세요.
           </p>
         </div>
         <ul className={styles.sourceList}>
