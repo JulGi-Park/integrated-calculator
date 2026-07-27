@@ -52,10 +52,18 @@ export const unemploymentUpperBasisDailyWage = 113_500;
 export const unemploymentMinimumWage2026 = 10_320;
 export const unemploymentStandardDailyHours = 8;
 export const unemploymentMinimumWageBenefitRate = 80;
+export const unemploymentScheduledHoursLowerLimits = [
+  { hours: "4시간 이하", amount: 33_024 },
+  { hours: "5시간", amount: 41_280 },
+  { hours: "6시간", amount: 49_536 },
+  { hours: "7시간", amount: 57_792 },
+  { hours: "8시간 이상", amount: 66_048 },
+] as const;
 
 export const unemploymentExampleInput: UnemploymentInput = {
   wageInputType: "monthlyWage",
   wageAmount: 3_300_000,
+  scheduledDailyHours: 8,
   insuredMonths: 36,
   ageGroup: "under50",
   leavingReason: "involuntary",
@@ -73,6 +81,7 @@ const unemploymentExampleResult = unemploymentExampleResponse.data;
 export const unemploymentExampleInputItems = [
   { label: "임금 입력 방식", value: "월급 기준 간편 입력" },
   { label: "월급", value: formatWon(unemploymentExampleInput.wageAmount) },
+  { label: "1일 소정근로시간", value: "8시간 이상" },
   { label: "고용보험 가입기간", value: "36개월" },
   { label: "나이 구간", value: "50세 미만" },
   { label: "퇴직 사유", value: "비자발적 퇴사" },
@@ -86,6 +95,10 @@ export const unemploymentExampleResultItems = [
   {
     label: "계산 전 기준 급여액",
     value: formatWon(unemploymentExampleResult.baseDailyBenefit),
+  },
+  {
+    label: "적용 하한액",
+    value: formatWon(unemploymentExampleResult.dailyBenefitLowerLimit),
   },
   {
     label: "1일 예상 구직급여액",
@@ -110,7 +123,7 @@ export const unemploymentInterpretationCards = [
   {
     title: "상한액·하한액",
     description:
-      "상한액은 급여기초 임금일액 상한 113,500원 × 60% = 68,100원, 하한액은 2026년 최저임금 10,320원 × 8시간 × 80% = 66,048원 기준입니다.",
+      "상한액은 급여기초 임금일액 상한 113,500원 × 60% = 68,100원입니다. 하한액은 2026년 최저임금 10,320원 × 80% × 선택한 1일 소정근로시간으로 계산하며, 8시간 이상 기준은 66,048원입니다.",
   },
   {
     title: "소정급여일수",
@@ -133,7 +146,7 @@ export const unemploymentDirectAnswerItems = [
   {
     title: "하루 하한액",
     description:
-      "현재 계산기는 2026년 최저임금 10,320원 × 8시간 × 80%인 66,048원을 하한 계산 상수로 사용합니다.",
+      "하한액은 2026년 최저임금 10,320원 × 80% × 이직 전 1일 소정근로시간으로 계산합니다. 4시간 이하는 33,024원, 5시간은 41,280원, 6시간은 49,536원, 7시간은 57,792원, 8시간 이상은 66,048원이며 계산기에서 해당 구간을 선택해야 합니다.",
   },
   {
     title: "지급일수",
@@ -143,7 +156,7 @@ export const unemploymentDirectAnswerItems = [
   {
     title: "입력 기준",
     description:
-      "월급 입력은 월급 ÷ 30의 간편 추정입니다. 퇴직 전 1일 평균임금을 알면 직접 입력이 더 적합합니다.",
+      "월급 입력은 월급 ÷ 30의 간편 추정입니다. 퇴직 전 1일 평균임금을 알면 직접 입력이 더 적합하며, 두 방식 모두 근로계약상 1일 소정근로시간을 별도로 선택합니다.",
   },
 ] as const;
 
@@ -162,6 +175,7 @@ export const unemploymentExcludedItems = [
   "대기기간, 조기재취업수당, 취업촉진수당과 부정수급 판단",
   "실업인정일별 실제 지급일과 지급 보류 여부",
   "세부 법령 개정이나 고시 변경의 실시간 반영",
+  "이직확인서상 1일 소정근로시간의 실제 인정과 시간 외·휴게시간 반영 여부",
   "고용센터 심사 결과와 행정 처분 판단",
 ] as const;
 
@@ -183,6 +197,12 @@ export const unemploymentQuickCheckRows: UnemploymentTableRow[] = [
     importance: "1일 구직급여액의 출발점입니다.",
     calculatorCoverage: "월급 ÷ 30 또는 직접 입력을 지원합니다.",
     additionalCheck: "퇴직 전 3개월 임금자료 확인 필요",
+  },
+  {
+    label: "1일 소정근로시간",
+    importance: "시간별 구직급여 하한액을 결정합니다.",
+    calculatorCoverage: "4시간 이하·5·6·7·8시간 이상 중 선택합니다.",
+    additionalCheck: "이직확인서와 고용센터 인정 시간 확인 필요",
   },
   {
     label: "나이 구간",
@@ -216,8 +236,13 @@ export const unemploymentCriteriaRows: UnemploymentCriteriaRow[] = [
   },
   {
     item: "하한액",
-    currentCalculatorBasis: `2026년 최저임금 ${formatWon(unemploymentMinimumWage2026)} × ${unemploymentStandardDailyHours}시간 × ${unemploymentMinimumWageBenefitRate}% = ${formatWon(UNEMPLOYMENT_POLICY_2026.dailyBenefitLowerLimit)}을 적용합니다.`,
+    currentCalculatorBasis: `2026년 최저임금 ${formatWon(unemploymentMinimumWage2026)} × ${unemploymentMinimumWageBenefitRate}% × 선택한 1일 소정근로시간을 적용합니다. 8시간 이상은 ${formatWon(UNEMPLOYMENT_POLICY_2026.dailyBenefitLowerLimit)}입니다.`,
     officialCheck: "고용보험법 제45조·제46조와 2026년 최저임금 고시",
+  },
+  {
+    item: "소정근로시간",
+    currentCalculatorBasis: "4시간 이하·5시간·6시간·7시간·8시간 이상 구간별 하한액을 적용합니다.",
+    officialCheck: "이직 전 근로계약·이직확인서와 고용센터 인정 시간 확인",
   },
   {
     item: "고용보험 가입기간",
@@ -255,7 +280,7 @@ export const unemploymentFaqs: UnemploymentFaq[] = [
   {
     question: "2026년 실업급여 하루 상한액과 하한액은 얼마인가요?",
     answer:
-      "현재 계산기는 2026년 1일 상한액 68,100원과 하한액 66,048원을 사용합니다. 상한액은 급여기초 임금일액 상한 113,500원 × 60%이고, 하한액은 최저임금 10,320원 × 8시간 × 80% 산식입니다.",
+      "현재 계산기는 2026년 1일 상한액 68,100원을 사용합니다. 하한액은 최저임금 10,320원 × 80% × 이직 전 1일 소정근로시간으로 계산해 4시간 이하 33,024원, 5시간 41,280원, 6시간 49,536원, 7시간 57,792원, 8시간 이상 66,048원입니다.",
   },
   {
     question: "급여기초 임금일액 113,500원은 실제로 받는 하루 실업급여인가요?",
@@ -275,7 +300,7 @@ export const unemploymentFaqs: UnemploymentFaq[] = [
   {
     question: "월급이 80만원이면 하한액이 바로 적용되나요?",
     answer:
-      "이 계산기에 월급 80만원, 가입기간 36개월, 50세 미만, 비자발적 퇴사를 입력하면 월급 ÷ 30의 간편 추정값 26,667원에 60%를 적용한 16,000원보다 하한액이 높아 1일 66,048원, 180일 기준 11,888,640원을 표시합니다. 다만 실제 하한 적용은 개인의 평균임금 산정 자료와 수급요건을 함께 확인해야 하므로, 월급이 낮다는 이유만으로 실제 지급액을 확정할 수는 없습니다.",
+      "아닙니다. 월급 80만원, 가입기간 36개월, 50세 미만, 비자발적 퇴사 입력은 월급 ÷ 30의 간편 추정값 26,667원에 60%를 적용한 약 16,000원보다 시간별 하한액이 높아 하한을 적용합니다. 다만 1일 소정근로시간에 따라 4시간 이하는 33,024원, 6시간은 49,536원, 8시간 이상은 66,048원으로 결과가 달라집니다. 180일 기준 총액도 각각 5,944,320원, 8,916,480원, 11,888,640원입니다. 실제 인정 시간과 지급액은 이직확인서와 고용센터에서 확인해야 합니다.",
   },
   {
     question: "이직확인서와 실업인정은 계산 결과와 어떤 관계가 있나요?",
@@ -285,6 +310,13 @@ export const unemploymentFaqs: UnemploymentFaq[] = [
 ] as const;
 
 export const unemploymentSources: UnemploymentSource[] = [
+  {
+    organization: "고용노동부 고객상담센터",
+    title: "구직급여일액 FAQ",
+    checkedAt: unemploymentPolicyCheckedAt,
+    href: "https://1350.moel.go.kr/home/hp/data/faqView.do?faq_idx=1000001176",
+    criterion: "이직 전 1일 소정근로시간별 하한액 구조와 4시간 이하 처리 확인",
+  },
   {
     organization: "국가법령정보센터",
     title: "고용보험법 시행규칙 제101조·별표 2",
@@ -428,14 +460,12 @@ export const unemploymentBasisSummary =
     UNEMPLOYMENT_POLICY_2026.basisDate,
   )}이며, 2026년 공식 기준인 상한액 ${formatWon(
     UNEMPLOYMENT_POLICY_2026.dailyBenefitUpperLimit,
-  )}, 하한액 ${formatWon(
-    UNEMPLOYMENT_POLICY_2026.dailyBenefitLowerLimit,
-  )}을 계산 상수로 사용합니다. 상한액 산식은 ${formatWon(
+  )}과 선택한 1일 소정근로시간별 하한액을 계산 상수로 사용합니다. 상한액 산식은 ${formatWon(
     unemploymentUpperBasisDailyWage,
   )} × 60% = ${formatWon(
     UNEMPLOYMENT_POLICY_2026.dailyBenefitUpperLimit,
   )}, 하한액 산식은 ${formatWon(
     unemploymentMinimumWage2026,
-  )} × ${unemploymentStandardDailyHours}시간 × ${unemploymentMinimumWageBenefitRate}% = ${formatWon(
+  )} × ${unemploymentMinimumWageBenefitRate}% × 선택한 소정근로시간입니다. 8시간 이상 기준은 ${formatWon(
     UNEMPLOYMENT_POLICY_2026.dailyBenefitLowerLimit,
   )}입니다.`;

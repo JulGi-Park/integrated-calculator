@@ -1,5 +1,7 @@
 export type UnemploymentWageInputType = "monthlyWage" | "averageDailyWage";
 
+export type UnemploymentScheduledDailyHours = 4 | 5 | 6 | 7 | 8;
+
 export type UnemploymentAgeGroup = "under50" | "over50OrDisabled";
 
 export type UnemploymentLeavingReason =
@@ -13,6 +15,7 @@ export type UnemploymentLeavingReason =
 export interface UnemploymentInput {
   wageInputType: UnemploymentWageInputType;
   wageAmount: number;
+  scheduledDailyHours: UnemploymentScheduledDailyHours;
   insuredMonths: number;
   ageGroup: UnemploymentAgeGroup;
   leavingReason: UnemploymentLeavingReason;
@@ -51,6 +54,7 @@ export interface UnemploymentResult {
   needsOfficialVerification: boolean;
   wageInputType: UnemploymentWageInputType;
   wageAmount: number;
+  scheduledDailyHours: UnemploymentScheduledDailyHours;
   estimatedAverageDailyWage: number;
   baseDailyBenefit: number;
   dailyBenefitUpperLimit: number;

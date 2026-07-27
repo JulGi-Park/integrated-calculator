@@ -87,6 +87,10 @@ test("기본 입력 UI와 안내 문구를 표시한다", () => {
   assert.equal(getRadio(/월급 기준 간편 입력/).checked, true);
   assert.ok(getRadio(/1일 평균임금 직접 입력/));
   assert.ok(screen.getByLabelText("월급 금액"));
+  assert.equal(getRadio(/8시간 이상/).checked, true);
+  for (const label of [/4시간 이하/, /^5시간/, /^6시간/, /^7시간/, /8시간 이상/]) {
+    assert.ok(getRadio(label));
+  }
   assert.ok(screen.getByLabelText("고용보험 가입기간"));
   assert.ok(getRadio(/50세 미만/));
   assert.ok(getRadio(/비자발적 퇴사/));
@@ -105,6 +109,8 @@ test("정상 입력 시 예상 총 지급액과 상하한 적용 상태를 표�
 
   assert.ok(await screen.findByText("11,888,640원"));
   assert.ok(screen.getAllByText("66,048원").length >= 1);
+  assert.ok(screen.getByText("선택한 소정근로시간"));
+  assert.ok(screen.getAllByText("8시간 이상").length >= 2);
   assert.ok(screen.getByText("180일"));
   assert.ok(screen.getAllByText("미적용").length >= 1);
   assert.ok(screen.getAllByText("적용").length >= 1);
@@ -160,6 +166,7 @@ test("초기화는 입력과 결과를 비운다", async () => {
   assert.equal(screen.getByLabelText("월급 금액").value, "");
   assert.equal(screen.getByLabelText("고용보험 가입기간").value, "");
   assert.equal(getRadio(/월급 기준 간편 입력/).checked, true);
+  assert.equal(getRadio(/8시간 이상/).checked, true);
   assert.equal(screen.queryByText("11,888,640원"), null);
 });
 
@@ -190,6 +197,8 @@ test("결과 복사는 화면 결과·입력 조건·기준일과 면책 안내�
   assert.match(copiedText, /예상 소정급여일수: 180일/);
   assert.match(copiedText, /예상 총 지급액: 11,888,640원/);
   assert.match(copiedText, /월급: 3,300,000원/);
+  assert.match(copiedText, /1일 소정근로시간: 8시간 이상/);
+  assert.match(copiedText, /2026년 적용 하한액: 66,048원/);
   assert.match(copiedText, /고용보험 가입기간: 36개월/);
   assert.match(copiedText, /계산 기준일: 2026-06-25/);
   assert.match(copiedText, /고용센터 심사 결과/);
@@ -289,10 +298,29 @@ test("초기화와 재계산은 결과 행동 상태를 제거하고 새 결과�
   assert.match(copiedText, /예상 총 지급액: 17,832,960원/);
 });
 
+test("소정근로시간 변경 후 재계산과 복사는 최신 하한액을 사용한다", async () => {
+  let copiedText = "";
+  const user = userEvent.setup();
+  setClipboard(async (text) => { copiedText = text; });
+  renderCalculator();
+
+  await calculateStandardResult(user, { wageAmount: "800000" });
+  assert.ok(await screen.findByText("11,888,640원"));
+  await user.click(getRadio(/^6시간/));
+  await user.click(screen.getByRole("button", { name: "실업급여 계산하기" }));
+  assert.ok(await screen.findByText("8,916,480원"));
+  assert.ok(screen.getAllByText("49,536원").length >= 1);
+  await user.click(screen.getByRole("button", { name: "결과 복사" }));
+  assert.match(copiedText, /1일 소정근로시간: 6시간/);
+  assert.match(copiedText, /2026년 적용 하한액: 49,536원/);
+  assert.doesNotMatch(copiedText, /2026년 적용 하한액: 66,048원/);
+});
+
 test("복사 문자열 생성은 비정상 숫자와 개발 URL을 거부한다", () => {
   const response = calculateUnemploymentBenefit({
     wageInputType: "monthlyWage",
     wageAmount: 3_300_000,
+    scheduledDailyHours: 8,
     insuredMonths: 36,
     ageGroup: "under50",
     leavingReason: "involuntary",

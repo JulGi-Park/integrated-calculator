@@ -6,6 +6,7 @@ import type {
   UnemploymentInput,
   UnemploymentInputField,
   UnemploymentLeavingReason,
+  UnemploymentScheduledDailyHours,
   UnemploymentValidationError,
   UnemploymentValidationErrorCode,
   UnemploymentWageInputType,
@@ -27,6 +28,9 @@ const leavingReasons = new Set<UnemploymentLeavingReason>([
   "voluntaryExceptionReview",
   "unclear",
 ]);
+const scheduledDailyHours = new Set<UnemploymentScheduledDailyHours>(
+  UNEMPLOYMENT_POLICY_2026.scheduledDailyHours,
+);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -49,7 +53,7 @@ function addError(
   errors.push({ field, code, message });
 }
 
-function validateOption<T extends string>(
+function validateOption<T extends string | number>(
   errors: UnemploymentValidationError[],
   field: UnemploymentInputField,
   value: unknown,
@@ -60,7 +64,10 @@ function validateOption<T extends string>(
     return;
   }
 
-  if (typeof value !== "string" || !values.has(value as T)) {
+  if (
+    (typeof value !== "string" && typeof value !== "number") ||
+    !values.has(value as T)
+  ) {
     addError(errors, field, "INVALID_OPTION", `${field} 선택값이 올바르지 않습니다.`);
   }
 }
@@ -223,6 +230,9 @@ function hasValidInput(
     isFiniteNumber(input.insuredMonths) &&
     Number.isSafeInteger(input.insuredMonths) &&
     ageGroups.has(input.ageGroup as UnemploymentAgeGroup) &&
+    scheduledDailyHours.has(
+      input.scheduledDailyHours as UnemploymentScheduledDailyHours,
+    ) &&
     leavingReasons.has(input.leavingReason as UnemploymentLeavingReason)
   );
 }
@@ -236,6 +246,7 @@ export function validateUnemploymentInput(
     return [
       "wageInputType",
       "wageAmount",
+      "scheduledDailyHours",
       "insuredMonths",
       "ageGroup",
       "leavingReason",
@@ -248,6 +259,12 @@ export function validateUnemploymentInput(
 
   validateOption(errors, "wageInputType", input.wageInputType, wageInputTypes);
   validateWageAmount(errors, input);
+  validateOption(
+    errors,
+    "scheduledDailyHours",
+    input.scheduledDailyHours,
+    scheduledDailyHours,
+  );
   validateInsuredMonths(errors, input);
   validateOption(errors, "ageGroup", input.ageGroup, ageGroups);
   validateOption(errors, "leavingReason", input.leavingReason, leavingReasons);
@@ -257,6 +274,12 @@ export function validateUnemploymentInput(
 
 function clamp(value: number, minimum: number, maximum: number): number {
   return Math.min(Math.max(value, minimum), maximum);
+}
+
+export function getDailyBenefitLowerLimit(
+  hours: UnemploymentScheduledDailyHours,
+): number {
+  return UNEMPLOYMENT_POLICY_2026.dailyBenefitLowerLimitsByScheduledHours[hours];
 }
 
 export function getPrescribedBenefitDays(
@@ -336,9 +359,12 @@ export function calculateUnemploymentBenefit(
     (estimatedAverageDailyWage * policy.benefitRateNumerator) /
       policy.benefitRateDenominator,
   );
+  const dailyBenefitLowerLimit = getDailyBenefitLowerLimit(
+    input.scheduledDailyHours,
+  );
   const dailyBenefitAmount = clamp(
     baseDailyBenefit,
-    policy.dailyBenefitLowerLimit,
+    dailyBenefitLowerLimit,
     policy.dailyBenefitUpperLimit,
   );
   const prescribedBenefitDays = getPrescribedBenefitDays(
@@ -355,13 +381,14 @@ export function calculateUnemploymentBenefit(
       needsOfficialVerification: policy.needsOfficialVerification,
       wageInputType: input.wageInputType,
       wageAmount: input.wageAmount,
+      scheduledDailyHours: input.scheduledDailyHours,
       estimatedAverageDailyWage,
       baseDailyBenefit,
       dailyBenefitUpperLimit: policy.dailyBenefitUpperLimit,
-      dailyBenefitLowerLimit: policy.dailyBenefitLowerLimit,
+      dailyBenefitLowerLimit,
       dailyBenefitAmount,
       isUpperLimitApplied: baseDailyBenefit > policy.dailyBenefitUpperLimit,
-      isLowerLimitApplied: baseDailyBenefit < policy.dailyBenefitLowerLimit,
+      isLowerLimitApplied: baseDailyBenefit < dailyBenefitLowerLimit,
       insuredMonths: input.insuredMonths,
       prescribedBenefitDays,
       estimatedTotalBenefit: dailyBenefitAmount * prescribedBenefitDays,

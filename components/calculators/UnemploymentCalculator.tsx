@@ -13,6 +13,7 @@ import type {
   UnemploymentInputField,
   UnemploymentLeavingReason,
   UnemploymentResult,
+  UnemploymentScheduledDailyHours,
   UnemploymentValidationError,
   UnemploymentWageInputType,
 } from "@/lib/calculators/unemployment/types";
@@ -25,6 +26,7 @@ import styles from "./UnemploymentCalculator.module.css";
 type RawInputs = {
   wageInputType: UnemploymentWageInputType;
   wageAmount: string;
+  scheduledDailyHours: UnemploymentScheduledDailyHours | "";
   insuredMonths: string;
   ageGroup: UnemploymentAgeGroup | "";
   leavingReason: UnemploymentLeavingReason | "";
@@ -33,6 +35,7 @@ type RawInputs = {
 const initialInputs: RawInputs = {
   wageInputType: "monthlyWage",
   wageAmount: "",
+  scheduledDailyHours: 8,
   insuredMonths: "",
   ageGroup: "",
   leavingReason: "",
@@ -41,6 +44,7 @@ const initialInputs: RawInputs = {
 const fieldLabels: Record<UnemploymentInputField, string> = {
   wageInputType: "임금 입력 방식",
   wageAmount: "임금 금액",
+  scheduledDailyHours: "1일 소정근로시간",
   insuredMonths: "고용보험 가입기간",
   ageGroup: "나이 구간",
   leavingReason: "퇴직 사유",
@@ -82,6 +86,22 @@ const leavingReasonOptions: Array<{
     description: "고용센터 또는 공식 절차 확인이 필요합니다.",
   },
 ];
+
+const scheduledDailyHoursOptions: Array<{
+  value: UnemploymentScheduledDailyHours;
+  label: string;
+  description: string;
+}> = [
+  { value: 4, label: "4시간 이하", description: "4시간 미만도 이 구간으로 계산합니다." },
+  { value: 5, label: "5시간", description: "근로계약상 1일 소정근로시간입니다." },
+  { value: 6, label: "6시간", description: "근로계약상 1일 소정근로시간입니다." },
+  { value: 7, label: "7시간", description: "근로계약상 1일 소정근로시간입니다." },
+  { value: 8, label: "8시간 이상", description: "8시간 초과도 이 구간으로 계산합니다." },
+];
+
+function getScheduledDailyHoursLabel(hours: UnemploymentScheduledDailyHours): string {
+  return scheduledDailyHoursOptions.find((option) => option.value === hours)?.label ?? "";
+}
 
 function formatAmountInput(value: string): string {
   const digitsOnly = value.replace(/\D/g, "");
@@ -127,6 +147,10 @@ function parseInputs(input: RawInputs): Record<string, unknown> {
       input.wageAmount.trim() === ""
         ? undefined
         : Number(input.wageAmount.replaceAll(",", "")),
+    scheduledDailyHours:
+      input.scheduledDailyHours === ""
+        ? undefined
+        : Number(input.scheduledDailyHours),
     insuredMonths:
       input.insuredMonths.trim() === ""
         ? undefined
@@ -304,6 +328,7 @@ export function UnemploymentCalculator() {
   }
 
   const wageAmountErrors = errorsByField.wageAmount ?? [];
+  const scheduledDailyHoursErrors = errorsByField.scheduledDailyHours ?? [];
   const insuredMonthsErrors = errorsByField.insuredMonths ?? [];
   const ageGroupErrors = errorsByField.ageGroup ?? [];
   const leavingReasonErrors = errorsByField.leavingReason ?? [];
@@ -390,6 +415,33 @@ export function UnemploymentCalculator() {
                 </p>
               )}
             </div>
+
+            <fieldset className={styles.field}>
+              <legend className={styles.legend}>1일 소정근로시간</legend>
+              <div className={styles.segmented}>
+                {scheduledDailyHoursOptions.map((option) => (
+                  <label className={styles.option} key={option.value}>
+                    <input
+                      type="radio"
+                      name="scheduledDailyHours"
+                      value={option.value}
+                      checked={input.scheduledDailyHours === option.value}
+                      onChange={handleChange}
+                    />
+                    <strong>{option.label}</strong>
+                    <span>{option.description}</span>
+                  </label>
+                ))}
+              </div>
+              <p className={styles.fieldDescription}>
+                이직 전 근로계약상 1일 소정근로시간을 선택하세요. 실제 근무·연장근로·휴게시간이 아니라 이직확인서와 고용센터가 인정한 소정근로시간 기준입니다.
+              </p>
+              {scheduledDailyHoursErrors.length > 0 && (
+                <p className={styles.fieldError}>
+                  {scheduledDailyHoursErrors.map(getErrorMessage).join(" ")}
+                </p>
+              )}
+            </fieldset>
 
             <div className={styles.field}>
               <label htmlFor="insuredMonths">고용보험 가입기간</label>
@@ -568,6 +620,14 @@ export function UnemploymentCalculator() {
                     <dd>{result.prescribedBenefitDays.toLocaleString("ko-KR")}일</dd>
                   </div>
                   <div>
+                    <dt>선택한 소정근로시간</dt>
+                    <dd>{getScheduledDailyHoursLabel(result.scheduledDailyHours)}</dd>
+                  </div>
+                  <div>
+                    <dt>적용 하한액</dt>
+                    <dd>{formatWon(result.dailyBenefitLowerLimit)}</dd>
+                  </div>
+                  <div>
                     <dt>상한액 적용</dt>
                     <dd>{result.isUpperLimitApplied ? "적용" : "미적용"}</dd>
                   </div>
@@ -587,6 +647,10 @@ export function UnemploymentCalculator() {
                     <div>
                       <dt>추정 1일 평균임금</dt>
                       <dd>{formatWon(result.estimatedAverageDailyWage)}</dd>
+                    </div>
+                    <div>
+                      <dt>선택한 1일 소정근로시간</dt>
+                      <dd>{getScheduledDailyHoursLabel(result.scheduledDailyHours)}</dd>
                     </div>
                     <div>
                       <dt>적용된 상한액</dt>

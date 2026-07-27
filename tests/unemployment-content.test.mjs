@@ -21,6 +21,7 @@ import {
   unemploymentSources,
   unemploymentMinimumWage2026,
   unemploymentMinimumWageBenefitRate,
+  unemploymentScheduledHoursLowerLimits,
   unemploymentStandardDailyHours,
   unemploymentUpperBasisDailyWage,
   unemploymentWebApplicationJsonLd,
@@ -105,7 +106,7 @@ test("주요 본문 섹션을 모두 렌더링한다", () => {
     "실업급여 계산 전 먼저 확인할 항목",
     "2026년 실업급여 계산 기준",
     "1일 구직급여액 계산 방식",
-    "상한액·하한액 적용 방식",
+    "시간별 하한액·상한액 적용 방식",
     "고용보험 가입기간과 소정급여일수",
     "자발적 퇴사와 예외 인정 가능성",
     "이직확인서와 실업인정 절차",
@@ -190,6 +191,7 @@ test("계산 예시는 현재 엔진 결과와 같은 확정값을 사용한다"
   assert.deepEqual(unemploymentExampleInput, {
     wageInputType: "monthlyWage",
     wageAmount: 3_300_000,
+    scheduledDailyHours: 8,
     insuredMonths: 36,
     ageGroup: "under50",
     leavingReason: "involuntary",
@@ -198,6 +200,7 @@ test("계산 예시는 현재 엔진 결과와 같은 확정값을 사용한다"
   assert.deepEqual(unemploymentExampleResultItems, [
     { label: "추정 1일 평균임금", value: "110,000원" },
     { label: "계산 전 기준 급여액", value: "66,000원" },
+    { label: "적용 하한액", value: "66,048원" },
     { label: "1일 예상 구직급여액", value: "66,048원" },
     { label: "예상 소정급여일수", value: "180일" },
     { label: "예상 총 지급액", value: "11,888,640원" },
@@ -263,7 +266,7 @@ test("공식 출처 섹션과 외부 링크 보안 속성을 제공한다", () =
     assert.ok(source.criterion.length > 0);
     assert.match(
       source.href,
-      /^https:\/\/(m\.work24\.go\.kr|www\.law\.go\.kr|www\.moel\.go\.kr|www\.minimumwage\.go\.kr)\//,
+      /^https:\/\/(m\.work24\.go\.kr|www\.law\.go\.kr|www\.moel\.go\.kr|1350\.moel\.go\.kr|www\.minimumwage\.go\.kr)\//,
     );
   }
 });
@@ -279,7 +282,17 @@ test("2026년 상한액과 하한액 산식을 공식 기준 문구로 표시한
   assert.match(renderedContent, /8시간/);
   assert.match(renderedContent, /80%/);
   assert.match(renderedContent, /66,048원/);
+  assert.match(renderedContent, /33,024원/);
+  assert.match(renderedContent, /49,536원/);
+  assert.match(renderedContent, /소정근로시간/);
   assert.match(renderedContent, /2026년 공식 기준/);
+  assert.deepEqual(unemploymentScheduledHoursLowerLimits, [
+    { hours: "4시간 이하", amount: 33_024 },
+    { hours: "5시간", amount: 41_280 },
+    { hours: "6시간", amount: 49_536 },
+    { hours: "7시간", amount: 57_792 },
+    { hours: "8시간 이상", amount: 66_048 },
+  ]);
 });
 
 test("관련 계산기는 기존 구현 URL만 활성 링크로 제공한다", () => {
@@ -366,7 +379,7 @@ test("policy 설명 필드는 공식 확인 완료 상태와 충돌하지 않는
   assert.equal(UNEMPLOYMENT_POLICY_2026.needsOfficialVerification, false);
   assert.match(UNEMPLOYMENT_POLICY_2026.sourceNote, /공식 기준/);
   assert.match(UNEMPLOYMENT_POLICY_2026.sourceNote, /113,500원 × 60%/);
-  assert.match(UNEMPLOYMENT_POLICY_2026.sourceNote, /10,320원 × 8시간 × 80%/);
+  assert.match(UNEMPLOYMENT_POLICY_2026.sourceNote, /10,320원 × 1시간 × 80%/);
   assert.doesNotMatch(UNEMPLOYMENT_POLICY_2026.sourceNote, /재검증|미확정|차이/);
   assert.equal(UNEMPLOYMENT_POLICY_2026.dailyBenefitUpperLimit, 68_100);
   assert.equal(UNEMPLOYMENT_POLICY_2026.dailyBenefitLowerLimit, 66_048);

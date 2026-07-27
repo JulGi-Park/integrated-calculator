@@ -11,6 +11,7 @@ import {
 const standardInput = {
   wageInputType: "monthlyWage",
   wageAmount: 3_300_000,
+  scheduledDailyHours: 8,
   insuredMonths: 36,
   ageGroup: "under50",
   leavingReason: "involuntary",
@@ -90,6 +91,72 @@ test("하한액보다 낮으면 오류가 아니라 하한액 적용 상태로 �
   assert.equal(data.isLowerLimitApplied, true);
 });
 
+test("소정근로시간별 하한액과 월급 80만원 예상 총액을 계산한다", () => {
+  const expected = {
+    4: [33_024, 5_944_320],
+    5: [41_280, 7_430_400],
+    6: [49_536, 8_916_480],
+    7: [57_792, 10_402_560],
+    8: [66_048, 11_888_640],
+  };
+
+  for (const [hours, [dailyBenefitAmount, estimatedTotalBenefit]] of Object.entries(expected)) {
+    const data = assertSuccess(
+      calculateUnemploymentBenefit({
+        ...standardInput,
+        wageAmount: 800_000,
+        scheduledDailyHours: Number(hours),
+      }),
+    );
+
+    assert.equal(data.dailyBenefitLowerLimit, dailyBenefitAmount);
+    assert.equal(data.dailyBenefitAmount, dailyBenefitAmount);
+    assert.equal(data.estimatedTotalBenefit, estimatedTotalBenefit);
+  }
+});
+
+test("직접 평균임금에도 선택한 소정근로시간별 하한액을 적용한다", () => {
+  for (const [hours, lowerLimit] of Object.entries({
+    4: 33_024,
+    5: 41_280,
+    6: 49_536,
+    7: 57_792,
+    8: 66_048,
+  })) {
+    const lower = assertSuccess(
+      calculateUnemploymentBenefit({
+        ...standardInput,
+        wageInputType: "averageDailyWage",
+        wageAmount: 50_000,
+        scheduledDailyHours: Number(hours),
+      }),
+    );
+    assert.equal(lower.dailyBenefitAmount, lowerLimit);
+
+    const middle = assertSuccess(
+      calculateUnemploymentBenefit({
+        ...standardInput,
+        wageInputType: "averageDailyWage",
+        wageAmount: 112_000,
+        scheduledDailyHours: Number(hours),
+      }),
+    );
+    assert.equal(middle.dailyBenefitAmount, 67_200);
+    assert.equal(middle.isLowerLimitApplied, false);
+
+    const upper = assertSuccess(
+      calculateUnemploymentBenefit({
+        ...standardInput,
+        wageInputType: "averageDailyWage",
+        wageAmount: 200_000,
+        scheduledDailyHours: Number(hours),
+      }),
+    );
+    assert.equal(upper.dailyBenefitAmount, 68_100);
+    assert.equal(upper.isUpperLimitApplied, true);
+  }
+});
+
 test("가입기간과 나이 구간별 소정급여일수 경계를 계산한다", () => {
   assert.equal(getPrescribedBenefitDays(6, "under50"), 120);
   assert.equal(getPrescribedBenefitDays(11, "over50OrDisabled"), 120);
@@ -145,6 +212,13 @@ test("빈 값, 숫자가 아닌 값, 음수와 범위 초과를 구조화 오류
     "leavingReason",
     "INVALID_OPTION",
   );
+  for (const scheduledDailyHours of [0, 1, 3, 9, "6", "other"]) {
+    assertHasError(
+      calculateUnemploymentBenefit({ ...standardInput, scheduledDailyHours }),
+      "scheduledDailyHours",
+      "INVALID_OPTION",
+    );
+  }
 });
 
 test("퇴직 사유별 안내는 지급 가능 여부를 확정하지 않는다", () => {
@@ -181,7 +255,14 @@ test("정책 상수는 2026년 공식 상한액과 하한액 기준을 노출한
   assert.equal(UNEMPLOYMENT_POLICY_2026.dailyBenefitUpperLimit, 68_100);
   assert.equal(UNEMPLOYMENT_POLICY_2026.dailyBenefitLowerLimit, 66_048);
   assert.match(UNEMPLOYMENT_POLICY_2026.sourceNote, /113,500원 × 60%/);
-  assert.match(UNEMPLOYMENT_POLICY_2026.sourceNote, /10,320원 × 8시간 × 80%/);
+  assert.match(UNEMPLOYMENT_POLICY_2026.sourceNote, /10,320원 × 1시간 × 80%/);
+  assert.deepEqual(UNEMPLOYMENT_POLICY_2026.dailyBenefitLowerLimitsByScheduledHours, {
+    4: 33_024,
+    5: 41_280,
+    6: 49_536,
+    7: 57_792,
+    8: 66_048,
+  });
   assert.match(UNEMPLOYMENT_POLICY_2026.sourceNote, /실제 수급 여부/);
 });
 
