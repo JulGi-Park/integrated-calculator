@@ -80,8 +80,10 @@ export function VatProfitCalculator() {
   }
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
-    const field = event.currentTarget.name as keyof VatProfitRawInputs;
-    setInput((current) => ({ ...current, [field]: event.currentTarget.value }));
+    const { name, value } = event.currentTarget;
+    const field = name as keyof VatProfitRawInputs;
+
+    setInput((current) => ({ ...current, [field]: value }));
     markStale();
   }
 
