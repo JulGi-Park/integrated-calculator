@@ -127,7 +127,10 @@ test("엔진 입력 필드를 렌더링하고 선택 입력을 구분한다", ()
 
   const dateLabels = ["입사일", "퇴직일"];
   for (const label of dateLabels) {
-    assert.equal(screen.getByLabelText(label).getAttribute("type"), "date");
+    const input = screen.getByLabelText(label);
+    assert.equal(input.getAttribute("type"), "date");
+    assert.equal(input.getAttribute("min"), "0001-01-01");
+    assert.equal(input.getAttribute("max"), "9999-12-31");
   }
 
   for (const label of [

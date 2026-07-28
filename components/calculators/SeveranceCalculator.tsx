@@ -2,6 +2,7 @@
 
 import {
   type ChangeEvent,
+  type FocusEvent,
   type FormEvent,
   useEffect,
   useRef,
@@ -313,6 +314,26 @@ export function SeveranceCalculator() {
     }
   }
 
+  function handleDateBlur(event: FocusEvent<HTMLInputElement>) {
+    if (!event.currentTarget.validity.badInput) {
+      return;
+    }
+
+    const field = event.currentTarget.name as SeveranceInputField;
+    setErrors((currentErrors) => [
+      ...currentErrors.filter((error) => error.field !== field),
+      {
+        field,
+        code: "INVALID_DATE_FORMAT",
+        message: `${field} 값은 YYYY-MM-DD 형식이어야 합니다.`,
+      },
+    ]);
+    setResult(null);
+    setCalculatedInput(null);
+    setIsResultStale(false);
+    setActionMessage("");
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -529,10 +550,13 @@ export function SeveranceCalculator() {
                         id={name}
                         name={name}
                         type={type}
+                        min={type === "date" ? "0001-01-01" : undefined}
+                        max={type === "date" ? "9999-12-31" : undefined}
                         inputMode={inputMode}
                         autoComplete="off"
                         value={input[name]}
                         onChange={handleChange}
+                        onBlur={type === "date" ? handleDateBlur : undefined}
                         aria-invalid={fieldErrors.length > 0}
                         aria-describedby={describedBy}
                       />
