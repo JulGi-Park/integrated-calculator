@@ -184,6 +184,12 @@ test("공식 기관 출처와 확인일을 표시한다", () => {
   assert.match(contentSource, /salaryTakeHomeSources\.map/);
   assert.match(contentSource, /target="_blank" rel="noopener noreferrer"/);
 
+  assert.equal(
+    salaryTakeHomeSources.find((source) => source.organization === "국세청")
+      ?.href,
+    "https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7862&mi=6426",
+  );
+
   for (const source of salaryTakeHomeSources) {
     assert.match(
       source.href,

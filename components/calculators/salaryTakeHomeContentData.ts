@@ -247,7 +247,7 @@ export const salaryTakeHomeSources: SalaryTakeHomeSource[] = [
     organization: "국세청",
     title: "근로소득 간이세액표 안내",
     criterion: "2026년 근로소득 간이세액표와 가족·자녀 기준",
-    href: "https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?mi=2226&cntntsId=7669",
+    href: "https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7862&mi=6426",
   },
   {
     organization: "국가법령정보센터",
