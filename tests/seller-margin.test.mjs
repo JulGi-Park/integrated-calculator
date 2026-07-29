@@ -36,6 +36,13 @@ function assertHasError(response, field, code) {
   );
 }
 
+function assertCombinationRangeError(input) {
+  const response = calculateSellerMargin(input);
+
+  assertHasError(response, "calculation", "CALCULATION_EXCEEDS_SAFE_RANGE");
+  assert.equal("data" in response, false);
+}
+
 test("일반적인 흑자 주문의 모든 중간 결과를 계산한다", () => {
   const data = assertSuccess(calculateSellerMargin(baseInput));
 
@@ -260,6 +267,159 @@ test("범위 내 입력이라도 판매단가 또는 원가와 수량의 곱이 
     "unitProductCost",
     "CALCULATION_EXCEEDS_SAFE_RANGE",
   );
+});
+
+test("P1 고액 조합은 부정확한 순이익을 만들기 전에 조합 범위 오류로 차단한다", () => {
+  assertCombinationRangeError({
+    ...baseInput,
+    unitPrice: 9_999_999_999,
+    quantity: 900_000,
+    sellerDiscount: 9_999_999_999,
+    customerShippingFee: 9_999_999_999,
+    unitProductCost: 9_999_999_999,
+    platformFeeRate: 100,
+    paymentFeeRate: 100,
+    sellerShippingCost: 9_999_999_999,
+    allocatedAdCost: 9_999_999_999,
+    otherCost: 9_999_999_999,
+  });
+});
+
+test("상품 판매금액은 안전하지만 결제금액이 안전 정수를 넘는 조합을 차단한다", () => {
+  assertCombinationRangeError({
+    ...baseInput,
+    unitPrice: 9_007_199_254,
+    quantity: 1_000_000,
+    sellerDiscount: 0,
+    customerShippingFee: 740_992,
+    unitProductCost: 0,
+    platformFeeRate: 0,
+    paymentFeeRate: 0,
+    sellerShippingCost: 0,
+    allocatedAdCost: 0,
+    otherCost: 0,
+  });
+});
+
+test("각 수수료는 안전하지만 총수수료가 안전 정수를 넘는 조합을 차단한다", () => {
+  assertCombinationRangeError({
+    ...baseInput,
+    unitPrice: 5_000_000_000,
+    quantity: 1_000_000,
+    sellerDiscount: 0,
+    customerShippingFee: 0,
+    unitProductCost: 0,
+    platformFeeRate: 100,
+    paymentFeeRate: 100,
+    sellerShippingCost: 0,
+    allocatedAdCost: 0,
+    otherCost: 0,
+  });
+});
+
+test("상품 원가 총액은 안전하지만 총비용이 안전 정수를 넘는 조합을 차단한다", () => {
+  assertCombinationRangeError({
+    ...baseInput,
+    unitPrice: 1,
+    quantity: 1_000_000,
+    sellerDiscount: 0,
+    customerShippingFee: 0,
+    unitProductCost: 9_007_199_254,
+    platformFeeRate: 0,
+    paymentFeeRate: 0,
+    sellerShippingCost: 740_992,
+    allocatedAdCost: 0,
+    otherCost: 0,
+  });
+});
+
+test("정산금액과 총비용이 각각 안전해도 순이익이 최소 안전 정수를 넘으면 차단한다", () => {
+  assertCombinationRangeError({
+    ...baseInput,
+    unitPrice: 4_503_590_000,
+    quantity: 1_000_000,
+    sellerDiscount: 0,
+    customerShippingFee: 0,
+    unitProductCost: 4_503_590_000,
+    platformFeeRate: 100,
+    paymentFeeRate: 100,
+    sellerShippingCost: 10_000_000_000,
+    allocatedAdCost: 10_000_000_000,
+    otherCost: 10_000_000_000,
+  });
+});
+
+test("최대·최소 안전 정수 경계의 결제금액과 손실은 정확히 계산한다", () => {
+  const boundaryUnitPrice = 9_007_199_254;
+  const boundaryQuantity = 1_000_000;
+  const boundaryDifference = 740_991;
+
+  const maximumProfit = assertSuccess(
+    calculateSellerMargin({
+      ...baseInput,
+      unitPrice: boundaryUnitPrice,
+      quantity: boundaryQuantity,
+      sellerDiscount: 0,
+      customerShippingFee: boundaryDifference,
+      unitProductCost: 0,
+      platformFeeRate: 0,
+      paymentFeeRate: 0,
+      sellerShippingCost: 0,
+      allocatedAdCost: 0,
+      otherCost: 0,
+    }),
+  );
+  const minimumProfit = assertSuccess(
+    calculateSellerMargin({
+      ...baseInput,
+      unitPrice: boundaryUnitPrice,
+      quantity: boundaryQuantity,
+      sellerDiscount: 0,
+      customerShippingFee: 0,
+      unitProductCost: boundaryUnitPrice,
+      platformFeeRate: 100,
+      paymentFeeRate: 0,
+      sellerShippingCost: boundaryDifference,
+      allocatedAdCost: 0,
+      otherCost: 0,
+    }),
+  );
+
+  assert.equal(maximumProfit.paymentAmount, Number.MAX_SAFE_INTEGER);
+  assert.equal(maximumProfit.estimatedNetProfit, Number.MAX_SAFE_INTEGER);
+  assert.equal(minimumProfit.totalCosts, Number.MAX_SAFE_INTEGER);
+  assert.equal(minimumProfit.estimatedNetProfit, Number.MIN_SAFE_INTEGER);
+});
+
+test("안전 정수 경계를 1원 넘는 결제금액과 총비용을 차단한다", () => {
+  const boundaryUnitPrice = 9_007_199_254;
+
+  assertCombinationRangeError({
+    ...baseInput,
+    unitPrice: boundaryUnitPrice,
+    quantity: 1_000_000,
+    sellerDiscount: 0,
+    customerShippingFee: 740_992,
+    unitProductCost: 0,
+    platformFeeRate: 0,
+    paymentFeeRate: 0,
+    sellerShippingCost: 0,
+    allocatedAdCost: 0,
+    otherCost: 0,
+  });
+  assertCombinationRangeError({
+    ...baseInput,
+    unitPrice: 1,
+    quantity: 1_000_000,
+    sellerDiscount: 0,
+    customerShippingFee: 0,
+    unitProductCost: boundaryUnitPrice,
+    platformFeeRate: 0,
+    paymentFeeRate: 0,
+    sellerShippingCost: 740_992,
+    allocatedAdCost: 0,
+    otherCost: 0,
+  });
 });
 
 for (const field of [

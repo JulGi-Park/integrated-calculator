@@ -270,6 +270,12 @@ export function SellerMarginCalculator() {
         inputRefs.current[
           firstInputError.field as SellerMarginInputField
         ]?.focus();
+      } else if (
+        response.errors.some(
+          (error) => error.code === "CALCULATION_EXCEEDS_SAFE_RANGE",
+        )
+      ) {
+        inputRefs.current.unitPrice?.focus();
       }
 
       return;
@@ -390,7 +396,14 @@ export function SellerMarginCalculator() {
 
   return (
     <div className={styles.calculator}>
-      <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+      <form
+        className={styles.formCard}
+        onSubmit={handleSubmit}
+        noValidate
+        aria-describedby={
+          errors.length > 0 ? "seller-margin-error-summary" : undefined
+        }
+      >
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>01 · 주문 정보</p>
@@ -443,7 +456,11 @@ export function SellerMarginCalculator() {
         </div>
 
         {errors.length > 0 && (
-          <div className={styles.errorSummary} role="alert">
+          <div
+            className={styles.errorSummary}
+            id="seller-margin-error-summary"
+            role="alert"
+          >
             입력값을 확인해 주세요.
             {generalErrors.map((error) => (
               <span key={`${error.field}-${error.code}`}>

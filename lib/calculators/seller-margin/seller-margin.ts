@@ -59,7 +59,8 @@ export type SellerMarginInputField = keyof SellerMarginInput;
 export type SellerMarginValidationField =
   | SellerMarginInputField
   | "productSalesAmount"
-  | "paymentAmount";
+  | "paymentAmount"
+  | "calculation";
 
 export type SellerMarginValidationErrorCode =
   | "INVALID_NUMBER"
@@ -122,6 +123,23 @@ const rateFields: SellerMarginInputField[] = [
   "paymentFeeRate",
 ];
 
+const maximumSafeMoney = BigInt(Number.MAX_SAFE_INTEGER);
+const minimumSafeMoney = BigInt(Number.MIN_SAFE_INTEGER);
+const derivedMoneyRangeErrorMessage =
+  "입력값 조합이 너무 커 정확한 원 단위 계산이 어렵습니다. 판매단가, 판매수량 또는 비용을 줄여 주세요.";
+
+interface SellerMarginDerivedAmounts {
+  productSalesAmount: number;
+  paymentAmount: number;
+  platformFee: number;
+  paymentFee: number;
+  totalFees: number;
+  estimatedSettlement: number;
+  totalProductCost: number;
+  totalCosts: number;
+  estimatedNetProfit: number;
+}
+
 /**
  * 법정·플랫폼 정책값이 아닌 서비스 입력 제한입니다.
  * 다른 금액형 공개 계산기와 같은 100억원 한도를 사용해 일반적인 주문 입력은
@@ -141,7 +159,144 @@ function isFiniteNumber(value: unknown): value is number {
 }
 
 function isSafeIntegerProduct(left: number, right: number): boolean {
-  return Number.isSafeInteger(left * right);
+  return safeMultiply(left, right) !== null;
+}
+
+function isSafeMoney(value: number): boolean {
+  return Number.isFinite(value) && Number.isSafeInteger(value);
+}
+
+function toSafeMoney(value: bigint): number | null {
+  if (value < minimumSafeMoney || value > maximumSafeMoney) {
+    return null;
+  }
+
+  return Number(value);
+}
+
+function safeAdd(left: number, right: number): number | null {
+  if (!isSafeMoney(left) || !isSafeMoney(right)) {
+    return null;
+  }
+
+  return toSafeMoney(BigInt(left) + BigInt(right));
+}
+
+function safeSubtract(left: number, right: number): number | null {
+  if (!isSafeMoney(left) || !isSafeMoney(right)) {
+    return null;
+  }
+
+  return toSafeMoney(BigInt(left) - BigInt(right));
+}
+
+function safeMultiply(left: number, right: number): number | null {
+  if (!isSafeMoney(left) || !isSafeMoney(right)) {
+    return null;
+  }
+
+  return toSafeMoney(BigInt(left) * BigInt(right));
+}
+
+function calculateRoundedFee(baseAmount: number, rate: number): number | null {
+  if (!isSafeMoney(baseAmount) || !Number.isFinite(rate)) {
+    return null;
+  }
+
+  const rateMagnitude = Math.abs(rate);
+  const canMultiplyBeforeDivide =
+    rateMagnitude === 0 ||
+    Math.abs(baseAmount) <= Number.MAX_SAFE_INTEGER / rateMagnitude;
+  const unroundedFee = canMultiplyBeforeDivide
+    ? (baseAmount * rate) / 100
+    : baseAmount * (rate / 100);
+
+  if (!Number.isFinite(unroundedFee)) {
+    return null;
+  }
+
+  const roundedFee = roundToWon(unroundedFee);
+  return isSafeMoney(roundedFee) ? roundedFee : null;
+}
+
+function calculateSafeDerivedAmounts(
+  input: SellerMarginInput,
+): SellerMarginDerivedAmounts | null {
+  const productSalesAmount = safeMultiply(input.unitPrice, input.quantity);
+
+  if (productSalesAmount === null) {
+    return null;
+  }
+
+  const discountedAmount = safeSubtract(
+    productSalesAmount,
+    input.sellerDiscount,
+  );
+  const paymentAmount =
+    discountedAmount === null
+      ? null
+      : safeAdd(discountedAmount, input.customerShippingFee);
+
+  if (paymentAmount === null) {
+    return null;
+  }
+
+  const platformFee = calculateRoundedFee(
+    productSalesAmount,
+    input.platformFeeRate,
+  );
+  const paymentFee = calculateRoundedFee(paymentAmount, input.paymentFeeRate);
+
+  if (platformFee === null || paymentFee === null) {
+    return null;
+  }
+
+  const totalFees = safeAdd(platformFee, paymentFee);
+  const estimatedSettlement =
+    totalFees === null ? null : safeSubtract(paymentAmount, totalFees);
+  const totalProductCost = safeMultiply(
+    input.unitProductCost,
+    input.quantity,
+  );
+
+  if (
+    totalFees === null ||
+    estimatedSettlement === null ||
+    totalProductCost === null
+  ) {
+    return null;
+  }
+
+  const costAfterShipping = safeAdd(
+    totalProductCost,
+    input.sellerShippingCost,
+  );
+  const costAfterAdvertising =
+    costAfterShipping === null
+      ? null
+      : safeAdd(costAfterShipping, input.allocatedAdCost);
+  const totalCosts =
+    costAfterAdvertising === null
+      ? null
+      : safeAdd(costAfterAdvertising, input.otherCost);
+  const estimatedNetProfit =
+    totalCosts === null ? null : safeSubtract(estimatedSettlement, totalCosts);
+
+  if (totalCosts === null || estimatedNetProfit === null) {
+    return null;
+  }
+
+  return {
+    productSalesAmount,
+    paymentAmount,
+    platformFee,
+    paymentFee,
+    totalFees,
+    estimatedSettlement,
+    totalProductCost,
+    totalCosts,
+    estimatedNetProfit,
+  };
 }
 
 function hasFiniteInputFields(
@@ -327,7 +482,9 @@ export function validateSellerMarginInput(
     quantity <= SELLER_MARGIN_SERVICE_LIMITS.maximumQuantity;
 
   if (canCalculateProductSales) {
-    if (!isSafeIntegerProduct(unitPrice, quantity)) {
+    const productSalesAmount = safeMultiply(unitPrice, quantity);
+
+    if (productSalesAmount === null) {
       addError(
         errors,
         "unitPrice",
@@ -351,8 +508,6 @@ export function validateSellerMarginInput(
       );
       return errors;
     }
-
-    const productSalesAmount = roundToWon(unitPrice * quantity);
 
     if (
       isFiniteNumber(input.sellerDiscount) &&
@@ -380,22 +535,23 @@ export function validateSellerMarginInput(
       isFiniteNumber(input.customerShippingFee) &&
       input.sellerDiscount <= productSalesAmount
     ) {
-      const paymentAmount = roundToWon(
-        productSalesAmount -
-          input.sellerDiscount +
-          input.customerShippingFee,
+      const discountedAmount = safeSubtract(
+        productSalesAmount,
+        input.sellerDiscount,
       );
+      const paymentAmount =
+        discountedAmount === null
+          ? null
+          : safeAdd(discountedAmount, input.customerShippingFee);
 
-      if (!Number.isSafeInteger(paymentAmount)) {
+      if (paymentAmount === null) {
         addError(
           errors,
-          "unitPrice",
+          "calculation",
           "CALCULATION_EXCEEDS_SAFE_RANGE",
-          "결제금액이 안전한 정수 범위를 넘습니다.",
+          derivedMoneyRangeErrorMessage,
         );
-      }
-
-      if (paymentAmount === 0) {
+      } else if (paymentAmount === 0) {
         addError(
           errors,
           "paymentAmount",
@@ -403,6 +559,19 @@ export function validateSellerMarginInput(
           "결제금액이 0이면 순이익률과 총수수료율을 계산할 수 없습니다.",
         );
       }
+    }
+  }
+
+  if (errors.length === 0 && hasFiniteInputFields(input)) {
+    const derivedAmounts = calculateSafeDerivedAmounts(input);
+
+    if (derivedAmounts === null) {
+      addError(
+        errors,
+        "calculation",
+        "CALCULATION_EXCEEDS_SAFE_RANGE",
+        derivedMoneyRangeErrorMessage,
+      );
     }
   }
 
@@ -422,56 +591,44 @@ export function calculateSellerMargin(
     return { success: false, errors };
   }
 
-  const productSalesAmount = roundToWon(input.unitPrice * input.quantity);
-  const paymentAmount = roundToWon(
-    productSalesAmount -
-      input.sellerDiscount +
-      input.customerShippingFee,
-  );
+  const derivedAmounts = calculateSafeDerivedAmounts(input);
 
-  // 수수료는 각각 원 단위로 먼저 반올림하고 이후 합계에 사용합니다.
-  const platformFee = roundToWon(
-    (productSalesAmount * input.platformFeeRate) / 100,
-  );
-  const paymentFee = roundToWon(
-    (paymentAmount * input.paymentFeeRate) / 100,
-  );
-  const totalFees = platformFee + paymentFee;
-
-  // 정산금액과 순이익은 반올림된 금액 및 수수료만으로 계산합니다.
-  const estimatedSettlement = paymentAmount - platformFee - paymentFee;
-  const totalProductCost = roundToWon(
-    input.unitProductCost * input.quantity,
-  );
-  const totalCosts = roundToWon(
-    totalProductCost +
-      input.sellerShippingCost +
-      input.allocatedAdCost +
-      input.otherCost,
-  );
-  const estimatedNetProfit = estimatedSettlement - totalCosts;
+  if (derivedAmounts === null) {
+    return {
+      success: false,
+      errors: [
+        {
+          field: "calculation",
+          code: "CALCULATION_EXCEEDS_SAFE_RANGE",
+          message: derivedMoneyRangeErrorMessage,
+        },
+      ],
+    };
+  }
 
   return {
     success: true,
     data: {
-      productSalesAmount,
-      paymentAmount,
-      platformFee,
-      paymentFee,
-      totalFees,
-      estimatedSettlement,
-      totalCosts,
-      estimatedNetProfit,
+      productSalesAmount: derivedAmounts.productSalesAmount,
+      paymentAmount: derivedAmounts.paymentAmount,
+      platformFee: derivedAmounts.platformFee,
+      paymentFee: derivedAmounts.paymentFee,
+      totalFees: derivedAmounts.totalFees,
+      estimatedSettlement: derivedAmounts.estimatedSettlement,
+      totalCosts: derivedAmounts.totalCosts,
+      estimatedNetProfit: derivedAmounts.estimatedNetProfit,
       netProfitMarginRate: roundToDecimalPlaces(
-        (estimatedNetProfit / paymentAmount) * 100,
+        (derivedAmounts.estimatedNetProfit / derivedAmounts.paymentAmount) *
+          100,
         2,
       ),
       productCostRate: roundToDecimalPlaces(
-        (totalProductCost / productSalesAmount) * 100,
+        (derivedAmounts.totalProductCost / derivedAmounts.productSalesAmount) *
+          100,
         2,
       ),
       totalFeeRate: roundToDecimalPlaces(
-        (totalFees / paymentAmount) * 100,
+        (derivedAmounts.totalFees / derivedAmounts.paymentAmount) * 100,
         2,
       ),
     },

@@ -263,6 +263,49 @@ test("초대형 판매단가 오류는 직전 결과와 결과 동작을 모두 
   assert.equal(screen.queryByRole("button", { name: "공유" }), null);
 });
 
+test("고액 입력 조합 오류는 기존 결과를 제거하고 조정 가능한 필드로 안내한다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+  await enterProfitableOrder(user);
+  await user.click(screen.getByRole("button", { name: "계산하기" }));
+  assert.ok(screen.getByRole("button", { name: "결과 복사" }));
+
+  await replaceValue(user, "상품 판매단가", "9999999999");
+  await replaceValue(user, "판매수량", "900000");
+  await replaceValue(user, "판매자 부담 할인금액", "9999999999");
+  await replaceValue(user, "고객에게 받은 배송비", "9999999999");
+  await replaceValue(user, "상품 1개당 원가", "9999999999");
+  await replaceValue(user, "플랫폼 수수료율", "100");
+  await replaceValue(user, "결제 수수료율", "100");
+  await replaceValue(user, "판매자 부담 배송비", "9999999999");
+  await replaceValue(user, "배분 광고비", "9999999999");
+  await replaceValue(user, "기타 비용", "9999999999");
+  await user.click(screen.getByRole("button", { name: "계산하기" }));
+
+  const errorSummary = screen.getByRole("alert");
+  assert.match(
+    errorSummary.textContent,
+    /입력값 조합이 너무 커 정확한 원 단위 계산이 어렵습니다/,
+  );
+  assert.equal(errorSummary.id, "seller-margin-error-summary");
+  assert.equal(
+    document.querySelector("form").getAttribute("aria-describedby"),
+    "seller-margin-error-summary",
+  );
+  assert.equal(document.activeElement, screen.getByLabelText("상품 판매단가"));
+  assert.equal(screen.queryByText("예상 순이익"), null);
+  assert.equal(screen.queryByText("-18,000,029,998,199,996원"), null);
+  assert.equal(screen.queryByRole("button", { name: "결과 복사" }), null);
+
+  await user.click(screen.getByRole("button", { name: "초기화" }));
+  assert.equal(screen.queryByRole("alert"), null);
+  assert.equal(screen.getByLabelText("상품 판매단가").value, "");
+
+  await enterProfitableOrder(user);
+  await user.click(screen.getByRole("button", { name: "계산하기" }));
+  assert.ok(screen.getByText("11,770원"));
+});
+
 test("계산 후 입력 변경을 알리고 다시 계산하면 새 결과를 표시한다", async () => {
   const user = userEvent.setup();
   renderCalculator();
