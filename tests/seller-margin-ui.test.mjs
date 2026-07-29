@@ -354,9 +354,14 @@ test("Clipboard API로 고정 결과 텍스트를 복사하고 성공을 안내�
       "[입력 조건]",
       "상품 판매단가: 20,000원",
       "판매수량: 2개",
+      "할인금액: 2,000원",
+      "고객 배송비: 3,000원",
       "개당 원가: 9,000원",
       "플랫폼 수수료율: 10%",
       "결제 수수료율: 3%",
+      "판매자 배송비: 3,500원",
+      "광고비: 2,000원",
+      "기타 비용: 500원",
       "",
       "[계산 결과]",
       "상품 판매금액: 40,000원",
@@ -426,6 +431,11 @@ test("Web Share 지원 환경에서 공유하고 성공을 안내한다", async 
   await user.click(shareButton);
 
   assert.equal(sharedData.title, "판매자 마진 계산 결과");
+  assert.match(sharedData.text, /할인금액: 2,000원/);
+  assert.match(sharedData.text, /고객 배송비: 3,000원/);
+  assert.match(sharedData.text, /판매자 배송비: 3,500원/);
+  assert.match(sharedData.text, /광고비: 2,000원/);
+  assert.match(sharedData.text, /기타 비용: 500원/);
   assert.match(sharedData.text, /예상 순이익: 11,770원/);
   assert.equal(sharedData.url, "http://localhost/");
   assert.ok(screen.getByText("계산 결과를 공유했습니다."));
