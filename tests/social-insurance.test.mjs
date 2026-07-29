@@ -53,6 +53,28 @@ test("2026년 7월 10일 기준 공식 상수와 계산식이 기록되어 있�
   );
   assert.equal(SOCIAL_INSURANCE_POLICY_2026.healthInsurance.employeeRate, 0.03595);
   assert.equal(
+    SOCIAL_INSURANCE_POLICY_2026.healthInsurance.totalMonthlyPremiumMinimum,
+    20_160,
+  );
+  assert.equal(
+    SOCIAL_INSURANCE_POLICY_2026.healthInsurance.totalMonthlyPremiumMaximum,
+    9_183_480,
+  );
+  assert.equal(
+    SOCIAL_INSURANCE_POLICY_2026.healthInsurance.employeeShareRate,
+    0.5,
+  );
+  assert.equal(
+    SOCIAL_INSURANCE_POLICY_2026.healthInsurance.employeeMonthlyPremiumMinimum,
+    SOCIAL_INSURANCE_POLICY_2026.healthInsurance.totalMonthlyPremiumMinimum /
+      2,
+  );
+  assert.equal(
+    SOCIAL_INSURANCE_POLICY_2026.healthInsurance.employeeMonthlyPremiumMaximum,
+    SOCIAL_INSURANCE_POLICY_2026.healthInsurance.totalMonthlyPremiumMaximum /
+      2,
+  );
+  assert.equal(
     SOCIAL_INSURANCE_POLICY_2026.longTermCareInsurance.healthInsuranceRate,
     0.1314,
   );
@@ -72,6 +94,9 @@ test("보험료율 기준 설명은 계산 상수의 부동소수점 오차 없�
   assert.match(criteria, /실업급여 계정 근로자 부담률 0\.9%/);
   assert.match(criteria, /근로자 부담률 4\.75%/);
   assert.match(criteria, /총 보험료율 7\.19% 중 근로자 부담분 3\.595%/);
+  assert.match(criteria, /20,160원~9,183,480원/);
+  assert.match(criteria, /10,080원~4,591,740원/);
+  assert.match(criteria, /상·하한이 보정된 근로자 건강보험료/);
 });
 
 test("월 급여 300만원·비과세 20만원의 4대보험 공제액을 계산한다", () => {
@@ -108,6 +133,150 @@ test("월 급여 250만원·비과세 0원의 예시 결과를 계산한다", ()
   assert.equal(data.employeeEmploymentInsurance, 22_500);
   assert.equal(data.totalEmployeeContribution, 242_935);
   assert.equal(data.afterContributionAmount, 2_257_065);
+});
+
+test("건강보험 근로자 부담 하한과 장기요양보험 연쇄를 적용한다", () => {
+  const data = assertSuccess(
+    calculateSocialInsurance({
+      monthlySalary: 100_000,
+      nonTaxableAmount: 0,
+    }),
+  );
+
+  assert.equal(data.employeePension, 19_470);
+  assert.equal(data.employeeHealthInsurance, 10_080);
+  assert.equal(data.employeeLongTermCare, 1_325);
+  assert.equal(data.employeeEmploymentInsurance, 900);
+  assert.equal(data.totalEmployeeContribution, 31_775);
+  assert.equal(data.afterContributionAmount, 68_225);
+});
+
+test("건강보험 근로자 부담 상한과 장기요양보험 연쇄를 적용한다", () => {
+  const data = assertSuccess(
+    calculateSocialInsurance({
+      monthlySalary: 1_000_000_000,
+      nonTaxableAmount: 0,
+    }),
+  );
+
+  assert.equal(data.employeePension, 313_020);
+  assert.equal(data.employeeHealthInsurance, 4_591_740);
+  assert.equal(data.employeeLongTermCare, 603_355);
+  assert.equal(data.employeeEmploymentInsurance, 9_000_000);
+  assert.equal(data.totalEmployeeContribution, 14_508_115);
+  assert.equal(data.afterContributionAmount, 985_491_885);
+});
+
+test("건강보험 하한·상한 경계와 보정된 건강보험료 기준 장기요양보험을 검증한다", () => {
+  const healthPolicy = SOCIAL_INSURANCE_POLICY_2026.healthInsurance;
+  const firstMinimumRoundedSalary = Math.ceil(
+    (healthPolicy.employeeMonthlyPremiumMinimum - 0.5) /
+      healthPolicy.employeeRate,
+  );
+  const firstAboveMaximumSalary = Math.ceil(
+    (healthPolicy.employeeMonthlyPremiumMaximum + 0.5) /
+      healthPolicy.employeeRate,
+  );
+
+  const lowerCases = [
+    [firstMinimumRoundedSalary - 1, 10_080, 1_325],
+    [firstMinimumRoundedSalary, 10_080, 1_325],
+    [firstMinimumRoundedSalary + 1, 10_080, 1_325],
+  ];
+  const upperCases = [
+    [firstAboveMaximumSalary - 1, 4_591_740, 603_355],
+    [firstAboveMaximumSalary, 4_591_740, 603_355],
+    [firstAboveMaximumSalary + 1, 4_591_740, 603_355],
+  ];
+
+  for (const [monthlySalary, healthInsurance, longTermCare] of [
+    ...lowerCases,
+    ...upperCases,
+  ]) {
+    const data = assertSuccess(
+      calculateSocialInsurance({ monthlySalary, nonTaxableAmount: 0 }),
+    );
+    assert.equal(data.employeeHealthInsurance, healthInsurance);
+    assert.equal(data.employeeLongTermCare, longTermCare);
+    assert.equal(
+      data.employeeLongTermCare,
+      Math.round(
+        data.employeeHealthInsurance *
+          SOCIAL_INSURANCE_POLICY_2026.longTermCareInsurance.healthInsuranceRate,
+      ),
+    );
+  }
+});
+
+test("비과세 금액 변경으로 건강보험 상·하한 구간을 오가는 결과를 계산한다", () => {
+  const lowerBeforeNonTaxable = assertSuccess(
+    calculateSocialInsurance({ monthlySalary: 300_000, nonTaxableAmount: 0 }),
+  );
+  const lowerAfterNonTaxable = assertSuccess(
+    calculateSocialInsurance({ monthlySalary: 300_000, nonTaxableAmount: 20_000 }),
+  );
+  const upperBeforeNonTaxable = assertSuccess(
+    calculateSocialInsurance({
+      monthlySalary: 127_725_745,
+      nonTaxableAmount: 0,
+    }),
+  );
+  const upperAfterNonTaxable = assertSuccess(
+    calculateSocialInsurance({
+      monthlySalary: 127_725_745,
+      nonTaxableAmount: 29,
+    }),
+  );
+
+  assert.equal(lowerBeforeNonTaxable.employeeHealthInsurance, 10_785);
+  assert.equal(lowerAfterNonTaxable.taxableMonthlyPay, 280_000);
+  assert.equal(lowerAfterNonTaxable.employeeHealthInsurance, 10_080);
+  assert.equal(upperBeforeNonTaxable.employeeHealthInsurance, 4_591_740);
+  assert.equal(upperAfterNonTaxable.taxableMonthlyPay, 127_725_716);
+  assert.equal(upperAfterNonTaxable.employeeHealthInsurance, 4_591_739);
+});
+
+test("정상 계산 결과는 건강보험 범위와 총공제액 불변식을 만족한다", () => {
+  const inputs = [
+    { monthlySalary: 100_000, nonTaxableAmount: 0 },
+    baseInput,
+    { monthlySalary: 1_000_000_000, nonTaxableAmount: 0 },
+  ];
+  const healthPolicy = SOCIAL_INSURANCE_POLICY_2026.healthInsurance;
+
+  for (const input of inputs) {
+    const data = assertSuccess(calculateSocialInsurance(input));
+    assert.ok(
+      data.employeeHealthInsurance >= healthPolicy.employeeMonthlyPremiumMinimum,
+    );
+    assert.ok(
+      data.employeeHealthInsurance <= healthPolicy.employeeMonthlyPremiumMaximum,
+    );
+    assert.equal(
+      data.employeeLongTermCare,
+      Math.round(
+        data.employeeHealthInsurance *
+          SOCIAL_INSURANCE_POLICY_2026.longTermCareInsurance.healthInsuranceRate,
+      ),
+    );
+    assert.equal(
+      data.totalEmployeeContribution,
+      data.employeePension +
+        data.employeeHealthInsurance +
+        data.employeeLongTermCare +
+        data.employeeEmploymentInsurance,
+    );
+    assert.equal(
+      data.afterContributionAmount,
+      data.monthlySalary - data.totalEmployeeContribution,
+    );
+    assert.ok(Object.values(data).every((value) => value !== undefined));
+    assert.ok(
+      Object.values(data).every(
+        (value) => typeof value !== "number" || Number.isFinite(value),
+      ),
+    );
+  }
 });
 
 test("국민연금 하한과 상한을 적용한다", () => {
@@ -376,11 +545,25 @@ test("공식 출처와 외부 링크 보안 속성을 제공한다", async () =>
     "utf8",
   );
 
-  assert.equal(socialInsuranceSources.length, 4);
+  assert.equal(socialInsuranceSources.length, 5);
   assert.match(source, /rel="noopener noreferrer"/);
   assert.deepEqual(
     socialInsuranceSources.map(({ organization }) => organization),
-    ["국민연금공단", "국민건강보험공단", "고용노동부", "고용노동부"],
+    [
+      "국민연금공단",
+      "국민건강보험공단",
+      "보건복지부·국민건강보험공단",
+      "고용노동부",
+      "고용노동부",
+    ],
+  );
+  assert.ok(
+    socialInsuranceSources.some(
+      ({ title, href }) =>
+        title === "월별 건강보험료액의 상한과 하한에 관한 고시" &&
+        href ===
+          "https://www.nhis.or.kr/lm/lmxsrv/law/lawFullContent.do?SEQ_HISTORY=593928",
+    ),
   );
 
   for (const officialSource of socialInsuranceSources) {

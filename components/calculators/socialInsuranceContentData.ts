@@ -101,11 +101,11 @@ export const socialInsuranceCriteria = [
   },
   {
     title: "건강보험",
-    description: `2026년 직장가입자 총 보험료율 ${formatRate(policy.healthInsurance.totalRate)} 중 근로자 부담분 ${formatRate(policy.healthInsurance.employeeRate)}를 과세기준급여에 적용합니다.`,
+    description: `2026년 직장가입자 총 보험료율 ${formatRate(policy.healthInsurance.totalRate)} 중 근로자 부담분 ${formatRate(policy.healthInsurance.employeeRate)}를 과세기준급여에 적용합니다. 직장가입자 보수월액보험료 총액은 ${formatWon(policy.healthInsurance.totalMonthlyPremiumMinimum)}~${formatWon(policy.healthInsurance.totalMonthlyPremiumMaximum)} 범위이며, 근로자와 사업주가 각각 ${formatRate(policy.healthInsurance.employeeShareRate)}씩 부담합니다. 따라서 이 계산기는 근로자 부담 건강보험료에 ${formatWon(policy.healthInsurance.employeeMonthlyPremiumMinimum)}~${formatWon(policy.healthInsurance.employeeMonthlyPremiumMaximum)} 범위를 적용합니다.`,
   },
   {
     title: "장기요양보험",
-    description: `장기요양보험료는 건강보험료와 별도로 표시되는 공제이며, 본 계산기는 근로자 건강보험료 × ${formatRate(policy.longTermCareInsurance.healthInsuranceRate)} 방식으로 계산합니다.`,
+    description: `장기요양보험료는 건강보험료와 별도로 표시되는 공제이며, 본 계산기는 상·하한이 보정된 근로자 건강보험료 × ${formatRate(policy.longTermCareInsurance.healthInsuranceRate)} 방식으로 계산합니다.`,
   },
   {
     title: "고용보험",
@@ -118,6 +118,7 @@ export const socialInsuranceCriteria = [
 ] as const;
 
 export const socialInsuranceExceptions = [
+  "건강보험 보수월액보험료 상·하한과 회사 신고 보수월액의 차이",
   "건강보험 정산분과 장기요양보험 정산분",
   "국민연금 기준소득월액 신고액과 실제 월급의 차이",
   "비과세 항목 인정 범위와 회사 처리 방식의 차이",
@@ -146,7 +147,7 @@ export const socialInsuranceFaqs: SocialInsuranceFaq[] = [
   {
     question: "건강보험료와 장기요양보험료는 어떻게 다른가요?",
     answer:
-      "건강보험료는 과세기준급여에 건강보험 근로자 부담률을 곱한 금액이고, 장기요양보험료는 산출된 건강보험료에 장기요양보험료율을 다시 곱한 금액입니다.",
+      "건강보험료는 과세기준급여에 건강보험 근로자 부담률을 적용한 뒤 직장가입자 보수월액보험료 상·하한을 반영한 금액입니다. 장기요양보험료는 이렇게 보정된 건강보험료에 장기요양보험료율을 다시 곱한 금액입니다.",
   },
   {
     question: "장기요양보험료는 왜 건강보험료에 다시 곱하나요?",
@@ -187,6 +188,13 @@ export const socialInsuranceSources: SocialInsuranceSource[] = [
     title: "2026년도 보험료율 인상 안내",
     criterion: "2026년 건강보험료율과 장기요양보험료 산정 기준",
     href: "https://edi.nhis.or.kr/portal/images/popup/20251204_pop01longdesc.html",
+  },
+  {
+    organization: "보건복지부·국민건강보험공단",
+    title: "월별 건강보험료액의 상한과 하한에 관한 고시",
+    criterion:
+      "2026년 직장가입자 보수월액보험료 총 상·하한과 2026년 1월분부터의 적용 기준",
+    href: "https://www.nhis.or.kr/lm/lmxsrv/law/lawFullContent.do?SEQ_HISTORY=593928",
   },
   {
     organization: "고용노동부",

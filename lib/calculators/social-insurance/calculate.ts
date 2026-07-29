@@ -67,6 +67,10 @@ function floorToUnit(value: number, unit: number): number {
   return Math.floor(value / unit) * unit;
 }
 
+function clamp(value: number, minimum: number, maximum: number): number {
+  return Math.min(maximum, Math.max(minimum, value));
+}
+
 function calculatePensionBase(taxableMonthlyPay: number): number {
   const { standardMonthlyIncomeMinimum, standardMonthlyIncomeMaximum } =
     SOCIAL_INSURANCE_POLICY_2026.nationalPension;
@@ -219,8 +223,13 @@ export function calculateSocialInsurance(
     pensionBase * policy.nationalPension.employeeRate,
     10,
   );
-  const employeeHealthInsurance = roundWon(
+  const calculatedEmployeeHealthInsurance = roundWon(
     taxableMonthlyPay * policy.healthInsurance.employeeRate,
+  );
+  const employeeHealthInsurance = clamp(
+    calculatedEmployeeHealthInsurance,
+    policy.healthInsurance.employeeMonthlyPremiumMinimum,
+    policy.healthInsurance.employeeMonthlyPremiumMaximum,
   );
   const employeeLongTermCare = roundWon(
     employeeHealthInsurance *

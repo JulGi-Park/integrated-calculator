@@ -16,6 +16,14 @@ export const SOCIAL_INSURANCE_POLICY_2026 = {
     totalRate: 0.0719,
     employeeRate: 0.03595,
     employerRate: 0.03595,
+    employeeShareRate: 0.5,
+    // 「월별 건강보험료액의 상한과 하한에 관한 고시」의 직장가입자
+    // 보수월액보험료 총액입니다. 근로자·사업주가 각각 50%를 부담합니다.
+    totalMonthlyPremiumMinimum: 20_160,
+    totalMonthlyPremiumMaximum: 9_183_480,
+    employeeMonthlyPremiumMinimum: 20_160 / 2,
+    employeeMonthlyPremiumMaximum: 9_183_480 / 2,
+    effectiveFrom: "2026-01-01",
     sourceName: "국민건강보험공단",
   },
   longTermCareInsurance: {
