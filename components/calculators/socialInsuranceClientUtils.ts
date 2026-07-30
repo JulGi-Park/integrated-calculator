@@ -65,5 +65,6 @@ export function buildSocialInsuranceResultText(
     `공제 후 참고 금액: ${formatWon(result.afterContributionAmount)}`,
     `기준일: ${result.policyVerifiedAt}`,
     "산재보험과 소득세·지방소득세는 포함하지 않습니다.",
+    "※ 이 결과는 참고용 예상값이며, 실제 공단 고지액 및 급여 공제액과 다를 수 있습니다.",
   ].join("\n");
 }

@@ -342,6 +342,36 @@ test("국민연금 절사 변경은 다른 근로자 부담 보험료를 바꾸�
   assert.match(buildSocialInsuranceResultText(input, data), /총 공제액: 640,371원/);
 });
 
+test("복사·공유 공용 결과 문자열은 참고용 예상값 안내를 한 번 포함한다", async () => {
+  const data = assertSuccess(calculateSocialInsurance(baseInput));
+  const text = buildSocialInsuranceResultText(baseInput, data);
+  const notice =
+    "※ 이 결과는 참고용 예상값이며, 실제 공단 고지액 및 급여 공제액과 다를 수 있습니다.";
+
+  assert.match(text, /월 급여: 3,000,000원/);
+  assert.match(text, /비과세 금액: 200,000원/);
+  assert.match(text, /과세기준급여: 2,800,000원/);
+  assert.match(text, /국민연금: 133,000원/);
+  assert.match(text, /건강보험: 100,660원/);
+  assert.match(text, /장기요양보험: 13,227원/);
+  assert.match(text, /고용보험: 25,200원/);
+  assert.match(text, /총 공제액: 272,087원/);
+  assert.match(text, /공제 후 참고 금액: 2,727,913원/);
+  assert.match(text, /산재보험과 소득세·지방소득세는 포함하지 않습니다\./);
+  assert.equal(text.split(notice).length - 1, 1);
+  assert.equal(text.endsWith(notice), true);
+
+  const source = await readFile(
+    "components/calculators/SocialInsuranceCalculator.tsx",
+    "utf8",
+  );
+  assert.match(source, /return buildSocialInsuranceResultText\(calculatedInput, result\)/);
+  assert.match(
+    source,
+    /navigator\.share\(\{\s*title: "2026 4대보험 계산 결과",\s*text,\s*\}\)/s,
+  );
+});
+
 test("국민연금 절사 기준 설명과 계산기 결과 영역은 같은 근로자 부담 결과를 사용한다", async () => {
   const source = await readFile(
     "components/calculators/SocialInsuranceCalculator.tsx",
