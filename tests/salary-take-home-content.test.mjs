@@ -179,8 +179,18 @@ test("결과 해석·제외 항목·면책 문구를 제공한다", () => {
   assert.match(contentSource, /급여명세서, 세무 신고나 기관의/);
 });
 
+test("기준소득월액과 실수령액의 역할을 독립적으로 구분해 설명한다", () => {
+  assert.match(contentSource, /기준소득월액과 실수령액은 왜 다른가요/);
+  assert.match(contentSource, /계약상 월급과 과세 대상 급여/);
+  assert.match(contentSource, /국민연금 기준소득월액/);
+  assert.match(contentSource, /건강보험·고용보험의 보수/);
+  assert.match(contentSource, /월 급여가 400만원/);
+  assert.match(contentSource, /380만원은 국민연금 기준소득월액이나 실수령액이라는/);
+  assert.doesNotMatch(contentSource, /기준소득월액에서 공제액을 바로 빼/);
+});
+
 test("공식 기관 출처와 확인일을 표시한다", () => {
-  assert.equal(salaryTakeHomeSources.length, 6);
+  assert.equal(salaryTakeHomeSources.length, 7);
   assert.match(contentSource, /salaryTakeHomeSources\.map/);
   assert.match(contentSource, /target="_blank" rel="noopener noreferrer"/);
 
@@ -190,10 +200,23 @@ test("공식 기관 출처와 확인일을 표시한다", () => {
     "https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7862&mi=6426",
   );
 
+  assert.equal(
+    salaryTakeHomeSources.find(
+      (source) => source.organization === "국민건강보험공단",
+    )?.href,
+    "https://www.nhis.or.kr/static/html/wbdb/f/wbdbf0501.html",
+  );
+  assert.equal(
+    salaryTakeHomeSources.find(
+      (source) => source.organization === "고용노동부",
+    )?.href,
+    "https://www.moel.go.kr/info/astmgmt/employ/employList.do",
+  );
+
   for (const source of salaryTakeHomeSources) {
     assert.match(
       source.href,
-      /^https:\/\/(www\.)?(nps\.or\.kr|nhis\.or\.kr|law\.go\.kr|nts\.go\.kr)\//,
+      /^https:\/\/(www\.)?(nps\.or\.kr|nhis\.or\.kr|law\.go\.kr|nts\.go\.kr|moel\.go\.kr)\//,
     );
     assert.ok(source.organization.length > 0);
     assert.ok(source.title.length > 0);
@@ -222,6 +245,18 @@ test("FAQ는 요구된 질문을 정확한 순서로 한 곳에서 관리한다"
   );
   assert.match(contentSource, /salaryTakeHomeFaqs\.map/);
   assert.match(contentSource, /<details/);
+  assert.match(
+    salaryTakeHomeFaqs.find(
+      (faq) => faq.question === "기준소득월액과 실제 월급은 왜 다른가요?",
+    )?.answer ?? "",
+    /기준소득월액에서 공제액을 바로 빼서 실수령액을 구하는 구조가 아닙니다/,
+  );
+  assert.match(
+    salaryTakeHomeFaqs.find(
+      (faq) => faq.question === "비과세액은 얼마를 입력해야 하나요?",
+    )?.answer ?? "",
+    /모든 사회보험료와 세금의 기준이 같은 금액만큼 줄어든다고 단정할 수는 없습니다/,
+  );
 });
 
 test("국민연금 정책값과 현재 적용 기간은 정책 모듈을 단일 출처로 사용한다", () => {

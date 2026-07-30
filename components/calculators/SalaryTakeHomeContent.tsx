@@ -102,6 +102,54 @@ export function SalaryTakeHomeContent() {
         </p>
       </section>
 
+      <section className={styles.section} aria-labelledby="salary-base-income-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="salary-base-income-title">
+            기준소득월액과 실수령액은 왜 다른가요?
+          </h2>
+          <p>
+            두 금액은 이름이 비슷해도 쓰임과 계산 단계가 다릅니다. 급여명세서나
+            공단에서 본 금액을 이 계산기의 실수령액과 바로 비교하지 마세요.
+          </p>
+        </div>
+        <div className={styles.interpretationGrid}>
+          <article className={styles.infoCard}>
+            <h3>계약상 월급과 과세 대상 급여</h3>
+            <p>
+              계약상 월급은 급여를 정할 때의 금액이고, 이 계산기는 입력한 월
+              비과세액을 반영해 월 과세 급여를 추정합니다. 실제 비과세 적용은
+              수당의 성격과 급여명세서 항목을 기준으로 확인해야 합니다.
+            </p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>국민연금 기준소득월액</h3>
+            <p>
+              국민연금 기준소득월액은 보험료와 급여 산정을 위한 신고 기준입니다.
+              국민연금에 적용하는 상·하한과 신고 기준은 실수령액 자체를 뜻하지
+              않습니다.
+            </p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>건강보험·고용보험의 보수</h3>
+            <p>
+              건강보험의 보수월액과 고용보험의 보수는 국민연금 기준소득월액과
+              같은 명칭이나 신고 구조가 아닐 수 있습니다. 실제 고지와 정산은
+              회사의 신고 내역을 확인해야 합니다.
+            </p>
+          </article>
+        </div>
+        <aside className={styles.policyNotice} aria-label="기준소득월액과 실수령액 비교 예시">
+          <strong>짧은 예시</strong>
+          <p>
+            월 급여가 400만원이고 급여명세서상 월 비과세액이 20만원이라면,
+            이 계산기는 380만원을 월 과세 급여로 사용해 각 공제 항목을
+            예상합니다. 380만원은 국민연금 기준소득월액이나 실수령액이라는
+            뜻이 아니며, 실제 신고 금액과 원천징수 결과는 항목별 기준과 회사
+            처리에 따라 달라질 수 있습니다.
+          </p>
+        </aside>
+      </section>
+
       <section className={styles.section} aria-labelledby="criteria-title">
         <div className={styles.sectionHeading}>
           <h2 id="criteria-title">2026년 계산 기준</h2>
