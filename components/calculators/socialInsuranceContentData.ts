@@ -19,6 +19,11 @@ export interface SocialInsuranceSource {
   href: string;
 }
 
+export const socialInsuranceContentMeta = {
+  finalReviewedAt: "2026-07-30",
+  lastModifiedAt: "2026-07-30",
+} as const;
+
 function formatWon(value: number): string {
   return `${value.toLocaleString("ko-KR")}원`;
 }
@@ -216,6 +221,7 @@ export const socialInsuranceWebApplicationJsonLd = {
   name: "2026 4대보험 계산기",
   description:
     "2026년 기준 국민연금, 건강보험, 장기요양보험, 고용보험 근로자 부담 공제액을 월급과 비과세 금액으로 계산합니다.",
+  dateModified: socialInsuranceContentMeta.lastModifiedAt,
   applicationCategory: "FinanceApplication",
   operatingSystem: "Any",
   browserRequirements: "JavaScript가 지원되는 웹 브라우저",

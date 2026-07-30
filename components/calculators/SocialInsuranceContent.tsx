@@ -1,11 +1,17 @@
 import {
   socialInsuranceCriteria,
+  socialInsuranceContentMeta,
   socialInsuranceExceptions,
   socialInsuranceExamples,
   socialInsuranceFaqs,
   socialInsuranceSources,
 } from "./socialInsuranceContentData";
 import styles from "./SocialInsuranceCalculator.module.css";
+
+function formatKoreanDate(value: string): string {
+  const [year, month, day] = value.split("-").map(Number);
+  return `${year}년 ${month}월 ${day}일`;
+}
 
 export function SocialInsuranceContent() {
   return (
@@ -98,6 +104,14 @@ export function SocialInsuranceContent() {
             ),
           )}
         </ul>
+        <p>
+          <strong>최종 검토일:</strong>{" "}
+          {formatKoreanDate(socialInsuranceContentMeta.finalReviewedAt)}
+        </p>
+        <p>
+          <strong>최종 수정일:</strong>{" "}
+          {formatKoreanDate(socialInsuranceContentMeta.lastModifiedAt)}
+        </p>
       </section>
 
       <section className={styles.disclaimerBox} aria-label="면책 문구">

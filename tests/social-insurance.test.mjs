@@ -15,7 +15,9 @@ import {
   socialInsuranceFaqs,
   socialInsuranceExamples,
   socialInsuranceCriteria,
+  socialInsuranceContentMeta,
   socialInsuranceSources,
+  socialInsuranceWebApplicationJsonLd,
 } from "../components/calculators/socialInsuranceContentData.ts";
 import { buildSocialInsuranceResultText } from "../components/calculators/socialInsuranceClientUtils.ts";
 
@@ -600,6 +602,48 @@ test("공식 출처와 외부 링크 보안 속성을 제공한다", async () =>
     assert.match(officialSource.href, /^https:\/\//);
     assert.ok(officialSource.criterion.length > 0);
   }
+});
+
+test("최종 검토일과 최종 수정일을 공식 자료 확인일과 구분해 표시한다", async () => {
+  const source = await readFile(
+    "components/calculators/SocialInsuranceContent.tsx",
+    "utf8",
+  );
+
+  assert.deepEqual(socialInsuranceContentMeta, {
+    finalReviewedAt: "2026-07-30",
+    lastModifiedAt: "2026-07-30",
+  });
+  assert.equal((source.match(/최종 검토일/g) ?? []).length, 1);
+  assert.equal((source.match(/최종 수정일/g) ?? []).length, 1);
+  assert.match(source, /socialInsuranceContentMeta\.finalReviewedAt/);
+  assert.match(source, /socialInsuranceContentMeta\.lastModifiedAt/);
+  assert.equal(SOCIAL_INSURANCE_POLICY_2026.verifiedAt, "2026-07-10");
+});
+
+test("WebApplication JSON-LD에 표준 dateModified만 추가한다", () => {
+  assert.equal(socialInsuranceWebApplicationJsonLd["@type"], "WebApplication");
+  assert.equal(socialInsuranceWebApplicationJsonLd.dateModified, "2026-07-30");
+  assert.equal(
+    Object.keys(socialInsuranceWebApplicationJsonLd).filter(
+      (key) => key === "dateModified",
+    ).length,
+    1,
+  );
+  assert.equal("dateReviewed" in socialInsuranceWebApplicationJsonLd, false);
+});
+
+test("월 급여 한도 오류 문구는 자연스러운 조사와 검증용 명칭을 사용한다", async () => {
+  const source = await readFile(
+    "components/calculators/SocialInsuranceCalculator.tsx",
+    "utf8",
+  );
+
+  assert.match(source, /monthlySalary: "월 급여 금액"/);
+  assert.match(source, /const errorFieldLabels/);
+  assert.match(source, /\$\{label\}은 \$\{formatWon\(/);
+  assert.match(source, /\$\{label\}이 허용 범위를 벗어났습니다/);
+  assert.doesNotMatch(source, /const fieldLabels/);
 });
 
 test("sitemap, 목록, 홈과 연봉 관련 계산기에 공개 4대보험 계산기를 노출한다", async () => {

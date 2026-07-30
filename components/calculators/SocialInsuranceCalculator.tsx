@@ -44,9 +44,10 @@ const fields: FieldDefinition[] = [
   },
 ];
 
-const fieldLabels = Object.fromEntries(
-  fields.map(({ name, label }) => [name, label]),
-) as Record<SocialInsuranceInputField, string>;
+const errorFieldLabels: Record<SocialInsuranceInputField, string> = {
+  monthlySalary: "월 급여 금액",
+  nonTaxableAmount: "비과세 금액",
+};
 
 function formatWon(value: number): string {
   return `${value.toLocaleString("ko-KR")}원`;
@@ -71,7 +72,7 @@ function parseInputs(input: SocialInsuranceRawInputs): Record<string, unknown> {
 }
 
 function getErrorMessage(error: SocialInsuranceValidationError): string {
-  const label = fieldLabels[error.field];
+  const label = errorFieldLabels[error.field];
 
   switch (error.code) {
     case "REQUIRED":
