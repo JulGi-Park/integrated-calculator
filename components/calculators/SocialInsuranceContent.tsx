@@ -17,7 +17,7 @@ export function SocialInsuranceContent() {
   return (
     <div className={styles.content}>
       <section className={styles.contentSection}>
-        <h2>2026년 4대보험 계산 기준</h2>
+        <h2>국민연금 납부액과 2026년 4대보험 계산 기준</h2>
         <p>
           본 계산기는 2026년 7월 10일 확인 기준의 일반 근로자 월급 기준
           예상값입니다. 기준 변경, 회사 신고 보수월액, 정산 여부에 따라

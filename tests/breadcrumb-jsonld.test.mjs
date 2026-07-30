@@ -42,7 +42,7 @@ const expectedBreadcrumbs = [
     items: [
       ["홈", "https://gyesanbox.kr/"],
       ["계산기 목록", "https://gyesanbox.kr/calculators/"],
-      ["2026 4대보험 계산기", "https://gyesanbox.kr/calculators/social-insurance/"],
+      ["2026 국민연금 납부액·4대보험 계산기", "https://gyesanbox.kr/calculators/social-insurance/"],
     ],
   },
   {

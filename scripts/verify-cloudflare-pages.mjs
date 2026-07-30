@@ -31,7 +31,7 @@ const requiredStaticFiles = [
   ],
   [
     "out/calculators/social-insurance/index.html",
-    "2026 4대보험 계산기",
+    "2026 국민연금 납부액·4대보험 계산기",
   ],
   [
     "out/calculators/labor-pay/index.html",

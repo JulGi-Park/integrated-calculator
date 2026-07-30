@@ -51,7 +51,7 @@ function assertExample(input: SocialInsuranceInput) {
 
 const examples = [
   {
-    title: "월 급여 300만원, 비과세 20만원",
+    title: "월 급여 300만원의 국민연금 납부액 예시",
     input: { monthlySalary: 3_000_000, nonTaxableAmount: 200_000 },
   },
   {
@@ -145,6 +145,10 @@ export const socialInsuranceFaqs: SocialInsuranceFaq[] = [
       "네. 본 계산기는 월 급여에서 비과세 금액을 뺀 과세기준급여를 보험료 계산 기준으로 사용합니다.",
   },
   {
+    question: "국민연금 납부액은 어떻게 계산하나요?",
+    answer: `월 급여에서 비과세 금액을 뺀 뒤 신고 소득월액은 1,000원 미만을 버리고, ${formatWon(policy.nationalPension.standardMonthlyIncomeMinimum)}~${formatWon(policy.nationalPension.standardMonthlyIncomeMaximum)} 범위를 적용합니다. 그 금액에 근로자 부담률 ${formatRate(policy.nationalPension.employeeRate)}를 적용한 뒤 10원 미만을 버린 값이 이 계산기의 국민연금 예상 납부액입니다.`,
+  },
+  {
     question: "국민연금은 왜 월급 전체로 계산되지 않나요?",
     answer:
       `국민연금은 기준소득월액 하한과 상한이 있습니다. ${formatKoreanDate(policy.verifiedAt)}에 확인한 기준으로 410,000원보다 낮으면 410,000원, 6,590,000원보다 높으면 6,590,000원을 기준으로 계산합니다. 이 상·하한은 ${formatKoreanDate(policy.nationalPension.effectiveFrom)}부터 ${formatKoreanDate(policy.nationalPension.effectiveTo)}까지 적용됩니다.`,
@@ -218,9 +222,9 @@ export const socialInsuranceSources: SocialInsuranceSource[] = [
 export const socialInsuranceWebApplicationJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "2026 4대보험 계산기",
+  name: "2026 국민연금 납부액·4대보험 계산기",
   description:
-    "2026년 기준 국민연금, 건강보험, 장기요양보험, 고용보험 근로자 부담 공제액을 월급과 비과세 금액으로 계산합니다.",
+    "월 급여와 비과세 금액을 입력해 2026년 국민연금 납부액과 건강보험·장기요양보험·고용보험의 근로자 공제액을 계산합니다.",
   dateModified: socialInsuranceContentMeta.lastModifiedAt,
   applicationCategory: "FinanceApplication",
   operatingSystem: "Any",
@@ -246,7 +250,7 @@ export const socialInsuranceBreadcrumbJsonLd = {
     {
       "@type": "ListItem",
       position: 3,
-      name: "2026 4대보험 계산기",
+      name: "2026 국민연금 납부액·4대보험 계산기",
       item: "https://gyesanbox.kr/calculators/social-insurance/",
     },
   ],

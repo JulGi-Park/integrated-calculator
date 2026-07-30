@@ -14,7 +14,7 @@ import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
 
 const seo = PUBLIC_CALCULATOR_SEO["social-insurance"];
 const { title, description } = seo;
-const ogTitle = "4대보험 계산기 2026 - 국민연금·건강보험·고용보험 공제액 계산";
+const ogTitle = "국민연금 납부액·4대보험 계산기 2026 - 월급 공제액 확인";
 const canonical = "https://gyesanbox.kr/calculators/social-insurance/";
 const ogImage = seo.image;
 
@@ -69,11 +69,12 @@ export default function SocialInsurancePage() {
       <CompactCalculatorHero
         className="seller-margin-heading"
         eyebrow="Social insurance"
-        title="2026 4대보험 계산기"
+        title="2026 국민연금 납부액·4대보험 계산기"
         description={
           <>
-          월 급여와 비과세 금액을 입력해 국민연금, 건강보험,
-          장기요양보험, 고용보험의 근로자 부담 공제액을 계산합니다.
+          월 급여와 비과세 금액을 입력해 국민연금 납부액을 포함한
+          4대보험 근로자 부담 공제액을 계산합니다. 국민연금은
+          기준소득월액 하한·상한과 절사 기준을 반영합니다.
           </>
         }
         meta={

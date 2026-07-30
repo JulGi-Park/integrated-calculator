@@ -19,7 +19,7 @@ const routes = [
   ],
   [
     "app/calculators/social-insurance/page.tsx",
-    "4대보험 계산기 2026 | 국민연금·건강보험 공제액 계산",
+    "국민연금 납부액·4대보험 계산기 2026 | 월급 공제액",
   ],
   [
     "app/calculators/labor-pay/page.tsx",
@@ -88,7 +88,7 @@ test("4대보험 계산기 페이지와 목록 링크가 실제 UI를 제공한�
 
   assert.match(pageSource, /SocialInsuranceCalculator/);
   assert.match(pageSource, /<CompactCalculatorHero/);
-  assert.match(pageSource, /title="2026 4대보험 계산기"/);
+  assert.match(pageSource, /title="2026 국민연금 납부액·4대보험 계산기"/);
   assert.match(pageSource, /JsonLdScripts/);
   assert.doesNotMatch(pageSource, /notFound\(\)|계산 기능 준비 중/);
   assert.match(listSource, /href="\/calculators\/social-insurance\/"/);

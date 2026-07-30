@@ -560,10 +560,10 @@ test("소셜 보험 계산기 페이지는 공개 메타데이터와 계산기 U
   assert.match(source, /canonical/);
   assert.match(source, /index:\s*true/);
   assert.match(source, /<CompactCalculatorHero/);
-  assert.match(source, /title="2026 4대보험 계산기"/);
+  assert.match(source, /title="2026 국민연금 납부액·4대보험 계산기"/);
   assert.equal(
     metadata.title,
-    "4대보험 계산기 2026 | 국민연금·건강보험 공제액 계산",
+    "국민연금 납부액·4대보험 계산기 2026 | 월급 공제액",
   );
   assert.deepEqual(metadata.robots, { index: true, follow: true });
   assert.deepEqual(metadata.alternates, {
@@ -664,5 +664,5 @@ test("Cloudflare 검증은 social-insurance 산출물을 공개 산출물로 요
   const source = await readFile("scripts/verify-cloudflare-pages.mjs", "utf8");
 
   assert.match(source, /out\/calculators\/social-insurance/);
-  assert.match(source, /2026 4대보험 계산기/);
+  assert.match(source, /2026 국민연금 납부액·4대보험 계산기/);
 });
