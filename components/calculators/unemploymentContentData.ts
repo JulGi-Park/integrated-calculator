@@ -123,7 +123,7 @@ export const unemploymentInterpretationCards = [
   {
     title: "상한액·하한액",
     description:
-      "상한액은 급여기초 임금일액 상한 113,500원 × 60% = 68,100원입니다. 하한액은 2026년 최저임금 10,320원 × 80% × 선택한 1일 소정근로시간으로 계산하며, 8시간 이상 기준은 66,048원입니다.",
+      "고용보험법 시행령 제68조의 113,500원은 급여기초 임금일액의 상한이며, 고용보험법 제46조의 60%를 적용한 68,100원이 2026년 1일 구직급여 상한액입니다. 하한액은 제68조가 아니라 2026년 최저임금 10,320원 × 80% × 선택한 1일 소정근로시간으로 계산하며, 8시간 이상 하한액은 66,048원입니다.",
   },
   {
     title: "소정급여일수",
@@ -141,12 +141,12 @@ export const unemploymentDirectAnswerItems = [
   {
     title: "하루 상한액",
     description:
-      "2026년 1일 구직급여 상한액은 68,100원입니다. 급여기초 임금일액 상한 113,500원에 60%를 적용한 값입니다.",
+      "2026년 1일 구직급여 상한액은 68,100원입니다. 고용보험법 시행령 제68조가 정한 급여기초 임금일액 상한 113,500원에 고용보험법 제46조의 60%를 적용한 값이며, 113,500원 자체가 실제 하루 구직급여 상한액은 아닙니다.",
   },
   {
     title: "하루 하한액",
     description:
-      "하한액은 2026년 최저임금 10,320원 × 80% × 이직 전 1일 소정근로시간으로 계산합니다. 4시간 이하는 33,024원, 5시간은 41,280원, 6시간은 49,536원, 7시간은 57,792원, 8시간 이상은 66,048원이며 계산기에서 해당 구간을 선택해야 합니다.",
+      "하한액은 고용보험법 시행령 제68조의 113,500원에서 계산하지 않습니다. 2026년 최저임금 10,320원 × 80% × 이직 전 인정 1일 소정근로시간으로 계산하며, 4시간 이하는 33,024원, 5시간은 41,280원, 6시간은 49,536원, 7시간은 57,792원, 8시간 이상은 66,048원입니다. 실제 인정 시간은 근로계약·이직확인서와 고용센터 확인이 필요합니다.",
   },
   {
     title: "지급일수",
@@ -232,12 +232,12 @@ export const unemploymentCriteriaRows: UnemploymentCriteriaRow[] = [
   {
     item: "상한액",
     currentCalculatorBasis: `급여기초 임금일액 상한 ${formatWon(unemploymentUpperBasisDailyWage)} × 60% = ${formatWon(UNEMPLOYMENT_POLICY_2026.dailyBenefitUpperLimit)}을 적용합니다.`,
-    officialCheck: "고용노동부 상한액 인상 자료와 고용보험법 시행령 제68조",
+    officialCheck: "고용보험법 시행령 제68조의 기초일액 상한과 제46조의 60% 산식",
   },
   {
     item: "하한액",
     currentCalculatorBasis: `2026년 최저임금 ${formatWon(unemploymentMinimumWage2026)} × ${unemploymentMinimumWageBenefitRate}% × 선택한 1일 소정근로시간을 적용합니다. 8시간 이상은 ${formatWon(UNEMPLOYMENT_POLICY_2026.dailyBenefitLowerLimit)}입니다.`,
-    officialCheck: "고용보험법 제45조·제46조와 2026년 최저임금 고시",
+    officialCheck: "고용보험법 제45조·제46조, 최저임금 고시와 인정 소정근로시간",
   },
   {
     item: "소정근로시간",
@@ -280,12 +280,12 @@ export const unemploymentFaqs: UnemploymentFaq[] = [
   {
     question: "2026년 실업급여 하루 상한액과 하한액은 얼마인가요?",
     answer:
-      "현재 계산기는 2026년 1일 상한액 68,100원을 사용합니다. 하한액은 최저임금 10,320원 × 80% × 이직 전 1일 소정근로시간으로 계산해 4시간 이하 33,024원, 5시간 41,280원, 6시간 49,536원, 7시간 57,792원, 8시간 이상 66,048원입니다.",
+      "현재 계산기는 2026년 1일 상한액 68,100원을 사용합니다. 이는 시행령 제68조의 급여기초 임금일액 상한 113,500원에 고용보험법 제46조의 60%를 적용한 값입니다. 하한액은 제68조가 아니라 최저임금 10,320원 × 80% × 이직 전 인정 1일 소정근로시간으로 계산해 4시간 이하 33,024원, 5시간 41,280원, 6시간 49,536원, 7시간 57,792원, 8시간 이상 66,048원입니다.",
   },
   {
     question: "급여기초 임금일액 113,500원은 실제로 받는 하루 실업급여인가요?",
     answer:
-      "아닙니다. 113,500원은 구직급여 산정의 기초가 되는 임금일액 상한입니다. 여기에 60%를 적용한 68,100원이 현재 계산기의 하루 구직급여 상한액입니다.",
+      "아닙니다. 고용보험법 시행령 제68조의 113,500원은 구직급여 산정의 기초가 되는 임금일액 상한입니다. 고용보험법 제46조에 따라 여기에 60%를 적용한 68,100원이 현재 계산기의 하루 구직급여 상한액입니다. 하한액은 이 금액에서 계산하지 않고 최저임금·80%·인정 소정근로시간을 따로 적용합니다.",
   },
   {
     question: "자발적 퇴사도 실업급여를 받을 수 있나요?",
@@ -312,10 +312,10 @@ export const unemploymentFaqs: UnemploymentFaq[] = [
 export const unemploymentSources: UnemploymentSource[] = [
   {
     organization: "고용노동부 고객상담센터",
-    title: "구직급여일액 FAQ",
+    title: "구직급여일액 FAQ(시간별 하한액 구조 참고)",
     checkedAt: unemploymentPolicyCheckedAt,
     href: "https://1350.moel.go.kr/home/hp/data/faqView.do?faq_idx=1000001176",
-    criterion: "이직 전 1일 소정근로시간별 하한액 구조와 4시간 이하 처리 확인",
+    criterion: "시간별 하한액 구조와 4시간 이하 처리 참고. 2022·2023년 금액은 2026년 수치 근거로 사용하지 않음",
   },
   {
     organization: "국가법령정보센터",
@@ -358,6 +358,13 @@ export const unemploymentSources: UnemploymentSource[] = [
     checkedAt: unemploymentPolicyCheckedAt,
     href: "https://www.law.go.kr/lsLinkProc.do?chrClsCd=010202&datClsCd=010102&gubun=admRul&joNo=006800000&lsId=41988&lsNm=%EA%B3%A0%EC%9A%A9%EB%B3%B4%ED%97%98%EB%B2%95%EC%8B%9C%ED%96%89%EB%A0%B9&mode=10",
     criterion: "급여기초 임금일액 상한 113,500원",
+  },
+  {
+    organization: "찾기쉬운 생활법령정보",
+    title: "구직급여 수급액 및 기초일액의 상·하한",
+    checkedAt: unemploymentPolicyCheckedAt,
+    href: "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=3&cnpClsNo=2&csmSeq=722&popMenu=ov",
+    criterion: "2026년 113,500원·68,100원 관계, 최저임금 하한 구조와 10,320원 확인",
   },
   {
     organization: "국가법령정보센터",

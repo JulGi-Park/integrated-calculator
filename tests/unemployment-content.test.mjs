@@ -266,7 +266,7 @@ test("공식 출처 섹션과 외부 링크 보안 속성을 제공한다", () =
     assert.ok(source.criterion.length > 0);
     assert.match(
       source.href,
-      /^https:\/\/(m\.work24\.go\.kr|www\.law\.go\.kr|www\.moel\.go\.kr|1350\.moel\.go\.kr|www\.minimumwage\.go\.kr)\//,
+      /^https:\/\/(m\.work24\.go\.kr|www\.law\.go\.kr|www\.moel\.go\.kr|1350\.moel\.go\.kr|www\.minimumwage\.go\.kr|www\.easylaw\.go\.kr)\//,
     );
   }
 });
@@ -278,6 +278,10 @@ test("2026년 상한액과 하한액 산식을 공식 기준 문구로 표시한
   assert.equal(unemploymentMinimumWageBenefitRate, 80);
   assert.match(renderedContent, /113,500원/);
   assert.match(renderedContent, /68,100원/);
+  assert.match(renderedContent, /시행령 제68조의 113,500원은 급여기초 임금일액의 상한/);
+  assert.match(renderedContent, /제68조가 아니라 2026년 최저임금/);
+  assert.match(renderedContent, /113,500원 자체가 실제 하루 구직급여 상한액은 아닙니다/);
+  assert.match(renderedContent, /66,048원입니다\. 실제 인정 시간은/);
   assert.match(renderedContent, /10,320원/);
   assert.match(renderedContent, /8시간/);
   assert.match(renderedContent, /80%/);
@@ -293,6 +297,22 @@ test("2026년 상한액과 하한액 산식을 공식 기준 문구로 표시한
     { hours: "7시간", amount: 57_792 },
     { hours: "8시간 이상", amount: 66_048 },
   ]);
+});
+
+test("상한·하한 법령 설명은 시행령 제68조와 제46조의 역할을 분리한다", () => {
+  const text = JSON.stringify([
+    unemploymentInterpretationCards,
+    unemploymentDirectAnswerItems,
+    unemploymentCriteriaRows,
+    unemploymentFaqs,
+  ]);
+
+  assert.match(text, /시행령 제68조/);
+  assert.match(text, /제46조/);
+  assert.match(text, /113,500원.*60%.*68,100원/);
+  assert.match(text, /하한액은 제68조가 아니라/);
+  assert.match(text, /66,048원/);
+  assert.doesNotMatch(text, /113,500원을 하한액/);
 });
 
 test("관련 계산기는 기존 구현 URL만 활성 링크로 제공한다", () => {
