@@ -15,7 +15,7 @@ const routes = [
   ],
   [
     "app/calculators/salary/page.tsx",
-    "2026 연봉 실수령액 계산기 | 월급·4대보험·소득세 계산",
+    "2026 연봉 실수령액 계산기 | 월급·비과세액·공제 후 금액",
   ],
   [
     "app/calculators/social-insurance/page.tsx",

@@ -78,9 +78,9 @@ const calculatorMetadataCases = [
   {
     slug: "salary",
     modulePath: "../app/calculators/salary/page.tsx",
-    title: "연봉 실수령액 계산기 - 세금 공제 후 실제 월급 확인",
+    title: "연봉 실수령액 계산기 | 월급·비과세액·공제 후 금액",
     description:
-      "연봉을 입력하면 국민연금, 건강보험, 고용보험, 소득세 등을 반영해 예상 월 실수령액을 확인할 수 있습니다.",
+      "연봉을 월급으로 환산하고 월 비과세액, 가족·자녀 수를 입력해 세금과 사회보험료 공제 후 예상 월·연 실수령액을 확인하세요.",
   },
   {
     slug: "social-insurance",

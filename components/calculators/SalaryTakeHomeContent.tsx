@@ -85,6 +85,14 @@ export function SalaryTakeHomeContent() {
               달라질 수 있습니다.
             </p>
           </article>
+          <article className={styles.infoCard}>
+            <h3>기준소득월액과 월급은 다를 수 있어요</h3>
+            <p>
+              실수령액은 세금과 사회보험료를 모두 뺀 결과입니다. 국민연금의
+              기준소득월액과 건강보험의 보수월액은 같은 값이 아니며, 비과세
+              급여·상한과 신고 시점에 따라 계약상 월급과 달라질 수 있습니다.
+            </p>
+          </article>
         </div>
         <p className={styles.note}>
           저소득 구간에서는 소득세가 0원일 수 있습니다. 국민연금은
@@ -119,6 +127,13 @@ export function SalaryTakeHomeContent() {
             {formatKoreanDate(policy.nationalPension.ceilingEffectiveTo)}까지
             적용합니다. 기준소득월액 상·하한은 매년 7월부터 1년간 적용되므로,
             다음 적용 기간의 기준은 국민연금공단 최신 안내를 확인해 주세요.
+          </p>
+          <p>
+            기준소득월액은 모든 공제에 공통으로 적용되는 하나의 값이 아닙니다.
+            이 계산기는 월 과세 급여를 바탕으로 국민연금 상·하한을 적용하고,
+            건강보험·장기요양보험·고용보험과 세금은 각 항목의 기준으로
+            예상합니다. 급여명세서와 차이가 크면 회사의 신고 기준과 과세·비과세
+            항목을 함께 확인하세요.
           </p>
         </aside>
       </section>
@@ -192,7 +207,7 @@ export function SalaryTakeHomeContent() {
             className={`${styles.relatedCard} ${styles.relatedLink}`}
             href="/calculators/social-insurance/"
           >
-            <h3>4대보험 계산기</h3>
+            <h3>2026 4대보험 계산기</h3>
             <p>월급 기준 국민연금, 건강보험, 고용보험 공제액을 계산합니다.</p>
           </a>
           <a

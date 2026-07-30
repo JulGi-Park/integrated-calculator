@@ -14,9 +14,9 @@ import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
 
 const seo = PUBLIC_CALCULATOR_SEO.salary;
 const { title, description } = seo;
-const ogTitle = "연봉 실수령액 계산기 - 세금 공제 후 실제 월급 확인";
+const ogTitle = "연봉 실수령액 계산기 | 월급·비과세액·공제 후 금액";
 const ogDescription =
-  "연봉을 입력하면 국민연금, 건강보험, 고용보험, 소득세 등을 반영해 예상 월 실수령액을 확인할 수 있습니다.";
+  "연봉을 월급으로 환산하고 월 비과세액, 가족·자녀 수를 입력해 세금과 사회보험료 공제 후 예상 월·연 실수령액을 확인하세요.";
 const ogUrl = `https://gyesanbox.kr${seo.path}`;
 const ogImage = seo.image;
 
@@ -74,8 +74,9 @@ export default function SalaryTakeHomePage() {
         title="연봉 실수령액 계산기"
         description={
           <>
-          연봉과 비과세액, 공제대상 가족 수를 입력해 월·연간 예상
-          실수령액과 공제 내역을 확인할 수 있습니다.
+          연봉을 월급으로 환산하고 월 비과세액, 공제대상 가족 수·자녀 수를 입력해
+          세금과 사회보험료를 뺀 월·연간 예상 실수령액과 공제 내역을 확인합니다.
+          계약상 월급과 기준소득월액은 다를 수 있으며 계산 결과는 예상값입니다.
           </>
         }
         meta={
