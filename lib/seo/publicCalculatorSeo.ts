@@ -32,9 +32,9 @@ export const PUBLIC_CALCULATOR_SEO = {
   loan: {
     slug: "loan",
     path: "/calculators/loan/",
-    title: "대출 이자 계산기 | 원리금균등·원금균등·만기일시상환 비교",
+    title: "대출 이자 계산기·원리금 계산기 | 월 납입액·총이자 비교",
     description:
-      "대출금액과 연이율, 기간을 입력해 월 납입액과 총이자를 계산하고 원리금균등·원금균등·만기일시상환 결과와 월별 일정을 비교해 보세요.",
+      "대출원금과 연이율, 기간을 입력해 원리금균등·원금균등·만기일시상환의 예상 월 납입액과 총이자를 비교하고 월별 상환 일정을 확인하세요.",
     image: "https://gyesanbox.kr/og/loan.png",
     imagePath: "/og/loan.png",
     imageAlt: "대출 이자 계산기 — 상환 방식별 월 납입액과 총이자 비교",

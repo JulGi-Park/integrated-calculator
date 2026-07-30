@@ -27,7 +27,7 @@ const routes = [
   ],
   [
     "app/calculators/loan/page.tsx",
-    "대출 이자 계산기 | 원리금균등·원금균등·만기일시상환 비교",
+    "대출 이자 계산기·원리금 계산기 | 월 납입액·총이자 비교",
   ],
   [
     "app/calculators/severance/page.tsx",
@@ -145,7 +145,7 @@ test("대출 이자 계산기 페이지와 목록 링크가 실제 UI를 제공�
 
   assert.match(pageSource, /LoanInterestCalculator/);
   assert.match(pageSource, /<CompactCalculatorHero/);
-  assert.match(pageSource, /title="대출 이자 계산기"/);
+  assert.match(pageSource, /title="대출 이자 계산기·원리금 계산기"/);
   assert.doesNotMatch(pageSource, /계산 기능 준비 중/);
   assert.match(listSource, /href="\/calculators\/loan\/"/);
   assert.match(listSource, /대출 이자 계산기/);

@@ -136,8 +136,8 @@ export const loanInterestCalculationCriteria = {
 
 export const loanInterestExampleInput: LoanRepaymentInput = {
   principal: 100_000_000,
-  annualInterestRate: 4,
-  termMonths: 120,
+  annualInterestRate: 4.5,
+  termMonths: 360,
 };
 
 const loanInterestExampleResponse = calculateLoanRepaymentComparison(
@@ -313,9 +313,9 @@ export const loanInterestSources: LoanInterestSource[] = [
 export const loanInterestWebApplicationJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "대출 이자 계산기",
+  name: "대출 이자 계산기·원리금 계산기 | 월 납입액·총이자 비교",
   description:
-    "대출금액과 연이율, 기간을 입력해 월 납입액과 총이자를 계산하고 원리금균등·원금균등·만기일시상환 결과를 비교합니다.",
+    "대출원금과 연이율, 기간을 입력해 원리금균등·원금균등·만기일시상환의 예상 월 납입액과 총이자를 비교하고 월별 상환 일정을 확인하세요.",
   applicationCategory: "FinanceApplication",
   operatingSystem: "Any",
   browserRequirements: "JavaScript가 지원되는 웹 브라우저",
@@ -340,7 +340,7 @@ export const loanInterestBreadcrumbJsonLd = {
     {
       "@type": "ListItem",
       position: 3,
-      name: "대출 이자 계산기",
+      name: "대출 이자 계산기·원리금 계산기",
       item: "https://gyesanbox.kr/calculators/loan/",
     },
   ],

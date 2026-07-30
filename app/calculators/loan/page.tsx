@@ -14,9 +14,8 @@ import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
 
 const seo = PUBLIC_CALCULATOR_SEO.loan;
 const { title, description } = seo;
-const ogTitle = "대출 이자 계산기 - 원리금·원금균등 상환액 확인";
-const ogDescription =
-  "대출금, 금리, 기간, 상환 방식을 입력하면 월 상환액과 총 이자 부담을 계산할 수 있습니다.";
+const ogTitle = title;
+const ogDescription = description;
 const ogUrl = `https://gyesanbox.kr${seo.path}`;
 const ogImage = seo.image;
 
@@ -66,11 +65,12 @@ export default function LoanInterestPage() {
       <CompactCalculatorHero
         className="seller-margin-heading"
         eyebrow="Loan repayment"
-        title="대출 이자 계산기"
+        title="대출 이자 계산기·원리금 계산기"
         description={
           <>
-          대출금액, 연이율과 기간을 입력해 원리금균등·원금균등·
-          만기일시상환의 예상 비용과 월별 일정을 비교합니다.
+          대출원금, 연이율과 기간을 입력해 원리금균등·원금균등·
+          만기일시상환의 예상 월 납입액과 총이자, 월별 상환 일정을 비교합니다.
+          실제 금융회사 상환금액은 실행일·납부일과 상품 조건에 따라 달라질 수 있습니다.
           </>
         }
         meta={

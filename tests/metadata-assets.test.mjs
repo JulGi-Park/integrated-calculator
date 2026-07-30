@@ -101,9 +101,9 @@ const calculatorMetadataCases = [
   {
     slug: "loan",
     modulePath: "../app/calculators/loan/page.tsx",
-    title: "대출 이자 계산기 - 원리금·원금균등 상환액 확인",
+    title: "대출 이자 계산기·원리금 계산기 | 월 납입액·총이자 비교",
     description:
-      "대출금, 금리, 기간, 상환 방식을 입력하면 월 상환액과 총 이자 부담을 계산할 수 있습니다.",
+      "대출원금과 연이율, 기간을 입력해 원리금균등·원금균등·만기일시상환의 예상 월 납입액과 총이자를 비교하고 월별 상환 일정을 확인하세요.",
   },
   {
     slug: "severance",

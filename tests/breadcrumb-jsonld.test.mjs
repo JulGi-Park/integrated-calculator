@@ -33,7 +33,7 @@ const expectedBreadcrumbs = [
     items: [
       ["홈", "https://gyesanbox.kr/"],
       ["계산기 목록", "https://gyesanbox.kr/calculators/"],
-      ["대출 이자 계산기", "https://gyesanbox.kr/calculators/loan/"],
+      ["대출 이자 계산기·원리금 계산기", "https://gyesanbox.kr/calculators/loan/"],
     ],
   },
   {

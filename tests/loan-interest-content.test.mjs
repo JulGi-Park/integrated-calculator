@@ -30,12 +30,11 @@ const dataSource = await readFile(
 
 test("대출 계산기 전용 SEO 메타데이터를 대표 URL 기준으로 설정한다", () => {
   const expectedTitle =
-    "대출 이자 계산기 | 원리금균등·원금균등·만기일시상환 비교";
+    "대출 이자 계산기·원리금 계산기 | 월 납입액·총이자 비교";
   const expectedDescription =
-    "대출금액과 연이율, 기간을 입력해 월 납입액과 총이자를 계산하고 원리금균등·원금균등·만기일시상환 결과와 월별 일정을 비교해 보세요.";
-  const expectedOgTitle = "대출 이자 계산기 - 원리금·원금균등 상환액 확인";
-  const expectedOgDescription =
-    "대출금, 금리, 기간, 상환 방식을 입력하면 월 상환액과 총 이자 부담을 계산할 수 있습니다.";
+    "대출원금과 연이율, 기간을 입력해 원리금균등·원금균등·만기일시상환의 예상 월 납입액과 총이자를 비교하고 월별 상환 일정을 확인하세요.";
+  const expectedOgTitle = expectedTitle;
+  const expectedOgDescription = expectedDescription;
   const expectedOgImage = "https://gyesanbox.kr/og/loan.png";
 
   assert.equal(metadata.title, expectedTitle);
@@ -70,7 +69,7 @@ test("대출 계산기 전용 SEO 메타데이터를 대표 URL 기준으로 설
 
 test("대출 페이지 상단은 H1 하나와 고정 안내를 유지한다", () => {
   assert.equal((pageSource.match(/<CompactCalculatorHero\b/g) ?? []).length, 1);
-  assert.match(pageSource, /title="대출 이자 계산기"/);
+  assert.match(pageSource, /title="대출 이자 계산기·원리금 계산기"/);
   assert.match(pageSource, /원 단위 예상 계산/);
   assert.match(pageSource, /실제 대출 가능\s+범위를 뜻하지 않습니다/);
 });
@@ -99,43 +98,43 @@ test("계산 기준·반올림·마지막 회차 보정을 설명한다", () => 
 test("고정 예시 입력과 결과는 엔진 확정값과 일치한다", () => {
   assert.deepEqual(loanInterestExampleInput, {
     principal: 100_000_000,
-    annualInterestRate: 4,
-    termMonths: 120,
+    annualInterestRate: 4.5,
+    termMonths: 360,
   });
   assert.deepEqual(loanInterestExampleInputItems, [
     { label: "대출원금", value: "100,000,000원" },
-    { label: "연이율", value: "4%" },
-    { label: "기간", value: "120개월" },
+    { label: "연이율", value: "4.5%" },
+    { label: "기간", value: "360개월" },
   ]);
 
   assert.deepEqual(loanInterestExampleResultItems, [
     {
       title: "원리금균등상환",
       items: [
-        { label: "첫 달 납입액", value: "1,012,451원" },
-        { label: "마지막 달 납입액", value: "1,012,507원" },
-        { label: "총이자", value: "21,494,176원" },
-        { label: "총상환액", value: "121,494,176원" },
+        { label: "첫 달 납입액", value: "506,685원" },
+        { label: "마지막 달 납입액", value: "506,926원" },
+        { label: "총이자", value: "82,406,841원" },
+        { label: "총상환액", value: "182,406,841원" },
         { label: "월 납입액 특징", value: "대체로 일정" },
       ],
     },
     {
       title: "원금균등상환",
       items: [
-        { label: "첫 달 납입액", value: "1,166,666원" },
-        { label: "마지막 달 납입액", value: "836,151원" },
-        { label: "총이자", value: "20,166,675원" },
-        { label: "총상환액", value: "120,166,675원" },
+        { label: "첫 달 납입액", value: "652,777원" },
+        { label: "마지막 달 납입액", value: "279,100원" },
+        { label: "총이자", value: "67,687,688원" },
+        { label: "총상환액", value: "167,687,688원" },
         { label: "월 납입액 특징", value: "점차 감소" },
       ],
     },
     {
       title: "만기일시상환",
       items: [
-        { label: "첫 달 납입액", value: "333,333원" },
-        { label: "마지막 달 납입액", value: "100,333,333원" },
-        { label: "총이자", value: "39,999,960원" },
-        { label: "총상환액", value: "139,999,960원" },
+        { label: "첫 달 납입액", value: "375,000원" },
+        { label: "마지막 달 납입액", value: "100,375,000원" },
+        { label: "총이자", value: "135,000,000원" },
+        { label: "총상환액", value: "235,000,000원" },
         { label: "월 납입액 특징", value: "이자만 내다가 만기 상환" },
       ],
     },
@@ -150,63 +149,63 @@ test("고정 예시 입력과 결과는 엔진 확정값과 일치한다", () =>
 
   assert.equal(response.data.equalPayment.repaymentType, "equalPayment");
   assert.equal(response.data.equalPayment.principal, 100_000_000);
-  assert.equal(response.data.equalPayment.totalInterest, 21_494_176);
-  assert.equal(response.data.equalPayment.totalPayment, 121_494_176);
-  assert.equal(response.data.equalPayment.termMonths, 120);
-  assert.equal(response.data.equalPayment.regularMonthlyPayment, 1_012_451);
-  assert.equal(response.data.equalPayment.firstMonthPrincipal, 679_118);
-  assert.equal(response.data.equalPayment.firstMonthInterest, 333_333);
-  assert.equal(response.data.equalPayment.lastMonthPrincipal, 1_009_143);
-  assert.equal(response.data.equalPayment.lastMonthInterest, 3_364);
-  assert.equal(response.data.equalPayment.lastMonthPayment, 1_012_507);
+  assert.equal(response.data.equalPayment.totalInterest, 82_406_841);
+  assert.equal(response.data.equalPayment.totalPayment, 182_406_841);
+  assert.equal(response.data.equalPayment.termMonths, 360);
+  assert.equal(response.data.equalPayment.regularMonthlyPayment, 506_685);
+  assert.equal(response.data.equalPayment.firstMonthPrincipal, 131_685);
+  assert.equal(response.data.equalPayment.firstMonthInterest, 375_000);
+  assert.equal(response.data.equalPayment.lastMonthPrincipal, 505_032);
+  assert.equal(response.data.equalPayment.lastMonthInterest, 1_894);
+  assert.equal(response.data.equalPayment.lastMonthPayment, 506_926);
 
   assert.equal(response.data.equalPrincipal.repaymentType, "equalPrincipal");
   assert.equal(response.data.equalPrincipal.principal, 100_000_000);
-  assert.equal(response.data.equalPrincipal.totalInterest, 20_166_675);
-  assert.equal(response.data.equalPrincipal.totalPayment, 120_166_675);
-  assert.equal(response.data.equalPrincipal.termMonths, 120);
-  assert.equal(response.data.equalPrincipal.baseMonthlyPrincipal, 833_333);
-  assert.equal(response.data.equalPrincipal.firstMonthPayment, 1_166_666);
-  assert.equal(response.data.equalPrincipal.lastMonthPayment, 836_151);
-  assert.equal(response.data.equalPrincipal.firstMonthInterest, 333_333);
-  assert.equal(response.data.equalPrincipal.lastMonthInterest, 2_778);
+  assert.equal(response.data.equalPrincipal.totalInterest, 67_687_688);
+  assert.equal(response.data.equalPrincipal.totalPayment, 167_687_688);
+  assert.equal(response.data.equalPrincipal.termMonths, 360);
+  assert.equal(response.data.equalPrincipal.baseMonthlyPrincipal, 277_777);
+  assert.equal(response.data.equalPrincipal.firstMonthPayment, 652_777);
+  assert.equal(response.data.equalPrincipal.lastMonthPayment, 279_100);
+  assert.equal(response.data.equalPrincipal.firstMonthInterest, 375_000);
+  assert.equal(response.data.equalPrincipal.lastMonthInterest, 1_043);
 
   assert.equal(response.data.bullet.repaymentType, "bullet");
   assert.equal(response.data.bullet.principal, 100_000_000);
-  assert.equal(response.data.bullet.totalInterest, 39_999_960);
-  assert.equal(response.data.bullet.totalPayment, 139_999_960);
-  assert.equal(response.data.bullet.termMonths, 120);
-  assert.equal(response.data.bullet.regularMonthlyInterest, 333_333);
-  assert.equal(response.data.bullet.maturityMonthPayment, 100_333_333);
+  assert.equal(response.data.bullet.totalInterest, 135_000_000);
+  assert.equal(response.data.bullet.totalPayment, 235_000_000);
+  assert.equal(response.data.bullet.termMonths, 360);
+  assert.equal(response.data.bullet.regularMonthlyInterest, 375_000);
+  assert.equal(response.data.bullet.maturityMonthPayment, 100_375_000);
   assert.equal(response.data.bullet.maturityMonthPrincipal, 100_000_000);
-  assert.equal(response.data.bullet.maturityMonthInterest, 333_333);
+  assert.equal(response.data.bullet.maturityMonthInterest, 375_000);
 
   assert.deepEqual(response.data.lowestTotalInterestTypes, ["equalPrincipal"]);
   assert.deepEqual(response.data.lowestFirstMonthPaymentTypes, ["bullet"]);
   assert.deepEqual(response.data.levelPaymentTypes, ["equalPayment"]);
   assert.deepEqual(response.data.totalInterestDifferences, {
-    equalPaymentVsEqualPrincipal: 1_327_501,
-    equalPaymentVsBullet: 18_505_784,
-    equalPrincipalVsBullet: 19_833_285,
+    equalPaymentVsEqualPrincipal: 14_719_153,
+    equalPaymentVsBullet: 52_593_159,
+    equalPrincipalVsBullet: 67_312_312,
   });
 
-  assert.equal(response.data.equalPayment.schedule.length, 120);
-  assert.equal(response.data.equalPrincipal.schedule.length, 120);
-  assert.equal(response.data.bullet.schedule.length, 120);
+  assert.equal(response.data.equalPayment.schedule.length, 360);
+  assert.equal(response.data.equalPrincipal.schedule.length, 360);
+  assert.equal(response.data.bullet.schedule.length, 360);
   assert.deepEqual(response.data.equalPayment.schedule[0], {
     installmentNumber: 1,
     openingBalance: 100_000_000,
-    principalPayment: 679_118,
-    interestPayment: 333_333,
-    monthlyPayment: 1_012_451,
-    closingBalance: 99_320_882,
+    principalPayment: 131_685,
+    interestPayment: 375_000,
+    monthlyPayment: 506_685,
+    closingBalance: 99_868_315,
   });
   assert.deepEqual(response.data.equalPayment.schedule.at(-1), {
-    installmentNumber: 120,
-    openingBalance: 1_009_143,
-    principalPayment: 1_009_143,
-    interestPayment: 3_364,
-    monthlyPayment: 1_012_507,
+    installmentNumber: 360,
+    openingBalance: 505_032,
+    principalPayment: 505_032,
+    interestPayment: 1_894,
+    monthlyPayment: 506_926,
     closingBalance: 0,
   });
 
@@ -302,7 +301,7 @@ test("WebApplication, BreadcrumbList와 FAQPage JSON-LD가 안전하다", () => 
   );
   assert.deepEqual(
     loanInterestBreadcrumbJsonLd.itemListElement.map((item) => item.name),
-    ["홈", "계산기 목록", "대출 이자 계산기"],
+    ["홈", "계산기 목록", "대출 이자 계산기·원리금 계산기"],
   );
   assert.deepEqual(
     loanInterestBreadcrumbJsonLd.itemListElement.map((item) => item.item),
