@@ -7,7 +7,7 @@ const routes = [
   ["app/calculators/page.tsx", "계산박스 계산기 목록"],
   [
     "app/calculators/seller-margin/page.tsx",
-    "판매자 마진 계산기 | 수수료·원가·순이익 계산",
+    "판매자 마진 계산기 | 판매가·수수료·비용 순이익 계산",
   ],
   [
     "app/calculators/vat-profit/page.tsx",

@@ -47,6 +47,31 @@ export function SellerMarginContent() {
         </div>
       </section>
 
+      <section className={styles.section} aria-labelledby="sales-price-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="sales-price-title">판매금액·판매가 기준으로 결과 보기</h2>
+          <p>
+            판매가는 상품 1개의 가격이고, 판매금액은 판매가에 수량을 곱한 값입니다.
+            이 계산기는 판매금액에서 할인, 수수료, 원가, 배송비, 광고비와 기타 비용을
+            차감해 주문 기준 예상 순이익을 보여줍니다.
+          </p>
+        </div>
+        <div className={styles.interpretationGrid}>
+          <article className={styles.infoCard}>
+            <h3>판매금액</h3>
+            <p>판매단가 × 판매수량으로 계산하며 상품 매출 기준을 확인합니다.</p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>결제금액</h3>
+            <p>판매금액에서 판매자 부담 할인금액을 빼고 고객에게 받은 배송비를 더합니다.</p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>예상 순이익</h3>
+            <p>예상 정산금액에서 원가·판매자 부담 배송비·광고비·기타 비용을 뺀 세전 값입니다.</p>
+          </article>
+        </div>
+      </section>
+
       <section className={styles.section} aria-labelledby="interpretation-title">
         <div className={styles.sectionHeading}>
           <h2 id="interpretation-title">결과를 이렇게 해석하세요</h2>

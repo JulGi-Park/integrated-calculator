@@ -36,7 +36,7 @@ test("페이지 상단에 고유 H1, 설명, 기준일과 예상값 안내가 �
   assert.match(pageSource, /판매자 마진 계산기/);
   assert.match(
     pageSource,
-    /판매단가, 수량, 원가, 수수료와 비용을 입력해 주문 기준 예상/,
+    /판매가와 수량으로 판매금액을 확인하고 원가, 할인, 배송비, 수수료와/,
   );
   assert.match(pageSource, /계산 기준일: 2026년 6월 18일/);
   assert.match(pageSource, /세전 예상값이며 실제 플랫폼/);
@@ -142,8 +142,8 @@ test("판매자 마진 페이지는 공식 참고 출처와 확인 기준일을 
   );
 });
 
-test("화면에 FAQ 8개와 동일한 질문·답변을 표시한다", () => {
-  assert.equal(sellerMarginFaqs.length, 8);
+test("화면에 FAQ 10개와 동일한 질문·답변을 표시한다", () => {
+  assert.equal(sellerMarginFaqs.length, 10);
   assert.match(contentSource, /sellerMarginFaqs\.map/);
   assert.match(contentSource, /<details/);
 
@@ -164,11 +164,11 @@ test("관련 계산기에서 실제 내부 라우트만 링크한다", () => {
 test("seller-margin 전용 메타데이터에 가짜 URL 없이 SEO 정보를 설정한다", () => {
   assert.equal(
     metadata.title,
-    "판매자 마진 계산기 | 수수료·원가·순이익 계산",
+    "판매자 마진 계산기 | 판매가·수수료·비용 순이익 계산",
   );
   assert.equal(
     metadata.description,
-    "판매단가, 수량, 개당 원가, 할인, 배송비, 플랫폼·결제 수수료와 광고비를 입력해 예상 정산금액과 세전 순이익을 계산합니다.",
+    "판매가와 수량으로 판매금액을 확인하고 원가, 할인, 배송비, 플랫폼·결제 수수료와 광고비를 반영해 예상 정산금액과 세전 순이익을 계산합니다.",
   );
   assert.deepEqual(metadata.robots, { index: true, follow: true });
   assert.deepEqual(metadata.alternates, {

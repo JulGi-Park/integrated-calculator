@@ -111,6 +111,16 @@ export const sellerMarginExclusions = [
 
 export const sellerMarginFaqs: SellerMarginFaq[] = [
   {
+    question: "판매금액과 판매가는 어떻게 다른가요?",
+    answer:
+      "판매가는 상품 1개의 가격인 판매단가이고, 판매금액은 판매단가에 판매수량을 곱한 상품 판매금액입니다. 고객에게 받은 배송비와 판매자 부담 할인금액은 결제금액을 계산할 때 별도로 반영합니다.",
+  },
+  {
+    question: "판매가 계산기로 원하는 순이익의 가격을 역산할 수 있나요?",
+    answer:
+      "이 페이지는 입력한 판매가와 비용으로 예상 정산금액·순이익을 계산하는 도구입니다. 목표 순이익에 맞는 판매가를 자동으로 역산하거나 플랫폼별 가격 정책을 추천하지 않으므로, 판매가 후보를 바꿔 결과를 비교해 보세요.",
+  },
+  {
     question: "마진과 순이익은 무엇이 다른가요?",
     answer:
       "마진은 판매금액에서 원가나 일부 비용을 제외한 차액을 넓게 표현할 때 사용됩니다. 이 계산기의 예상 순이익은 결제금액에서 플랫폼·결제 수수료와 입력한 원가·배송비·광고비·기타 비용을 차감한 세전 예상값입니다.",
@@ -176,7 +186,7 @@ export const sellerMarginWebApplicationJsonLd = {
   "@type": "WebApplication",
   name: "판매자 마진 계산기",
   description:
-    "판매단가, 수량, 개당 원가, 할인, 배송비, 플랫폼·결제 수수료와 광고비를 입력해 예상 정산금액과 세전 순이익을 계산합니다.",
+    "판매가와 수량으로 판매금액을 확인하고 원가, 할인, 배송비, 플랫폼·결제 수수료와 광고비를 반영해 예상 정산금액과 세전 순이익을 계산합니다.",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
 };

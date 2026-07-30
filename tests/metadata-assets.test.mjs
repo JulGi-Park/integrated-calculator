@@ -63,9 +63,9 @@ const calculatorMetadataCases = [
   {
     slug: "seller-margin",
     modulePath: "../app/calculators/seller-margin/page.tsx",
-    title: "판매자 마진 계산기 - 판매가·수수료·원가 기준 순이익 확인",
+    title: "판매자 마진 계산기 | 판매가·수수료·비용 순이익 계산",
     description:
-      "판매가, 원가, 플랫폼 수수료, 배송비, 광고비를 입력하면 예상 마진율과 순이익을 계산할 수 있습니다.",
+      "판매가와 수량으로 판매금액을 확인하고 원가, 할인, 배송비, 수수료와 광고비를 반영해 예상 순이익을 계산합니다.",
   },
   {
     slug: "vat-profit",
