@@ -11,6 +11,7 @@ import {
   severanceFaqs,
   severanceFormulaItems,
   severanceInterpretationCards,
+  severanceSearchIntentCards,
   severanceOfficialExampleInput,
   severanceOfficialExampleInputItems,
   severanceOfficialExampleResultItems,
@@ -187,6 +188,16 @@ test("결과 해석·주의사항·면책 문구를 제공한다", () => {
   assert.match(contentSource, /법률 자문을 제공하는 서비스는\s+아닙니다/);
 });
 
+test("기존 GSC에서 확인한 예외 질문의 답변 범위와 자동 반영 한계를 안내한다", () => {
+  assert.deepEqual(
+    severanceSearchIntentCards.map((item) => item.title),
+    ["수습기간과 계속근로기간", "중간정산 이후 계산", "퇴직연금 DB·DC와의 차이"],
+  );
+  assert.match(contentSource, /severanceSearchIntentCards\.map/);
+  assert.match(dataSource, /중간정산 이력과 이미 지급된 금액을 자동으로 반영하지 않/);
+  assert.match(dataSource, /DB형·DC형 퇴직연금의 적립금·운용수익/);
+});
+
 test("공식 출처는 요구된 공식 기관 원문만 사용한다", () => {
   assert.equal(severanceSources.length, 3);
   assert.match(contentSource, /severanceSources\.map/);
@@ -205,7 +216,7 @@ test("공식 출처는 요구된 공식 기관 원문만 사용한다", () => {
   assert.equal(SEVERANCE_POLICY_2026.verifiedAt, "2026-06-23");
 });
 
-test("FAQ 8개를 한 곳에서 관리하고 FAQPage와 질문·답변·순서가 일치한다", () => {
+test("FAQ 11개를 한 곳에서 관리하고 FAQPage와 질문·답변·순서가 일치한다", () => {
   const expectedQuestions = [
     "1년 미만 근무하면 퇴직금을 받을 수 있나요?",
     "주 15시간 미만 근로자도 퇴직금 대상인가요?",
@@ -215,13 +226,16 @@ test("FAQ 8개를 한 곳에서 관리하고 FAQPage와 질문·답변·순서�
     "퇴직일은 어떤 기준으로 입력하나요?",
     "계산 결과는 세전인가요, 세후인가요?",
     "실제 지급액과 계산 결과가 달라지는 이유는 무엇인가요?",
+    "수습기간도 퇴직금 계속근로기간에 포함되나요?",
+    "중간정산을 받은 뒤 퇴직금은 어떻게 계산하나요?",
+    "퇴직연금 DB형·DC형도 이 계산기로 계산할 수 있나요?",
   ];
 
   assert.deepEqual(
     severanceFaqs.map((faq) => faq.question),
     expectedQuestions,
   );
-  assert.equal(severanceFaqJsonLd.mainEntity.length, 8);
+  assert.equal(severanceFaqJsonLd.mainEntity.length, 11);
   assert.match(contentSource, /severanceFaqs\.map/);
   assert.match(contentSource, /<details/);
 

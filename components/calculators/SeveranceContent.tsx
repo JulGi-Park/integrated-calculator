@@ -5,6 +5,7 @@ import {
   severanceFaqs,
   severanceFormulaItems,
   severanceInterpretationCards,
+  severanceSearchIntentCards,
   severanceOfficialExampleResultItems,
   severanceOfficialExampleInputItems,
   severanceSources,
@@ -64,6 +65,24 @@ export function SeveranceContent() {
         </div>
         <div className={styles.interpretationGrid}>
           {severanceInterpretationCards.map(({ title, description }) => (
+            <article className={styles.infoCard} key={title}>
+              <h3>{title}</h3>
+              <p>{description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section} aria-labelledby="search-intent-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="search-intent-title">검색 질문별 확인</h2>
+          <p>
+            입사일과 퇴직일만으로 판단하기 어려운 대표적인 경우는 아래처럼
+            계산기의 적용 범위와 별도로 확인해야 합니다.
+          </p>
+        </div>
+        <div className={styles.interpretationGrid}>
+          {severanceSearchIntentCards.map(({ title, description }) => (
             <article className={styles.infoCard} key={title}>
               <h3>{title}</h3>
               <p>{description}</p>

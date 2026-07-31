@@ -24,6 +24,11 @@ export interface SeveranceInterpretationCard {
   description: string;
 }
 
+export interface SeveranceSearchIntentCard {
+  title: string;
+  description: string;
+}
+
 const wonFormatter = new Intl.NumberFormat("ko-KR", {
   maximumFractionDigits: 0,
 });
@@ -230,6 +235,24 @@ export const severanceInterpretationCards: SeveranceInterpretationCard[] = [
   },
 ];
 
+export const severanceSearchIntentCards: SeveranceSearchIntentCard[] = [
+  {
+    title: "수습기간과 계속근로기간",
+    description:
+      "수습기간도 실제 근로관계가 시작된 기간이면 계속근로기간에 포함될 수 있습니다. 계산기는 입력한 입사일부터 재직일수를 계산하므로, 계약서와 실제 근로 시작일이 다르면 기준일을 먼저 확인하세요.",
+  },
+  {
+    title: "중간정산 이후 계산",
+    description:
+      "중간정산을 받은 기간과 그 이후 계속근로기간은 별도로 확인해야 합니다. 현재 계산기는 중간정산 이력과 이미 지급된 금액을 자동으로 반영하지 않으므로 결과를 확정 지급액으로 볼 수 없습니다.",
+  },
+  {
+    title: "퇴직연금 DB·DC와의 차이",
+    description:
+      "이 계산기는 평균임금·통상임금 기준의 법정 퇴직금 예상액을 계산하며, DB형·DC형 퇴직연금의 적립금·운용수익·회사 부담금은 계산하지 않습니다. 연금 계좌 결과는 사업자 내역을 따로 확인하세요.",
+  },
+] as const;
+
 export const severanceCautions = [
   "퇴직소득세 계산은 포함하지 않습니다.",
   "퇴직연금(DB·DC) 적립금과 운용 결과는 포함하지 않습니다.",
@@ -279,6 +302,21 @@ export const severanceFaqs: SeveranceFaq[] = [
     question: "실제 지급액과 계산 결과가 달라지는 이유는 무엇인가요?",
     answer:
       "회사별 임금 항목 판단, 평균임금 제외기간, 퇴직연금 처리, 세금, 미사용 연차 정산 기준과 개별 분쟁 여부에 따라 실제 지급액이 달라질 수 있습니다.",
+  },
+  {
+    question: "수습기간도 퇴직금 계속근로기간에 포함되나요?",
+    answer:
+      "수습기간에도 실제 근로관계가 시작됐다면 계속근로기간에 포함될 수 있습니다. 계산기는 입력한 입사일부터 재직일수를 계산하므로, 계약서와 실제 근로 시작일이 다르면 고용노동부나 전문가에게 기준을 확인하세요.",
+  },
+  {
+    question: "중간정산을 받은 뒤 퇴직금은 어떻게 계산하나요?",
+    answer:
+      "중간정산으로 이미 정산한 기간과 그 이후 계속근로기간을 구분해야 합니다. 현재 계산기는 중간정산 이력과 이미 지급된 금액을 자동 반영하지 않으므로 결과를 최종 지급액으로 확정하지 않습니다.",
+  },
+  {
+    question: "퇴직연금 DB형·DC형도 이 계산기로 계산할 수 있나요?",
+    answer:
+      "아니요. 이 계산기는 평균임금과 통상임금 기준의 법정 퇴직금 예상액을 계산합니다. DB형·DC형 퇴직연금의 적립금, 운용수익, 회사 부담금은 포함하지 않으므로 연금 사업자 내역을 따로 확인해야 합니다.",
   },
 ] as const;
 
