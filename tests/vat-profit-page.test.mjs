@@ -61,6 +61,11 @@ test("콘텐츠 데이터에 기준일, 공식 출처, FAQ, 면책 문구가 준
       (faq) => faq.question === "매출세액과 예상 납부세액은 어떻게 다른가요?",
     ),
   );
+  assert.ok(
+    vatProfitFaqs.some(
+      (faq) => faq.question === "세액 계산을 위해 공급가액과 합계금액 중 무엇을 입력하나요?",
+    ),
+  );
   assert.match(contentSource, /부가세 포함 합계금액/);
   assert.match(contentSource, /매출세액은 판매 단계의 세액/);
   assert.match(contentSource, /공식 출처/);
