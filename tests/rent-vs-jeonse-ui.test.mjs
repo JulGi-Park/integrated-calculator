@@ -172,6 +172,7 @@ test("본문 콘텐츠는 FAQ, 출처, 면책 문구를 화면에 표시한다",
   assert.ok(screen.getByRole("heading", { name: "법정 전월세전환율 참고" }));
   assert.ok(screen.getByRole("heading", { name: "자주 묻는 질문" }));
   assert.ok(screen.getAllByText(/전세 vs 월세 비교 계산기는 무엇을 비교하나요/).length >= 1);
+  assert.ok(screen.getAllByText(/전세대출금리는 어떤 값을 입력하나요/).length >= 1);
   assert.ok(screen.getByText("주택임대차보호법 제7조의2"));
   assert.ok(screen.getByText("통화정책방향(2026.7.16)"));
 
