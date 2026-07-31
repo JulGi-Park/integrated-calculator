@@ -4,6 +4,7 @@ import {
   parentalLeaveExample,
   parentalLeaveExcludedItems,
   parentalLeaveFaqs,
+  parentalLeavePeriodSummary,
   parentalLeaveSpecialPolicySummary,
   parentalLeaveSources,
 } from "./parentalLeaveContentData";
@@ -79,6 +80,13 @@ export function ParentalLeaveContent() {
               ))}
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <section className={styles.section} aria-labelledby="period-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="period-title">육아휴직 기간과 월별 계산</h2>
+          <p>{parentalLeavePeriodSummary}</p>
         </div>
       </section>
 
