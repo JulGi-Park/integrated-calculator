@@ -34,7 +34,19 @@ export function VatProfitContent() {
             <h3>예상 납부세액</h3>
             <p>매출세액에서 사용자가 입력한 매입세액을 뺀 금액입니다.</p>
           </article>
+          <article className={styles.infoCard}>
+            <h3>부가세 포함 합계금액</h3>
+            <p>
+              공급가액과 부가세를 더한 금액입니다. 합계금액을 입력하면 1.1로
+              나누어 공급가액과 포함된 부가세를 역산합니다.
+            </p>
+          </article>
         </div>
+        <p className={styles.roundingNote}>
+          매출세액은 판매 단계의 세액이고, 예상 납부세액은 여기에서 입력한
+          매입세액을 차감한 계산값입니다. 실제 신고 금액은 공제 요건과
+          불공제 항목에 따라 달라질 수 있습니다.
+        </p>
       </section>
 
       <section className={styles.section} aria-labelledby="vat-formula">

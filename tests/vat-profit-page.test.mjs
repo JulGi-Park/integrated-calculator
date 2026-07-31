@@ -51,6 +51,18 @@ test("콘텐츠 데이터에 기준일, 공식 출처, FAQ, 면책 문구가 준
   assert.match(ntsSource.url, /cntntsId=7693/);
   assert.notEqual(ntsSource.url, "https://www.nts.go.kr/");
   assert.ok(vatProfitFaqs.length >= 8);
+  assert.ok(
+    vatProfitFaqs.some(
+      (faq) => faq.question === "부가세 포함 금액에서 부가세는 어떻게 계산하나요?",
+    ),
+  );
+  assert.ok(
+    vatProfitFaqs.some(
+      (faq) => faq.question === "매출세액과 예상 납부세액은 어떻게 다른가요?",
+    ),
+  );
+  assert.match(contentSource, /부가세 포함 합계금액/);
+  assert.match(contentSource, /매출세액은 판매 단계의 세액/);
   assert.match(contentSource, /공식 출처/);
   assert.match(contentSource, /target="_blank"/);
   assert.match(contentSource, /rel="noopener noreferrer"/);
