@@ -8,6 +8,8 @@ import {
   loanInterestInterpretationNotes,
   loanInterestPolicySummary,
   loanInterestQuickComparison,
+  loanInterestResultReadingNote,
+  loanInterestTermCards,
   loanInterestSources,
 } from "./loanInterestContentData";
 import styles from "./LoanInterestContent.module.css";
@@ -69,6 +71,27 @@ export function LoanInterestContent() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className={styles.section} aria-labelledby="principal-interest-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="principal-interest-title">원금·이자·원리금은 어떻게 다른가요?</h2>
+          <p>
+            계산 결과의 금액은 모두 원 단위로 표시되지만, 가리키는 대상과 합산
+            범위가 다릅니다.
+          </p>
+        </div>
+        <div className={styles.cardGrid}>
+          {loanInterestTermCards.map(({ title, description }) => (
+            <article className={styles.infoCard} key={title}>
+              <h3>{title}</h3>
+              <p>{description}</p>
+            </article>
+          ))}
+        </div>
+        <aside className={styles.note} aria-label="대출 결과 필드 읽는 방법">
+          {loanInterestResultReadingNote}
+        </aside>
       </section>
 
       <section className={styles.section} aria-labelledby="criteria-title">

@@ -25,6 +25,11 @@ export interface LoanInterestSource {
   href: string;
 }
 
+export interface LoanInterestTermCard {
+  title: string;
+  description: string;
+}
+
 const wonFormatter = new Intl.NumberFormat("ko-KR", {
   maximumFractionDigits: 0,
 });
@@ -83,6 +88,26 @@ export const loanInterestQuickComparison = [
     ],
   },
 ] as const;
+
+export const loanInterestTermCards = [
+  {
+    title: "원금",
+    description: "처음 빌린 금액 또는 아직 갚지 않은 대출 잔액입니다.",
+  },
+  {
+    title: "이자",
+    description:
+      "남은 원금과 금리·계산 기간을 기준으로 부담하는 대출 비용입니다.",
+  },
+  {
+    title: "원리금",
+    description:
+      "해당 회차에 갚는 원금과 이자를 합한 금액입니다. 월 원리금은 월 납입액을 뜻합니다.",
+  },
+] as const satisfies readonly LoanInterestTermCard[];
+
+export const loanInterestResultReadingNote =
+  "상환 일정표에서는 월 납입액 = 해당 월 원금 + 해당 월 이자, 총상환액 = 대출원금 + 총이자로 읽습니다. 남은 원금은 다음 회차 이자 계산의 기준이 되며, 실제 금융회사 청구액에는 일수·약정·수수료 등이 추가로 달라질 수 있습니다.";
 
 export const loanInterestCalculationCriteria = {
   common: [
@@ -281,6 +306,11 @@ export const loanInterestFaqs: LoanInterestFaq[] = [
     question: "실제 은행 상환금액과 계산 결과가 다른 이유는 무엇인가요?",
     answer:
       "실제 금융회사는 실행일, 납부일, 월별 일수, 상품 조건, 절사·반올림 방식이 다를 수 있습니다. 이 계산 결과는 입력값과 현재 계산 정책에 따른 예상치입니다.",
+  },
+  {
+    question: "원리금과 원금·이자는 어떻게 다른가요?",
+    answer:
+      "원금은 빌린 금액 또는 남은 대출 잔액이고, 이자는 그 잔액과 금리·계산 기간을 기준으로 부담하는 비용입니다. 원리금은 해당 회차에 갚는 원금과 이자를 합한 금액이므로 월 원리금(월 납입액)과 총이자는 서로 다른 값입니다.",
   },
 ];
 

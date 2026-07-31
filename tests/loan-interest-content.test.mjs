@@ -13,6 +13,8 @@ import {
   loanInterestFaqJsonLd,
   loanInterestFaqs,
   loanInterestQuickComparison,
+  loanInterestResultReadingNote,
+  loanInterestTermCards,
   loanInterestSources,
   loanInterestWebApplicationJsonLd,
 } from "../components/calculators/loanInterestContentData.ts";
@@ -81,6 +83,20 @@ test("상환방식 빠른 비교를 세 카드로 정적으로 표시한다", ()
     loanInterestQuickComparison.map((item) => item.title),
     ["원리금균등상환", "원금균등상환", "만기일시상환"],
   );
+});
+
+test("원금·이자·원리금과 결과 필드의 의미를 직접 설명한다", () => {
+  assert.deepEqual(
+    loanInterestTermCards.map((item) => item.title),
+    ["원금", "이자", "원리금"],
+  );
+  assert.match(loanInterestTermCards[0].description, /처음 빌린 금액|대출 잔액/);
+  assert.match(loanInterestTermCards[1].description, /남은 원금.*금리/);
+  assert.match(loanInterestTermCards[2].description, /원금과 이자를 합한 금액/);
+  assert.match(loanInterestResultReadingNote, /월 납입액 = 해당 월 원금 \+ 해당 월 이자/);
+  assert.match(loanInterestResultReadingNote, /총상환액 = 대출원금 \+ 총이자/);
+  assert.match(contentSource, /loanInterestTermCards\.map/);
+  assert.match(contentSource, /principal-interest-title/);
 });
 
 test("계산 기준·반올림·마지막 회차 보정을 설명한다", () => {
@@ -230,7 +246,7 @@ test("결과 해석·제외 항목·면책 문구를 제공한다", () => {
   assert.match(contentSource, /loanInterestExclusions\.map/);
 });
 
-test("FAQ 8개를 한 곳에서 관리하고 FAQPage와 순서가 일치한다", () => {
+test("FAQ 9개를 한 곳에서 관리하고 FAQPage와 순서가 일치한다", () => {
   const expectedQuestions = [
     "대출이자는 어떻게 계산하나요?",
     "원리금균등과 원금균등의 차이는 무엇인가요?",
@@ -240,13 +256,14 @@ test("FAQ 8개를 한 곳에서 관리하고 FAQPage와 순서가 일치한다",
     "0% 금리도 계산할 수 있나요?",
     "거치기간과 중도상환수수료도 반영되나요?",
     "실제 은행 상환금액과 계산 결과가 다른 이유는 무엇인가요?",
+    "원리금과 원금·이자는 어떻게 다른가요?",
   ];
 
   assert.deepEqual(
     loanInterestFaqs.map((faq) => faq.question),
     expectedQuestions,
   );
-  assert.equal(loanInterestFaqJsonLd.mainEntity.length, 8);
+  assert.equal(loanInterestFaqJsonLd.mainEntity.length, 9);
   assert.match(contentSource, /loanInterestFaqs\.map/);
 
   for (const [index, faq] of loanInterestFaqs.entries()) {
