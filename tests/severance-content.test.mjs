@@ -216,11 +216,12 @@ test("공식 출처는 요구된 공식 기관 원문만 사용한다", () => {
   assert.equal(SEVERANCE_POLICY_2026.verifiedAt, "2026-06-23");
 });
 
-test("FAQ 11개를 한 곳에서 관리하고 FAQPage와 질문·답변·순서가 일치한다", () => {
+test("FAQ 12개를 한 곳에서 관리하고 FAQPage와 질문·답변·순서가 일치한다", () => {
   const expectedQuestions = [
     "1년 미만 근무하면 퇴직금을 받을 수 있나요?",
     "주 15시간 미만 근로자도 퇴직금 대상인가요?",
     "평균임금과 통상임금은 무엇이 다른가요?",
+    "통상임금으로 퇴직금을 계산할 때 어떤 금액을 입력하나요?",
     "상여금도 퇴직금 계산에 반영되나요?",
     "연차수당도 퇴직금 계산에 반영되나요?",
     "퇴직일은 어떤 기준으로 입력하나요?",
@@ -235,7 +236,7 @@ test("FAQ 11개를 한 곳에서 관리하고 FAQPage와 질문·답변·순서�
     severanceFaqs.map((faq) => faq.question),
     expectedQuestions,
   );
-  assert.equal(severanceFaqJsonLd.mainEntity.length, 11);
+  assert.equal(severanceFaqJsonLd.mainEntity.length, 12);
   assert.match(contentSource, /severanceFaqs\.map/);
   assert.match(contentSource, /<details/);
 
