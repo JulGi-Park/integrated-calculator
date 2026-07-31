@@ -53,12 +53,23 @@ test("콘텐츠 데이터에 기준일, 공식 출처, FAQ, 면책 문구가 준
     "https://1350.moel.go.kr/rtmview.do?id=1000059852",
   );
   assert.ok(laborPayFaqs.length >= 9);
+  assert.equal(laborPayFaqs.at(-1).question, "한 달 주휴수당은 어떻게 계산하나요?");
+  assert.match(dataSource, /주급을 단순히 4배 또는 4\.345배로 자동 환산하지 않습니다/);
   assert.match(contentSource, /공식 출처/);
   assert.match(contentSource, /target="_blank"/);
   assert.match(contentSource, /rel="noopener noreferrer"/);
   assert.match(contentSource, /자주 묻는 질문/);
   assert.match(contentSource, /관련 계산기/);
   assert.match(contentSource, /계산 결과는 입력값을 바탕으로 한 참고용 예상값/);
+});
+
+test("GSC에서 확인한 한 달 주휴수당 질문에 계산 범위를 직접 답한다", () => {
+  const monthlyFaq = laborPayFaqs.find(
+    (faq) => faq.question === "한 달 주휴수당은 어떻게 계산하나요?",
+  );
+  assert.ok(monthlyFaq);
+  assert.match(monthlyFaq.answer, /1주 단위/);
+  assert.match(monthlyFaq.answer, /주별 금액을 합산/);
 });
 
 test("sitemap, 메인, 계산기 목록, 연봉 관련 계산기에 labor-pay가 공개 노출된다", async () => {
