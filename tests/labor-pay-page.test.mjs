@@ -54,6 +54,7 @@ test("콘텐츠 데이터에 기준일, 공식 출처, FAQ, 면책 문구가 준
   );
   assert.ok(laborPayFaqs.length >= 9);
   assert.equal(laborPayFaqs.at(-1).question, "한 달 주휴수당은 어떻게 계산하나요?");
+  assert.ok(laborPayFaqs.some((faq) => faq.question === "주급에 주휴수당은 어떻게 포함되나요?"));
   assert.match(dataSource, /주급을 단순히 4배 또는 4\.345배로 자동 환산하지 않습니다/);
   assert.match(contentSource, /공식 출처/);
   assert.match(contentSource, /target="_blank"/);
