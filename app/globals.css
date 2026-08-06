@@ -108,6 +108,31 @@ a:focus-visible {
   color: var(--accent);
 }
 
+.favorites-header { position: relative; display: flex; align-items: center; gap: 8px; }
+.favorites-current, .favorites-trigger { min-height: 44px; border: 1px solid var(--line); border-radius: 10px; padding: 0 10px; background: var(--surface); color: var(--text); font: inherit; font-size: .84rem; font-weight: 700; cursor: pointer; }
+.favorites-current, .favorites-trigger { display: inline-flex; align-items: center; gap: 6px; }
+.favorites-current span:first-child, .favorites-trigger span:first-child { color: #c88a16; font-size: 1.1rem; }
+.favorites-current:hover, .favorites-trigger:hover { border-color: var(--accent); color: var(--accent); }
+.favorites-current:focus-visible, .favorites-trigger:focus-visible, .favorites-menu button:focus-visible { outline: 3px solid rgba(35, 97, 68, 0.35); outline-offset: 2px; }
+.favorites-menu { position: absolute; z-index: 20; top: calc(100% + 10px); right: 0; width: min(360px, calc(100vw - 32px)); padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 14px 34px rgba(22,32,25,.16); }
+.favorites-menu__heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.favorites-menu__heading button, .favorites-menu li button, .favorites-clear { min-width: 44px; min-height: 44px; border: 0; background: transparent; color: var(--muted); font: inherit; cursor: pointer; }
+.favorites-menu ul { display: grid; gap: 4px; max-height: 280px; overflow: auto; padding: 0; margin: 0; list-style: none; }
+.favorites-menu li { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.favorites-menu li a { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+.favorites-menu li button:hover, .favorites-clear:hover { color: var(--accent); }
+.favorites-empty { margin: 14px 0; color: var(--muted); font-size: .9rem; }
+.favorites-clear { margin-top: 10px; padding: 4px 0; color: #a04438; font-size: .84rem; }
+.favorites-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+@media (max-width: 800px) {
+  .site-header__inner { width: min(100% - 24px, var(--max-width)); gap: 8px; }
+  .site-header nav { gap: 6px; }
+  .site-header nav .nav-link { font-size: .78rem; }
+  .favorites-current span:last-child { display: none; }
+  .favorites-menu { right: -2px; }
+}
+
 .site-main {
   display: flex;
   flex: 1;

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FavoritesHeader } from "./FavoritesHeader";
 
 export function SiteHeader() {
   return (
@@ -26,6 +27,7 @@ export function SiteHeader() {
           <a className="nav-link" href="/contact/">
             문의
           </a>
+          <FavoritesHeader />
         </nav>
       </div>
     </header>
