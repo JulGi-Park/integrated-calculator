@@ -109,7 +109,7 @@ const calculators = [
     name: "부동산 중개보수 계산기",
     href: "/calculators/brokerage-fee/",
     url: "https://gyesanbox.kr/calculators/brokerage-fee/",
-    description: "주택 매매·임대차 거래금액과 지역 요율로 중개보수 상한을 계산합니다.",
+    description: "주택 매매·전세·월세 거래금액별 중개보수 상한을 계산합니다.",
   },
   {
     name: "자동차 유지비 계산기",

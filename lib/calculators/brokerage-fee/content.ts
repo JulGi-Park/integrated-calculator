@@ -15,14 +15,51 @@ export interface BrokerageFeeFaq {
   answer: string;
 }
 
+export interface BrokerageFeePolicySource {
+  title: string;
+  href: string;
+  description: string;
+  verifiedAt: string;
+}
+
 export const brokerageFeePolicySources = [
-  "공인중개사법 제32조 중개보수 등",
-  "공인중개사법 시행규칙 제20조 중개보수 및 실비의 한도 등",
-  "공인중개사법 시행규칙 별표 1 주택 중개보수 상한요율",
-  "공인중개사법 시행규칙 별표 2 오피스텔 중개보수 요율",
-  "서울특별시 부동산 중개보수 안내",
-  "경기부동산포털 부동산 중개보수 요율표",
-  "경기도 부동산 중개보수 등에 관한 조례 별표 1",
+  {
+    title: "공인중개사법 제32조(중개보수 등)",
+    href: "https://www.law.go.kr/LSW/lsLinkCommonInfo.do?lsJoLnkSeq=1020097567",
+    description: "주택 중개보수는 국토교통부령의 범위에서 시·도 조례로 정하도록 한 근거",
+    verifiedAt: "2026-08-09",
+  },
+  {
+    title: "공인중개사법 시행규칙 제20조(중개보수 및 실비의 한도 등)",
+    href: "https://www.law.go.kr/LSW/lsLawLinkInfo.do?chrClsCd=010202&lsJoLnkSeq=900141463",
+    description:
+      "주택 상한요율, 중개사무소 소재지 관할 조례 적용, 월세 거래금액 환산 기준",
+    verifiedAt: "2026-08-09",
+  },
+  {
+    title: "공인중개사법 시행규칙 별표 1(주택 중개보수 상한요율)",
+    href: "https://www.law.go.kr/법령별표서식/(공인중개사법 시행규칙,20240710,별표1)",
+    description: "주택 매매·교환과 임대차 등의 거래금액별 상한요율 및 한도액",
+    verifiedAt: "2026-08-09",
+  },
+  {
+    title: "공인중개사법 시행규칙 별표 2(오피스텔 중개보수 요율)",
+    href: "https://www.law.go.kr/법령별표서식/(공인중개사법 시행규칙,20240710,별표2)",
+    description: "요건을 모두 충족하는 오피스텔의 별도 상한요율(이 계산기 범위 밖)",
+    verifiedAt: "2026-08-09",
+  },
+  {
+    title: "서울특별시 부동산 중개보수 안내",
+    href: "https://land.seoul.go.kr/land/broker/brokerageCommission.do",
+    description: "주택 중개보수표와 협의보수·월세 환산·부가가치세 안내",
+    verifiedAt: "2026-08-09",
+  },
+  {
+    title: "경상북도 부동산중개보수 안내",
+    href: "https://gb.go.kr/Main/page.do?LARGE_CODE=1070&MEDIUM_CODE=10&SMALL_CODE=30&mnu_uid=15502",
+    description: "현행 주택 거래금액별 상한요율과 한도액 안내",
+    verifiedAt: "2026-08-09",
+  },
 ] as const;
 
 export const brokerageFeeExampleInput: BrokerageFeeContentItem[] = [
@@ -114,7 +151,7 @@ export const brokerageFeeFaqs: BrokerageFeeFaq[] = [
   {
     question: "전국 어디서나 같은가요?",
     answer:
-      "주택 중개보수는 법령상 상한과 시·도 조례를 함께 확인해야 합니다. 이 계산기는 2026-08-09 확인 기준의 주택 상한요율표를 바탕으로 한 참고 계산입니다.",
+      "주택 중개보수는 중개사무소 소재지를 관할하는 시·도 조례의 상한요율을 기준으로 합니다. 2026-08-09에 현행 17개 시·도 주택 상한표를 대조한 결과, 이 계산기가 지원하는 주택 매매·교환과 임대차 구간의 요율·한도액은 같은 표로 확인했습니다. 조례가 바뀌거나 주택 외 거래라면 해당 지역의 최신 안내를 다시 확인해 주세요.",
   },
   {
     question: "오피스텔도 계산할 수 있나요?",
@@ -178,5 +215,5 @@ export const brokerageFeeFaqJsonLd = {
 
 export const brokerageFeePolicySummary = {
   verifiedAt: BROKERAGE_FEE_POLICY_VERIFIED_AT,
-  note: "주택 매매·교환 및 임대차 중개보수 상한요율 기준",
+  note: "주택 매매·교환 및 임대차의 거래금액별 중개보수 상한요율 기준",
 };

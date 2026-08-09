@@ -48,10 +48,11 @@ export default function BrokerageFeePage() {
         <h1>부동산 중개보수 계산기</h1>
         <p>
           주택 매매·교환, 전세, 월세 거래금액을 입력해 중개보수 상한액과
-          부가세 포함 예상 금액, 협의요율 적용 금액을 계산합니다.
+          부가세 포함 예상액, 협의요율 적용 금액을 계산합니다.
         </p>
         <div className="seller-margin-meta">
           <span>기준일: {brokerageFeePolicySummary.verifiedAt}</span>
+          <span>지원 범위: 주택 매매·교환, 전세, 월세의 상한요율</span>
           <span>결과는 확정 청구액이 아닌 참고 계산입니다.</span>
         </div>
       </div>

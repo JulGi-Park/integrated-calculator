@@ -71,6 +71,21 @@ test("주택 매매 15억원 이상은 0.7%를 적용한다", () => {
   assert.equal(data.baseFee, 10_500_000);
 });
 
+for (const [amount, ratePercent] of [
+  [50_000_000, 0.5],
+  [200_000_000, 0.4],
+  [900_000_000, 0.5],
+  [1_200_000_000, 0.6],
+]) {
+  test(`주택 매매 ${amount.toLocaleString("ko-KR")}원 경계는 ${ratePercent}% 구간을 적용한다`, () => {
+    const data = assertSuccess(
+      calculateBrokerageFee({ transactionType: "sale", transactionAmount: amount }),
+    );
+
+    assert.equal(data.maxRatePercent, ratePercent);
+  });
+}
+
 test("주택 전세 5천만원 미만은 0.5%와 20만원 한도액을 적용한다", () => {
   const data = assertSuccess(
     calculateBrokerageFee({
@@ -96,6 +111,22 @@ test("주택 전세 1억원 이상 6억원 미만은 0.3%와 한도 없음 구�
   assert.equal(data.limitAmount, null);
   assert.equal(data.baseFee, 900_000);
 });
+
+for (const [deposit, ratePercent] of [
+  [50_000_000, 0.4],
+  [100_000_000, 0.3],
+  [600_000_000, 0.4],
+  [1_200_000_000, 0.5],
+  [1_500_000_000, 0.6],
+]) {
+  test(`주택 임대차 ${deposit.toLocaleString("ko-KR")}원 경계는 ${ratePercent}% 구간을 적용한다`, () => {
+    const data = assertSuccess(
+      calculateBrokerageFee({ transactionType: "jeonse", jeonseDeposit: deposit }),
+    );
+
+    assert.equal(data.maxRatePercent, ratePercent);
+  });
+}
 
 test("월세 보증금 1,000만원 월세 40만원은 5천만원 이상 구간을 적용한다", () => {
   const data = assertSuccess(

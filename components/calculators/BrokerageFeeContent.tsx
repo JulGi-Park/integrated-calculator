@@ -41,6 +41,33 @@ export function BrokerageFeeContent() {
         </p>
       </section>
 
+      <section className={styles.section} aria-labelledby="scope-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="scope-title">이 계산기의 적용 범위</h2>
+          <p>
+            주택 매매·교환, 전세, 월세의 거래금액별 중개보수 상한액을
+            계산합니다. 실제 중개보수는 상한요율 이내에서 협의해 정합니다.
+          </p>
+        </div>
+        <div className={styles.interpretationGrid}>
+          <article className={styles.infoCard}>
+            <h3>지원 거래</h3>
+            <p>주택 매매·교환, 전세, 월세의 한쪽 당 상한보수를 계산합니다.</p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>지역 기준</h3>
+            <p>
+              중개대상물 주소가 아닌 중개사무소 소재지 관할 시·도 조례 기준을
+              적용합니다.
+            </p>
+          </article>
+          <article className={styles.infoCard}>
+            <h3>계산하지 않는 거래</h3>
+            <p>상가·토지·분양권과 지원 범위 밖 오피스텔은 자동 계산하지 않습니다.</p>
+          </article>
+        </div>
+      </section>
+
       <section className={styles.section} aria-labelledby="formula-title">
         <div className={styles.sectionHeading}>
           <h2 id="formula-title">계산 기준과 계산식</h2>
@@ -100,7 +127,14 @@ export function BrokerageFeeContent() {
         </div>
         <ul className={styles.exclusionList}>
           {brokerageFeePolicySources.map((source) => (
-            <li key={source}>{source}</li>
+            <li key={source.href}>
+              <a href={source.href} target="_blank" rel="noreferrer">
+                {source.title}
+              </a>
+              <span>
+                {" "}— {source.description} · 확인일: {source.verifiedAt}
+              </span>
+            </li>
           ))}
         </ul>
       </section>
