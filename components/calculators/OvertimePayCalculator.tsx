@@ -36,7 +36,7 @@ const fields: FieldDefinition[] = [
     label: "통상시급 또는 기준 시급",
     unit: "원",
     required: true,
-    description: "통상임금 기준 시급을 입력합니다.",
+    description: "연장·야간·휴일근로수당 계산에 쓰는 통상임금 기준 시급을 입력합니다.",
   },
   {
     name: "baseHours",
@@ -50,14 +50,14 @@ const fields: FieldDefinition[] = [
     label: "연장근로 시간",
     unit: "시간",
     required: true,
-    description: "법정 연장근로수당 1.5배로 계산합니다.",
+    description: "연장근로로 판정된 시간을 입력하면 해당 시간의 지급분을 1.5배로 계산합니다.",
   },
   {
     name: "nightHours",
     label: "야간근로 시간",
     unit: "시간",
     required: true,
-    description: "추가 가산 시간으로 보고 0.5배를 더합니다.",
+    description: "오후 10시~다음 날 오전 6시의 시간입니다. 연장·휴일근로와 겹치면 같은 시간을 함께 입력합니다.",
   },
   {
     name: "holidayHoursWithin8",
@@ -313,8 +313,9 @@ export function OvertimePayCalculator() {
       <aside className={styles.policyNotice} aria-label="계산 기준 안내">
         <strong>입력 전 확인</strong>
         <p>
-          야간근로 시간은 추가 가산 시간입니다. 연장근로가 야간에 겹치면 두
-          항목에 같은 시간을 함께 입력합니다.
+          이 계산기는 상시근로자 5인 이상 사업장의 법정 가산 기준을 참고합니다.
+          야간근로 시간은 추가 가산 시간이므로 연장·휴일근로와 겹치면 같은 시간을
+          야간근로에도 입력합니다. 5인 미만 사업장은 근로계약·취업규칙을 확인해 주세요.
         </p>
       </aside>
 
@@ -457,10 +458,6 @@ export function OvertimePayCalculator() {
                   <div>
                     <dt>가산수당 합계</dt>
                     <dd>{formatWon(result.additionalAllowanceTotal)}</dd>
-                  </div>
-                  <div>
-                    <dt>일반 근로 대비 추가 금액</dt>
-                    <dd>{formatWon(result.extraComparedWithRegularPay)}</dd>
                   </div>
                   <div>
                     <dt>전체 실제 근로시간</dt>

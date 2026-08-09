@@ -173,6 +173,7 @@ test("복사·공유용 결과에도 가산수당 합계의 수정된 의미를 
 
   assert.match(text, /가산수당 합계: 80,000원/);
   assert.match(text, /총 예상 지급액: 200,000원/);
+  assert.doesNotMatch(text, /일반 근로 대비 추가 금액/);
 });
 
 test("기본근로만 있으면 가산수당 합계는 0원이다", () => {

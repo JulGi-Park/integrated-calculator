@@ -68,7 +68,6 @@ export function buildOvertimePayResultText(
     `휴일근로 8시간 초과 수당: ${formatWon(result.holidayPayOver8)}`,
     `총 예상 지급액: ${formatWon(result.totalExpectedPay)}`,
     `가산수당 합계: ${formatWon(result.additionalAllowanceTotal)}`,
-    `일반 근로 대비 추가 금액: ${formatWon(result.extraComparedWithRegularPay)}`,
     "기준: 2026년 8월 9일, 근로기준법 제56조 참고",
   ].join("\n");
 }
