@@ -111,6 +111,29 @@ export function RoasContent() {
         </div>
       </section>
 
+      <section className={styles.section} aria-labelledby="roas-related-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="roas-related-title">관련 계산기</h2>
+          <p>ROAS를 확인한 뒤 상품별 비용 구조와 부가세를 함께 점검해 보세요.</p>
+        </div>
+        <div className={styles.relatedGrid}>
+          <a
+            className={`${styles.relatedCard} ${styles.relatedLink}`}
+            href="/calculators/seller-margin/"
+          >
+            <h3>판매자 마진 계산기</h3>
+            <p>판매가, 원가, 수수료와 광고비를 반영한 주문 기준 예상 순이익을 계산합니다.</p>
+          </a>
+          <a
+            className={`${styles.relatedCard} ${styles.relatedLink}`}
+            href="/calculators/vat-profit/"
+          >
+            <h3>부가세 계산기</h3>
+            <p>매출과 매입세액을 기준으로 예상 부가세를 별도로 확인합니다.</p>
+          </a>
+        </div>
+      </section>
+
       <aside className={styles.disclaimer} aria-label="계산 결과 안내">
         이 계산기는 입력값을 기준으로 한 단순 예상 계산 도구입니다. 실제 광고
         성과, 정산 금액, 세금, 수수료, 환불, 취소, 광고 플랫폼 집계 방식에

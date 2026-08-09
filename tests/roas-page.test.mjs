@@ -105,7 +105,8 @@ test("ROAS는 sitemap, 메인 서비스 목록, 계산기 목록에 공개 연�
   assert.match(homeSource, /\/calculators\/roas|ROAS 계산기/);
 });
 
-test("ROAS 페이지 본문은 기존 계산기 내부링크를 새로 노출하지 않는다", () => {
+test("ROAS 페이지 본문은 수익성 검토에 직접 연관된 계산기로 연결한다", () => {
   assert.doesNotMatch(pageSource, /href="\/calculators/);
-  assert.doesNotMatch(contentSource, /href="\/calculators/);
+  assert.match(contentSource, /href="\/calculators\/seller-margin\/"/);
+  assert.match(contentSource, /href="\/calculators\/vat-profit\/"/);
 });
