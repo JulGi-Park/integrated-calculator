@@ -8,7 +8,7 @@ import {
 import { CarCostCalculator } from "@/components/calculators/CarCostCalculator";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 
-const title = "자동차 유지비 계산기";
+const title = "자동차 유지비 계산기 | 월·연간 차량 유지비·1km당 비용";
 const description =
   "유류비, 보험료, 자동차세, 주차비, 정비비 등을 입력해 월간·연간 자동차 유지비와 1km당 비용을 계산합니다.";
 
