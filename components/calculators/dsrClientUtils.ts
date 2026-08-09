@@ -15,6 +15,12 @@ export interface DsrRawInputs {
   balloonPrincipal: string;
   creditInstallmentRatio: string;
   creditRepaymentFrequency: DsrInput["creditRepaymentFrequency"];
+  regionType: DsrInput["regionType"];
+  isRegulatedArea: "yes" | "no";
+  interestRateType: DsrInput["interestRateType"];
+  fixedRatePeriodMonths: string;
+  rateResetPeriodMonths: string;
+  creditLoanTotalBalance: string;
   stressInterestRate: string;
   dsrLimitRate: string;
 }
@@ -33,6 +39,12 @@ export const initialDsrInputs: DsrRawInputs = {
   balloonPrincipal: "0",
   creditInstallmentRatio: "100",
   creditRepaymentFrequency: "monthly",
+  regionType: "capital",
+  isRegulatedArea: "no",
+  interestRateType: "variable",
+  fixedRatePeriodMonths: "60",
+  rateResetPeriodMonths: "60",
+  creditLoanTotalBalance: "100,000,000",
   stressInterestRate: "1.5",
   dsrLimitRate: "40",
 };
@@ -43,6 +55,18 @@ export function formatWon(value: number): string {
 
 export function formatRate(value: number): string {
   return `${value.toLocaleString("ko-KR", {
+    maximumFractionDigits: 2,
+  })}%`;
+}
+
+export function formatPercentPoint(value: number): string {
+  return `${value.toLocaleString("ko-KR", {
+    maximumFractionDigits: 4,
+  })}%p`;
+}
+
+export function formatMultiplier(value: number): string {
+  return `${(value * 100).toLocaleString("ko-KR", {
     maximumFractionDigits: 2,
   })}%`;
 }
@@ -80,6 +104,12 @@ export function parseDsrInputs(input: DsrRawInputs): Partial<DsrInput> {
     balloonPrincipal: parseAmount(input.balloonPrincipal),
     creditInstallmentRatio: parseNumber(input.creditInstallmentRatio),
     creditRepaymentFrequency: input.creditRepaymentFrequency,
+    regionType: input.regionType,
+    isRegulatedArea: input.isRegulatedArea === "yes",
+    interestRateType: input.interestRateType,
+    fixedRatePeriodMonths: parseNumber(input.fixedRatePeriodMonths),
+    rateResetPeriodMonths: parseNumber(input.rateResetPeriodMonths),
+    creditLoanTotalBalance: parseAmount(input.creditLoanTotalBalance),
     stressInterestRate: parseNumber(input.stressInterestRate),
     dsrLimitRate: parseNumber(input.dsrLimitRate),
   };
@@ -102,13 +132,19 @@ export function parseDsrStoredInputs(value: string): DsrRawInputs | null {
       typeof parsed.gracePeriodMonths !== "string" ||
       typeof parsed.balloonPrincipal !== "string" ||
       typeof parsed.creditInstallmentRatio !== "string" ||
+      typeof parsed.fixedRatePeriodMonths !== "string" ||
+      typeof parsed.rateResetPeriodMonths !== "string" ||
+      typeof parsed.creditLoanTotalBalance !== "string" ||
       typeof parsed.stressInterestRate !== "string" ||
       typeof parsed.dsrLimitRate !== "string" ||
       !["levelPayment", "equalPrincipal", "partialInstallment", "bullet"].includes(
         parsed.repaymentType ?? "",
       ) ||
       !["mortgage", "credit", "officetelMortgage", "nonHousingMortgage", "leaseDepositSecured"].includes(parsed.loanType ?? "") ||
-      !["monthly", "quarterly", "other"].includes(parsed.creditRepaymentFrequency ?? "")
+      !["monthly", "quarterly", "other"].includes(parsed.creditRepaymentFrequency ?? "") ||
+      !["capital", "local"].includes(parsed.regionType ?? "") ||
+      !["yes", "no"].includes(parsed.isRegulatedArea ?? "") ||
+      !["variable", "mixed", "periodic", "fixed"].includes(parsed.interestRateType ?? "")
     ) {
       return null;
     }
@@ -122,8 +158,13 @@ export function parseDsrStoredInputs(value: string): DsrRawInputs | null {
 export function buildDsrResultText(result: DsrCalculationResult): string {
   return [
     "DSR 계산 결과",
-    `기준 DSR: ${formatRate(result.base.dsrRate)}`,
-    `스트레스 DSR: ${formatRate(result.stressed.dsrRate)}`,
+    `일반 DSR: ${formatRate(result.base.dsrRate)}`,
+    `공식 스트레스 DSR: ${formatRate(result.officialStressed.dsrRate)}`,
+    `공식 최종 적용 스트레스 금리: ${formatPercentPoint(result.officialStressPolicy.finalStressRate)}`,
+    `공식 정책 적용 여부: ${result.officialStressPolicy.applicable ? "적용" : "미적용"}`,
+    `공식 정책 단계: ${result.officialStressPolicy.policyStage ? `${result.officialStressPolicy.policyStage}단계` : "지원 기간 밖"}`,
+    `공식 정책 기준일: ${result.officialStressPolicy.referenceDate}`,
+    `공식 정책 근거: ${result.officialStressPolicy.reason}`,
     `기존 대출 연간 DSR 원리금: ${formatWon(result.input.existingAnnualDebtPayment)}`,
     `신규 대출 계약상 향후 1년 납입액: ${formatWon(result.base.newLoanPayment.contractAnnualPayment)}`,
     `신규 대출 DSR 산정 연간 원금: ${formatWon(result.base.newLoanPayment.annualPrincipalForDsr)}`,
@@ -133,6 +174,7 @@ export function buildDsrResultText(result: DsrCalculationResult): string {
     `전체 연간 원리금: ${formatWon(result.base.totalAnnualDebtPayment)}`,
     `DSR 기준: ${formatRate(result.input.dsrLimitRate)}`,
     `사용자 금리상승 시나리오 DSR: ${formatRate(result.stressed.dsrRate)}`,
-    "공식 스트레스 DSR 자동판정이 아닌 참고용 금리상승 시나리오이며 실제 금융기관 심사 결과와 다를 수 있습니다.",
+    `사용자 금리상승 시나리오 가산금리: ${formatPercentPoint(result.input.stressInterestRate)}`,
+    "공식 스트레스 금리는 실제 약정금리에 추가로 부과되는 이자가 아니며, 모든 결과는 참고용으로 실제 금융기관 심사와 다를 수 있습니다.",
   ].join("\n");
 }

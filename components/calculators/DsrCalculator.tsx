@@ -18,6 +18,8 @@ import {
   buildDsrResultText,
   DSR_STORAGE_KEY,
   formatNumericInput,
+  formatMultiplier,
+  formatPercentPoint,
   formatRate,
   formatWon,
   initialDsrInputs,
@@ -66,7 +68,12 @@ const loanOptions: Array<{ value: DsrInput["loanType"]; label: string }> = [
 const inputFields: Array<{
   name: Exclude<
     DsrInputField,
-    "loanType" | "repaymentType" | "creditRepaymentFrequency"
+    | "loanType"
+    | "repaymentType"
+    | "creditRepaymentFrequency"
+    | "regionType"
+    | "isRegulatedArea"
+    | "interestRateType"
   >;
   label: string;
   unit: string;
@@ -133,6 +140,28 @@ const inputFields: Array<{
     unit: "%",
     inputMode: "decimal",
     description: "신용대출 총액 중 약정기간에 나누어 갚는 비율입니다.",
+  },
+  {
+    name: "creditLoanTotalBalance",
+    label: "전체 신용대출 잔액",
+    unit: "원",
+    inputMode: "numeric",
+    description: "기존 신용대출과 이번 신규 신용대출을 합친 판정 대상 잔액을 입력합니다.",
+    isAmount: true,
+  },
+  {
+    name: "fixedRatePeriodMonths",
+    label: "고정금리 적용기간",
+    unit: "개월",
+    inputMode: "numeric",
+    description: "혼합형에서 고정금리가 유지되는 기간입니다. 5년은 60개월입니다.",
+  },
+  {
+    name: "rateResetPeriodMonths",
+    label: "금리변동주기",
+    unit: "개월",
+    inputMode: "numeric",
+    description: "주기형에서 금리가 다시 정해지는 주기입니다. 5년은 60개월입니다.",
   },
   {
     name: "stressInterestRate",
@@ -273,7 +302,10 @@ export function DsrCalculator() {
   function handleSelectChange(event: ChangeEvent<HTMLSelectElement>) {
     const field = event.currentTarget.name as
       | "loanType"
-      | "creditRepaymentFrequency";
+      | "creditRepaymentFrequency"
+      | "regionType"
+      | "isRegulatedArea"
+      | "interestRateType";
     const nextInput = { ...input, [field]: event.currentTarget.value } as DsrRawInputs;
     setInput(nextInput);
     setErrors([]);
@@ -380,9 +412,53 @@ export function DsrCalculator() {
             <p className={styles.fieldDescription}>대출 종류에 따라 공식 DSR 원금 산정만기가 달라집니다.</p>
           </div>
 
+          {(input.loanType === "mortgage" || input.loanType === "officetelMortgage") && (
+            <>
+              <div className={styles.field}>
+                <label htmlFor="regionType">담보물 지역</label>
+                <div className={styles.selectShell}>
+                  <select id="regionType" name="regionType" value={input.regionType} onChange={handleSelectChange}>
+                    <option value="capital">수도권</option>
+                    <option value="local">지방</option>
+                  </select>
+                </div>
+                <p className={styles.fieldDescription}>수도권은 서울·경기·인천을 뜻합니다.</p>
+              </div>
+
+              {input.regionType === "local" && (
+                <div className={styles.field}>
+                  <label htmlFor="isRegulatedArea">규제지역 여부</label>
+                  <div className={styles.selectShell}>
+                    <select id="isRegulatedArea" name="isRegulatedArea" value={input.isRegulatedArea} onChange={handleSelectChange}>
+                      <option value="no">비규제지역</option>
+                      <option value="yes">규제지역</option>
+                    </select>
+                  </div>
+                  <p className={styles.fieldDescription}>지방이라도 규제지역이면 수도권과 같은 강화 기준을 적용합니다.</p>
+                </div>
+              )}
+            </>
+          )}
+
+          <div className={styles.field}>
+            <label htmlFor="interestRateType">금리 유형</label>
+            <div className={styles.selectShell}>
+              <select id="interestRateType" name="interestRateType" value={input.interestRateType} onChange={handleSelectChange}>
+                <option value="variable">변동형</option>
+                <option value="mixed">혼합형</option>
+                <option value="periodic">주기형</option>
+                <option value="fixed">완전 고정형</option>
+              </select>
+            </div>
+            <p className={styles.fieldDescription}>금리변동 위험에 따라 공식 스트레스 금리 적용비율이 달라집니다.</p>
+          </div>
+
           {inputFields.map(({ name, label, unit, inputMode, description }, index) => {
             if (name === "balloonPrincipal" && input.repaymentType !== "partialInstallment") return null;
             if (name === "creditInstallmentRatio" && input.loanType !== "credit") return null;
+            if (name === "creditLoanTotalBalance" && input.loanType !== "credit") return null;
+            if (name === "fixedRatePeriodMonths" && input.interestRateType !== "mixed") return null;
+            if (name === "rateResetPeriodMonths" && input.interestRateType !== "periodic") return null;
             const fieldErrors = getFieldErrors(errors, name);
             const describedBy = `${name}-description${
               fieldErrors.length > 0 ? ` ${name}-error` : ""
@@ -481,14 +557,14 @@ export function DsrCalculator() {
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>02 · 결과</p>
-            <h2 id="dsr-result-heading">일반 DSR 비율</h2>
+            <h2 id="dsr-result-heading">DSR 계산 결과</h2>
           </div>
           <p className={styles.muted}>심사 결과 아님</p>
         </div>
 
         {!result && (
           <div className={styles.emptyResult} aria-live="polite">
-            <p>조건을 입력하면 일반 DSR과 사용자 금리상승 시나리오를 비교합니다.</p>
+            <p>조건을 입력하면 일반 DSR, 공식 스트레스 DSR, 사용자 금리상승 시나리오를 구분해 계산합니다.</p>
           </div>
         )}
 
@@ -507,11 +583,57 @@ export function DsrCalculator() {
                 <p>{formatWon(result.base.totalAnnualDebtPayment)} / 년</p>
               </article>
               <article>
+                <h3>공식 스트레스 DSR</h3>
+                <p>{formatRate(result.officialStressed.dsrRate)}</p>
+                <p>{formatWon(result.officialStressed.totalAnnualDebtPayment)} / 년</p>
+              </article>
+              <article>
                 <h3>사용자 금리상승 시나리오</h3>
                 <p>{formatRate(result.stressed.dsrRate)}</p>
                 <p>{formatWon(result.stressed.totalAnnualDebtPayment)} / 년</p>
               </article>
             </div>
+
+            <dl className={styles.summaryGrid}>
+              <div>
+                <dt>정책 적용 여부</dt>
+                <dd>{result.officialStressPolicy.applicable ? "적용" : "미적용"}</dd>
+              </div>
+              <div>
+                <dt>정책 단계</dt>
+                <dd>
+                  {result.officialStressPolicy.policyStage
+                    ? `${result.officialStressPolicy.policyStage}단계`
+                    : "지원 기간 밖"}
+                </dd>
+              </div>
+              <div>
+                <dt>기본 스트레스 금리</dt>
+                <dd>{formatPercentPoint(result.officialStressPolicy.baseStressRate)}</dd>
+              </div>
+              <div>
+                <dt>단계 적용비율</dt>
+                <dd>{formatMultiplier(result.officialStressPolicy.stageMultiplier)}</dd>
+              </div>
+              <div>
+                <dt>금리유형 적용비율</dt>
+                <dd>{formatMultiplier(result.officialStressPolicy.productMultiplier)}</dd>
+              </div>
+              <div>
+                <dt>최종 적용 스트레스 금리</dt>
+                <dd>{formatPercentPoint(result.officialStressPolicy.finalStressRate)}</dd>
+              </div>
+              <div>
+                <dt>정책 기준일</dt>
+                <dd>{result.officialStressPolicy.referenceDate}</dd>
+              </div>
+              <div>
+                <dt>정책 유효기간</dt>
+                <dd>{result.officialStressPolicy.effectiveFrom}~{result.officialStressPolicy.effectiveTo}</dd>
+              </div>
+            </dl>
+
+            <p className={styles.notice}>{result.officialStressPolicy.reason}</p>
 
             <dl className={styles.summaryGrid}>
               <div>
@@ -565,9 +687,10 @@ export function DsrCalculator() {
             <p className={styles.notice}>{result.base.newLoanPayment.assessmentReason}</p>
 
             <p className={styles.notice}>
-              금리상승 비교값은 사용자가 입력한 시나리오이며 공식 스트레스 DSR
-              적용 여부·가산금리를 자동 판정하지 않습니다. 실제 금융기관 심사는
-              제외대출, 소득 인정 및 상품 세부조건에 따라 달라질 수 있습니다.
+              공식 스트레스 금리는 DSR 심사용 가산금리이며 실제 대출 약정금리에
+              추가로 부과되는 이자가 아닙니다. 사용자 금리상승 시나리오는 공식
+              정책 결과와 별도인 참고값입니다. 실제 금융기관 심사는 제외대출,
+              소득 인정 및 상품 세부조건에 따라 달라질 수 있습니다.
             </p>
 
             <div className={styles.resultActions}>

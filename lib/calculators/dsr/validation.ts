@@ -2,7 +2,9 @@ import { DSR_POLICY } from "./constants";
 import type {
   DsrInput,
   DsrInputField,
+  DsrInterestRateType,
   DsrLoanType,
+  DsrRegionType,
   DsrRepaymentType,
   DsrValidationError,
   DsrValidationErrorCode,
@@ -22,6 +24,13 @@ const loanTypes = new Set<DsrLoanType>([
   "leaseDepositSecured",
 ]);
 const creditFrequencies = new Set(["monthly", "quarterly", "other"]);
+const regionTypes = new Set<DsrRegionType>(["capital", "local"]);
+const interestRateTypes = new Set<DsrInterestRateType>([
+  "variable",
+  "mixed",
+  "periodic",
+  "fixed",
+]);
 
 function addError(
   errors: DsrValidationError[],
@@ -200,6 +209,31 @@ export function validateDsrInput(
     addError(errors, "loanType", "INVALID_OPTION", "대출 종류를 선택해 주세요.");
   }
 
+  if (!input.regionType || !regionTypes.has(input.regionType)) {
+    addError(errors, "regionType", "INVALID_OPTION", "담보물 지역을 선택해 주세요.");
+  }
+
+  if (typeof input.isRegulatedArea !== "boolean") {
+    addError(
+      errors,
+      "isRegulatedArea",
+      "INVALID_OPTION",
+      "규제지역 여부를 선택해 주세요.",
+    );
+  }
+
+  if (
+    !input.interestRateType ||
+    !interestRateTypes.has(input.interestRateType)
+  ) {
+    addError(
+      errors,
+      "interestRateType",
+      "INVALID_OPTION",
+      "금리 유형을 선택해 주세요.",
+    );
+  }
+
   if (
     !input.creditRepaymentFrequency ||
     !creditFrequencies.has(input.creditRepaymentFrequency)
@@ -252,6 +286,73 @@ export function validateDsrInput(
     input.creditInstallmentRatio > 100
   ) {
     addError(errors, "creditInstallmentRatio", "RATE_EXCEEDS_LIMIT", "분할상환 비율은 100% 이하여야 합니다.");
+  }
+
+  if (isMissing(input.creditLoanTotalBalance)) {
+    addError(
+      errors,
+      "creditLoanTotalBalance",
+      "REQUIRED",
+      "전체 신용대출 잔액을 입력해 주세요.",
+    );
+  } else if (!isFiniteNumber(input.creditLoanTotalBalance)) {
+    addError(
+      errors,
+      "creditLoanTotalBalance",
+      "INVALID_NUMBER",
+      "전체 신용대출 잔액은 숫자로 입력해 주세요.",
+    );
+  } else if (input.creditLoanTotalBalance < 0) {
+    addError(
+      errors,
+      "creditLoanTotalBalance",
+      "MUST_BE_NON_NEGATIVE",
+      "전체 신용대출 잔액은 0원 이상이어야 합니다.",
+    );
+  } else if (input.creditLoanTotalBalance > DSR_POLICY.maximumAmount) {
+    addError(
+      errors,
+      "creditLoanTotalBalance",
+      "AMOUNT_EXCEEDS_LIMIT",
+      "전체 신용대출 잔액이 너무 큽니다.",
+    );
+  }
+
+  for (const [field, label, isRequired] of [
+    [
+      "fixedRatePeriodMonths",
+      "고정금리 적용기간",
+      input.interestRateType === "mixed",
+    ],
+    [
+      "rateResetPeriodMonths",
+      "금리변동주기",
+      input.interestRateType === "periodic",
+    ],
+  ] as const) {
+    const value = input[field];
+    if (isMissing(value)) {
+      addError(errors, field, "REQUIRED", `${label}을 입력해 주세요.`);
+    } else if (!isFiniteNumber(value)) {
+      addError(errors, field, "INVALID_NUMBER", `${label}은 숫자로 입력해 주세요.`);
+    } else {
+      if (!Number.isInteger(value)) {
+        addError(errors, field, "MUST_BE_INTEGER", `${label}은 정수 개월로 입력해 주세요.`);
+      }
+      if (isRequired && value <= 0) {
+        addError(errors, field, "MUST_BE_POSITIVE", `${label}을 0보다 크게 입력해 주세요.`);
+      }
+      if (value < 0) {
+        addError(errors, field, "MUST_BE_NON_NEGATIVE", `${label}은 0 이상이어야 합니다.`);
+      }
+      if (
+        isRequired &&
+        isFiniteNumber(input.termMonths) &&
+        value > input.termMonths
+      ) {
+        addError(errors, field, "TERM_EXCEEDS_LIMIT", `${label}은 대출기간 이하여야 합니다.`);
+      }
+    }
   }
 
   if (isMissing(input.stressInterestRate)) {

@@ -26,6 +26,12 @@ const baseInput = {
   balloonPrincipal: 0,
   creditInstallmentRatio: 100,
   creditRepaymentFrequency: "monthly",
+  regionType: "capital",
+  isRegulatedArea: false,
+  interestRateType: "variable",
+  fixedRatePeriodMonths: 60,
+  rateResetPeriodMonths: 60,
+  creditLoanTotalBalance: 100_000_000,
   stressInterestRate: 1.5,
   dsrLimitRate: 40,
 };
@@ -44,6 +50,8 @@ test("원리금균등상환 DSR 대표 케이스를 계산한다", () => {
   assert.equal(response.data.base.totalAnnualDebtPayment, 20_160_447);
   assert.equal(response.data.base.dsrRate, 33.6);
   assert.equal(response.data.base.status, "withinLimit");
+  assert.equal(response.data.officialStressPolicy.finalStressRate, 3);
+  assert.ok(response.data.officialStressed.dsrRate > response.data.stressed.dsrRate);
   assert.equal(response.data.stressed.newLoanPayment.monthlyPayment, 1_199_101);
   assert.equal(response.data.stressed.dsrRate, 37.32);
 });
@@ -223,7 +231,7 @@ test("0%·고액 안전범위와 비정상 입력 경계를 처리한다", () =>
   assert.equal(calculateDsr({ ...baseInput, annualIncome: 0 }).success, false);
 });
 
-test("복사 결과는 계약상 납입액과 DSR 원금·이자 및 사용자 시나리오를 구분한다", () => {
+test("복사 결과는 일반·공식 스트레스·사용자 시나리오를 구분한다", () => {
   const response = calculateDsr(baseInput);
   assert.equal(response.success, true);
   if (!response.success) return;
@@ -232,7 +240,8 @@ test("복사 결과는 계약상 납입액과 DSR 원금·이자 및 사용자 �
   assert.match(text, /DSR 산정 연간 원금/);
   assert.match(text, /DSR 산정 연간 이자/);
   assert.match(text, /사용자 금리상승 시나리오/);
-  assert.doesNotMatch(text, /공식 스트레스 DSR 자동계산/);
+  assert.match(text, /공식 스트레스 DSR/);
+  assert.match(text, /공식 최종 적용 스트레스 금리: 3%p/);
 });
 
 test("UI는 공식 산정 입력·결과와 안전한 스트레스 시나리오 명칭을 제공한다", async () => {

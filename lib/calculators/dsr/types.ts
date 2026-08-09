@@ -13,6 +13,43 @@ export type DsrLoanType =
 
 export type DsrCreditRepaymentFrequency = "monthly" | "quarterly" | "other";
 
+export type DsrRegionType = "capital" | "local";
+
+export type DsrInterestRateType =
+  | "variable"
+  | "mixed"
+  | "periodic"
+  | "fixed";
+
+export type DsrStressPolicyStage = 2 | 3 | null;
+
+export interface DsrStressPolicyInput {
+  referenceDate: string;
+  loanType: DsrLoanType;
+  regionType: DsrRegionType;
+  isRegulatedArea: boolean;
+  interestRateType: DsrInterestRateType;
+  termMonths: number;
+  fixedRatePeriodMonths: number;
+  rateResetPeriodMonths: number;
+  creditLoanTotalBalance: number;
+}
+
+export interface DsrStressPolicyResult {
+  supported: boolean;
+  applicable: boolean;
+  policyStage: DsrStressPolicyStage;
+  baseStressRate: number;
+  stageMultiplier: number;
+  productMultiplier: number;
+  finalStressRate: number;
+  reason: string;
+  referenceDate: string;
+  effectiveFrom: string;
+  effectiveTo: string;
+  source: string;
+}
+
 export interface DsrInput {
   annualIncome: number;
   existingAnnualDebtPayment: number;
@@ -25,6 +62,12 @@ export interface DsrInput {
   balloonPrincipal: number;
   creditInstallmentRatio: number;
   creditRepaymentFrequency: DsrCreditRepaymentFrequency;
+  regionType: DsrRegionType;
+  isRegulatedArea: boolean;
+  interestRateType: DsrInterestRateType;
+  fixedRatePeriodMonths: number;
+  rateResetPeriodMonths: number;
+  creditLoanTotalBalance: number;
   stressInterestRate: number;
   dsrLimitRate: number;
 }
@@ -58,6 +101,8 @@ export interface DsrScenarioResult {
 export interface DsrCalculationResult {
   input: DsrInput;
   base: DsrScenarioResult;
+  officialStressed: DsrScenarioResult;
+  officialStressPolicy: DsrStressPolicyResult;
   stressed: DsrScenarioResult;
 }
 
@@ -73,6 +118,12 @@ export type DsrInputField =
   | "balloonPrincipal"
   | "creditInstallmentRatio"
   | "creditRepaymentFrequency"
+  | "regionType"
+  | "isRegulatedArea"
+  | "interestRateType"
+  | "fixedRatePeriodMonths"
+  | "rateResetPeriodMonths"
+  | "creditLoanTotalBalance"
   | "stressInterestRate"
   | "dsrLimitRate";
 

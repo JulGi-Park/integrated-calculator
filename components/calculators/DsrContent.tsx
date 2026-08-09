@@ -18,6 +18,9 @@ export function DsrContent() {
           {dsrPolicySummary.defaultLimitRate}, 기본 금리상승 시나리오는
           {dsrPolicySummary.defaultStressRate}입니다.
         </p>
+        <p>
+          공식 스트레스 DSR 자동판정 정책의 지원 기간은 {dsrPolicySummary.stressPolicyEffectiveFrom}부터 {dsrPolicySummary.stressPolicyEffectiveTo}까지입니다.
+        </p>
         <ul>
           {dsrCriteria.map((item) => (
             <li key={item.title}>
@@ -74,8 +77,22 @@ export function DsrContent() {
 
       <section className={styles.contentCard} aria-labelledby="dsr-sources-heading">
         <h2 id="dsr-sources-heading">공식 출처</h2>
+        <h3>부채산정 기준</h3>
         <ul className={styles.sourceList}>
-          {dsrSources.map((source) => (
+          {dsrSources.filter((source) => source.category === "debtService").map((source) => (
+            <li key={source.href}>
+              <a href={source.href} target="_blank" rel="noreferrer">
+                {source.organization} · {source.title}
+              </a>
+              <p>
+                {source.description} · 확인일 {source.verifiedAt}
+              </p>
+            </li>
+          ))}
+        </ul>
+        <h3>스트레스 DSR 정책</h3>
+        <ul className={styles.sourceList}>
+          {dsrSources.filter((source) => source.category === "stressPolicy").map((source) => (
             <li key={source.href}>
               <a href={source.href} target="_blank" rel="noreferrer">
                 {source.organization} · {source.title}

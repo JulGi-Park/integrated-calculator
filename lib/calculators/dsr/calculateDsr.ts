@@ -1,5 +1,9 @@
 import { DSR_POLICY } from "./constants";
 import { DSR_DEBT_SERVICE_POLICY } from "./debtServicePolicy";
+import {
+  DSR_STRESS_POLICY,
+  resolveStressDsrPolicy,
+} from "./stressDsrPolicy";
 import { validateDsrInput } from "./validation";
 import type {
   DsrCalculationResponse,
@@ -282,6 +286,12 @@ export function calculateNewLoanPayment(
     balloonPrincipal: 0,
     creditInstallmentRatio: 100,
     creditRepaymentFrequency: "monthly",
+    regionType: "capital",
+    isRegulatedArea: false,
+    interestRateType: "variable",
+    fixedRatePeriodMonths: 60,
+    rateResetPeriodMonths: 60,
+    creditLoanTotalBalance: principal,
     stressInterestRate: 0,
     dsrLimitRate: 40,
   });
@@ -319,6 +329,21 @@ export function calculateDsr(input: Partial<DsrInput>): DsrCalculationResponse {
 
   const safeInput = input as DsrInput;
   const base = buildScenario(safeInput, safeInput.annualInterestRate);
+  const officialStressPolicy = resolveStressDsrPolicy({
+    referenceDate: DSR_STRESS_POLICY.verifiedAt,
+    loanType: safeInput.loanType,
+    regionType: safeInput.regionType,
+    isRegulatedArea: safeInput.isRegulatedArea,
+    interestRateType: safeInput.interestRateType,
+    termMonths: safeInput.termMonths,
+    fixedRatePeriodMonths: safeInput.fixedRatePeriodMonths,
+    rateResetPeriodMonths: safeInput.rateResetPeriodMonths,
+    creditLoanTotalBalance: safeInput.creditLoanTotalBalance,
+  });
+  const officialStressed = buildScenario(
+    safeInput,
+    safeInput.annualInterestRate + officialStressPolicy.finalStressRate,
+  );
   const stressed = buildScenario(
     safeInput,
     safeInput.annualInterestRate + safeInput.stressInterestRate,
@@ -326,8 +351,10 @@ export function calculateDsr(input: Partial<DsrInput>): DsrCalculationResponse {
 
   if (
     !Number.isFinite(base.dsrRate) ||
+    !Number.isFinite(officialStressed.dsrRate) ||
     !Number.isFinite(stressed.dsrRate) ||
     base.totalAnnualDebtPayment > DSR_POLICY.maximumAmount ||
+    officialStressed.totalAnnualDebtPayment > DSR_POLICY.maximumAmount ||
     stressed.totalAnnualDebtPayment > DSR_POLICY.maximumAmount
   ) {
     return {
@@ -340,5 +367,14 @@ export function calculateDsr(input: Partial<DsrInput>): DsrCalculationResponse {
     };
   }
 
-  return { success: true, data: { input: safeInput, base, stressed } };
+  return {
+    success: true,
+    data: {
+      input: safeInput,
+      base,
+      officialStressed,
+      officialStressPolicy,
+      stressed,
+    },
+  };
 }
