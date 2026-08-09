@@ -55,6 +55,15 @@ export function calculateOvertimePay(
   const holidayPayOver8 = roundWon(
     input.hourlyWage * input.holidayHoursOver8 * 2,
   );
+  const overtimePremiumPay = roundWon(
+    input.hourlyWage * input.overtimeHours * 0.5,
+  );
+  const holidayPremiumPayWithin8 = roundWon(
+    input.hourlyWage * input.holidayHoursWithin8 * 0.5,
+  );
+  const holidayPremiumPayOver8 = roundWon(
+    input.hourlyWage * input.holidayHoursOver8,
+  );
   const totalEnteredHours =
     input.baseHours +
     input.overtimeHours +
@@ -62,9 +71,13 @@ export function calculateOvertimePay(
     input.holidayHoursOver8;
   const regularEquivalentPay = roundWon(input.hourlyWage * totalEnteredHours);
   const additionalAllowanceTotal =
-    overtimePay + nightPremiumPay + holidayPayWithin8 + holidayPayOver8;
-  const totalExpectedPay = basePay + additionalAllowanceTotal;
-  const extraComparedWithRegularPay = totalExpectedPay - regularEquivalentPay;
+    overtimePremiumPay +
+    nightPremiumPay +
+    holidayPremiumPayWithin8 +
+    holidayPremiumPayOver8;
+  const totalExpectedPay =
+    basePay + overtimePay + nightPremiumPay + holidayPayWithin8 + holidayPayOver8;
+  const extraComparedWithRegularPay = additionalAllowanceTotal;
 
   const result: OvertimePayResult = {
     ...input,
