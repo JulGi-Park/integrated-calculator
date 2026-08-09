@@ -1,0 +1,12 @@
+# 현재 SEO 및 기능 인벤토리
+- 실제 페이지: `app/calculators/loan/page.tsx`
+- 관련: `components/calculators/LoanInterestCalculator.tsx`, `LoanInterestContent.tsx`, `loanInterestContentData.ts`
+- metadata 원본: `lib/seo/publicCalculatorSeo.ts`
+- title/H1: `대출 이자 계산기·원리금 계산기 | 월 납입액·총이자 비교` / `대출 이자 계산기·원리금 계산기`
+- description: 대출원금·연이율·기간 입력, 원리금균등·원금균등·만기일시상환의 예상 월 납입액·총이자·월별 일정 비교
+- 지원 상환방식: 원리금균등, 원금균등, 만기일시상환
+- 입력: 대출원금, 연이율, 기간, 상환방식. 거치기간은 지원하지 않음.
+- 결과: 월 납입액, 총이자, 총상환액, 원금·이자 구분, 월별 상환 일정과 방식 비교
+- FAQ: 9개. 중도상환수수료·거치기간 미반영을 명시.
+- JSON-LD: WebApplication, BreadcrumbList, FAQPage. 공개 렌더링과 일치.
+- canonical: https://gyesanbox.kr/calculators/loan/

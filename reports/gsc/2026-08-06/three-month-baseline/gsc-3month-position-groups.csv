@@ -1,0 +1,51 @@
+﻿calculator_name,url,position_group,query_count,total_impressions,total_clicks,representative_queries,seo_review_value
+연봉 실수령액,https://gyesanbox.kr/calculators/salary/,1~3위,0,0,0,,CTR 방어 및 대표 검색어 유지
+연봉 실수령액,https://gyesanbox.kr/calculators/salary/,4~10위,2,3,0,2027 연봉 실수령액 / 월급 공제액,높음: CTR·의도 정합성 우선 검토
+연봉 실수령액,https://gyesanbox.kr/calculators/salary/,11~20위,5,36,0,기준소득월액 실수령액 차이 / 비과세액 계산 / 월급여 실수령액 계산기,높음: 순위 개선 후보
+연봉 실수령액,https://gyesanbox.kr/calculators/salary/,21~50위,0,0,0,,중간: 콘텐츠 확장 검토
+연봉 실수령액,https://gyesanbox.kr/calculators/salary/,51위 이하,0,0,0,,낮음: 관련성과 표본부터 확인
+2026 4대보험,https://gyesanbox.kr/calculators/social-insurance/,1~3위,0,0,0,,CTR 방어 및 대표 검색어 유지
+2026 4대보험,https://gyesanbox.kr/calculators/social-insurance/,4~10위,0,0,0,,높음: CTR·의도 정합성 우선 검토
+2026 4대보험,https://gyesanbox.kr/calculators/social-insurance/,11~20위,1,29,0,국민연금 납부액 계산기,높음: 순위 개선 후보
+2026 4대보험,https://gyesanbox.kr/calculators/social-insurance/,21~50위,1,1,0,4대보험 공제액,중간: 콘텐츠 확장 검토
+2026 4대보험,https://gyesanbox.kr/calculators/social-insurance/,51위 이하,3,3,0,사대보험 계산기 / 2026년 4대보험 계산기 / 고용 보험료 계산,낮음: 관련성과 표본부터 확인
+주휴수당,https://gyesanbox.kr/calculators/labor-pay/,1~3위,0,0,0,,CTR 방어 및 대표 검색어 유지
+주휴수당,https://gyesanbox.kr/calculators/labor-pay/,4~10위,0,0,0,,높음: CTR·의도 정합성 우선 검토
+주휴수당,https://gyesanbox.kr/calculators/labor-pay/,11~20위,1,1,0,주급 주휴수당,높음: 순위 개선 후보
+주휴수당,https://gyesanbox.kr/calculators/labor-pay/,21~50위,0,0,0,,중간: 콘텐츠 확장 검토
+주휴수당,https://gyesanbox.kr/calculators/labor-pay/,51위 이하,2,4,0,주휴 수당 계산 / 한달 주휴수당 계산기,낮음: 관련성과 표본부터 확인
+퇴직금,https://gyesanbox.kr/calculators/severance/,1~3위,0,0,0,,CTR 방어 및 대표 검색어 유지
+퇴직금,https://gyesanbox.kr/calculators/severance/,4~10위,0,0,0,,높음: CTR·의도 정합성 우선 검토
+퇴직금,https://gyesanbox.kr/calculators/severance/,11~20위,0,0,0,,높음: 순위 개선 후보
+퇴직금,https://gyesanbox.kr/calculators/severance/,21~50위,1,2,0,통상임금 퇴직금 계산기,중간: 콘텐츠 확장 검토
+퇴직금,https://gyesanbox.kr/calculators/severance/,51위 이하,0,0,0,,낮음: 관련성과 표본부터 확인
+실업급여,https://gyesanbox.kr/calculators/unemployment/,1~3위,1,1,0,국가법령정보센터 고용보험법 시행령 구직급여 상한액 68100 2026,CTR 방어 및 대표 검색어 유지
+실업급여,https://gyesanbox.kr/calculators/unemployment/,4~10위,10,21,0,고용보험법 시행령 제68조 구직급여일액 상한액 68100 / 국가법령정보센터 고용보험법 시행령 제68조 2026 68100 / 고용보험법 시행령 2026 구직급여 상한액 68100 국가법령정보센터,높음: CTR·의도 정합성 우선 검토
+실업급여,https://gyesanbox.kr/calculators/unemployment/,11~20위,6,10,0,국가법령정보센터 고용보험법 시행령 제68조 113500 2026 / 고용보험법 시행령 제68조 구직급여일액 상한액 2026 68100 / 월급 80 만원 실업급여,높음: 순위 개선 후보
+실업급여,https://gyesanbox.kr/calculators/unemployment/,21~50위,8,13,0,실업급여 기간 계산 / 실업 급여 기간 계산 / 실업급여 계산방법,중간: 콘텐츠 확장 검토
+실업급여,https://gyesanbox.kr/calculators/unemployment/,51위 이하,0,0,0,,낮음: 관련성과 표본부터 확인
+육아휴직급여,https://gyesanbox.kr/calculators/parental-leave/,1~3위,0,0,0,,CTR 방어 및 대표 검색어 유지
+육아휴직급여,https://gyesanbox.kr/calculators/parental-leave/,4~10위,0,0,0,,높음: CTR·의도 정합성 우선 검토
+육아휴직급여,https://gyesanbox.kr/calculators/parental-leave/,11~20위,1,1,0,육아휴직급여 계산,높음: 순위 개선 후보
+육아휴직급여,https://gyesanbox.kr/calculators/parental-leave/,21~50위,6,24,0,육아휴직 급여 계산기 / 육아휴직급여 계산기 / 육아휴직기간계산기,중간: 콘텐츠 확장 검토
+육아휴직급여,https://gyesanbox.kr/calculators/parental-leave/,51위 이하,0,0,0,,낮음: 관련성과 표본부터 확인
+대출 이자,https://gyesanbox.kr/calculators/loan/,1~3위,0,0,0,,CTR 방어 및 대표 검색어 유지
+대출 이자,https://gyesanbox.kr/calculators/loan/,4~10위,4,18,0,원리금 계산기 / 원금균등상환 계산기 / 원리금 균등 분할 상환 계산기,높음: CTR·의도 정합성 우선 검토
+대출 이자,https://gyesanbox.kr/calculators/loan/,11~20위,3,8,0,원리금균등분할상환 계산기 / 원리균등상환 계산기 / 원리금균등상환 계산기,높음: 순위 개선 후보
+대출 이자,https://gyesanbox.kr/calculators/loan/,21~50위,3,3,0,대출 원리금 계산 / 대출 월납입금 계산 / 만기일시상환 계산기,중간: 콘텐츠 확장 검토
+대출 이자,https://gyesanbox.kr/calculators/loan/,51위 이하,0,0,0,,낮음: 관련성과 표본부터 확인
+전세 vs 월세,https://gyesanbox.kr/calculators/rent-vs-jeonse/,1~3위,0,0,0,,CTR 방어 및 대표 검색어 유지
+전세 vs 월세,https://gyesanbox.kr/calculators/rent-vs-jeonse/,4~10위,1,1,0,전세대출금리,높음: CTR·의도 정합성 우선 검토
+전세 vs 월세,https://gyesanbox.kr/calculators/rent-vs-jeonse/,11~20위,0,0,0,,높음: 순위 개선 후보
+전세 vs 월세,https://gyesanbox.kr/calculators/rent-vs-jeonse/,21~50위,0,0,0,,중간: 콘텐츠 확장 검토
+전세 vs 월세,https://gyesanbox.kr/calculators/rent-vs-jeonse/,51위 이하,0,0,0,,낮음: 관련성과 표본부터 확인
+판매자 마진,https://gyesanbox.kr/calculators/seller-margin/,1~3위,0,0,0,,CTR 방어 및 대표 검색어 유지
+판매자 마진,https://gyesanbox.kr/calculators/seller-margin/,4~10위,5,25,0,결정값 계산기 / 판매금액 / 크림 수수료 계산기,높음: CTR·의도 정합성 우선 검토
+판매자 마진,https://gyesanbox.kr/calculators/seller-margin/,11~20위,0,0,0,,높음: 순위 개선 후보
+판매자 마진,https://gyesanbox.kr/calculators/seller-margin/,21~50위,1,4,0,판매가 계산기,중간: 콘텐츠 확장 검토
+판매자 마진,https://gyesanbox.kr/calculators/seller-margin/,51위 이하,2,5,0,판매 수수료 계산기 / 원가 계산기,낮음: 관련성과 표본부터 확인
+부가세,https://gyesanbox.kr/calculators/vat-profit/,1~3위,0,0,0,,CTR 방어 및 대표 검색어 유지
+부가세,https://gyesanbox.kr/calculators/vat-profit/,4~10위,0,0,0,,높음: CTR·의도 정합성 우선 검토
+부가세,https://gyesanbox.kr/calculators/vat-profit/,11~20위,0,0,0,,높음: 순위 개선 후보
+부가세,https://gyesanbox.kr/calculators/vat-profit/,21~50위,1,1,0,세액 계산,중간: 콘텐츠 확장 검토
+부가세,https://gyesanbox.kr/calculators/vat-profit/,51위 이하,3,4,0,부가세 계산기 / 부가세 포함 계산 / 부가세 계산,낮음: 관련성과 표본부터 확인

@@ -1,0 +1,11 @@
+﻿calculator,page_file,metadata_file,content_component,content_faq_jsonld_data
+연봉 실수령액,app/calculators/salary/page.tsx,lib/seo/publicCalculatorSeo.ts,SalaryTakeHomeContent.tsx,salaryTakeHomeContentData.ts
+2026 4대보험,app/calculators/social-insurance/page.tsx,lib/seo/publicCalculatorSeo.ts,SocialInsuranceContent.tsx,socialInsuranceContentData.ts
+주휴수당,app/calculators/labor-pay/page.tsx,lib/seo/publicCalculatorSeo.ts,LaborPayContent.tsx,laborPayContentData.ts
+퇴직금,app/calculators/severance/page.tsx,lib/seo/publicCalculatorSeo.ts,SeveranceContent.tsx,severanceContentData.ts
+실업급여,app/calculators/unemployment/page.tsx,lib/seo/publicCalculatorSeo.ts,UnemploymentContent.tsx,unemploymentContentData.ts
+육아휴직급여,app/calculators/parental-leave/page.tsx,lib/seo/publicCalculatorSeo.ts,ParentalLeaveContent.tsx,parentalLeaveContentData.ts
+대출 이자,app/calculators/loan/page.tsx,lib/seo/publicCalculatorSeo.ts,LoanInterestContent.tsx,loanInterestContentData.ts
+전세 vs 월세,app/calculators/rent-vs-jeonse/page.tsx,lib/seo/publicCalculatorSeo.ts,RentVsJeonseContent.tsx,rentVsJeonseContentData.ts
+판매자 마진,app/calculators/seller-margin/page.tsx,lib/seo/publicCalculatorSeo.ts,SellerMarginContent.tsx,sellerMarginContentData.ts
+부가세,app/calculators/vat-profit/page.tsx,lib/seo/publicCalculatorSeo.ts,VatProfitContent.tsx,vatProfitContentData.ts
