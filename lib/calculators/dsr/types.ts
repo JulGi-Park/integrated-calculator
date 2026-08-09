@@ -1,7 +1,17 @@
 export type DsrRepaymentType =
   | "levelPayment"
   | "equalPrincipal"
+  | "partialInstallment"
   | "bullet";
+
+export type DsrLoanType =
+  | "mortgage"
+  | "credit"
+  | "officetelMortgage"
+  | "nonHousingMortgage"
+  | "leaseDepositSecured";
+
+export type DsrCreditRepaymentFrequency = "monthly" | "quarterly" | "other";
 
 export interface DsrInput {
   annualIncome: number;
@@ -9,7 +19,12 @@ export interface DsrInput {
   newLoanPrincipal: number;
   annualInterestRate: number;
   termMonths: number;
+  loanType: DsrLoanType;
   repaymentType: DsrRepaymentType;
+  gracePeriodMonths: number;
+  balloonPrincipal: number;
+  creditInstallmentRatio: number;
+  creditRepaymentFrequency: DsrCreditRepaymentFrequency;
   stressInterestRate: number;
   dsrLimitRate: number;
 }
@@ -20,6 +35,11 @@ export interface DsrLoanPaymentSummary {
   firstMonthlyPayment: number;
   averageMonthlyPayment: number;
   annualPaymentForDsr: number;
+  annualPrincipalForDsr: number;
+  annualInterestForDsr: number;
+  contractAnnualPayment: number;
+  assessmentMaturityMonths: number;
+  assessmentReason: string;
   totalInterest: number;
   maturityPrincipal: number;
   annualInterestRate: number;
@@ -47,7 +67,12 @@ export type DsrInputField =
   | "newLoanPrincipal"
   | "annualInterestRate"
   | "termMonths"
+  | "loanType"
   | "repaymentType"
+  | "gracePeriodMonths"
+  | "balloonPrincipal"
+  | "creditInstallmentRatio"
+  | "creditRepaymentFrequency"
   | "stressInterestRate"
   | "dsrLimitRate";
 

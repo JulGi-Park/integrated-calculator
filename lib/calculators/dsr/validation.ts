@@ -2,6 +2,7 @@ import { DSR_POLICY } from "./constants";
 import type {
   DsrInput,
   DsrInputField,
+  DsrLoanType,
   DsrRepaymentType,
   DsrValidationError,
   DsrValidationErrorCode,
@@ -10,8 +11,17 @@ import type {
 const repaymentTypes = new Set<DsrRepaymentType>([
   "levelPayment",
   "equalPrincipal",
+  "partialInstallment",
   "bullet",
 ]);
+const loanTypes = new Set<DsrLoanType>([
+  "mortgage",
+  "credit",
+  "officetelMortgage",
+  "nonHousingMortgage",
+  "leaseDepositSecured",
+]);
+const creditFrequencies = new Set(["monthly", "quarterly", "other"]);
 
 function addError(
   errors: DsrValidationError[],
@@ -184,6 +194,64 @@ export function validateDsrInput(
       "INVALID_OPTION",
       "상환 방식을 선택해 주세요.",
     );
+  }
+
+  if (!input.loanType || !loanTypes.has(input.loanType)) {
+    addError(errors, "loanType", "INVALID_OPTION", "대출 종류를 선택해 주세요.");
+  }
+
+  if (
+    !input.creditRepaymentFrequency ||
+    !creditFrequencies.has(input.creditRepaymentFrequency)
+  ) {
+    addError(
+      errors,
+      "creditRepaymentFrequency",
+      "INVALID_OPTION",
+      "신용대출 상환 주기를 선택해 주세요.",
+    );
+  }
+
+  for (const [field, label] of [
+    ["gracePeriodMonths", "거치기간"],
+    ["balloonPrincipal", "만기상환 원금"],
+    ["creditInstallmentRatio", "신용대출 분할상환 비율"],
+  ] as const) {
+    const value = input[field];
+    if (isMissing(value)) {
+      addError(errors, field, "REQUIRED", `${label}을 입력해 주세요.`);
+    } else if (!isFiniteNumber(value)) {
+      addError(errors, field, "INVALID_NUMBER", `${label}은 숫자로 입력해 주세요.`);
+    } else if (value < 0) {
+      addError(errors, field, "MUST_BE_NON_NEGATIVE", `${label}은 0 이상이어야 합니다.`);
+    }
+  }
+
+  if (
+    isFiniteNumber(input.gracePeriodMonths) &&
+    !Number.isInteger(input.gracePeriodMonths)
+  ) {
+    addError(errors, "gracePeriodMonths", "MUST_BE_INTEGER", "거치기간은 정수 개월로 입력해 주세요.");
+  }
+  if (
+    isFiniteNumber(input.gracePeriodMonths) &&
+    isFiniteNumber(input.termMonths) &&
+    input.gracePeriodMonths >= input.termMonths
+  ) {
+    addError(errors, "gracePeriodMonths", "TERM_EXCEEDS_LIMIT", "거치기간은 대출기간보다 짧아야 합니다.");
+  }
+  if (
+    isFiniteNumber(input.balloonPrincipal) &&
+    isFiniteNumber(input.newLoanPrincipal) &&
+    input.balloonPrincipal > input.newLoanPrincipal
+  ) {
+    addError(errors, "balloonPrincipal", "AMOUNT_EXCEEDS_LIMIT", "만기상환 원금은 신규 대출금액 이하여야 합니다.");
+  }
+  if (
+    isFiniteNumber(input.creditInstallmentRatio) &&
+    input.creditInstallmentRatio > 100
+  ) {
+    addError(errors, "creditInstallmentRatio", "RATE_EXCEEDS_LIMIT", "분할상환 비율은 100% 이하여야 합니다.");
   }
 
   if (isMissing(input.stressInterestRate)) {

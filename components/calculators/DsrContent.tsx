@@ -15,7 +15,7 @@ export function DsrContent() {
         <h2 id="dsr-criteria-heading">계산 기준</h2>
         <p>
           기준일은 {dsrPolicySummary.verifiedAt}이며, 기본 DSR 기준은
-          {dsrPolicySummary.defaultLimitRate}, 기본 스트레스 금리는
+          {dsrPolicySummary.defaultLimitRate}, 기본 금리상승 시나리오는
           {dsrPolicySummary.defaultStressRate}입니다.
         </p>
         <ul>
@@ -30,7 +30,7 @@ export function DsrContent() {
       <section className={styles.contentCard} aria-labelledby="dsr-example-heading">
         <h2 id="dsr-example-heading">예시</h2>
         <p>
-          연소득 6,000만원, 기존 대출 연간 원리금 800만원, 신규 대출 2억원,
+          연소득 6,000만원, 기존 대출 연간 DSR 원리금 800만원, 신규 주택담보대출 2억원,
           연 4.5%, 30년 원리금균등상환 조건의 예시입니다.
         </p>
         <ul>

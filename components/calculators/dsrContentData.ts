@@ -19,7 +19,12 @@ export const dsrExampleInput: DsrInput = {
   newLoanPrincipal: 200_000_000,
   annualInterestRate: 4.5,
   termMonths: 360,
+  loanType: "mortgage",
   repaymentType: "levelPayment",
+  gracePeriodMonths: 0,
+  balloonPrincipal: 0,
+  creditInstallmentRatio: 100,
+  creditRepaymentFrequency: "monthly",
   stressInterestRate: 1.5,
   dsrLimitRate: 40,
 };
@@ -40,38 +45,43 @@ export const dsrPolicySummary = {
 
 export const dsrCriteria = [
   {
-    title: "DSR 계산식",
+    title: "일반 DSR 계산식",
     description:
-      "전체 DSR은 기존 대출 연간 원리금과 신규 대출 예상 연간 원리금을 더한 뒤 연소득으로 나눠 계산합니다.",
+      "기존 대출 연간 DSR 원리금과 신규 대출의 공식 산정 연간 원금·이자를 더한 뒤 연소득으로 나눕니다.",
   },
   {
-    title: "스트레스 금리",
+    title: "계약상 납입액과 DSR 산정액",
     description:
-      "스트레스 DSR 비교에서는 신규 대출 금리에 입력한 가산금리를 더해 원리금을 다시 계산합니다. 화면의 1.5%는 입력 예시이며 실제 적용률은 시기·지역·상품에 따라 금융기관에서 확인해야 합니다.",
+      "계약상 향후 1년 납입액은 실제 상환 일정 기준이며, DSR 산정액은 대출 종류별 공식 산정만기를 적용하므로 서로 다를 수 있습니다.",
   },
   {
-    title: "원리금균등상환",
+    title: "주택담보대출",
     description:
-      "월 상환액 공식을 사용하며 0% 금리는 대출금액을 전체 개월 수로 나눕니다. DSR용 연간 원리금은 월 상환액의 12개월분입니다.",
+      "전액 분할상환은 향후 1년 실제 원금, 일부 분할상환은 실제 분할원금과 만기상환분의 연 환산액, 일시상환은 실제 만기(최대 10년)로 나눈 원금을 사용합니다.",
   },
   {
-    title: "원금균등상환",
+    title: "신용대출",
     description:
-      "첫 달 월 상환액과 평균 월 상환액을 구분하며, DSR용 연간 원리금은 평균 월 상환액 × 12로 계산합니다.",
+      "무거치·월/분기 균등분할·총액 40% 이상·5~10년 요건을 모두 충족하면 실제 약정만기, 아니면 5년으로 원금을 나눕니다.",
   },
   {
-    title: "만기일시상환",
+    title: "비주택·보증금담보",
     description:
-      "DSR용 연간 원리금은 월 이자 × 12로 계산하며 만기 원금 상환 부담은 별도로 확인해야 합니다.",
+      "오피스텔 외 비주택담보는 8년, 전세보증금담보는 4년을 산정만기로 사용합니다. 전세자금대출과 혼동하지 마세요.",
+  },
+  {
+    title: "사용자 금리상승 시나리오",
+    description:
+      "입력한 가산금리를 신규대출 금리에 더해 비교합니다. 지역·금리유형별 공식 스트레스 DSR 정책을 자동 판정하는 기능은 아닙니다.",
   },
 ] as const;
 
 export const dsrCautions = [
   "이 계산기는 예상 계산용이며 실제 금융기관 심사 결과와 다를 수 있습니다.",
   "DSR 적용 대상, 예외, 소득 인정 방식, 대출별 원리금 산정 방식은 금융기관·업권·상품·차주 상황에 따라 달라질 수 있습니다.",
-  "스트레스 금리는 실제 대출 금리에 더해지는 금리가 아니라 DSR 산정에서 금리변동 위험을 반영하기 위한 비교용 입력값입니다.",
+  "화면의 스트레스 금리는 공식 정책 자동판정값이 아니라 사용자가 직접 정하는 금리상승 시나리오입니다.",
   "기본 40%는 은행권 차주단위 DSR의 대표 기준입니다. 비은행권 기준과 규제 예외는 다를 수 있습니다.",
-  "만기일시상환 등 실제 DSR의 대출별 원리금 산정은 이 계산기의 단순 상환일정 계산과 다를 수 있습니다.",
+  "전세자금대출, 예·적금담보대출, 보험계약대출 등 DSR 적용 제외 대출은 신규대출 선택 항목에서 지원하지 않습니다.",
   "이 결과만으로 대출 실행이나 금융기관 심사 통과를 단정할 수 없습니다.",
 ] as const;
 
@@ -79,22 +89,32 @@ export const dsrFaqs: DsrFaq[] = [
   {
     question: "DSR은 어떻게 계산하나요?",
     answer:
-      "DSR은 연간 금융부채 원리금 상환액을 연소득으로 나눈 비율입니다. 이 계산기는 기존 대출 연간 원리금과 신규 대출 예상 연간 원리금을 합산해 예상 DSR을 계산합니다.",
+      "DSR은 연간 금융부채 원리금 상환액을 연소득으로 나눈 비율입니다. 이 계산기는 기존 대출 연간 DSR 원리금과 신규 대출의 공식 산정 연간 원금·이자를 합산해 일반 DSR을 계산합니다.",
   },
   {
-    question: "스트레스 DSR은 무엇인가요?",
+    question: "사용자 금리상승 시나리오는 공식 스트레스 DSR인가요?",
     answer:
-      "스트레스 DSR은 금리변동 위험을 반영하기 위해 DSR 산정 때 일정 수준의 가산금리를 적용해 보는 방식입니다. 이 계산기는 신규 대출 금리에 입력한 스트레스 금리를 더해 비교합니다.",
+      "아니요. 사용자가 입력한 가산금리를 신규대출 금리에 더해 보는 참고용 비교입니다. 지역, 대출 종류, 금리유형에 따른 공식 스트레스 DSR 적용 여부와 가산금리를 자동 판정하지 않습니다.",
   },
   {
-    question: "원금균등상환의 연간 원리금은 어떻게 보나요?",
+    question: "계약상 납입액과 DSR 산정 원리금은 왜 다른가요?",
     answer:
-      "원금균등상환은 월 납입액이 매달 달라지므로 첫 달 월 상환액과 평균 월 상환액을 함께 보여줍니다. MVP 계산에서는 평균 월 상환액 × 12를 DSR용 연간 원리금으로 사용합니다.",
+      "DSR은 대출 종류와 상환형태별 공식 산정만기로 원금을 환산합니다. 따라서 실제 약정에 따른 향후 1년 납입액과 DSR 분자에 반영되는 연간 원리금이 다를 수 있습니다.",
   },
   {
     question: "만기일시상환은 원금도 DSR에 포함하나요?",
     answer:
-      "현재 계산기는 만기 전 기간의 연간 이자 부담을 DSR용 연간 상환액으로 계산하고, 만기 원금 상환 부담은 별도 안내합니다. 실제 심사 산정 방식은 금융기관과 상품별 기준을 확인해야 합니다.",
+      "네. 이 계산기는 이자뿐 아니라 대출 종류별 공식 산정만기로 나눈 연간 원금도 포함합니다. 주택담보 일시상환은 실제 만기를 최대 10년까지만, 신용대출 인정요건 미충족은 5년을 적용합니다.",
+  },
+  {
+    question: "분할상환 신용대출은 언제 실제 만기를 인정하나요?",
+    answer:
+      "거치기간이 없고 월 또는 분기별 균등분할상환이며 총 대출액의 40% 이상을 5년 이상 10년 이내에 나누어 갚는 조건을 모두 충족해야 합니다. 하나라도 충족하지 않으면 이 계산기는 5년을 적용합니다.",
+  },
+  {
+    question: "전세자금대출도 계산할 수 있나요?",
+    answer:
+      "전세자금대출은 DSR 적용 제외 범위가 있어 신규대출 선택 항목에서 지원하지 않습니다. 현재 제공하는 전세보증금담보대출은 임차인이 지급한 보증금을 담보로 받는 별도 대출이며 4년 산정만기를 적용합니다.",
   },
   {
     question: "계산 결과가 대출 가능을 의미하나요?",
@@ -111,7 +131,7 @@ export const dsrSources = DSR_POLICY.sources.map((source) => ({
 export const dsrExampleItems = [
   { label: "연소득", value: formatWon(dsrExampleInput.annualIncome) },
   {
-    label: "기존 대출 연간 원리금",
+    label: "기존 대출 연간 DSR 원리금",
     value: formatWon(dsrExampleInput.existingAnnualDebtPayment),
   },
   { label: "신규 대출 금액", value: formatWon(dsrExampleInput.newLoanPrincipal) },
@@ -121,7 +141,7 @@ export const dsrExampleItems = [
     value: formatRate(dsrExampleResult.base.dsrRate),
   },
   {
-    label: "스트레스 DSR",
+    label: "사용자 금리상승 시나리오 DSR",
     value: formatRate(dsrExampleResult.stressed.dsrRate),
   },
 ];
@@ -131,7 +151,7 @@ export const dsrWebApplicationJsonLd = {
   "@type": "WebApplication",
   name: "DSR 계산기 2026",
   description:
-    "연소득, 기존 대출 연간 원리금, 신규 대출 조건과 스트레스 금리를 입력해 예상 DSR 비율을 계산합니다.",
+    "기존 대출 연간 DSR 원리금과 신규 대출 종류·상환조건을 입력해 공식 부채산정 기준의 일반 DSR과 사용자 금리상승 시나리오를 계산합니다.",
   applicationCategory: "FinanceApplication",
   operatingSystem: "Any",
   browserRequirements: "JavaScript가 지원되는 웹 브라우저",

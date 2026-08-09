@@ -44,14 +44,30 @@ const repaymentOptions: Array<{
     description: "첫 달과 평균 구분",
   },
   {
+    value: "partialInstallment",
+    label: "일부 분할",
+    description: "일부 원금은 만기상환",
+  },
+  {
     value: "bullet",
     label: "만기일시",
-    description: "DSR은 연간 이자 중심",
+    description: "원금도 산정만기로 나눔",
   },
 ];
 
+const loanOptions: Array<{ value: DsrInput["loanType"]; label: string }> = [
+  { value: "mortgage", label: "주택담보대출" },
+  { value: "credit", label: "신용대출" },
+  { value: "officetelMortgage", label: "오피스텔담보대출" },
+  { value: "nonHousingMortgage", label: "기타 비주택담보대출" },
+  { value: "leaseDepositSecured", label: "전세보증금담보대출" },
+];
+
 const inputFields: Array<{
-  name: Exclude<DsrInputField, "repaymentType">;
+  name: Exclude<
+    DsrInputField,
+    "loanType" | "repaymentType" | "creditRepaymentFrequency"
+  >;
   label: string;
   unit: string;
   inputMode: "numeric" | "decimal";
@@ -68,10 +84,10 @@ const inputFields: Array<{
   },
   {
     name: "existingAnnualDebtPayment",
-    label: "기존 대출 연간 원리금",
+    label: "기존 대출 연간 DSR 원리금",
     unit: "원",
     inputMode: "numeric",
-    description: "기존 대출의 1년 원리금 상환액을 입력합니다. 없으면 0원입니다.",
+    description: "기존 대출별 DSR 산정 연간 원리금 합계를 입력합니다. 없으면 0원입니다.",
     isAmount: true,
   },
   {
@@ -97,11 +113,33 @@ const inputFields: Array<{
     description: "정수 개월로 입력합니다. 30년은 360개월입니다.",
   },
   {
+    name: "gracePeriodMonths",
+    label: "거치기간",
+    unit: "개월",
+    inputMode: "numeric",
+    description: "원금 상환을 미루는 기간입니다. 없으면 0개월입니다.",
+  },
+  {
+    name: "balloonPrincipal",
+    label: "만기상환 원금",
+    unit: "원",
+    inputMode: "numeric",
+    description: "일부 분할상환에서 만기에 남겨 두는 원금입니다.",
+    isAmount: true,
+  },
+  {
+    name: "creditInstallmentRatio",
+    label: "분할상환 비율",
+    unit: "%",
+    inputMode: "decimal",
+    description: "신용대출 총액 중 약정기간에 나누어 갚는 비율입니다.",
+  },
+  {
     name: "stressInterestRate",
-    label: "스트레스 금리",
+    label: "금리상승 시나리오",
     unit: "%p",
     inputMode: "decimal",
-    description: "비교 계산에서 신규 대출 금리에 더합니다.",
+    description: "사용자 비교 시나리오에서 신규 대출 금리에 더합니다. 공식 정책 자동값이 아닙니다.",
   },
   {
     name: "dsrLimitRate",
@@ -232,6 +270,18 @@ export function DsrCalculator() {
     persist(nextInput);
   }
 
+  function handleSelectChange(event: ChangeEvent<HTMLSelectElement>) {
+    const field = event.currentTarget.name as
+      | "loanType"
+      | "creditRepaymentFrequency";
+    const nextInput = { ...input, [field]: event.currentTarget.value } as DsrRawInputs;
+    setInput(nextInput);
+    setErrors([]);
+    setActionMessage("");
+    setIsResultStale(result !== null);
+    persist(nextInput);
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setActionMessage("");
@@ -318,7 +368,21 @@ export function DsrCalculator() {
         </div>
 
         <div className={styles.fieldGrid}>
+          <div className={styles.field}>
+            <label htmlFor="loanType">신규 대출 종류</label>
+            <div className={styles.selectShell}>
+              <select id="loanType" name="loanType" value={input.loanType} onChange={handleSelectChange}>
+                {loanOptions.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </div>
+            <p className={styles.fieldDescription}>대출 종류에 따라 공식 DSR 원금 산정만기가 달라집니다.</p>
+          </div>
+
           {inputFields.map(({ name, label, unit, inputMode, description }, index) => {
+            if (name === "balloonPrincipal" && input.repaymentType !== "partialInstallment") return null;
+            if (name === "creditInstallmentRatio" && input.loanType !== "credit") return null;
             const fieldErrors = getFieldErrors(errors, name);
             const describedBy = `${name}-description${
               fieldErrors.length > 0 ? ` ${name}-error` : ""
@@ -376,6 +440,25 @@ export function DsrCalculator() {
               ))}
             </div>
           </fieldset>
+
+          {input.loanType === "credit" && (
+            <div className={styles.field}>
+              <label htmlFor="creditRepaymentFrequency">신용대출 상환 주기</label>
+              <div className={styles.selectShell}>
+                <select
+                  id="creditRepaymentFrequency"
+                  name="creditRepaymentFrequency"
+                  value={input.creditRepaymentFrequency}
+                  onChange={handleSelectChange}
+                >
+                  <option value="monthly">매월</option>
+                  <option value="quarterly">매분기</option>
+                  <option value="other">그 외</option>
+                </select>
+              </div>
+              <p className={styles.fieldDescription}>무거치·월/분기 균등분할·40% 이상·5~10년 조건을 모두 충족해야 실제 약정만기를 인정합니다.</p>
+            </div>
+          )}
         </div>
 
         {errors.length > 0 && (
@@ -398,14 +481,14 @@ export function DsrCalculator() {
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>02 · 결과</p>
-            <h2 id="dsr-result-heading">예상 DSR 비율</h2>
+            <h2 id="dsr-result-heading">일반 DSR 비율</h2>
           </div>
           <p className={styles.muted}>심사 결과 아님</p>
         </div>
 
         {!result && (
           <div className={styles.emptyResult} aria-live="polite">
-            <p>조건을 입력하면 기준 DSR과 스트레스 DSR을 비교합니다.</p>
+            <p>조건을 입력하면 일반 DSR과 사용자 금리상승 시나리오를 비교합니다.</p>
           </div>
         )}
 
@@ -419,12 +502,12 @@ export function DsrCalculator() {
 
             <div className={styles.comparisonGrid}>
               <article>
-                <h3>기준 금리</h3>
+                <h3>일반 DSR</h3>
                 <p>{formatRate(result.base.dsrRate)}</p>
                 <p>{formatWon(result.base.totalAnnualDebtPayment)} / 년</p>
               </article>
               <article>
-                <h3>스트레스 금리 반영</h3>
+                <h3>사용자 금리상승 시나리오</h3>
                 <p>{formatRate(result.stressed.dsrRate)}</p>
                 <p>{formatWon(result.stressed.totalAnnualDebtPayment)} / 년</p>
               </article>
@@ -432,16 +515,24 @@ export function DsrCalculator() {
 
             <dl className={styles.summaryGrid}>
               <div>
-                <dt>기존 대출 연간 원리금</dt>
+                <dt>기존 대출 연간 DSR 원리금</dt>
                 <dd>{formatWon(result.input.existingAnnualDebtPayment)}</dd>
               </div>
               <div>
-                <dt>신규 대출 연간 원리금</dt>
+                <dt>DSR 산정 연간 원금</dt>
+                <dd>{formatWon(result.base.newLoanPayment.annualPrincipalForDsr)}</dd>
+              </div>
+              <div>
+                <dt>DSR 산정 연간 이자</dt>
+                <dd>{formatWon(result.base.newLoanPayment.annualInterestForDsr)}</dd>
+              </div>
+              <div>
+                <dt>DSR 산정 연간 원리금</dt>
                 <dd>{formatWon(result.base.newLoanPayment.annualPaymentForDsr)}</dd>
               </div>
               <div>
-                <dt>신규 대출 월 상환액</dt>
-                <dd>{formatWon(result.base.newLoanPayment.monthlyPayment)}</dd>
+                <dt>계약상 향후 1년 납입액</dt>
+                <dd>{formatWon(result.base.newLoanPayment.contractAnnualPayment)}</dd>
               </div>
               <div>
                 <dt>DSR 기준 대비</dt>
@@ -462,14 +553,21 @@ export function DsrCalculator() {
                 <dd>{formatWon(result.base.newLoanPayment.averageMonthlyPayment)}</dd>
               </div>
               <div>
+                <dt>DSR 산정만기</dt>
+                <dd>{result.base.newLoanPayment.assessmentMaturityMonths}개월</dd>
+              </div>
+              <div>
                 <dt>만기 원금 별도 확인</dt>
                 <dd>{formatWon(result.base.newLoanPayment.maturityPrincipal)}</dd>
               </div>
             </dl>
 
+            <p className={styles.notice}>{result.base.newLoanPayment.assessmentReason}</p>
+
             <p className={styles.notice}>
-              예상 계산용이며 실제 금융기관 심사 결과와 다를 수 있습니다.
-              만기일시상환은 만기 원금 상환 부담을 별도로 확인해야 합니다.
+              금리상승 비교값은 사용자가 입력한 시나리오이며 공식 스트레스 DSR
+              적용 여부·가산금리를 자동 판정하지 않습니다. 실제 금융기관 심사는
+              제외대출, 소득 인정 및 상품 세부조건에 따라 달라질 수 있습니다.
             </p>
 
             <div className={styles.resultActions}>

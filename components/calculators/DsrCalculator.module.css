@@ -78,6 +78,17 @@
   background: #fff;
 }
 
+.selectShell select {
+  width: 100%;
+  min-height: 50px;
+  border: 1px solid #cfd6d0;
+  border-radius: 11px;
+  padding: 0 12px;
+  color: var(--text);
+  background: #fff;
+  font: inherit;
+}
+
 .inputShell:focus-within {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(35, 97, 68, 0.12);
@@ -121,7 +132,7 @@
 
 .radioGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
