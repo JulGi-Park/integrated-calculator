@@ -377,7 +377,7 @@ test("신규 핵심 본문은 기존 페이지와 35자 이상 완전 중복 문
   );
 });
 
-test("소개·문의·홈은 방법론과 변경 이력을 연결하고 비공개 계산기를 노출하지 않는다", async () => {
+test("소개·문의·홈은 방법론과 변경 이력을 연결하고 공개 계산기를 노출한다", async () => {
   const sources = await Promise.all([
     readFile("app/page.tsx", "utf8"),
     readFile("app/about/page.tsx", "utf8"),
@@ -387,5 +387,7 @@ test("소개·문의·홈은 방법론과 변경 이력을 연결하고 비공�
   assert.match(sources[1], /href="\/methodology\/"/);
   assert.match(sources[1], /href="\/updates\/"/);
   assert.match(sources[2], /href="\/methodology\/"/);
-  assert.doesNotMatch(sources.join("\n"), /\/calculators\/(?:roas|savings|average-price|card-installment|brokerage-fee|car-cost|overtime-pay|youth-future-savings|dsr|work-child-incentive)\//);
+  for (const slug of ["roas", "savings", "average-price", "card-installment", "brokerage-fee", "car-cost", "overtime-pay", "youth-future-savings", "dsr", "work-child-incentive"]) {
+    assert.match(sources[0], new RegExp(`/calculators/${slug}/`));
+  }
 });

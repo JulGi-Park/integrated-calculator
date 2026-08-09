@@ -19,6 +19,16 @@ const expectedUrls = [
   "https://gyesanbox.kr/calculators/unemployment/",
   "https://gyesanbox.kr/calculators/parental-leave/",
   "https://gyesanbox.kr/calculators/rent-vs-jeonse/",
+  "https://gyesanbox.kr/calculators/roas/",
+  "https://gyesanbox.kr/calculators/savings/",
+  "https://gyesanbox.kr/calculators/average-price/",
+  "https://gyesanbox.kr/calculators/card-installment/",
+  "https://gyesanbox.kr/calculators/brokerage-fee/",
+  "https://gyesanbox.kr/calculators/car-cost/",
+  "https://gyesanbox.kr/calculators/overtime-pay/",
+  "https://gyesanbox.kr/calculators/youth-future-savings/",
+  "https://gyesanbox.kr/calculators/dsr/",
+  "https://gyesanbox.kr/calculators/work-child-incentive/",
   "https://gyesanbox.kr/about/",
   "https://gyesanbox.kr/methodology/",
   "https://gyesanbox.kr/updates/",
@@ -28,14 +38,14 @@ const expectedUrls = [
   "https://gyesanbox.kr/disclaimer/",
 ];
 
-test("sitemap은 운영 도메인과 구현 완료 페이지 및 정책 페이지 19개를 포함한다", () => {
+test("sitemap은 운영 도메인과 구현 완료 페이지 및 정책 페이지 29개를 포함한다", () => {
   const entries = sitemap();
 
   assert.deepEqual(
     entries.map((entry) => entry.url),
     expectedUrls,
   );
-  assert.equal(entries.length, 19);
+  assert.equal(entries.length, 29);
   assert.equal(new Set(entries.map((entry) => entry.url)).size, entries.length);
 
   for (const entry of entries) {
@@ -44,12 +54,12 @@ test("sitemap은 운영 도메인과 구현 완료 페이지 및 정책 페이�
   }
 });
 
-test("sitemap은 비공개 계산기 10개를 포함하지 않는다", () => {
+test("sitemap은 신규 공개 계산기 10개를 모두 포함한다", () => {
   const urls = sitemap().map((entry) => entry.url).join("\n");
-  assert.doesNotMatch(
-    urls,
-    /roas|savings|average-price|card-installment|brokerage-fee|car-cost|overtime-pay|youth-future-savings|dsr|work-child-incentive/,
-  );
+  for (const slug of [
+    "roas", "savings", "average-price", "card-installment", "brokerage-fee",
+    "car-cost", "overtime-pay", "youth-future-savings", "dsr", "work-child-incentive",
+  ]) assert.match(urls, new RegExp(`/calculators/${slug}/`));
 });
 
 test("robots는 주요 페이지 색인을 막지 않고 운영 sitemap을 가리킨다", () => {

@@ -11,7 +11,7 @@ import {
 
 test("즐겨찾기 레지스트리는 공개 계산기와 반복 방문 허브만 포함한다", () => {
   assert.equal(FAVORITES_STORAGE_KEY, "gyesanbox:favorites:v1");
-  assert.equal(BOOKMARKABLE_PAGES.filter((page) => page.type === "calculator").length, 10);
+  assert.equal(BOOKMARKABLE_PAGES.filter((page) => page.type === "calculator").length, 20);
   assert.ok(BOOKMARKABLE_PAGES.some((page) => page.path === "/calculators/"));
   assert.equal(BOOKMARKABLE_PAGES.some((page) => page.path === "/privacy-policy/"), false);
 });

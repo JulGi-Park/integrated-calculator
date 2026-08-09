@@ -42,7 +42,7 @@ export default function CalculatorsPage() {
         <p className="page-heading__eyebrow">Calculators</p>
         <h1>계산기 목록</h1>
         <p>
-          현재 공개 운영 중인 계산기 10개만 모았습니다. 각 계산기는 입력값,
+          현재 공개 운영 중인 계산기 20개를 모았습니다. 각 계산기는 입력값,
           계산 기준, 결과 해석과 주의사항을 함께 제공합니다.
         </p>
       </div>
@@ -274,6 +274,28 @@ export default function CalculatorsPage() {
             →
           </span>
         </a>
+
+        {[
+          ["사업", "ROAS 계산기", "/calculators/roas/", "광고비 대비 매출과 손익분기 ROAS를 비교합니다."],
+          ["금융", "예금·적금 계산기", "/calculators/savings/", "금리와 과세 방식에 따른 만기 예상액을 계산합니다."],
+          ["투자", "물타기 계산기", "/calculators/average-price/", "추가 매수 후 평균단가와 손익분기 가격을 계산합니다."],
+          ["금융", "카드 할부 계산기", "/calculators/card-installment/", "할부 월 납입액과 총 수수료를 계산합니다."],
+          ["주거", "부동산 중개보수 계산기", "/calculators/brokerage-fee/", "거래 유형과 금액별 중개보수 상한을 계산합니다."],
+          ["생활", "자동차 유지비 계산기", "/calculators/car-cost/", "연료비·보험료·세금 등 월·연간 차량 비용을 계산합니다."],
+          ["급여", "연장·야간·휴일근로수당 계산기", "/calculators/overtime-pay/", "근로기준법 가산율에 따른 예상 지급액을 계산합니다."],
+          ["금융", "청년미래적금 계산기", "/calculators/youth-future-savings/", "정부기여금과 금리를 반영한 예상 만기수령액을 계산합니다."],
+          ["금융", "DSR 계산기", "/calculators/dsr/", "기존·신규 대출 원리금과 스트레스 DSR을 비교합니다."],
+          ["급여", "근로·자녀장려금 계산기", "/calculators/work-child-incentive/", "소득·재산 기준과 법정 산식으로 예상 장려금을 계산합니다."],
+        ].map(([category, title, href, description]) => (
+          <a className="calculator-card" href={href} role="listitem" key={href}>
+            <div>
+              <span className="calculator-card__category">{category}</span>
+              <h2>{title}</h2>
+              <p>{description}</p>
+            </div>
+            <span className="calculator-card__arrow" aria-hidden="true">→</span>
+          </a>
+        ))}
       </div>
     </section>
   );

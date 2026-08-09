@@ -81,6 +81,66 @@ const calculators = [
     description:
       "전세대출 이자, 월세, 관리비와 보증금 기회비용을 기준으로 거주기간 총비용을 비교합니다.",
   },
+  {
+    name: "ROAS 계산기",
+    href: "/calculators/roas/",
+    url: "https://gyesanbox.kr/calculators/roas/",
+    description: "광고비와 매출, 마진을 기준으로 ROAS와 손익분기 ROAS를 비교합니다.",
+  },
+  {
+    name: "예금·적금 계산기",
+    href: "/calculators/savings/",
+    url: "https://gyesanbox.kr/calculators/savings/",
+    description: "예치·납입 조건과 금리, 과세 방식에 따른 만기 예상액을 계산합니다.",
+  },
+  {
+    name: "물타기 계산기",
+    href: "/calculators/average-price/",
+    url: "https://gyesanbox.kr/calculators/average-price/",
+    description: "기존 보유분과 추가 매수분을 합산해 평균단가와 손익분기 가격을 계산합니다.",
+  },
+  {
+    name: "카드 할부 계산기",
+    href: "/calculators/card-installment/",
+    url: "https://gyesanbox.kr/calculators/card-installment/",
+    description: "할부 원금과 수수료율을 기준으로 월 납입액과 총 수수료를 계산합니다.",
+  },
+  {
+    name: "부동산 중개보수 계산기",
+    href: "/calculators/brokerage-fee/",
+    url: "https://gyesanbox.kr/calculators/brokerage-fee/",
+    description: "주택 매매·임대차 거래금액과 지역 요율로 중개보수 상한을 계산합니다.",
+  },
+  {
+    name: "자동차 유지비 계산기",
+    href: "/calculators/car-cost/",
+    url: "https://gyesanbox.kr/calculators/car-cost/",
+    description: "연료비, 보험료, 세금과 정비비를 합산해 월·연간 차량 비용을 계산합니다.",
+  },
+  {
+    name: "연장·야간·휴일근로수당 계산기",
+    href: "/calculators/overtime-pay/",
+    url: "https://gyesanbox.kr/calculators/overtime-pay/",
+    description: "시급과 근로시간을 기준으로 연장·야간·휴일근로 예상 지급액을 계산합니다.",
+  },
+  {
+    name: "청년미래적금 계산기",
+    href: "/calculators/youth-future-savings/",
+    url: "https://gyesanbox.kr/calculators/youth-future-savings/",
+    description: "월 납입액과 금리, 정부기여금 유형에 따른 예상 만기수령액을 계산합니다.",
+  },
+  {
+    name: "DSR 계산기",
+    href: "/calculators/dsr/",
+    url: "https://gyesanbox.kr/calculators/dsr/",
+    description: "연소득과 대출 원리금, 스트레스 금리를 입력해 예상 DSR 비율을 비교합니다.",
+  },
+  {
+    name: "근로·자녀장려금 계산기",
+    href: "/calculators/work-child-incentive/",
+    url: "https://gyesanbox.kr/calculators/work-child-incentive/",
+    description: "가구·소득·재산 조건과 법정 산식으로 장려금 신청 가능성과 예상액을 확인합니다.",
+  },
 ] as const;
 
 const servicePrinciples = [

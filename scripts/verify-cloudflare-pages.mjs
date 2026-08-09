@@ -37,35 +37,29 @@ const requiredStaticFiles = [
     "out/calculators/labor-pay/index.html",
     "주휴수당 계산기",
   ],
+  ["out/calculators/roas/index.html", "ROAS 계산기"],
+  ["out/calculators/savings/index.html", "예금 적금 계산기"],
+  ["out/calculators/average-price/index.html", "물타기 계산기"],
+  ["out/calculators/card-installment/index.html", "카드 할부 계산기"],
+  ["out/calculators/brokerage-fee/index.html", "부동산 중개보수 계산기"],
+  ["out/calculators/car-cost/index.html", "자동차 유지비 계산기"],
+  ["out/calculators/overtime-pay/index.html", "연장·야간·휴일근로수당 계산기"],
+  ["out/calculators/youth-future-savings/index.html", "청년미래적금 계산기"],
+  ["out/calculators/dsr/index.html", "DSR 계산기 2026"],
+  ["out/calculators/work-child-incentive/index.html", "근로·자녀장려금 계산기"],
 ];
 
-const forbiddenPrivateOutputPaths = [
-  "out/calculators/roas",
-  "out/calculators/dsr",
-  "out/calculators/car-cost",
-  "out/calculators/savings",
-  "out/calculators/average-price",
-  "out/calculators/card-installment",
-  "out/calculators/overtime-pay",
-  "out/calculators/youth-future-savings",
-  "out/calculators/work-child-incentive",
-  "out/calculators/brokerage-fee",
-  "out/calculators/brokerage-fee.html",
-];
-
-const publicHtmlFilesWithoutPrivateRoutes = [
-  "out/index.html",
-  "out/calculators/index.html",
-  "out/calculators/seller-margin/index.html",
-  "out/calculators/vat-profit/index.html",
-  "out/calculators/salary/index.html",
-  "out/calculators/loan/index.html",
-  "out/calculators/severance/index.html",
-  "out/calculators/unemployment/index.html",
-  "out/calculators/social-insurance/index.html",
-  "out/calculators/labor-pay/index.html",
-  "out/calculators/parental-leave/index.html",
-  "out/calculators/rent-vs-jeonse/index.html",
+const newlyPublicCalculatorPages = [
+  ["roas", "https://gyesanbox.kr/calculators/roas/"],
+  ["savings", "https://gyesanbox.kr/calculators/savings/"],
+  ["average-price", "https://gyesanbox.kr/calculators/average-price/"],
+  ["card-installment", "https://gyesanbox.kr/calculators/card-installment/"],
+  ["brokerage-fee", "https://gyesanbox.kr/calculators/brokerage-fee/"],
+  ["car-cost", "https://gyesanbox.kr/calculators/car-cost/"],
+  ["overtime-pay", "https://gyesanbox.kr/calculators/overtime-pay/"],
+  ["youth-future-savings", "https://gyesanbox.kr/calculators/youth-future-savings/"],
+  ["dsr", "https://gyesanbox.kr/calculators/dsr/"],
+  ["work-child-incentive", "https://gyesanbox.kr/calculators/work-child-incentive/"],
 ];
 
 const publicCalculatorHeroPages = [
@@ -181,32 +175,18 @@ async function verifyStaticOutput() {
     );
   }
 
-  for (const relativePath of forbiddenPrivateOutputPaths) {
-    try {
-      await stat(path.join(projectRoot, relativePath));
-      assert.fail(`${relativePath} must not be emitted in the default export.`);
-    } catch (error) {
-      if (error && error.code === "ENOENT") {
-        continue;
-      }
-
-      throw error;
-    }
-  }
-
   const sitemap = await readFile(path.join(projectRoot, "out/sitemap.xml"), "utf8");
-  assert.doesNotMatch(
-    sitemap,
-    /roas|dsr|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|work-child-incentive/,
-  );
-
-  for (const relativePath of publicHtmlFilesWithoutPrivateRoutes) {
+  for (const [slug, canonical] of newlyPublicCalculatorPages) {
+    const relativePath = `out/calculators/${slug}/index.html`;
     const html = await readFile(path.join(projectRoot, relativePath), "utf8");
+    const [head = "", body = ""] = html.split(/<\/head>/i);
 
-    assert.doesNotMatch(
-      html,
-      /roas|dsr|car-cost|savings|average-price|brokerage-fee|card-installment|overtime-pay|youth-future-savings|work-child-incentive|부동산 중개보수 계산기/,
-    );
+    assert.match(sitemap, new RegExp(`/calculators/${slug}/`));
+    assert.equal((body.match(/<h1\b/gi) ?? []).length, 1, `${relativePath} must render exactly one H1.`);
+    assert.match(head, new RegExp(`<link[^>]+rel="canonical"[^>]+href="${canonical}"|<link[^>]+href="${canonical}"[^>]+rel="canonical"`, "i"));
+    assert.doesNotMatch(head, /name="robots"[^>]+noindex|content="[^"']*noindex/i);
+    assert.equal((html.match(/<script\b[^>]*googletagmanager\.com\/gtag\/js\?id=G-YMJFLPRFMV[^>]*>/gi) ?? []).length, 1);
+    assert.equal((html.match(/<script\b[^>]*pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-4273771596550595[^>]*>/gi) ?? []).length, 1);
   }
 
   for (const [relativePath, imagePath] of publicCalculatorHeroPages) {

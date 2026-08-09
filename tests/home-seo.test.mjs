@@ -27,6 +27,16 @@ const calculators = [
   ["실업급여 계산기", "/calculators/unemployment/", "https://gyesanbox.kr/calculators/unemployment/"],
   ["육아휴직급여 계산기", "/calculators/parental-leave/", "https://gyesanbox.kr/calculators/parental-leave/"],
   ["전세 vs 월세 비교 계산기", "/calculators/rent-vs-jeonse/", "https://gyesanbox.kr/calculators/rent-vs-jeonse/"],
+  ["ROAS 계산기", "/calculators/roas/", "https://gyesanbox.kr/calculators/roas/"],
+  ["예금·적금 계산기", "/calculators/savings/", "https://gyesanbox.kr/calculators/savings/"],
+  ["물타기 계산기", "/calculators/average-price/", "https://gyesanbox.kr/calculators/average-price/"],
+  ["카드 할부 계산기", "/calculators/card-installment/", "https://gyesanbox.kr/calculators/card-installment/"],
+  ["부동산 중개보수 계산기", "/calculators/brokerage-fee/", "https://gyesanbox.kr/calculators/brokerage-fee/"],
+  ["자동차 유지비 계산기", "/calculators/car-cost/", "https://gyesanbox.kr/calculators/car-cost/"],
+  ["연장·야간·휴일근로수당 계산기", "/calculators/overtime-pay/", "https://gyesanbox.kr/calculators/overtime-pay/"],
+  ["청년미래적금 계산기", "/calculators/youth-future-savings/", "https://gyesanbox.kr/calculators/youth-future-savings/"],
+  ["DSR 계산기", "/calculators/dsr/", "https://gyesanbox.kr/calculators/dsr/"],
+  ["근로·자녀장려금 계산기", "/calculators/work-child-incentive/", "https://gyesanbox.kr/calculators/work-child-incentive/"],
 ];
 
 test("홈 메타데이터가 계산박스 운영 도메인 기준 SEO 정보를 가진다", () => {
@@ -76,7 +86,7 @@ test("공통 metadataBase가 계산박스 운영 도메인을 기준으로 한�
   assert.doesNotMatch(layoutSource, /integrated-calculator\.pages\.dev|localhost|127\.0\.0\.1|example\.com/);
 });
 
-test("홈 화면에서 구현 완료 계산기 10개로 이동할 수 있다", () => {
+test("홈 화면에서 구현 완료 계산기 20개로 이동할 수 있다", () => {
   const html = renderToStaticMarkup(React.createElement(Home));
 
   assert.match(html, /계산박스/);
@@ -120,7 +130,7 @@ test("홈 JSON-LD는 화면 내용과 연락처 및 구현 완료 계산기만 �
     scripts[3].itemListElement.map((item) => [item.name, item.url]),
     calculators.map(([name, , url]) => [name, url]),
   );
-  assert.equal(scripts[3].itemListElement.length, 10);
+  assert.equal(scripts[3].itemListElement.length, 20);
 
   const serialized = JSON.stringify(scripts);
   assert.doesNotMatch(
