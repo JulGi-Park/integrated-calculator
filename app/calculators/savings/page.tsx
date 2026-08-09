@@ -8,7 +8,7 @@ import {
 } from "@/components/calculators/savingsContentData";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 
-const title = "예금 적금 계산기";
+const title = "예금·적금 이자 계산기 | 세후 이자·만기 수령액 계산";
 const description =
   "예금과 적금의 세전 이자, 세후 이자, 세금, 만기 수령액을 입력값 기준으로 계산합니다.";
 
