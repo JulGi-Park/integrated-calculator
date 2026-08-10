@@ -17,7 +17,7 @@ export function YouthFutureSavingsContent() {
         <p>
           기준일은 {youthFutureSavingsPolicySummary.verifiedAt}이며, 월 납입 한도
           {youthFutureSavingsPolicySummary.monthlyLimit}, 기본 기간
-          {youthFutureSavingsPolicySummary.defaultTerm}, 정부기여금 일반형
+          {youthFutureSavingsPolicySummary.defaultTerm}의 {youthFutureSavingsPolicySummary.productTerm}, 정부기여금 일반형
           {youthFutureSavingsPolicySummary.standardRate}, 우대형
           {youthFutureSavingsPolicySummary.preferredRate}를 기준으로 합니다.
         </p>
@@ -41,6 +41,7 @@ export function YouthFutureSavingsContent() {
           <li>예상 세전 이자: {formatWon(youthFutureSavingsExampleResult.grossInterest)}</li>
           <li>정부기여금 합계: {formatWon(youthFutureSavingsExampleResult.governmentContribution)}</li>
           <li>비과세 절감액: {formatWon(youthFutureSavingsExampleResult.taxSaving)}</li>
+          <li>예상 만기금액: {formatWon(youthFutureSavingsExampleResult.maturityAmount)}</li>
         </ul>
       </section>
 
