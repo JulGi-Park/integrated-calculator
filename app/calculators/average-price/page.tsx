@@ -12,22 +12,27 @@ import {
 const title = "물타기 계산기 | 주식·코인 평균단가 계산";
 const description =
   "현재 보유 수량, 평균 단가, 추가 매수 수량과 단가를 입력해 신규 평균단가, 총 투자금액, 예상 손익과 예상 수익률을 계산합니다.";
+const ogUrl = "https://gyesanbox.kr/calculators/average-price/";
+const ogImage = "https://gyesanbox.kr/og/average-price.png";
 
 export const metadata: Metadata = {
   title,
   description,
   alternates: {
-    canonical: "https://gyesanbox.kr/calculators/average-price/",
+    canonical: ogUrl,
   },
   openGraph: {
     title,
     description,
+    url: ogUrl,
     type: "website",
+    images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title,
     description,
+    images: [ogImage],
   },
 };
 

@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { metadata } from "../app/calculators/average-price/page.tsx";
 import {
   AVERAGE_PRICE_MAX_INPUT,
   calculateAveragePrice,
@@ -12,6 +14,22 @@ const baseInput = {
   additionalQuantity: 5,
   additionalPrice: 40_000,
 };
+
+test("물타기 계산기는 전용 Open Graph와 Twitter 이미지를 사용한다", async () => {
+  const image = "https://gyesanbox.kr/og/average-price.png";
+  const png = await readFile("public/og/average-price.png");
+
+  assert.equal(metadata.alternates.canonical, "https://gyesanbox.kr/calculators/average-price/");
+  assert.equal(metadata.openGraph.url, "https://gyesanbox.kr/calculators/average-price/");
+  assert.deepEqual(metadata.openGraph.images, [
+    { url: image, width: 1200, height: 630, alt: metadata.title },
+  ]);
+  assert.equal(metadata.twitter.card, "summary_large_image");
+  assert.deepEqual(metadata.twitter.images, [image]);
+  assert.deepEqual([...png.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+  assert.equal(png.readUInt32BE(16), 1200);
+  assert.equal(png.readUInt32BE(20), 630);
+});
 
 function assertSuccess(response) {
   assert.equal(response.success, true);
