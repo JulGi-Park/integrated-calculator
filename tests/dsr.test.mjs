@@ -9,6 +9,7 @@ import {
   getDsrAssessmentMaturity,
 } from "../lib/calculators/dsr/index.ts";
 import {
+  dsrExampleItems,
   dsrFaqJsonLd,
   dsrFaqs,
 } from "../components/calculators/dsrContentData.ts";
@@ -295,6 +296,16 @@ test("FAQ 화면 데이터와 FAQPage JSON-LD 데이터가 일치한다", () => 
       answer: faq.answer,
     })),
   );
+});
+
+test("DSR SEO 콘텐츠는 스트레스 DSR·40%·대출한도 의도를 정확히 구분한다", async () => {
+  const pageSource = await readFile("app/calculators/dsr/page.tsx", "utf8");
+
+  assert.match(pageSource, /스트레스 DSR·대출 원리금 계산/);
+  assert.ok(dsrFaqs.some((faq) => faq.question === "DSR 40%는 무슨 뜻인가요?"));
+  assert.ok(dsrFaqs.some((faq) => faq.question === "DSR 계산 결과로 대출 가능 금액을 알 수 있나요?"));
+  assert.ok(dsrFaqs.some((faq) => faq.question === "DSR·DTI·LTV는 어떻게 다른가요?"));
+  assert.ok(dsrExampleItems.some((item) => item.label === "최종 적용 스트레스 금리"));
 });
 
 test("공식 출처와 기준일, 면책 문구를 콘텐츠에 포함한다", async () => {

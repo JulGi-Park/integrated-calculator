@@ -59,6 +59,11 @@ export const dsrCriteria = [
       "기존 대출 연간 DSR 원리금과 신규 대출의 공식 산정 연간 원금·이자를 더한 뒤 연소득으로 나눕니다.",
   },
   {
+    title: "DSR 40%의 의미",
+    description:
+      "DSR 40%는 연소득 대비 연간 원리금 상환액을 비교하는 대표적인 은행권 차주단위 기준입니다. 실제 적용 비율과 예외, 소득 인정 방식은 금융회사와 상품에 따라 달라질 수 있습니다.",
+  },
+  {
     title: "계약상 납입액과 DSR 산정액",
     description:
       "계약상 향후 1년 납입액은 실제 상환 일정 기준이며, DSR 산정액은 대출 종류별 공식 산정만기를 적용하므로 서로 다를 수 있습니다.",
@@ -118,6 +123,11 @@ export const dsrFaqs: DsrFaq[] = [
       "DSR은 연간 금융부채 원리금 상환액을 연소득으로 나눈 비율입니다. 이 계산기는 기존 대출 연간 DSR 원리금과 신규 대출의 공식 산정 연간 원금·이자를 합산해 일반 DSR을 계산합니다.",
   },
   {
+    question: "DSR 40%는 무슨 뜻인가요?",
+    answer:
+      "DSR 40%는 연소득 대비 연간 원리금 상환액 비율을 비교하는 대표적인 은행권 차주단위 기준입니다. 40% 이하 또는 초과만으로 실제 대출 가능 여부를 단정할 수는 없으며, 금융업권·상품·규제 예외와 소득 인정 방식이 함께 적용됩니다.",
+  },
+  {
     question: "스트레스 DSR이란 무엇인가요?",
     answer:
       "향후 금리상승으로 원리금 부담이 늘어날 가능성을 DSR 심사에 반영하는 제도입니다. 계산기는 2026년 8월 9일 확인 정책으로 적용 대상과 최종 스트레스 금리를 자동 판정합니다.",
@@ -146,6 +156,16 @@ export const dsrFaqs: DsrFaq[] = [
     question: "금리상승 시나리오와 공식 스트레스 DSR은 무엇이 다른가요?",
     answer:
       "공식 스트레스 DSR은 지역·대출 종류·금리유형·잔액 조건을 정책표로 자동 판정합니다. 금리상승 시나리오는 사용자가 원하는 가산금리를 직접 입력해 비교하는 별도 참고값입니다.",
+  },
+  {
+    question: "DSR 계산 결과로 대출 가능 금액을 알 수 있나요?",
+    answer:
+      "이 계산기는 입력한 기존·신규 대출 조건의 DSR을 계산하는 도구이며, 최대 대출금액을 역산하지는 않습니다. 실제 대출한도는 DSR 외에도 담보가치, LTV, 소득 인정, 신용, 상품 조건과 규제 예외를 함께 심사해 결정됩니다.",
+  },
+  {
+    question: "DSR·DTI·LTV는 어떻게 다른가요?",
+    answer:
+      "DSR은 모든 금융부채의 연간 원리금 상환액을 연소득과 비교하는 지표입니다. DTI와 LTV는 각각 소득·주택가격을 기준으로 한 별도 규제 지표이며, 이 페이지는 DSR과 공식 스트레스 DSR 계산에 집중합니다.",
   },
   {
     question: "계약상 납입액과 DSR 산정 원리금은 왜 다른가요?",
@@ -184,12 +204,14 @@ export const dsrSources = [
 
 export const dsrExampleItems = [
   { label: "연소득", value: formatWon(dsrExampleInput.annualIncome) },
+  { label: "신규 대출 종류", value: "주택담보대출" },
   {
     label: "기존 대출 연간 DSR 원리금",
     value: formatWon(dsrExampleInput.existingAnnualDebtPayment),
   },
   { label: "신규 대출 금액", value: formatWon(dsrExampleInput.newLoanPrincipal) },
   { label: "신규 대출 금리", value: formatRate(dsrExampleInput.annualInterestRate) },
+  { label: "상환 방식", value: "원리금균등" },
   {
     label: "기준 DSR",
     value: formatRate(dsrExampleResult.base.dsrRate),
@@ -197,6 +219,10 @@ export const dsrExampleItems = [
   {
     label: "공식 스트레스 DSR",
     value: formatRate(dsrExampleResult.officialStressed.dsrRate),
+  },
+  {
+    label: "최종 적용 스트레스 금리",
+    value: formatPercentPoint(dsrExampleResult.officialStressPolicy.finalStressRate),
   },
   {
     label: "사용자 금리상승 시나리오 DSR",

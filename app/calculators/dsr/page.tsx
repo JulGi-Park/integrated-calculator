@@ -10,7 +10,7 @@ import {
   dsrWebApplicationJsonLd,
 } from "@/components/calculators/dsrContentData";
 
-const title = "DSR 계산기 2026 | 대출 종류별 연간 원리금 계산";
+const title = "DSR 계산기 2026 | 스트레스 DSR·대출 원리금 계산";
 const description =
   "주택담보·신용·비주택담보대출의 일반 DSR과 2026년 하반기 공식 스트레스 DSR 정책 자동판정, 사용자 금리상승 시나리오를 구분해 계산합니다.";
 const ogUrl = "https://gyesanbox.kr/calculators/dsr/";
@@ -65,7 +65,9 @@ export default function DsrPage() {
         </p>
         <div className="seller-margin-meta">
           <span>계산 기준일: {dsrPolicySummary.verifiedAt}</span>
-          <span>기본 DSR 기준: {dsrPolicySummary.defaultLimitRate}</span>
+          <span>
+            기본 DSR 기준: {dsrPolicySummary.defaultLimitRate} (대표 은행권 기준)
+          </span>
           <span>예상 계산용이며 실제 금융기관 심사 결과와 다를 수 있습니다.</span>
         </div>
       </div>
