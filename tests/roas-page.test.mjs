@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 import sitemapModule from "../app/sitemap.ts";
 import { metadata } from "../app/calculators/roas/page.tsx";
@@ -48,6 +48,26 @@ test("ROAS 메타데이터는 canonical을 제공하고 색인을 막지 않는�
   );
   assert.equal(metadata.alternates.canonical, "https://gyesanbox.kr/calculators/roas/");
   assert.equal(metadata.robots, undefined);
+  assert.equal(metadata.openGraph.url, "https://gyesanbox.kr/calculators/roas/");
+  assert.deepEqual(metadata.openGraph.images, [
+    {
+      url: "https://gyesanbox.kr/og/roas.png",
+      width: 1200,
+      height: 630,
+      alt: "ROAS 계산기 - 광고비 대비 매출과 광고수익률 계산",
+    },
+  ]);
+  assert.equal(metadata.twitter.card, "summary_large_image");
+  assert.equal(metadata.twitter.title, "ROAS 계산기 - 광고비 대비 매출과 광고수익률 계산");
+  assert.deepEqual(metadata.twitter.images, ["https://gyesanbox.kr/og/roas.png"]);
+});
+
+test("ROAS 전용 OG 이미지는 정적 1200x630 PNG로 제공된다", async () => {
+  const image = await readFile("public/og/roas.png");
+  await access("public/og/roas.png");
+  assert.deepEqual([...image.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+  assert.equal(image.readUInt32BE(16), 1200);
+  assert.equal(image.readUInt32BE(20), 630);
 });
 
 test("계산 기준 설명, 예시, 예외, FAQ와 면책 문구를 포함한다", () => {

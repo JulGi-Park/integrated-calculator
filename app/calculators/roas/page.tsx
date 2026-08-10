@@ -9,18 +9,31 @@ import {
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import pageStyles from "./RoasPage.module.css";
 
+const ogTitle = "ROAS 계산기 - 광고비 대비 매출과 광고수익률 계산";
+const ogDescription =
+  "광고비와 광고 매출을 입력해 광고수익률(ROAS)과 손익분기 ROAS를 계산합니다.";
+const ogUrl = "https://gyesanbox.kr/calculators/roas/";
+const ogImage = "https://gyesanbox.kr/og/roas.png";
+
 export const metadata: Metadata = {
   title: "ROAS 계산기 - 광고비 대비 매출과 손익분기 ROAS 계산 | 계산박스",
   description:
     "광고비와 광고 매출을 입력해 ROAS, 광고비 비중, 광고 후 순이익, 손익분기 ROAS를 계산해보세요.",
   alternates: {
-    canonical: "https://gyesanbox.kr/calculators/roas/",
+    canonical: ogUrl,
   },
   openGraph: {
-    title: "ROAS 계산기 - 광고비 대비 매출과 손익분기 ROAS 계산 | 계산박스",
-    description:
-      "광고비와 광고 매출을 입력해 ROAS, 광고비 비중, 광고 후 순이익, 손익분기 ROAS를 계산해보세요.",
+    title: ogTitle,
+    description: ogDescription,
+    url: ogUrl,
     type: "website",
+    images: [{ url: ogImage, width: 1200, height: 630, alt: ogTitle }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: ogTitle,
+    description: ogDescription,
+    images: [ogImage],
   },
 };
 
