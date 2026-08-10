@@ -137,7 +137,7 @@ test("정책 페이지는 H1, SEO metadata, canonical과 연락처를 가진다"
   }
 });
 
-test("소개 페이지는 공개 계산기 10개만 최신 URL로 안내한다", async () => {
+test("소개 페이지는 현재 공개 계산기 20개를 최신 URL로 안내한다", async () => {
   const source = await readFile("app/about/page.tsx", "utf8");
   const publicRoutes = [
     "/calculators/seller-margin/",
@@ -150,23 +150,19 @@ test("소개 페이지는 공개 계산기 10개만 최신 URL로 안내한다",
     "/calculators/vat-profit/",
     "/calculators/parental-leave/",
     "/calculators/rent-vs-jeonse/",
+    "/calculators/roas/",
+    "/calculators/savings/",
+    "/calculators/average-price/",
+    "/calculators/card-installment/",
+    "/calculators/brokerage-fee/",
+    "/calculators/car-cost/",
+    "/calculators/overtime-pay/",
+    "/calculators/youth-future-savings/",
+    "/calculators/dsr/",
+    "/calculators/work-child-incentive/",
   ];
-  assert.equal((source.match(/href="\/calculators\//g) ?? []).length, 10);
+  assert.equal((source.match(/href="\/calculators\//g) ?? []).length, 20);
   for (const route of publicRoutes) assert.match(source, new RegExp(`href="${route}"`));
-  for (const privateSlug of [
-    "roas",
-    "savings",
-    "average-price",
-    "card-installment",
-    "brokerage-fee",
-    "car-cost",
-    "overtime-pay",
-    "youth-future-savings",
-    "dsr",
-    "work-child-incentive",
-  ]) {
-    assert.doesNotMatch(source, new RegExp(`/calculators/${privateSlug}`));
-  }
 });
 
 test("개인정보처리방침은 실제 분석·광고 목적을 구분하고 임시 표현과 중복 섹션을 사용하지 않는다", async () => {
@@ -257,12 +253,16 @@ test("방법론은 실제 계산기 경계 사례를 설명하고 변경 이력�
   );
 });
 
-test("변경 이력은 공개 계산기 10개와 검증된 주요 변경만 올바른 경로로 연결한다", async () => {
+test("변경 이력은 신규 10개 공개와 검증된 주요 변경을 올바르게 안내한다", async () => {
   const html = renderToStaticMarkup(React.createElement(updatesModule.default));
   const sections = [...html.matchAll(
     /<section><h2>([^<]+)<\/h2>[\s\S]*?<a href="([^"]+)">상세 페이지 보기<\/a><\/p><\/section>/g,
   )].map((match) => ({ target: match[1], href: match[2] }));
   const publicCalculators = [
+    ["신규 계산기 10개 공개", "/calculators/"],
+    ["DSR 공식 부채 산정·스트레스 DSR 정책", "/calculators/dsr/"],
+    ["연장·야간·휴일근로수당 가산수당 합계", "/calculators/overtime-pay/"],
+    ["부동산 중개보수 공식 출처·적용 범위", "/calculators/brokerage-fee/"],
     ["판매자 마진 계산기", "/calculators/seller-margin/"],
     ["연봉 실수령액 계산기", "/calculators/salary/"],
     ["대출 이자 계산기", "/calculators/loan/"],
@@ -287,8 +287,11 @@ test("변경 이력은 공개 계산기 10개와 검증된 주요 변경만 올�
     sections.filter(({ href }) => href.startsWith("/calculators/")).map(({ href }) => href),
   );
   assert.deepEqual(calculatorPaths, new Set(publicCalculators.map(([, href]) => href)));
-  assert.equal(new Set(publicCalculators.map(([name]) => name)).size, 10);
-  assert.doesNotMatch(html, /\/calculators\/(?:roas|savings|average-price|card-installment|brokerage-fee|car-cost|overtime-pay|youth-future-savings|dsr|work-child-incentive)\//);
+  assert.equal(new Set(publicCalculators.map(([name]) => name)).size, 14);
+  for (const name of [
+    "ROAS", "예금·적금", "물타기·평단가", "카드 할부", "부동산 중개보수",
+    "자동차 유지비", "연장·야간·휴일근로수당", "청년미래적금", "DSR", "근로·자녀장려금",
+  ]) assert.match(html, new RegExp(name));
   assert.doesNotMatch(html, /href="\/guides(?:\/|\")/);
 
   for (const { href } of sections) {
@@ -298,14 +301,16 @@ test("변경 이력은 공개 계산기 10개와 검증된 주요 변경만 올�
   }
 });
 
-test("변경 이력은 전세·월세 7월 27일 변경과 최신순 정렬을 유지한다", () => {
+test("변경 이력은 신규 공개와 전세·월세 변경을 최신순으로 유지한다", () => {
   const html = renderToStaticMarkup(React.createElement(updatesModule.default));
   const dates = [...html.matchAll(/확인·적용 날짜:<\/strong> (\d{4})년 (\d{1,2})월 (\d{1,2})일/g)]
     .map(([, year, month, day]) => Date.UTC(Number(year), Number(month) - 1, Number(day)));
 
   assert.ok(dates.length > 0);
-  assert.equal(dates[0], Date.UTC(2026, 6, 27));
+  assert.equal(dates[0], Date.UTC(2026, 7, 9));
   assert.deepEqual(dates, [...dates].sort((a, b) => b - a));
+  assert.match(html, /신규 계산기 10개 공개/);
+  assert.match(html, /총 20개로 확대/);
   assert.match(html, /전세 vs 월세 비교 계산기 기준금리·전환율/);
   assert.match(html, /기준금리 기본값을 연 2\.50%에서 2\.75%/);
   assert.match(html, /법정 참고 전환율을 연 4\.50%에서 4\.75%/);

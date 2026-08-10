@@ -67,6 +67,16 @@ export default function AboutPage() {
           <li><a href="/calculators/vat-profit/">부가세 계산기</a></li>
           <li><a href="/calculators/parental-leave/">육아휴직급여 계산기</a></li>
           <li><a href="/calculators/rent-vs-jeonse/">전세 vs 월세 계산기</a></li>
+          <li><a href="/calculators/roas/">ROAS 계산기</a></li>
+          <li><a href="/calculators/savings/">예금·적금 계산기</a></li>
+          <li><a href="/calculators/average-price/">물타기 계산기</a></li>
+          <li><a href="/calculators/card-installment/">카드 할부 계산기</a></li>
+          <li><a href="/calculators/brokerage-fee/">부동산 중개보수 계산기</a></li>
+          <li><a href="/calculators/car-cost/">자동차 유지비 계산기</a></li>
+          <li><a href="/calculators/overtime-pay/">연장·야간·휴일근로수당 계산기</a></li>
+          <li><a href="/calculators/youth-future-savings/">청년미래적금 계산기</a></li>
+          <li><a href="/calculators/dsr/">DSR 계산기</a></li>
+          <li><a href="/calculators/work-child-incentive/">근로·자녀장려금 계산기</a></li>
         </ul>
       </section>
 
