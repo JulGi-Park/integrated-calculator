@@ -5,6 +5,7 @@ import {
   calculateWorkChildIncentive,
 } from "../lib/calculators/work-child-incentive/index.ts";
 import {
+  workChildIncentiveExampleItems,
   workChildIncentiveFaqJsonLd,
   workChildIncentiveFaqs,
 } from "../components/calculators/workChildIncentiveContentData.ts";
@@ -235,6 +236,16 @@ test("FAQ 화면 데이터와 FAQPage JSON-LD 데이터가 일치한다", () => 
       answer: faq.answer,
     })),
   );
+});
+
+test("2026 신청 기준 SEO 콘텐츠는 귀속연도·기한후·자녀장려금 의도를 구분한다", async () => {
+  const pageSource = await readFile("app/calculators/work-child-incentive/page.tsx", "utf8");
+
+  assert.match(pageSource, /2026년 신청\(2025년 귀속\)/);
+  assert.ok(workChildIncentiveFaqs.some((faq) => faq.question === "2026년 근로·자녀장려금은 몇 년 소득으로 계산하나요?"));
+  assert.ok(workChildIncentiveFaqs.some((faq) => faq.question === "근로장려금과 자녀장려금을 같이 받을 수 있나요?"));
+  assert.ok(workChildIncentiveFaqs.some((faq) => faq.question === "전세보증금도 재산에 포함되나요?"));
+  assert.ok(workChildIncentiveExampleItems.some((item) => item.label === "예상 자녀장려금"));
 });
 
 test("sitemap, 목록, 홈에는 근로·자녀장려금 계산기를 노출한다", async () => {

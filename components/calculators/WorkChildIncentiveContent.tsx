@@ -17,8 +17,8 @@ export function WorkChildIncentiveContent() {
           <h2 id="work-child-criteria">2026년 신청 기준</h2>
           <p>
             기준일은 {formatKoreanDate(workChildIncentivePolicySummary.verifiedAt)}
-            이며, {workChildIncentivePolicySummary.incomeYear}으로 소득 기준을
-            확인합니다.
+            이며, 2026년 신청은 {workChildIncentivePolicySummary.incomeYear}과
+            2025년 6월 1일 재산을 기준으로 확인합니다.
           </p>
         </div>
         <dl className={styles.criteriaList}>
@@ -44,6 +44,18 @@ export function WorkChildIncentiveContent() {
             </div>
           ))}
         </dl>
+      </section>
+
+      <section className={styles.section} aria-labelledby="work-child-filing">
+        <div className={styles.sectionHeading}>
+          <h2 id="work-child-filing">2026년 신청 시기</h2>
+          <p>{workChildIncentivePolicySummary.filingPeriod}</p>
+        </div>
+        <p>
+          기한 후 신청은 정기신청 기준 예상액의 95%를 반영합니다. 근로소득자 대상
+          반기신청은 2026년 발생 소득을 바탕으로 이후 정산하므로 이 계산기의 2025년
+          귀속 정기·기한 후 예상액과 같은 의미가 아닙니다.
+        </p>
       </section>
 
       <section className={styles.section} aria-labelledby="work-child-exceptions">

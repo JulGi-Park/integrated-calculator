@@ -10,9 +10,9 @@ import {
   workChildIncentiveWebApplicationJsonLd,
 } from "@/components/calculators/workChildIncentiveContentData";
 
-const title = "근로장려금 계산기 2026 - 자녀장려금 예상 지급액까지 확인";
+const title = "근로·자녀장려금 계산기 2026 | 예상 지급액·소득·재산 기준";
 const description =
-  "근로장려금과 자녀장려금의 신청 가능성, 소득 기준, 재산 기준, 예상 지급액을 확인하는 계산기입니다. 예상 계산용이며 실제 지급 여부와 지급액은 국세청 심사 결과에 따라 달라질 수 있습니다.";
+  "2026년 신청(2025년 귀속) 기준으로 근로장려금·자녀장려금의 예상 지급액, 소득·재산 기준과 기한 후 신청 감액을 확인합니다. 실제 지급 여부와 금액은 국세청 심사 결과에 따라 달라질 수 있습니다.";
 const ogUrl = "https://gyesanbox.kr/calculators/work-child-incentive/";
 const ogImage = "https://gyesanbox.kr/og/default.png";
 
@@ -59,8 +59,8 @@ export default function WorkChildIncentivePage() {
         <p className="page-heading__eyebrow">Work and child incentive</p>
         <h1>근로·자녀장려금 계산기</h1>
         <p>
-          2026년 신청 기준으로 근로장려금과 자녀장려금 신청 가능성,
-          재산 감액, 예상 지급액과 예상 구간을 자가진단합니다.
+          2026년 신청은 2025년 귀속 소득과 2025년 6월 1일 재산을 기준으로
+          근로장려금과 자녀장려금 신청 가능성, 재산 감액, 예상 지급액을 자가진단합니다.
         </p>
         <div className="seller-margin-meta">
           <span>계산 기준일: {workChildIncentivePolicySummary.verifiedAt}</span>
