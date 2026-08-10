@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import test from "node:test";
@@ -47,14 +48,13 @@ test("AdSense 설정값은 환경변수 형식이 유효할 때만 사용한다"
   assert.equal(getConfiguredAdSenseClient("ca-pub-1234567890123456"), "ca-pub-1234567890123456");
 });
 
-test("AdSenseScript는 유효한 publisher ID로 전역 연결 스크립트를 렌더링한다", () => {
-  const markup = renderToStaticMarkup(
-    React.createElement(AdSenseScript, { client: "ca-pub-1234567890123456" }),
-  );
+test("AdSenseScript는 hydration 이후 전역 연결 스크립트를 로드하도록 구성한다", async () => {
+  const source = await readFile("components/ads/AdSenseScript.tsx", "utf8");
 
-  assert.match(markup, /pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/);
-  assert.match(markup, /client=ca-pub-1234567890123456/);
-  assert.match(markup, /crossorigin="anonymous"/);
+  assert.match(source, /import Script from "next\/script"/);
+  assert.match(source, /pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/);
+  assert.match(source, /crossOrigin="anonymous"/);
+  assert.match(source, /strategy="afterInteractive"/);
 });
 
 test("AdSenseScript는 환경변수가 없거나 잘못되면 빈 스크립트를 렌더링하지 않는다", () => {

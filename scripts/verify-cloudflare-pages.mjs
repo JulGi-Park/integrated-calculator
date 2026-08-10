@@ -75,6 +75,37 @@ const publicCalculatorHeroPages = [
   ["out/calculators/rent-vs-jeonse/index.html", "/og/rent-vs-jeonse-hero.png"],
 ];
 
+function countInitialScriptLoads(html, sourceUrl) {
+  const escapedUrl = sourceUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const directScriptLoads =
+    html.match(
+      new RegExp(`<script\\b[^>]*\\bsrc=["']${escapedUrl}["'][^>]*>`, "gi"),
+    ) ?? [];
+  const nextScriptLoads =
+    html.match(
+      new RegExp(
+        `self\\.__next_s=self\\.__next_s\\|\\|\\[\\]\\)\\.push\\(\\["${escapedUrl}"`,
+        "gi",
+      ),
+    ) ?? [];
+  const afterInteractiveDescriptor = `\\"src\\":\\"${sourceUrl}\\",\\"strategy\\":\\"afterInteractive\\"`;
+  const afterInteractiveLoads = html.split(afterInteractiveDescriptor).length - 1;
+
+  if (afterInteractiveLoads > 0) {
+    const preloadLinks =
+      html.match(
+        new RegExp(
+          `<link[^>]+rel="preload"[^>]+href="${escapedUrl}"[^>]+as="script"|<link[^>]+href="${escapedUrl}"[^>]+rel="preload"[^>]+as="script"`,
+          "gi",
+        ),
+      ) ?? [];
+
+    assert.equal(preloadLinks.length, 1, `${sourceUrl} must retain one preload link.`);
+  }
+
+  return directScriptLoads.length + nextScriptLoads.length + afterInteractiveLoads;
+}
+
 const forbiddenSourcePatterns = [
   {
     pattern: /["']use server["']/,
@@ -185,8 +216,20 @@ async function verifyStaticOutput() {
     assert.equal((body.match(/<h1\b/gi) ?? []).length, 1, `${relativePath} must render exactly one H1.`);
     assert.match(head, new RegExp(`<link[^>]+rel="canonical"[^>]+href="${canonical}"|<link[^>]+href="${canonical}"[^>]+rel="canonical"`, "i"));
     assert.doesNotMatch(head, /name="robots"[^>]+noindex|content="[^"']*noindex/i);
-    assert.equal((html.match(/<script\b[^>]*googletagmanager\.com\/gtag\/js\?id=G-YMJFLPRFMV[^>]*>/gi) ?? []).length, 1);
-    assert.equal((html.match(/<script\b[^>]*pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-4273771596550595[^>]*>/gi) ?? []).length, 1);
+    assert.equal(
+      countInitialScriptLoads(
+        html,
+        "https://www.googletagmanager.com/gtag/js?id=G-YMJFLPRFMV",
+      ),
+      1,
+    );
+    assert.equal(
+      countInitialScriptLoads(
+        html,
+        "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4273771596550595",
+      ),
+      1,
+    );
   }
 
   for (const [relativePath, imagePath] of publicCalculatorHeroPages) {
@@ -225,12 +268,18 @@ async function verifyStaticOutput() {
       `${relativePath} must not render an advertising unit or placeholder.`,
     );
     assert.equal(
-      (html.match(/<script\b[^>]*googletagmanager\.com\/gtag\/js\?id=G-YMJFLPRFMV[^>]*>/gi) ?? []).length,
+      countInitialScriptLoads(
+        html,
+        "https://www.googletagmanager.com/gtag/js?id=G-YMJFLPRFMV",
+      ),
       1,
       `${relativePath} must retain exactly one GA4 script.`,
     );
     assert.equal(
-      (html.match(/<script\b[^>]*pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-4273771596550595[^>]*>/gi) ?? []).length,
+      countInitialScriptLoads(
+        html,
+        "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4273771596550595",
+      ),
       1,
       `${relativePath} must retain exactly one AdSense script.`,
     );

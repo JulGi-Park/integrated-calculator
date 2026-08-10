@@ -1,3 +1,4 @@
+import Script from "next/script";
 import { getConfiguredAdSenseClient } from "@/lib/adsense";
 
 type AdSenseScriptProps = {
@@ -12,10 +13,11 @@ export function AdSenseScript({ client }: AdSenseScriptProps) {
   }
 
   return (
-    <script
+    <Script
       async
       crossOrigin="anonymous"
       src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adSenseClient}`}
+      strategy="afterInteractive"
     />
   );
 }

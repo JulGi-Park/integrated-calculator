@@ -1,16 +1,16 @@
 import assert from "node:assert/strict";
-import React from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { GoogleTag, GOOGLE_TAG_ID } from "../components/analytics/GoogleTag.tsx";
+import { GOOGLE_TAG_ID } from "../components/analytics/GoogleTag.tsx";
 
-test("GoogleTag는 요청된 Google tag ID를 한 번 렌더링한다", () => {
-  const markup = renderToStaticMarkup(React.createElement(GoogleTag));
+test("GoogleTag는 hydration 이후 Google tag를 한 번 로드하도록 구성한다", async () => {
+  const source = await readFile("components/analytics/GoogleTag.tsx", "utf8");
 
   assert.equal(GOOGLE_TAG_ID, "G-YMJFLPRFMV");
-  assert.match(markup, /https:\/\/www\.googletagmanager\.com\/gtag\/js\?id=G-YMJFLPRFMV/);
-  assert.match(markup, /window\.dataLayer = window\.dataLayer \|\| \[\];/);
-  assert.match(markup, /gtag\('config', 'G-YMJFLPRFMV'\);/);
-  assert.equal((markup.match(/googletagmanager\.com/g) ?? []).length, 1);
-  assert.equal((markup.match(/G-YMJFLPRFMV/g) ?? []).length, 2);
+  assert.match(source, /import Script from "next\/script"/);
+  assert.match(source, /googletagmanager\.com\/gtag\/js\?id=/);
+  assert.match(source, /strategy="afterInteractive"/);
+  assert.match(source, /id="google-tag-bootstrap"/);
+  assert.match(source, /window\.dataLayer = window\.dataLayer \|\| \[\];/);
+  assert.match(source, /gtag\('config', '\$\{GOOGLE_TAG_ID\}'\);/);
 });
