@@ -1,6 +1,7 @@
 import {
   laborPayExampleInput,
   laborPayExampleResult,
+  laborPayBoundaryExamples,
   laborPayExclusions,
   laborPayFaqs,
   laborPayFormulas,
@@ -11,6 +12,22 @@ import styles from "./SellerMarginContent.module.css";
 export function LaborPayContent() {
   return (
     <div className={styles.content}>
+      <section className={styles.section} aria-labelledby="labor-weekly-pay-intro">
+        <div className={styles.sectionHeading}>
+          <h2 id="labor-weekly-pay-intro">알바 주급과 주휴수당을 한 번에 확인하세요</h2>
+          <p>
+            시급제 근로자의 예상 주급은 실제 근로시간에 대한 기본 근로임금과,
+            지급 요건을 충족할 때 발생하는 주휴수당을 합산해 확인합니다.
+          </p>
+        </div>
+        <div className={styles.formulaList}>
+          <div>
+            <dt>예상 주급</dt>
+            <dd>기본 근로임금 + 해당되는 주휴수당</dd>
+          </div>
+        </div>
+      </section>
+
       <section className={styles.section} aria-labelledby="labor-interpretation">
         <div className={styles.sectionHeading}>
           <h2 id="labor-interpretation">결과를 이렇게 해석하세요</h2>
@@ -121,7 +138,10 @@ export function LaborPayContent() {
       <section className={styles.section} aria-labelledby="labor-example">
         <div className={styles.sectionHeading}>
           <h2 id="labor-example">계산 예시</h2>
-          <p>아래 예시는 2026년 최저임금과 주 20시간 개근을 가정한 사례입니다.</p>
+          <p>
+            아래 예시는 2026년 최저임금과 주 20시간 개근을 가정한 사례입니다.
+            하루 4시간·주 5일 근무와 주 15시간 경계도 함께 보여드립니다.
+          </p>
         </div>
         <div className={styles.exampleGrid}>
           <article className={styles.exampleCard}>
@@ -147,6 +167,13 @@ export function LaborPayContent() {
             </dl>
           </article>
         </div>
+        <ul className={styles.exclusionList}>
+          {laborPayBoundaryExamples.map(({ title, description }) => (
+            <li key={title}>
+              <strong>{title}</strong>: {description}
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className={styles.section} aria-labelledby="labor-exclusions">

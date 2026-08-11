@@ -23,7 +23,7 @@ const routes = [
   ],
   [
     "app/calculators/labor-pay/page.tsx",
-    "주휴수당 계산기 2026 | 알바 주휴수당과 주급 계산",
+    "알바 주급·주휴수당 계산기 2026 | 시급·근무시간 기준",
   ],
   [
     "app/calculators/loan/page.tsx",
@@ -103,7 +103,7 @@ test("주휴수당 계산기 페이지와 목록 링크가 실제 UI를 제공�
 
   assert.match(pageSource, /LaborPayCalculator/);
   assert.match(pageSource, /<CompactCalculatorHero/);
-  assert.match(pageSource, /title="주휴수당 계산기"/);
+  assert.match(pageSource, /title="주휴수당·알바 주급 계산기"/);
   assert.match(pageSource, /JsonLdScripts/);
   assert.doesNotMatch(pageSource, /notFound\(\)|계산 기능 준비 중/);
   assert.match(listSource, /href="\/calculators\/labor-pay\/"/);

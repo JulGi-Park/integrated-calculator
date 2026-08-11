@@ -93,9 +93,9 @@ const calculatorMetadataCases = [
   {
     slug: "labor-pay",
     modulePath: "../app/calculators/labor-pay/page.tsx",
-    title: "주휴수당 계산기 2026 - 알바 주휴수당과 주급 계산",
+    title: "알바 주급·주휴수당 계산기 2026 | 시급·근무시간 기준",
     description:
-      "2026년 최저임금과 근로기준법 기준을 참고해 시급제·단시간 근로자의 예상 주휴시간, 주휴수당, 주휴 포함 주급을 계산합니다.",
+      "시급과 주간 근무시간을 입력해 기본 근로임금, 주휴수당, 주휴 포함 예상 주급을 계산하고 주 15시간 기준과 개근 여부를 확인합니다.",
     imageSlug: "labor-pay-hero",
   },
   {

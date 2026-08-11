@@ -10,7 +10,7 @@ import {
 test("주휴수당 계산기 페이지는 공개 메타데이터와 색인 허용 설정을 가진다", () => {
   assert.equal(
     metadata.title,
-    "주휴수당 계산기 2026 | 알바 주휴수당과 주급 계산",
+    "알바 주급·주휴수당 계산기 2026 | 시급·근무시간 기준",
   );
   assert.equal(metadata.robots.index, true);
   assert.equal(metadata.robots.follow, true);
@@ -24,7 +24,7 @@ test("페이지 소스가 제목, 기준일, 공개 JSON-LD를 포함한다", as
   const source = await readFile("app/calculators/labor-pay/page.tsx", "utf8");
 
   assert.match(source, /<CompactCalculatorHero/);
-  assert.match(source, /title="주휴수당 계산기"/);
+  assert.match(source, /title="주휴수당·알바 주급 계산기"/);
   assert.match(source, /laborPayBaseDate/);
   assert.match(source, /JsonLdScripts/);
   assert.doesNotMatch(source, /isLaborPayCalculatorEnabled|notFound\(\)/);
@@ -53,6 +53,8 @@ test("콘텐츠 데이터에 기준일, 공식 출처, FAQ, 면책 문구가 준
     "https://1350.moel.go.kr/rtmview.do?id=1000059852",
   );
   assert.ok(laborPayFaqs.length >= 9);
+  assert.ok(laborPayFaqs.some((faq) => faq.question === "알바 주급은 어떻게 계산하나요?"));
+  assert.ok(laborPayFaqs.some((faq) => faq.question === "주 15시간 미만도 주휴수당을 받을 수 있나요?"));
   assert.equal(laborPayFaqs.at(-1).question, "한 달 주휴수당은 어떻게 계산하나요?");
   assert.ok(laborPayFaqs.some((faq) => faq.question === "주급에 주휴수당은 어떻게 포함되나요?"));
   assert.match(dataSource, /주급을 단순히 4배 또는 4\.345배로 자동 환산하지 않습니다/);

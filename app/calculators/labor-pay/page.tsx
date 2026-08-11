@@ -14,7 +14,7 @@ import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
 const seo = PUBLIC_CALCULATOR_SEO["labor-pay"];
 const { title, description } = seo;
 const canonical = `https://gyesanbox.kr${seo.path}`;
-const ogTitle = "주휴수당 계산기 2026 - 알바 주휴수당과 주급 계산";
+const ogTitle = "알바 주급·주휴수당 계산기 2026 | 시급·근무시간 기준";
 const ogDescription = description;
 const ogImage = seo.image;
 
@@ -99,11 +99,11 @@ export default function LaborPayPage() {
       <CompactCalculatorHero
         className="labor-pay-heading"
         eyebrow="Labor pay"
-        title="주휴수당 계산기"
+        title="주휴수당·알바 주급 계산기"
         description={
           <>
-          근무시간, 시급, 개근 여부를 입력해 예상 주휴수당과 주휴 포함
-          주급을 계산하는 계산기입니다.
+          시급과 1주 근무시간, 개근 여부를 입력하면 기본 근로임금과 해당되는
+          주휴수당을 더한 예상 주급을 확인할 수 있습니다.
           </>
         }
         meta={

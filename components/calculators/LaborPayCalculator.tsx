@@ -344,7 +344,7 @@ export function LaborPayCalculator() {
             <p className={styles.step}>Step 2</p>
             <h2>결과 요약</h2>
           </div>
-          <p>입력값 기준 예상값</p>
+          <p>기본 근로임금과 주휴수당을 합산한 예상 주급</p>
         </div>
 
         <div className={styles.resultLive}>
@@ -385,11 +385,11 @@ export function LaborPayCalculator() {
                   <dd>{formatLaborPayHours(result.weeklyHolidayHours)}</dd>
                 </div>
                 <div>
-                  <dt>기본 근로수당</dt>
+                  <dt>기본 근로임금</dt>
                   <dd>{formatLaborPayWon(result.baseWeeklyPay)}</dd>
                 </div>
                 <div>
-                  <dt>주휴 포함 예상 주급</dt>
+                  <dt>예상 주급 (주휴 포함)</dt>
                   <dd>{formatLaborPayWon(result.weeklyPayIncludingHoliday)}</dd>
                 </div>
                 <div>

@@ -62,8 +62,8 @@ export function buildLaborPayResultText(
     `지급 대상 여부: ${result.isEligible ? "대상" : "대상 아님"}`,
     `예상 주휴시간: ${formatLaborPayHours(result.weeklyHolidayHours)}`,
     `예상 주휴수당: ${formatLaborPayWon(result.weeklyHolidayPay)}`,
-    `기본 근로수당: ${formatLaborPayWon(result.baseWeeklyPay)}`,
-    `주휴 포함 예상 주급: ${formatLaborPayWon(
+    `기본 근로임금: ${formatLaborPayWon(result.baseWeeklyPay)}`,
+    `예상 주급 (주휴 포함): ${formatLaborPayWon(
       result.weeklyPayIncludingHoliday,
     )}`,
   ];
