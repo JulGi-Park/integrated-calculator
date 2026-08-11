@@ -113,9 +113,18 @@ test("홈 JSON-LD는 화면 내용과 연락처 및 구현 완료 계산기만 �
     ["WebSite", "Organization", "BreadcrumbList", "ItemList"],
   );
   assert.equal(scripts[0].name, "계산박스");
+  assert.deepEqual(scripts[0].alternateName, ["gyesanbox", "gyesanbox.kr"]);
   assert.equal(scripts[0].url, "https://gyesanbox.kr/");
   assert.equal(scripts[0].description, "생활·금융·근로 계산기 모음 서비스");
   assert.equal(scripts[1]["@type"], "Organization");
+  assert.equal(scripts[1].name, "계산박스");
+  assert.deepEqual(scripts[1].alternateName, ["gyesanbox", "gyesanbox.kr"]);
+  assert.equal(scripts[1].url, "https://gyesanbox.kr/");
+  assert.equal(scripts[1].logo, "https://gyesanbox.kr/icon.png");
+  assert.equal(
+    scripts[1].description,
+    "계산박스(gyesanbox)는 생활·금융·근로 계산을 간편하게 확인할 수 있는 무료 온라인 계산기 서비스입니다.",
+  );
   assert.deepEqual(scripts[1].sameAs, [
     "https://www.instagram.com/gyesanbox/",
     "https://www.threads.com/@gyesanbox",
@@ -137,6 +146,7 @@ test("홈 JSON-LD는 화면 내용과 연락처 및 구현 완료 계산기만 �
     serialized,
     /integrated-calculator\.pages\.dev|localhost|127\.0\.0\.1|example\.com|placeholder|준비 중/,
   );
+  assert.match(html, /계산박스\(gyesanbox\)는 생활·금융·근로 계산을 간편하게 확인할 수 있는/);
 });
 
 test("공통 푸터에 문의 링크와 참고용 면책 문구가 있다", async () => {
