@@ -10,23 +10,27 @@ import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 const title = "카드 할부 계산기 | 월별 수수료·총 납부액 계산";
 const description =
   "구매금액, 할부 개월 수, 연 할부 수수료율을 입력해 월별 수수료, 월 납부액, 총 수수료와 총 납부액을 추정합니다.";
+const ogUrl = "https://gyesanbox.kr/calculators/card-installment/";
+const ogImage = "https://gyesanbox.kr/og/card-installment.png";
 
 export const metadata: Metadata = {
   title,
   description,
   alternates: {
-    canonical: "https://gyesanbox.kr/calculators/card-installment/",
+    canonical: ogUrl,
   },
   openGraph: {
     title,
     description,
-    url: "https://gyesanbox.kr/calculators/card-installment/",
+    url: ogUrl,
     type: "website",
+    images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title,
     description,
+    images: [ogImage],
   },
 };
 

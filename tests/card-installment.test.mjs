@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { metadata } from "../app/calculators/card-installment/page.tsx";
 import {
   calculateCardInstallment,
   calculateCardInstallmentFromUnknown,
@@ -8,6 +10,22 @@ import {
   CARD_INSTALLMENT_LIMITS,
   validateCardInstallmentInput,
 } from "../lib/calculators/card-installment/validation.ts";
+
+test("카드 할부 계산기는 전용 Open Graph와 Twitter 이미지를 사용한다", async () => {
+  const image = "https://gyesanbox.kr/og/card-installment.png";
+  const png = await readFile("public/og/card-installment.png");
+
+  assert.equal(metadata.alternates.canonical, "https://gyesanbox.kr/calculators/card-installment/");
+  assert.equal(metadata.openGraph.url, "https://gyesanbox.kr/calculators/card-installment/");
+  assert.deepEqual(metadata.openGraph.images, [
+    { url: image, width: 1200, height: 630, alt: metadata.title },
+  ]);
+  assert.equal(metadata.twitter.card, "summary_large_image");
+  assert.deepEqual(metadata.twitter.images, [image]);
+  assert.deepEqual([...png.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+  assert.equal(png.readUInt32BE(16), 1200);
+  assert.equal(png.readUInt32BE(20), 630);
+});
 
 const baseInput = {
   purchaseAmount: 1_200_000,
