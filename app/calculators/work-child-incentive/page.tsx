@@ -14,7 +14,7 @@ const title = "근로·자녀장려금 계산기 2026 | 예상 지급액·소득
 const description =
   "2026년 신청(2025년 귀속) 기준으로 근로장려금·자녀장려금의 예상 지급액, 소득·재산 기준과 기한 후 신청 감액을 확인합니다. 실제 지급 여부와 금액은 국세청 심사 결과에 따라 달라질 수 있습니다.";
 const ogUrl = "https://gyesanbox.kr/calculators/work-child-incentive/";
-const ogImage = "https://gyesanbox.kr/og/default.png";
+const ogImage = "https://gyesanbox.kr/og/work-child-incentive.png";
 
 export const metadata: Metadata = {
   title,

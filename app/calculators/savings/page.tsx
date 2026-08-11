@@ -11,12 +11,27 @@ import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 const title = "예금·적금 이자 계산기 | 세후 이자·만기 수령액 계산";
 const description =
   "예금과 적금의 세전 이자, 세후 이자, 세금, 만기 수령액을 입력값 기준으로 계산합니다.";
+const ogUrl = "https://gyesanbox.kr/calculators/savings/";
+const ogImage = "https://gyesanbox.kr/og/savings.png";
 
 export const metadata: Metadata = {
   title,
   description,
   alternates: {
-    canonical: "https://gyesanbox.kr/calculators/savings/",
+    canonical: ogUrl,
+  },
+  openGraph: {
+    title,
+    description,
+    url: ogUrl,
+    type: "website",
+    images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: [ogImage],
   },
 };
 

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { metadata } from "../app/calculators/youth-future-savings/page.tsx";
 import {
   calculateYouthFutureSavings,
 } from "../lib/calculators/youth-future-savings/index.ts";
@@ -8,6 +9,18 @@ import {
   youthFutureSavingsFaqJsonLd,
   youthFutureSavingsFaqs,
 } from "../components/calculators/youthFutureSavingsContentData.ts";
+
+test("청년미래적금 계산기는 전용 OG/Twitter 이미지를 사용한다", async () => {
+  const image = "https://gyesanbox.kr/og/youth-future-savings.png";
+  const png = await readFile("public/og/youth-future-savings.png");
+  assert.equal(metadata.openGraph.url, "https://gyesanbox.kr/calculators/youth-future-savings/");
+  assert.deepEqual(metadata.openGraph.images, [{ url: image, width: 1200, height: 630, alt: "청년미래적금 계산기" }]);
+  assert.equal(metadata.twitter.card, "summary_large_image");
+  assert.deepEqual(metadata.twitter.images, [image]);
+  assert.deepEqual([...png.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+  assert.equal(png.readUInt32BE(16), 1200);
+  assert.equal(png.readUInt32BE(20), 630);
+});
 
 test("청년미래적금 대표 계산 케이스를 계산한다", () => {
   const response = calculateYouthFutureSavings({

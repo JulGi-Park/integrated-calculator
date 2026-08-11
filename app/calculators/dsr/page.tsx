@@ -14,7 +14,7 @@ const title = "DSR 계산기 2026 | 스트레스 DSR·대출 원리금 계산";
 const description =
   "주택담보·신용·비주택담보대출의 일반 DSR과 2026년 하반기 공식 스트레스 DSR 정책 자동판정, 사용자 금리상승 시나리오를 구분해 계산합니다.";
 const ogUrl = "https://gyesanbox.kr/calculators/dsr/";
-const ogImage = "https://gyesanbox.kr/og/default.png";
+const ogImage = "https://gyesanbox.kr/og/dsr.png";
 
 export const metadata: Metadata = {
   title,

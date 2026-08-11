@@ -15,7 +15,7 @@ const title =
 const description =
   "월 납입액·연 이자율·정부기여금 참고 유형을 입력해 청년미래적금의 예상 만기금액을 계산합니다. 월 최대 50만원, 3년, 일반형 6%·우대형 12%와 비과세 기준을 안내합니다.";
 const ogUrl = "https://gyesanbox.kr/calculators/youth-future-savings/";
-const ogImage = "https://gyesanbox.kr/og/default.png";
+const ogImage = "https://gyesanbox.kr/og/youth-future-savings.png";
 
 export const metadata: Metadata = {
   title,
