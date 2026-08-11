@@ -12,23 +12,27 @@ import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 const title = "야간수당 계산기 2026 - 연장근로·휴일근로수당 자동 계산";
 const description =
   "시급과 연장근로, 야간근로, 휴일근로 시간을 입력해 연장근로수당·야간근로 가산수당·휴일근로수당을 나눠 계산합니다.";
+const ogUrl = "https://gyesanbox.kr/calculators/overtime-pay/";
+const ogImage = "https://gyesanbox.kr/og/overtime-pay.png";
 
 export const metadata: Metadata = {
   title,
   description,
   alternates: {
-    canonical: "https://gyesanbox.kr/calculators/overtime-pay/",
+    canonical: ogUrl,
   },
   openGraph: {
     title,
     description,
-    url: "https://gyesanbox.kr/calculators/overtime-pay/",
+    url: ogUrl,
     type: "website",
+    images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title,
     description,
+    images: [ogImage],
   },
 };
 
