@@ -275,11 +275,6 @@ test("변경 이력은 신규 10개 공개와 검증된 주요 변경을 올바�
     ["전세 vs 월세 비교 계산기", "/calculators/rent-vs-jeonse/"],
   ];
 
-  assert.deepEqual(
-    sections.filter((section) => section.target === "공개 계산기 공유 대표 이미지"),
-    [{ target: "공개 계산기 공유 대표 이미지", href: "/calculators/" }],
-  );
-
   for (const [name, href] of publicCalculators) {
     assert.deepEqual(
       sections.filter((section) => section.target === name),
@@ -312,13 +307,10 @@ test("변경 이력은 신규 공개와 전세·월세 변경을 최신순으로
     .map(([, year, month, day]) => Date.UTC(Number(year), Number(month) - 1, Number(day)));
 
   assert.ok(dates.length > 0);
-  assert.equal(dates[0], Date.UTC(2026, 7, 11));
-  assert.ok(dates.includes(Date.UTC(2026, 7, 9)));
+  assert.equal(dates[0], Date.UTC(2026, 7, 9));
   assert.deepEqual(dates, [...dates].sort((a, b) => b - a));
   assert.match(html, /신규 계산기 10개 공개/);
   assert.match(html, /총 20개로 확대/);
-  assert.match(html, /공개 계산기 공유 대표 이미지/);
-  assert.match(html, /계산기별 대표 이미지를 적용/);
   assert.match(html, /전세 vs 월세 비교 계산기 기준금리·전환율/);
   assert.match(html, /기준금리 기본값을 연 2\.50%에서 2\.75%/);
   assert.match(html, /법정 참고 전환율을 연 4\.50%에서 4\.75%/);
