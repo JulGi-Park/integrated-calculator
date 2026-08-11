@@ -129,7 +129,6 @@ a:focus-visible {
   .site-header__inner { width: min(100% - 24px, var(--max-width)); gap: 8px; }
   .site-header nav { gap: 6px; }
   .site-header nav .nav-link { font-size: .78rem; }
-  .favorites-current span:last-child { display: none; }
   .favorites-menu { right: -2px; }
 }
 

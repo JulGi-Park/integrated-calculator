@@ -121,12 +121,12 @@ export function FavoritesHeader() {
           aria-pressed={saved.has(currentPath!)}
           aria-label={
             saved.has(currentPath!)
-              ? "현재 페이지 즐겨찾기에서 삭제"
-              : "현재 페이지 즐겨찾기에 추가"
+              ? "즐겨찾기 해제"
+              : "즐겨찾기 추가"
           }
         >
           <span aria-hidden="true">{saved.has(currentPath!) ? "★" : "☆"}</span>
-          <span>즐겨찾기</span>
+          <span>{saved.has(currentPath!) ? "즐겨찾기 해제" : "즐겨찾기 추가"}</span>
         </button>
       )}
       <button
@@ -140,7 +140,7 @@ export function FavoritesHeader() {
         aria-label="즐겨찾기 목록 열기"
       >
         <span aria-hidden="true">★</span>
-        <span>즐겨찾기{items.length ? ` (${items.length})` : ""}</span>
+        <span>즐겨찾기 목록{items.length ? ` (${items.length})` : ""}</span>
       </button>
       {open && (
         <div
