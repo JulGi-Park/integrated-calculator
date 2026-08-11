@@ -13,22 +13,27 @@ import {
 const title = "부동산 중개보수 계산기 | 복비·중개수수료 계산";
 const description =
   "주택 매매, 전세, 월세 거래금액으로 부동산 중개보수 상한액, 부가세 포함 중개수수료, 협의요율 적용 금액과 월세 환산 거래금액을 계산합니다.";
+const ogUrl = "https://gyesanbox.kr/calculators/brokerage-fee/";
+const ogImage = "https://gyesanbox.kr/og/brokerage-fee.png";
 
 export const metadata: Metadata = {
   title,
   description,
   alternates: {
-    canonical: "https://gyesanbox.kr/calculators/brokerage-fee/",
+    canonical: ogUrl,
   },
   openGraph: {
     title,
     description,
+    url: ogUrl,
     type: "website",
+    images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title,
     description,
+    images: [ogImage],
   },
 };
 

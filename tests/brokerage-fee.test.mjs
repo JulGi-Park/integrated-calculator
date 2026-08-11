@@ -1,9 +1,27 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { metadata } from "../app/calculators/brokerage-fee/page.tsx";
 import {
   BROKERAGE_FEE_MAX_INPUT,
   calculateBrokerageFee,
 } from "../lib/calculators/brokerage-fee/brokerage-fee.ts";
+
+test("부동산 중개보수 계산기는 전용 Open Graph와 Twitter 이미지를 사용한다", async () => {
+  const image = "https://gyesanbox.kr/og/brokerage-fee.png";
+  const png = await readFile("public/og/brokerage-fee.png");
+
+  assert.equal(metadata.alternates.canonical, "https://gyesanbox.kr/calculators/brokerage-fee/");
+  assert.equal(metadata.openGraph.url, "https://gyesanbox.kr/calculators/brokerage-fee/");
+  assert.deepEqual(metadata.openGraph.images, [
+    { url: image, width: 1200, height: 630, alt: metadata.title },
+  ]);
+  assert.equal(metadata.twitter.card, "summary_large_image");
+  assert.deepEqual(metadata.twitter.images, [image]);
+  assert.deepEqual([...png.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+  assert.equal(png.readUInt32BE(16), 1200);
+  assert.equal(png.readUInt32BE(20), 630);
+});
 
 function assertSuccess(response) {
   assert.equal(response.success, true);
