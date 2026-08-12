@@ -4,6 +4,7 @@ import test from "node:test";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { metadata } from "../app/calculators/training-certificate-cost/page.tsx";
+import { TrainingCertificateCostCalculator } from "../components/calculators/TrainingCertificateCostCalculator.tsx";
 import { TrainingCertificateCostContent } from "../components/calculators/TrainingCertificateCostContent.tsx";
 import {
   trainingCertificateCostBreadcrumbJsonLd,
@@ -66,6 +67,20 @@ test("페이지에는 정확히 하나의 H1과 계산기 다음 콘텐츠가 �
     source.indexOf("<TrainingCertificateCostCalculator />") <
       source.indexOf("<TrainingCertificateCostContent />"),
   );
+});
+
+test("계산기와 콘텐츠를 함께 렌더링해도 중복 id가 없다", () => {
+  const markup = renderToStaticMarkup(
+    React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(TrainingCertificateCostCalculator),
+      React.createElement(TrainingCertificateCostContent),
+    ),
+  );
+  const ids = [...markup.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
+
+  assert.equal(new Set(ids).size, ids.length);
 });
 
 test("핵심 안내, 고용24 확인 흐름, 결과 한계와 기준일을 표시한다", () => {

@@ -68,11 +68,11 @@ export function TrainingCertificateCostContent() {
 
         <section
           className={styles.section}
-          aria-labelledby="additional-cost-heading"
+          aria-labelledby="additional-cost-explanation-heading"
         >
           <div className={styles.sectionHeading}>
             <p className={styles.eyebrow}>추가 비용</p>
-            <h2 id="additional-cost-heading">
+            <h2 id="additional-cost-explanation-heading">
               국비지원이어도 추가 비용이 발생할 수 있나요?
             </h2>
           </div>
