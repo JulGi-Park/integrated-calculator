@@ -9,6 +9,7 @@ import {
   trainingCertificateCostSeo,
   trainingCertificateCostWebApplicationJsonLd,
 } from "@/components/calculators/trainingCertificateCostContentData";
+import { isTrainingCertificateCostCalculatorEnabled } from "@/lib/calculators/training-certificate-cost/publication";
 
 const ogImage = "https://gyesanbox.kr/og/training-certificate-cost.png";
 
@@ -40,13 +41,6 @@ export const metadata: Metadata = {
   },
 };
 
-function isTrainingCertificateCostCalculatorEnabled(): boolean {
-  return (
-    process.env.NEXT_PUBLIC_ENABLE_TRAINING_CERTIFICATE_COST_CALCULATOR ===
-    "true"
-  );
-}
-
 export default function TrainingCertificateCostPage() {
   if (!isTrainingCertificateCostCalculatorEnabled()) {
     notFound();
@@ -72,7 +66,7 @@ export default function TrainingCertificateCostPage() {
           예상 부담액을 계산합니다.
         </p>
         <div className="seller-margin-meta">
-          <span>로컬 비공개 검수 중</span>
+          <span>자격증 취득 예상비용 계산</span>
           <span>입력값 기준 예상 계산</span>
           <span>정책 검토 기준일: 2026-08-12</span>
         </div>

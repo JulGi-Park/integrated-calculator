@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
 import { ContactEmail } from "@/components/common/ContactEmail";
 import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
+import {
+  isTrainingCertificateCostCalculatorEnabled,
+  TRAINING_CERTIFICATE_COST_PUBLICATION,
+} from "@/lib/calculators/training-certificate-cost/publication";
 
 const ogTitle = "계산박스 소개 - 생활 계산을 쉽게";
 const ogDescription =
   "계산박스는 실생활에 필요한 계산을 쉽고 빠르게 돕는 웹서비스입니다.";
 const ogUrl = "https://gyesanbox.kr/about/";
 const ogImage = "https://gyesanbox.kr/og/about.png";
+const trainingCertificateCostEnabled =
+  isTrainingCertificateCostCalculatorEnabled();
+const publicCalculatorCount = trainingCertificateCostEnabled ? 21 : 20;
 
 export const metadata: Metadata = {
   title: "계산박스 소개 | 계산박스",
@@ -57,6 +64,7 @@ export default function AboutPage() {
 
       <section>
         <h2>현재 제공 중인 계산기</h2>
+        <p>현재 공개 운영 중인 계산기 {publicCalculatorCount}개를 제공합니다.</p>
         <ul>
           <li><a href="/calculators/seller-margin/">판매자 마진 계산기</a></li>
           <li><a href="/calculators/salary/">연봉 실수령액 계산기</a></li>
@@ -78,6 +86,13 @@ export default function AboutPage() {
           <li><a href="/calculators/youth-future-savings/">청년미래적금 계산기</a></li>
           <li><a href="/calculators/dsr/">DSR 계산기</a></li>
           <li><a href="/calculators/work-child-incentive/">근로·자녀장려금 계산기</a></li>
+          {trainingCertificateCostEnabled ? (
+            <li>
+              <a href={TRAINING_CERTIFICATE_COST_PUBLICATION.path}>
+                {TRAINING_CERTIFICATE_COST_PUBLICATION.name}
+              </a>
+            </li>
+          ) : null}
         </ul>
       </section>
 

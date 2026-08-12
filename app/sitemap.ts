@@ -1,10 +1,14 @@
 import type { MetadataRoute } from "next";
+import {
+  isTrainingCertificateCostCalculatorEnabled,
+  TRAINING_CERTIFICATE_COST_PUBLICATION,
+} from "@/lib/calculators/training-certificate-cost/publication";
 
 const baseUrl = "https://gyesanbox.kr";
 
 export const dynamic = "force-static";
 
-const routes = [
+const publicCalculatorRoutes = [
   "/",
   "/calculators/",
   "/calculators/seller-margin/",
@@ -27,6 +31,9 @@ const routes = [
   "/calculators/youth-future-savings/",
   "/calculators/dsr/",
   "/calculators/work-child-incentive/",
+] as const;
+
+const policyRoutes = [
   "/about/",
   "/methodology/",
   "/updates/",
@@ -35,6 +42,14 @@ const routes = [
   "/terms/",
   "/disclaimer/",
 ] as const;
+
+const routes = [
+  ...publicCalculatorRoutes,
+  ...(isTrainingCertificateCostCalculatorEnabled()
+    ? [TRAINING_CERTIFICATE_COST_PUBLICATION.path]
+    : []),
+  ...policyRoutes,
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return routes.map((route) => ({

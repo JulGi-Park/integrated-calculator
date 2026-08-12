@@ -4,6 +4,7 @@ import {
   BOOKMARKABLE_PAGES,
   FAVORITES_STORAGE_KEY,
   MAX_FAVORITES,
+  getBookmarkablePages,
   normalizeFavoritePath,
   parseFavorites,
   serializeFavorites,
@@ -14,6 +15,17 @@ test("즐겨찾기 레지스트리는 공개 계산기와 반복 방문 허브�
   assert.equal(BOOKMARKABLE_PAGES.filter((page) => page.type === "calculator").length, 20);
   assert.ok(BOOKMARKABLE_PAGES.some((page) => page.path === "/calculators/"));
   assert.equal(BOOKMARKABLE_PAGES.some((page) => page.path === "/privacy-policy/"), false);
+});
+
+test("즐겨찾기 레지스트리는 공개 조건에 따라 계산기 20개와 21개를 구분한다", () => {
+  const disabled = getBookmarkablePages(false);
+  const enabled = getBookmarkablePages(true);
+  const releasePath = "/calculators/training-certificate-cost/";
+
+  assert.equal(disabled.filter((page) => page.type === "calculator").length, 20);
+  assert.equal(enabled.filter((page) => page.type === "calculator").length, 21);
+  assert.equal(disabled.some((page) => page.path === releasePath), false);
+  assert.equal(enabled.filter((page) => page.path === releasePath).length, 1);
 });
 
 test("즐겨찾기 경로는 내부 canonical path로 정규화한다", () => {

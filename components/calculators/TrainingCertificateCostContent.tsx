@@ -3,6 +3,7 @@ import {
   trainingCertificateCostExampleResult,
   trainingCertificateCostFaqs,
   trainingCertificateCostFormulaItems,
+  trainingCertificateCostRelatedCalculators,
   trainingCertificateCostSeo,
   trainingCertificateCostSources,
 } from "./trainingCertificateCostContentData";
@@ -209,6 +210,23 @@ export function TrainingCertificateCostContent() {
               <p>{answer}</p>
             </details>
           ))}
+        </div>
+      </section>
+
+      <section className={styles.section} aria-labelledby="related-heading">
+        <div className={styles.sectionHeading}>
+          <p className={styles.eyebrow}>함께 계산하기</p>
+          <h2 id="related-heading">관련 계산기</h2>
+        </div>
+        <div className={styles.relatedGrid}>
+          {trainingCertificateCostRelatedCalculators.map(
+            ({ href, title, description }) => (
+              <a className={styles.relatedCard} href={href} key={href}>
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </a>
+            ),
+          )}
         </div>
       </section>
 

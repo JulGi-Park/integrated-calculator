@@ -8,6 +8,7 @@ import {
   isStaticRouteEnabled,
   pruneDisabledStaticRoutes,
 } from "../scripts/prune-disabled-static-routes.mjs";
+import { isTrainingCertificateCostCalculatorEnabled } from "../lib/calculators/training-certificate-cost/publication.ts";
 
 const featureEnvironmentVariable =
   "NEXT_PUBLIC_ENABLE_TRAINING_CERTIFICATE_COST_CALCULATOR";
@@ -27,9 +28,15 @@ async function pathExists(targetPath) {
 
 test("정확한 소문자 true만 정적 route를 활성화한다", () => {
   assert.equal(isStaticRouteEnabled("true"), true);
+  assert.equal(isTrainingCertificateCostCalculatorEnabled("true"), true);
 
   for (const value of [undefined, "", "false", "TRUE", "1", "yes"]) {
     assert.equal(isStaticRouteEnabled(value), false, String(value));
+    assert.equal(
+      isTrainingCertificateCostCalculatorEnabled(value),
+      false,
+      String(value),
+    );
   }
 });
 

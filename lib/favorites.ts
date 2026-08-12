@@ -11,7 +11,11 @@ export type BookmarkablePage = {
   bookmarkable: true;
 };
 
-export const BOOKMARKABLE_PAGES: BookmarkablePage[] = [
+export function getBookmarkablePages(
+  trainingCertificateCostEnabled =
+    isTrainingCertificateCostCalculatorEnabled(),
+): BookmarkablePage[] {
+  return [
   ["calculators", "/calculators/", "계산기 목록", "hub"],
   ["salary", "/calculators/salary/", "연봉 실수령액 계산기", "calculator"],
   ["social-insurance", "/calculators/social-insurance/", "2026 4대보험 계산기", "calculator"],
@@ -33,9 +37,23 @@ export const BOOKMARKABLE_PAGES: BookmarkablePage[] = [
   ["youth-future-savings", "/calculators/youth-future-savings/", "청년미래적금 계산기", "calculator"],
   ["dsr", "/calculators/dsr/", "DSR 계산기", "calculator"],
   ["work-child-incentive", "/calculators/work-child-incentive/", "근로·자녀장려금 계산기", "calculator"],
+  ...(trainingCertificateCostEnabled
+    ? [[
+        TRAINING_CERTIFICATE_COST_PUBLICATION.slug,
+        TRAINING_CERTIFICATE_COST_PUBLICATION.path,
+        TRAINING_CERTIFICATE_COST_PUBLICATION.name,
+        "calculator",
+      ]]
+    : []),
   ["methodology", "/methodology/", "계산 방법론", "guide"],
   ["updates", "/updates/", "계산기 변경 이력", "guide"],
-].map(([id, path, title, type]) => ({ id, path, title, type, bookmarkable: true } as BookmarkablePage));
+  ].map(
+    ([id, path, title, type]) =>
+      ({ id, path, title, type, bookmarkable: true }) as BookmarkablePage,
+  );
+}
+
+export const BOOKMARKABLE_PAGES = getBookmarkablePages();
 
 const allowedPaths = new Set(BOOKMARKABLE_PAGES.map((page) => page.path));
 
@@ -80,3 +98,7 @@ export function parseFavorites(raw: string | null): FavoriteItem[] {
 export function serializeFavorites(items: FavoriteItem[]): string {
   return JSON.stringify(items.slice(0, MAX_FAVORITES));
 }
+import {
+  isTrainingCertificateCostCalculatorEnabled,
+  TRAINING_CERTIFICATE_COST_PUBLICATION,
+} from "@/lib/calculators/training-certificate-cost/publication";

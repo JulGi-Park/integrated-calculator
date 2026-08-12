@@ -71,6 +71,27 @@ export const trainingCertificateCostFaqs = [
   },
 ] as const;
 
+export const trainingCertificateCostRelatedCalculators = [
+  {
+    href: "/calculators/unemployment/",
+    title: "실업급여 계산기",
+    description:
+      "퇴직 후 구직 기간의 예상 구직급여와 지급 기간을 함께 확인합니다.",
+  },
+  {
+    href: "/calculators/salary/",
+    title: "연봉 실수령액 계산기",
+    description:
+      "취업 후 연봉·월급 기준 예상 공제액과 실수령액을 계산합니다.",
+  },
+  {
+    href: "/calculators/work-child-incentive/",
+    title: "근로·자녀장려금 계산기",
+    description:
+      "가구·소득·재산 조건으로 예상 장려금과 신청 기준을 확인합니다.",
+  },
+] as const;
+
 export const trainingCertificateCostSources = [
   {
     organization: "고용24",

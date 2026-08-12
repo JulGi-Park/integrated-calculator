@@ -70,6 +70,10 @@ async function pathExists(targetPath) {
   }
 }
 
+function countMatches(value, pattern) {
+  return value.match(pattern)?.length ?? 0;
+}
+
 const newlyPublicCalculatorPages = [
   ["roas", "https://gyesanbox.kr/calculators/roas/"],
   ["savings", "https://gyesanbox.kr/calculators/savings/"],
@@ -320,11 +324,34 @@ async function verifyStaticOutput() {
         path.join(routeDirectory, "index.html"),
         "utf8",
       );
+      const [routeHead = ""] = routeHtml.split(/<\/head>/i);
       assert.match(
         routeHtml,
         new RegExp(route.expectedText),
         `${route.pathname} must be exported when ${route.environmentVariable}=true.`,
       );
+      assert.match(
+        routeHead,
+        /<link[^>]+rel="canonical"[^>]+href="https:\/\/gyesanbox\.kr\/calculators\/training-certificate-cost\/"|<link[^>]+href="https:\/\/gyesanbox\.kr\/calculators\/training-certificate-cost\/"[^>]+rel="canonical"/i,
+      );
+      assert.doesNotMatch(
+        routeHead,
+        /name="robots"[^>]+noindex|content="[^"']*noindex/i,
+      );
+      for (const relatedPath of [
+        "/calculators/unemployment/",
+        "/calculators/salary/",
+        "/calculators/work-child-incentive/",
+      ]) {
+        assert.equal(
+          countMatches(
+            routeHtml,
+            new RegExp(`href="${relatedPath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`, "g"),
+          ),
+          1,
+          `${route.pathname} must render the related link once: ${relatedPath}`,
+        );
+      }
       continue;
     }
 
@@ -335,6 +362,77 @@ async function verifyStaticOutput() {
         `${route.pathname} must not exist in static output unless ${route.environmentVariable}=true: ${targetPath}`,
       );
     }
+  }
+
+  const trainingRoute = privateStaticRoutes.find(
+    (route) => route.pathname === "/calculators/training-certificate-cost/",
+  );
+  assert.ok(trainingRoute, "The training certificate publication route must stay configured.");
+  const trainingEnabled = isStaticRouteEnabled(
+    process.env[trainingRoute.environmentVariable],
+  );
+  const trainingPath = trainingRoute.pathname;
+  const trainingCanonical = `https://gyesanbox.kr${trainingPath}`;
+  const homeBody = await readFile(path.join(projectRoot, "out/index.html"), "utf8");
+  const calculatorsBody = await readFile(
+    path.join(projectRoot, "out/calculators/index.html"),
+    "utf8",
+  );
+  const aboutBody = await readFile(
+    path.join(projectRoot, "out/about/index.html"),
+    "utf8",
+  );
+  const updatesBody = await readFile(
+    path.join(projectRoot, "out/updates/index.html"),
+    "utf8",
+  );
+
+  if (trainingEnabled) {
+    assert.equal(countMatches(homeBody, /href="\/calculators\/training-certificate-cost\/"/g), 1);
+    assert.equal(countMatches(calculatorsBody, /href="\/calculators\/training-certificate-cost\/"/g), 1);
+    assert.equal(countMatches(aboutBody, /href="\/calculators\/training-certificate-cost\/"/g), 1);
+    assert.equal(countMatches(updatesBody, /href="\/calculators\/training-certificate-cost\/"/g), 1);
+    assert.match(
+      calculatorsBody,
+      /현재 공개 운영 중인 계산기\s*(?:<!-- -->)?21(?:<!-- -->)?개/,
+    );
+    assert.match(
+      aboutBody,
+      /현재 공개 운영 중인 계산기\s*(?:<!-- -->)?21(?:<!-- -->)?개/,
+    );
+    assert.match(updatesBody, /국비지원 자격증 취득비용 계산기 공개/);
+    assert.equal(countMatches(sitemap, new RegExp(trainingCanonical, "g")), 1);
+  } else {
+    for (const [name, body] of [
+      ["home", homeBody],
+      ["calculators", calculatorsBody],
+      ["about", aboutBody],
+      ["updates", updatesBody],
+    ]) {
+      assert.doesNotMatch(
+        body,
+        /training-certificate-cost|국비지원 자격증 취득비용 계산기/,
+        `${name} must not expose the disabled calculator.`,
+      );
+    }
+    assert.match(
+      calculatorsBody,
+      /현재 공개 운영 중인 계산기\s*(?:<!-- -->)?20(?:<!-- -->)?개/,
+    );
+    assert.match(
+      aboutBody,
+      /현재 공개 운영 중인 계산기\s*(?:<!-- -->)?20(?:<!-- -->)?개/,
+    );
+    assert.doesNotMatch(sitemap, /training-certificate-cost/);
+  }
+
+  for (const [relativePath] of requiredStaticFiles.slice(2)) {
+    const body = await readFile(path.join(projectRoot, relativePath), "utf8");
+    assert.doesNotMatch(
+      body,
+      /href="\/calculators\/training-certificate-cost\/"/,
+      `${relativePath} must not expose an unreviewed inbound release link.`,
+    );
   }
 }
 
