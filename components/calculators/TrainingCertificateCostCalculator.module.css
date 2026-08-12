@@ -367,6 +367,75 @@
   text-align: right;
 }
 
+.retryComparisonGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.retryComparisonCard {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #dde4de;
+  border-radius: 16px;
+  background: #fafcfb;
+}
+
+.retryComparisonCardCurrent {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  background: var(--accent-soft);
+}
+
+.retryCardHeading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.retryCardHeading h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.currentBadge {
+  flex: 0 0 auto;
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.retryComparisonCard > p {
+  margin: 18px 0 5px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.retryComparisonCard > strong {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: clamp(1.15rem, 3vw, 1.55rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.retryGuide {
+  margin: 16px 0 0;
+  padding: 13px 15px;
+  border-radius: 11px;
+  color: #3d5949;
+  background: #edf5f0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
 .notice {
   padding: 20px 24px;
   color: #566159;
@@ -386,7 +455,8 @@
   .sectionHeading,
   .fieldGrid,
   .summaryGrid,
-  .breakdownList {
+  .breakdownList,
+  .retryComparisonGrid {
     grid-template-columns: 1fr;
   }
 

@@ -19,6 +19,11 @@ import styles from "./TrainingCertificateCostCalculator.module.css";
 
 type RawInputs = Record<TrainingCertificateCostInputField, string>;
 
+type RetryComparisonScenario = {
+  attempts: 1 | 2 | 3;
+  estimatedTotalOutOfPocket: number;
+};
+
 interface FieldDefinition {
   name: TrainingCertificateCostInputField;
   label: string;
@@ -110,6 +115,30 @@ const wonFormatter = new Intl.NumberFormat("ko-KR", {
 
 function formatWon(value: number): string {
   return `${wonFormatter.format(value)}원`;
+}
+
+function calculateRetryComparisonScenarios(
+  input: TrainingCertificateCostInput,
+): RetryComparisonScenario[] | null {
+  const scenarios: RetryComparisonScenario[] = [];
+
+  for (const attempts of [1, 2, 3] as const) {
+    const response = calculateTrainingCertificateCostFromUnknown({
+      ...input,
+      expectedExamAttempts: attempts,
+    });
+
+    if (!response.success) {
+      return null;
+    }
+
+    scenarios.push({
+      attempts,
+      estimatedTotalOutOfPocket: response.data.estimatedTotalOutOfPocket,
+    });
+  }
+
+  return scenarios;
 }
 
 function formatAmountInput(value: string): string {
@@ -238,6 +267,9 @@ export function TrainingCertificateCostCalculator() {
   const calculationErrors = errors.filter(
     (error) => error.field === "calculation",
   );
+  const retryComparisonScenarios = calculatedInput
+    ? calculateRetryComparisonScenarios(calculatedInput)
+    : null;
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const field = event.currentTarget.name as TrainingCertificateCostInputField;
@@ -464,6 +496,64 @@ export function TrainingCertificateCostCalculator() {
               </div>
             </dl>
           </section>
+
+          {retryComparisonScenarios && (
+            <section
+              className={styles.resultCard}
+              aria-labelledby="retry-comparison-heading"
+            >
+              <div className={styles.cardHeading}>
+                <div>
+                  <p className={styles.step}>05 · 재응시 비교</p>
+                  <h2 id="retry-comparison-heading">
+                    응시 횟수별 예상비용 비교
+                  </h2>
+                </div>
+                <p>현재 입력한 다른 비용은 그대로 두고 응시 횟수만 비교합니다.</p>
+              </div>
+
+              <div className={styles.retryComparisonGrid}>
+                {retryComparisonScenarios.map((scenario) => {
+                  const isCurrentScenario =
+                    calculatedInput.expectedExamAttempts === scenario.attempts;
+
+                  return (
+                    <article
+                      className={`${styles.retryComparisonCard} ${
+                        isCurrentScenario
+                          ? styles.retryComparisonCardCurrent
+                          : ""
+                      }`}
+                      aria-label={`${scenario.attempts}회 응시${
+                        isCurrentScenario ? ", 현재 선택" : ""
+                      }`}
+                      aria-current={isCurrentScenario ? "true" : undefined}
+                      key={scenario.attempts}
+                    >
+                      <div className={styles.retryCardHeading}>
+                        <h3>{scenario.attempts}회 응시</h3>
+                        {isCurrentScenario && (
+                          <span className={styles.currentBadge}>현재 선택</span>
+                        )}
+                      </div>
+                      <p>총 본인부담 예상액</p>
+                      <strong>
+                        {formatWon(scenario.estimatedTotalOutOfPocket)}
+                      </strong>
+                    </article>
+                  );
+                })}
+              </div>
+
+              <p className={styles.retryGuide}>
+                {calculatedInput.examFee > 0
+                  ? `시험을 한 번 더 응시하면 예상 취득비용이 ${formatWon(
+                      calculatedInput.examFee,
+                    )} 증가합니다.`
+                  : "추가 응시료를 입력하면 응시 횟수별 비용 차이를 확인할 수 있습니다."}
+              </p>
+            </section>
+          )}
 
           <aside className={styles.notice} aria-label="계산 결과 안내">
             <p>본 계산 결과는 입력한 금액을 기준으로 한 예상값입니다.</p>

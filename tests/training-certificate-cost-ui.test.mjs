@@ -105,6 +105,83 @@ test("금액 입력에 천 단위 콤마를 표시하고 대표 fixture를 계�
   assert.ok(screen.getByText(/본 계산 결과는 입력한 금액을 기준으로 한 예상값/));
 });
 
+test("대표 fixture의 1·2·3회 비용과 현재 선택 및 증가액을 표시한다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+  await enterRepresentativeFixture(user);
+  await user.click(screen.getByRole("button", { name: "계산하기" }));
+
+  const comparison = screen.getByRole("region", {
+    name: "응시 횟수별 예상비용 비교",
+  });
+  const oneAttempt = within(comparison).getByRole("article", {
+    name: "1회 응시",
+  });
+  const twoAttempts = within(comparison).getByRole("article", {
+    name: "2회 응시, 현재 선택",
+  });
+  const threeAttempts = within(comparison).getByRole("article", {
+    name: "3회 응시",
+  });
+
+  assert.ok(within(oneAttempt).getByText("550,000원"));
+  assert.ok(within(twoAttempts).getByText("600,000원"));
+  assert.ok(within(twoAttempts).getByText("현재 선택"));
+  assert.equal(twoAttempts.getAttribute("aria-current"), "true");
+  assert.ok(within(threeAttempts).getByText("650,000원"));
+  assert.ok(
+    within(comparison).getByText(
+      "시험을 한 번 더 응시하면 예상 취득비용이 50,000원 증가합니다.",
+    ),
+  );
+});
+
+test("응시료 0원은 동일 비용과 중립 안내를 표시한다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+  await replaceValue(user, "총 훈련비", "1000000");
+  await replaceValue(user, "본인부담 훈련비", "200000");
+  await replaceValue(user, "1회 응시료", "0");
+  await replaceValue(user, "예상 응시 횟수", "2");
+  await user.click(screen.getByRole("button", { name: "계산하기" }));
+
+  const comparison = screen.getByRole("region", {
+    name: "응시 횟수별 예상비용 비교",
+  });
+  assert.equal(within(comparison).getAllByText("200,000원").length, 3);
+  assert.ok(
+    within(comparison).getByText(
+      "추가 응시료를 입력하면 응시 횟수별 비용 차이를 확인할 수 있습니다.",
+    ),
+  );
+  assert.equal(
+    within(comparison).queryByText(/예상 취득비용이 .* 증가합니다/),
+    null,
+  );
+});
+
+test("현재 응시 횟수 4회는 기존 결과를 유지하고 비교 선택은 표시하지 않는다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+  await enterRepresentativeFixture(user);
+  await replaceValue(user, "예상 응시 횟수", "4");
+  await user.click(screen.getByRole("button", { name: "계산하기" }));
+
+  const primaryResult = screen.getByRole("region", {
+    name: "국비지원 적용 후 자격증 취득 예상비용",
+  });
+  const comparison = screen.getByRole("region", {
+    name: "응시 횟수별 예상비용 비교",
+  });
+
+  assert.ok(within(primaryResult).getByText("700,000원"));
+  assert.ok(within(comparison).getByText("550,000원"));
+  assert.ok(within(comparison).getByText("600,000원"));
+  assert.ok(within(comparison).getByText("650,000원"));
+  assert.equal(comparison.querySelector('[aria-current="true"]'), null);
+  assert.equal(within(comparison).queryByText("현재 선택"), null);
+});
+
 test("선택 비용 빈 값은 0원으로 계산하고 상세 내역에 표시한다", async () => {
   const user = userEvent.setup();
   renderCalculator();
@@ -140,6 +217,10 @@ test("본인부담액 초과 오류를 표시하고 이전 정상 결과를 제�
     screen.queryByRole("region", {
       name: "국비지원 적용 후 자격증 취득 예상비용",
     }),
+    null,
+  );
+  assert.equal(
+    screen.queryByRole("region", { name: "응시 횟수별 예상비용 비교" }),
     null,
   );
 });
@@ -185,6 +266,10 @@ test("초기화는 입력·오류·결과를 지우고 응시 횟수를 1회로 
     screen.queryByRole("region", {
       name: "국비지원 적용 후 자격증 취득 예상비용",
     }),
+    null,
+  );
+  assert.equal(
+    screen.queryByRole("region", { name: "응시 횟수별 예상비용 비교" }),
     null,
   );
   assert.equal(document.activeElement, screen.getByLabelText("총 훈련비"));
