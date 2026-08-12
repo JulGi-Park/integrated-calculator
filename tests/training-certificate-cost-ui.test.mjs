@@ -1,0 +1,205 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { afterEach, test } from "node:test";
+import { JSDOM } from "jsdom";
+
+const dom = new JSDOM("<!doctype html><html><body></body></html>", {
+  url: "http://localhost/calculators/training-certificate-cost/",
+});
+
+Object.defineProperties(globalThis, {
+  window: { value: dom.window, configurable: true },
+  document: { value: dom.window.document, configurable: true },
+  navigator: { value: dom.window.navigator, configurable: true },
+  HTMLElement: { value: dom.window.HTMLElement, configurable: true },
+  HTMLInputElement: { value: dom.window.HTMLInputElement, configurable: true },
+  Node: { value: dom.window.Node, configurable: true },
+  getComputedStyle: {
+    value: dom.window.getComputedStyle.bind(dom.window),
+    configurable: true,
+  },
+  IS_REACT_ACT_ENVIRONMENT: {
+    value: true,
+    configurable: true,
+    writable: true,
+  },
+});
+
+const { cleanup, render, screen, within } = await import(
+  "@testing-library/react"
+);
+const userEvent = (await import("@testing-library/user-event")).default;
+const { TrainingCertificateCostCalculator } = await import(
+  "../components/calculators/TrainingCertificateCostCalculator.tsx"
+);
+const React = await import("react");
+
+afterEach(() => {
+  cleanup();
+});
+
+function renderCalculator() {
+  render(React.createElement(TrainingCertificateCostCalculator));
+}
+
+async function replaceValue(user, label, value) {
+  const input = screen.getByLabelText(label);
+  await user.clear(input);
+
+  if (value !== "") {
+    await user.type(input, value);
+  }
+
+  return input;
+}
+
+async function enterRepresentativeFixture(user) {
+  await replaceValue(user, "총 훈련비", "1500000");
+  await replaceValue(user, "본인부담 훈련비", "300000");
+  await replaceValue(user, "1회 응시료", "50000");
+  await replaceValue(user, "예상 응시 횟수", "2");
+  await replaceValue(user, "교재비", "30000");
+  await replaceValue(user, "실습·재료비", "50000");
+  await replaceValue(user, "훈련기간 총 교통비", "120000");
+  await replaceValue(user, "훈련기간 총 식비", "0");
+  await replaceValue(user, "기타 비용", "0");
+}
+
+test("필드 label, 모바일 입력 모드, 응시 횟수 기본값을 제공한다", () => {
+  renderCalculator();
+
+  for (const label of [
+    "총 훈련비",
+    "본인부담 훈련비",
+    "1회 응시료",
+    "예상 응시 횟수",
+    "교재비",
+    "실습·재료비",
+    "훈련기간 총 교통비",
+    "훈련기간 총 식비",
+    "기타 비용",
+  ]) {
+    assert.equal(screen.getByLabelText(label).getAttribute("inputmode"), "numeric");
+  }
+
+  assert.equal(screen.getByLabelText("예상 응시 횟수").value, "1");
+});
+
+test("금액 입력에 천 단위 콤마를 표시하고 대표 fixture를 계산한다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+  await enterRepresentativeFixture(user);
+
+  assert.equal(screen.getByLabelText("총 훈련비").value, "1,500,000");
+  assert.equal(screen.getByLabelText("본인부담 훈련비").value, "300,000");
+
+  await user.click(screen.getByRole("button", { name: "계산하기" }));
+
+  const primaryResult = screen.getByRole("region", {
+    name: "국비지원 적용 후 자격증 취득 예상비용",
+  });
+  assert.ok(within(primaryResult).getByText("600,000원"));
+  assert.equal(screen.getAllByText("1,200,000원").length, 2);
+  assert.ok(screen.getByText("1,800,000원"));
+  assert.ok(screen.getByText("100,000원"));
+  assert.ok(screen.getByText(/본 계산 결과는 입력한 금액을 기준으로 한 예상값/));
+});
+
+test("선택 비용 빈 값은 0원으로 계산하고 상세 내역에 표시한다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+  await replaceValue(user, "총 훈련비", "1000000");
+  await replaceValue(user, "본인부담 훈련비", "200000");
+  await replaceValue(user, "1회 응시료", "50000");
+
+  await user.click(screen.getByRole("button", { name: "계산하기" }));
+
+  const breakdown = screen.getByRole("region", { name: "본인부담 비용 내역" });
+  assert.equal(within(breakdown).getAllByText("0원").length, 5);
+  assert.ok(within(breakdown).getByText("250,000원"));
+});
+
+test("본인부담액 초과 오류를 표시하고 이전 정상 결과를 제거한다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+  await enterRepresentativeFixture(user);
+  await user.click(screen.getByRole("button", { name: "계산하기" }));
+  assert.ok(
+    screen.getByRole("region", {
+      name: "국비지원 적용 후 자격증 취득 예상비용",
+    }),
+  );
+
+  await replaceValue(user, "총 훈련비", "1000000");
+  await replaceValue(user, "본인부담 훈련비", "1100000");
+  await user.click(screen.getByRole("button", { name: "계산하기" }));
+
+  assert.ok(screen.getByText("훈련비 본인부담액은 총 훈련비보다 클 수 없습니다."));
+  assert.ok(screen.getByRole("alert"));
+  assert.equal(
+    screen.queryByRole("region", {
+      name: "국비지원 적용 후 자격증 취득 예상비용",
+    }),
+    null,
+  );
+});
+
+test("응시 횟수 0과 100억원 초과 금액을 필드 오류로 표시한다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+  await replaceValue(user, "총 훈련비", "10000000001");
+  await replaceValue(user, "본인부담 훈련비", "0");
+  await replaceValue(user, "1회 응시료", "0");
+  await replaceValue(user, "예상 응시 횟수", "0");
+
+  await user.click(screen.getByRole("button", { name: "계산하기" }));
+
+  assert.ok(screen.getByText("금액은 10,000,000,000원 이하여야 합니다."));
+  assert.ok(screen.getByText("예상 응시 횟수는 1회 이상이어야 합니다."));
+  assert.equal(screen.getByLabelText("총 훈련비").getAttribute("aria-invalid"), "true");
+  assert.equal(screen.getByLabelText("예상 응시 횟수").getAttribute("aria-invalid"), "true");
+});
+
+test("초기화는 입력·오류·결과를 지우고 응시 횟수를 1회로 되돌린다", async () => {
+  const user = userEvent.setup();
+  renderCalculator();
+  await enterRepresentativeFixture(user);
+  await user.click(screen.getByRole("button", { name: "계산하기" }));
+  await user.click(screen.getByRole("button", { name: "초기화" }));
+
+  for (const label of [
+    "총 훈련비",
+    "본인부담 훈련비",
+    "1회 응시료",
+    "교재비",
+    "실습·재료비",
+    "훈련기간 총 교통비",
+    "훈련기간 총 식비",
+    "기타 비용",
+  ]) {
+    assert.equal(screen.getByLabelText(label).value, "");
+  }
+  assert.equal(screen.getByLabelText("예상 응시 횟수").value, "1");
+  assert.equal(screen.queryByRole("alert"), null);
+  assert.equal(
+    screen.queryByRole("region", {
+      name: "국비지원 적용 후 자격증 취득 예상비용",
+    }),
+    null,
+  );
+  assert.equal(document.activeElement, screen.getByLabelText("총 훈련비"));
+});
+
+test("비공개 page는 strict true 환경변수와 notFound로 보호된다", async () => {
+  const source = await readFile(
+    "app/calculators/training-certificate-cost/page.tsx",
+    "utf8",
+  );
+
+  assert.match(
+    source,
+    /NEXT_PUBLIC_ENABLE_TRAINING_CERTIFICATE_COST_CALCULATOR\s*===\s*["']true["']/,
+  );
+  assert.match(source, /notFound\(\)/);
+  assert.doesNotMatch(source, /export const metadata|canonical|openGraph|FAQPage/);
+});
