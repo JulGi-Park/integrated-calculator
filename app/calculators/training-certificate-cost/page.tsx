@@ -10,7 +10,7 @@ import {
   trainingCertificateCostWebApplicationJsonLd,
 } from "@/components/calculators/trainingCertificateCostContentData";
 
-const fallbackOgImage = "https://gyesanbox.kr/og-default.png";
+const ogImage = "https://gyesanbox.kr/og/training-certificate-cost.png";
 
 export const metadata: Metadata = {
   title: trainingCertificateCostSeo.title,
@@ -25,10 +25,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: fallbackOgImage,
+        url: ogImage,
         width: 1200,
         height: 630,
-        alt: "계산박스 기본 공유 이미지",
+        alt: "국비지원 자격증 취득비용 계산기 - 내일배움카드 자비부담금과 추가 비용 계산",
       },
     ],
   },
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: trainingCertificateCostSeo.title,
     description: trainingCertificateCostSeo.description,
-    images: [fallbackOgImage],
+    images: [ogImage],
   },
 };
 

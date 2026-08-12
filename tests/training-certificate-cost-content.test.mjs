@@ -15,7 +15,12 @@ import {
   trainingCertificateCostWebApplicationJsonLd,
 } from "../components/calculators/trainingCertificateCostContentData.ts";
 
-test("전용 title, description, canonical과 기존 fallback OG를 제공한다", () => {
+test("전용 title, description, canonical과 개별 OG 이미지를 제공한다", async () => {
+  const imageUrl =
+    "https://gyesanbox.kr/og/training-certificate-cost.png";
+  const imageAlt =
+    "국비지원 자격증 취득비용 계산기 - 내일배움카드 자비부담금과 추가 비용 계산";
+
   assert.equal(metadata.title, trainingCertificateCostSeo.title);
   assert.equal(metadata.description, trainingCertificateCostSeo.description);
   assert.equal(
@@ -25,12 +30,28 @@ test("전용 title, description, canonical과 기존 fallback OG를 제공한다
   assert.equal(metadata.openGraph.url, trainingCertificateCostSeo.canonical);
   assert.deepEqual(metadata.openGraph.images, [
     {
-      url: "https://gyesanbox.kr/og-default.png",
+      url: imageUrl,
       width: 1200,
       height: 630,
-      alt: "계산박스 기본 공유 이미지",
+      alt: imageAlt,
     },
   ]);
+  assert.deepEqual(metadata.twitter.images, [imageUrl]);
+
+  const pageSource = await readFile(
+    "app/calculators/training-certificate-cost/page.tsx",
+    "utf8",
+  );
+  assert.equal(pageSource.includes("og-default.png"), false);
+
+  const image = await readFile("public/og/training-certificate-cost.png");
+  assert.deepEqual(
+    [...image.subarray(0, 8)],
+    [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
+  );
+  assert.equal(image.readUInt32BE(16), 1200);
+  assert.equal(image.readUInt32BE(20), 630);
+  assert.equal(image[25], 2, "OG 이미지는 투명도 없는 RGB PNG여야 한다");
 });
 
 test("페이지에는 정확히 하나의 H1과 계산기 다음 콘텐츠가 있다", async () => {
