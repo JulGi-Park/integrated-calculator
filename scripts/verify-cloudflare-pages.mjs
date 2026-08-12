@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
-import { readdir, readFile, stat } from "node:fs/promises";
+import { access, readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
+import {
+  getStaticRouteOutputPaths,
+  isStaticRouteEnabled,
+  privateStaticRoutes,
+} from "./prune-disabled-static-routes.mjs";
 
 const projectRoot = process.cwd();
 const sourceDirectories = ["app", "components"];
@@ -13,6 +18,9 @@ const requiredStaticFiles = [
     "out/calculators/seller-margin/index.html",
     "판매 조건을 입력하세요",
   ],
+  ["out/calculators/salary/index.html", "연봉 실수령액 계산기"],
+  ["out/calculators/loan/index.html", "대출 이자 계산기"],
+  ["out/calculators/severance/index.html", "퇴직금 계산기"],
   [
     "out/calculators/vat-profit/index.html",
     "부가세 계산기",
@@ -48,6 +56,19 @@ const requiredStaticFiles = [
   ["out/calculators/dsr/index.html", "DSR 계산기 2026"],
   ["out/calculators/work-child-incentive/index.html", "근로·자녀장려금 계산기"],
 ];
+
+async function pathExists(targetPath) {
+  try {
+    await access(targetPath);
+    return true;
+  } catch (error) {
+    if (error && typeof error === "object" && error.code === "ENOENT") {
+      return false;
+    }
+
+    throw error;
+  }
+}
 
 const newlyPublicCalculatorPages = [
   ["roas", "https://gyesanbox.kr/calculators/roas/"],
@@ -283,6 +304,37 @@ async function verifyStaticOutput() {
       1,
       `${relativePath} must retain exactly one AdSense script.`,
     );
+  }
+
+  for (const route of privateStaticRoutes) {
+    const [routeDirectory, ...flatRouteFiles] = getStaticRouteOutputPaths(
+      path.join(projectRoot, "out"),
+      route.pathname,
+    );
+    const enabled = isStaticRouteEnabled(
+      process.env[route.environmentVariable],
+    );
+
+    if (enabled) {
+      const routeHtml = await readFile(
+        path.join(routeDirectory, "index.html"),
+        "utf8",
+      );
+      assert.match(
+        routeHtml,
+        new RegExp(route.expectedText),
+        `${route.pathname} must be exported when ${route.environmentVariable}=true.`,
+      );
+      continue;
+    }
+
+    for (const targetPath of [routeDirectory, ...flatRouteFiles]) {
+      assert.equal(
+        await pathExists(targetPath),
+        false,
+        `${route.pathname} must not exist in static output unless ${route.environmentVariable}=true: ${targetPath}`,
+      );
+    }
   }
 }
 

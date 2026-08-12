@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && npm run verify:cloudflare",
+    "build": "next build && npm run prune:private-routes && npm run verify:cloudflare",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "node --import ./tests/register-css.mjs --import tsx --test",
+    "prune:private-routes": "node scripts/prune-disabled-static-routes.mjs",
     "verify:cloudflare": "node scripts/verify-cloudflare-pages.mjs"
   },
   "dependencies": {
