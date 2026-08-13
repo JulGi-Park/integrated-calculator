@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CalculatorCategoryFilter } from "@/components/calculators/CalculatorCategoryFilter";
 import {
   isTrainingCertificateCostCalculatorEnabled,
   TRAINING_CERTIFICATE_COST_PUBLICATION,
@@ -69,9 +70,10 @@ export default function CalculatorsPage() {
         </article>
       </div>
 
-      <div className="calculator-grid" role="list">
+      <CalculatorCategoryFilter>
         <a
           className="calculator-card"
+          data-category="금융"
           href="/calculators/loan/"
           role="listitem"
         >
@@ -94,6 +96,7 @@ export default function CalculatorsPage() {
 
         <a
           className="calculator-card"
+          data-category="주거"
           href="/calculators/rent-vs-jeonse/"
           role="listitem"
         >
@@ -111,6 +114,7 @@ export default function CalculatorsPage() {
 
         <a
           className="calculator-card"
+          data-category="급여"
           href="/calculators/salary/"
           role="listitem"
         >
@@ -133,6 +137,7 @@ export default function CalculatorsPage() {
 
         <a
           className="calculator-card"
+          data-category="급여"
           href="/calculators/social-insurance/"
           role="listitem"
         >
@@ -155,6 +160,7 @@ export default function CalculatorsPage() {
 
         <a
           className="calculator-card"
+          data-category="사업"
           href="/calculators/seller-margin/"
           role="listitem"
         >
@@ -174,6 +180,7 @@ export default function CalculatorsPage() {
 
         <a
           className="calculator-card"
+          data-category="사업"
           href="/calculators/vat-profit/"
           role="listitem"
         >
@@ -196,6 +203,7 @@ export default function CalculatorsPage() {
 
         <a
           className="calculator-card"
+          data-category="급여"
           href="/calculators/labor-pay/"
           role="listitem"
         >
@@ -218,6 +226,7 @@ export default function CalculatorsPage() {
 
         <a
           className="calculator-card"
+          data-category="급여"
           href="/calculators/severance/"
           role="listitem"
         >
@@ -240,6 +249,7 @@ export default function CalculatorsPage() {
 
         <a
           className="calculator-card"
+          data-category="급여"
           href="/calculators/unemployment/"
           role="listitem"
         >
@@ -262,6 +272,7 @@ export default function CalculatorsPage() {
 
         <a
           className="calculator-card"
+          data-category="급여"
           href="/calculators/parental-leave/"
           role="listitem"
         >
@@ -302,7 +313,7 @@ export default function CalculatorsPage() {
               ]]
             : []),
         ].map(([category, title, href, description]) => (
-          <a className="calculator-card" href={href} role="listitem" key={href}>
+          <a className="calculator-card" data-category={category} href={href} role="listitem" key={href}>
             <div>
               <span className="calculator-card__category">{category}</span>
               <h2>{title}</h2>
@@ -311,7 +322,7 @@ export default function CalculatorsPage() {
             <span className="calculator-card__arrow" aria-hidden="true">→</span>
           </a>
         ))}
-      </div>
+      </CalculatorCategoryFilter>
     </section>
   );
 }

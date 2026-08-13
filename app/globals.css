@@ -366,6 +366,58 @@ a:focus-visible {
   line-height: 1.7;
 }
 
+.calculator-filter {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 24px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.calculator-filter__label {
+  color: var(--text);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.calculator-filter__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.calculator-filter__buttons button {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: #425148;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.calculator-filter__buttons button:hover,
+.calculator-filter__buttons button.is-selected {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.calculator-filter__buttons button:focus-visible {
+  outline: 3px solid rgba(35, 97, 68, 0.35);
+  outline-offset: 2px;
+}
+
+.calculator-filter__status {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
 .calculator-card {
   display: flex;
   min-height: 240px;
