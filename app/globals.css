@@ -431,6 +431,10 @@ a:focus-visible {
   transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
 }
 
+.calculator-card[hidden] {
+  display: none;
+}
+
 .calculator-card:hover {
   transform: translateY(-3px);
   border-color: #a7bcaf;
