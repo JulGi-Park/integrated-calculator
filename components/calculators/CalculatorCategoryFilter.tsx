@@ -59,7 +59,7 @@ export function CalculatorCategoryFilter({ children }: { children: ReactNode }) 
         </span>
       </div>
 
-      <div className="calculator-grid" role="list">
+      <div className="calculator-grid">
         {cards.map((card) => {
           const isHidden =
             selectedCategory !== "전체" && card.props["data-category"] !== selectedCategory;
