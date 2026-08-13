@@ -236,20 +236,22 @@ export default function Home() {
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
+      "@id": `${siteUrl}#website`,
       name: "계산박스",
-      alternateName: ["gyesanbox", "gyesanbox.kr"],
+      alternateName: "gyesanbox.kr",
       url: siteUrl,
       description: "생활·금융·근로 계산기 모음 서비스",
+      publisher: { "@id": `${siteUrl}#organization` },
     },
     {
       "@context": "https://schema.org",
       "@type": "Organization",
+      "@id": `${siteUrl}#organization`,
       name: "계산박스",
-      alternateName: ["gyesanbox", "gyesanbox.kr"],
       url: siteUrl,
       logo: `${siteUrl}icon.png`,
       description:
-        "계산박스(gyesanbox)는 생활·금융·근로 계산을 간편하게 확인할 수 있는 무료 온라인 계산기 서비스입니다.",
+        "계산박스는 생활·금융·근로 계산을 간편하게 확인할 수 있는 무료 온라인 계산기 서비스입니다.",
       sameAs: [
         "https://www.instagram.com/gyesanbox/",
         "https://www.threads.com/@gyesanbox",
@@ -293,12 +295,12 @@ export default function Home() {
         <div className="hero__eyebrow">생활과 사업에 필요한 계산을 한곳에서</div>
         <h1>계산박스</h1>
         <p className="hero__description">
-          계산박스(gyesanbox)는 생활·금융·근로 계산을 간편하게 확인할 수 있는
-          무료 온라인 계산기 서비스입니다. 판매자 마진, 부가세, 연봉 실수령액,
-          대출 이자, 퇴직금, 실업급여처럼 자주 필요한 계산 도구를 빠르게
-          찾아보세요. 각 계산기는 입력값 기준의 예상 결과와 계산 기준, 입력값
-          설명, 유의사항을 함께 제공합니다. 입력한 값은 서버에 저장하지 않으며,
-          결과는 실제 지급액·세금·대출 심사·정산 결과와 다를 수 있는 참고값입니다.
+          계산박스는 gyesanbox.kr에서 운영하는 생활·금융·근로 계산 서비스입니다.
+          판매자 마진, 부가세, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여처럼
+          자주 필요한 계산 도구를 빠르게 찾아보세요. 각 계산기는 입력값 기준의
+          예상 결과와 계산 기준, 입력값 설명, 유의사항을 함께 제공합니다. 입력한
+          값은 서버에 저장하지 않으며, 결과는 실제 지급액·세금·대출 심사·정산
+          결과와 다를 수 있는 참고값입니다.
         </p>
         <a className="button button--primary" href="/calculators/">
           계산기 목록 보기

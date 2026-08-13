@@ -24,6 +24,7 @@ export function SiteFooter() {
           <p className="site-footer__copyright">
             © 2026 계산박스. All rights reserved.
           </p>
+          <p>계산박스는 대한민국 상표 출원 중입니다.</p>
           <nav className="site-footer__nav" aria-label="사이트 정책">
             {footerLinks.map((link) => (
               <a key={link.href} href={link.href}>

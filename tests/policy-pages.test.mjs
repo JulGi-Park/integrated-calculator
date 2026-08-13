@@ -13,11 +13,11 @@ const pages = [
     h1: "계산박스 소개",
     title: "계산박스 소개 | 계산박스",
     description:
-      "계산박스(gyesanbox)는 판매자 마진, 부가세, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여, 육아휴직급여, 전세·월세 비교 등 생활·금융·근로·사업·판매·주거 계산기를 제공하는 온라인 계산기 모음입니다.",
+      "계산박스는 판매자 마진, 부가세, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여, 육아휴직급여, 전세·월세 비교 등 생활·금융·근로·사업·판매·주거 계산기를 제공하는 온라인 계산기 모음입니다.",
     canonical: "https://gyesanbox.kr/about/",
     required: [
       "생활·금융·근로·사업·판매·주거 계산기 모음 서비스",
-      "계산박스(gyesanbox)는 gyesanbox.kr에서",
+      "계산박스의 공식 웹사이트는 gyesanbox.kr입니다.",
       "판매자 마진 계산기",
       "연봉 실수령액 계산기",
       "대출 이자 계산기",
@@ -86,6 +86,8 @@ const pages = [
       "사전 고지 없이 서비스의 일부를 변경하거나 중단",
       "부정 사용",
       "자동화된 과도한 요청",
+      "상표·저작권과 콘텐츠 이용 제한",
+      "계산박스 명칭은 대한민국 상표 출원 중입니다",
       "텍스트, 계산기 구성, 화면 구성, 설명 콘텐츠",
       "저작권은 계산박스 또는 정당한 권리자",
       "개인적인 참고 목적",
@@ -192,6 +194,7 @@ test("푸터에 정책 페이지 링크와 기존 연락처가 있다", async ()
   assert.match(source, /href="\/contact\/"/);
   assert.match(source, /<ContactEmail \/>/);
   assert.match(source, /© 2026 계산박스\. All rights reserved\./);
+  assert.match(source, /계산박스는 대한민국 상표 출원 중입니다/);
   assert.match(source, /계산 결과는 참고용입니다/);
 });
 
@@ -308,8 +311,11 @@ test("변경 이력은 신규 공개와 전세·월세 변경을 최신순으로
     .map(([, year, month, day]) => Date.UTC(Number(year), Number(month) - 1, Number(day)));
 
   assert.ok(dates.length > 0);
-  assert.equal(dates[0], Date.UTC(2026, 7, 9));
+  assert.equal(dates[0], Date.UTC(2026, 7, 13));
   assert.deepEqual(dates, [...dates].sort((a, b) => b - a));
+  assert.match(html, /계산박스 상표등록출원 및 브랜드 식별 신호/);
+  assert.match(html, /계산박스 상표등록출원을 완료/);
+  assert.doesNotMatch(html, /상표등록 완료/);
   assert.match(html, /신규 계산기 10개 공개/);
   assert.match(html, /총 20개로 확대/);
   assert.match(html, /전세 vs 월세 비교 계산기 기준금리·전환율/);
