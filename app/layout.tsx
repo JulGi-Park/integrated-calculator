@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { AdSenseScript } from "@/components/ads/AdSenseScript";
+import { GoogleAnalyticsPageView } from "@/components/analytics/GoogleAnalyticsPageView";
 import { GoogleTag } from "@/components/analytics/GoogleTag";
 import { SiteFooter } from "@/components/common/SiteFooter";
 import { SiteHeader } from "@/components/common/SiteHeader";
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <AdSenseScript />
       </head>
       <body>
+        <GoogleAnalyticsPageView />
         <div className="site-shell">
           <SiteHeader />
           <main className="site-main">{children}</main>
