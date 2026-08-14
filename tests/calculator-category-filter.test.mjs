@@ -41,6 +41,10 @@ test("계산기 목록은 Registry 카드 전체를 정적 HTML에 유지한다"
   for (const category of ["전체", "급여", "금융", "주거", "사업", "투자", "생활"]) {
     assert.match(html, new RegExp(`>${category}<`));
   }
+  for (const category of ["급여", "금융", "주거", "사업", "투자", "생활"]) {
+    assert.match(html, new RegExp(`<h2>${category}</h2>`));
+  }
+  assert.doesNotMatch(html, /<h2>급여·근로<\/h2>|<h2>사업·판매<\/h2>/);
 });
 
 test("카테고리 필터는 접근 가능한 버튼과 비동기 없는 상태 전환 구조를 사용한다", async () => {

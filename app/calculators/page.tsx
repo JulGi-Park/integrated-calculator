@@ -17,7 +17,7 @@ const publicCalculatorCount = trainingCertificateCostEnabled ? 21 : 20;
 export const metadata: Metadata = {
   title: "계산박스 계산기 목록",
   description:
-    "계산박스에서 급여·근로, 금융, 주거, 사업·판매 목적에 맞는 판매자 마진, 부가세, 연봉 실수령액, 대출 이자, 육아휴직급여, 전세·월세 비교 계산기를 확인하세요.",
+    "계산박스에서 급여·금융·주거·사업·투자·생활 분야의 계산기를 한곳에서 확인하세요. 연봉, 대출, 주거비, 판매 수익, 투자 손익, 생활 비용을 목적에 맞게 계산할 수 있습니다.",
   alternates: {
     canonical: ogUrl,
   },
@@ -57,16 +57,28 @@ export default function CalculatorsPage() {
 
       <div className="calculator-guide" aria-label="계산기 선택 안내">
         <article>
-          <h2>급여·근로</h2>
-          <p>연봉 실수령액, 4대보험, 주휴수당, 퇴직금, 실업급여처럼 근로 조건과 제도 기준을 함께 확인해야 할 때 사용합니다.</p>
+          <h2>급여</h2>
+          <p>연봉 실수령액, 4대보험, 주휴수당, 퇴직금, 실업급여 등 급여·근로·지원 관련 계산을 확인합니다.</p>
         </article>
         <article>
           <h2>금융</h2>
-          <p>대출 이자와 전세·월세 비교는 자금 조달 조건과 거주기간 부담을 함께 살펴볼 때 사용합니다.</p>
+          <p>대출 이자, 예금·적금, 카드 할부, DSR, 청년미래적금 등 금리·상환·저축 조건을 비교합니다.</p>
         </article>
         <article>
-          <h2>사업·판매</h2>
-          <p>판매자 마진과 부가세는 판매 조건, 공급가액, 매입세액을 나누어 점검할 때 사용합니다.</p>
+          <h2>주거</h2>
+          <p>전세 vs 월세와 부동산 중개보수 등 주거비와 거래비용을 살펴봅니다.</p>
+        </article>
+        <article>
+          <h2>사업</h2>
+          <p>판매자 마진, 부가세, ROAS 등 판매·세금·광고 수익성을 계산합니다.</p>
+        </article>
+        <article>
+          <h2>투자</h2>
+          <p>물타기·평단가처럼 추가 매수 후 평균단가와 손익 기준을 확인합니다.</p>
+        </article>
+        <article>
+          <h2>생활</h2>
+          <p>자동차 유지비와 국비지원 자격증 취득비용 등 생활 과정의 비용을 계산합니다.</p>
         </article>
       </div>
 
