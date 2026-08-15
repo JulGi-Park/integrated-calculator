@@ -79,7 +79,7 @@ export const PUBLIC_CALCULATOR_SEO = {
     path: "/calculators/social-insurance/",
     title: "2026 국민연금 납부액·4대보험 계산기 | 월급 기준 근로자 부담액",
     description:
-      "월 급여와 비과세 금액을 입력하면 2026년 4대보험(국민연금·건강보험·장기요양보험·고용보험)의 근로자 부담액과 총 공제액을 계산합니다.",
+      "월 급여와 비과세 금액을 입력하면 2026년 국민연금·건강보험(장기요양 포함)·고용보험의 근로자 부담액과 월 총 공제액을 계산합니다.",
     image: "https://gyesanbox.kr/og/social-insurance-hero.png",
     imagePath: "/og/social-insurance-hero.png",
     imageAlt: "4대보험 계산기 — 국민연금·건강보험·고용보험 공제액 계산",
