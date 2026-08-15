@@ -17,9 +17,9 @@ export const PUBLIC_CALCULATOR_SEO = {
   salary: {
     slug: "salary",
     path: "/calculators/salary/",
-    title: "2026 연봉 실수령액 계산기 | 월급·비과세액·공제 후 금액",
+    title: "2026 연봉 실수령액 계산기 | 월급·4대보험·세금 공제 후 예상액",
     description:
-      "연봉을 월급으로 환산하고 월 비과세액과 가족·자녀 수를 입력해 소득세와 사회보험료를 뺀 예상 월·연 실수령액과 공제 내역을 확인하세요.",
+      "연봉을 입력하면 월급으로 환산하고 월 비과세액·가족·자녀 수를 반영해 4대보험과 소득세·지방소득세 공제 후 예상 월·연 실수령액을 확인하세요.",
     image: "https://gyesanbox.kr/og/salary.png",
     imagePath: "/og/salary.png",
     imageAlt: "연봉 실수령액 계산기 — 월급과 공제 후 금액 확인",

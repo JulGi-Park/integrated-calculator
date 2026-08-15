@@ -37,12 +37,13 @@ const policySource = await readFile(
 
 test("연봉 계산기 전용 SEO 메타데이터를 대표 URL 기준으로 설정한다", () => {
   const expectedTitle =
-    "2026 연봉 실수령액 계산기 | 월급·비과세액·공제 후 금액";
+    "2026 연봉 실수령액 계산기 | 월급·4대보험·세금 공제 후 예상액";
   const expectedDescription =
-    "연봉을 월급으로 환산하고 월 비과세액과 가족·자녀 수를 입력해 소득세와 사회보험료를 뺀 예상 월·연 실수령액과 공제 내역을 확인하세요.";
-  const expectedOgTitle = "연봉 실수령액 계산기 | 월급·비과세액·공제 후 금액";
+    "연봉을 입력하면 월급으로 환산하고 월 비과세액·가족·자녀 수를 반영해 4대보험과 소득세·지방소득세 공제 후 예상 월·연 실수령액을 확인하세요.";
+  const expectedOgTitle =
+    "2026 연봉 실수령액 계산기 | 월급·4대보험·세금 공제 후 예상액";
   const expectedOgDescription =
-    "연봉을 월급으로 환산하고 월 비과세액, 가족·자녀 수를 입력해 세금과 사회보험료 공제 후 예상 월·연 실수령액을 확인하세요.";
+    "연봉을 입력하면 월급으로 환산하고 월 비과세액·가족·자녀 수를 반영해 4대보험과 소득세·지방소득세 공제 후 예상 월·연 실수령액을 확인하세요.";
   const expectedOgImage = "https://gyesanbox.kr/og/salary.png";
 
   assert.equal(metadata.title, expectedTitle);
@@ -77,7 +78,9 @@ test("연봉 계산기 전용 SEO 메타데이터를 대표 URL 기준으로 설
 
 test("페이지 상단은 H1 하나와 정책 연도·기준일·예상값 안내를 표시한다", () => {
   assert.equal((pageSource.match(/<CompactCalculatorHero\b/g) ?? []).length, 1);
-  assert.match(pageSource, /연봉 실수령액 계산기/);
+  assert.match(pageSource, /2026 연봉 실수령액 계산기/);
+  assert.match(pageSource, /4대보험과 소득세·지방소득세/);
+  assert.match(pageSource, /기준소득월액은 다를 수/);
   assert.match(pageSource, /적용 정책:/);
   assert.match(pageSource, /기준 확인일:/);
   assert.match(pageSource, /예상값입니다/);
