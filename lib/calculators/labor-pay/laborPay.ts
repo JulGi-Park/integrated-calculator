@@ -1,7 +1,8 @@
 export const MINIMUM_HOURLY_WAGE_2026 = 10_320;
 export const MAX_HOURLY_WAGE = 10_000_000;
 export const MONTHLY_STANDARD_HOURS = 209;
-export const WEEKLY_HOLIDAY_HOUR_LIMIT = 8;
+export const MAX_WEEKLY_SCHEDULED_HOURS = 40;
+export const MAX_DAILY_SCHEDULED_HOURS = 8;
 export const WEEKLY_ELIGIBILITY_HOURS = 15;
 
 export type LaborPayInputField =
@@ -19,6 +20,7 @@ export type LaborPayValidationCode =
   | "MUST_BE_NON_NEGATIVE"
   | "AMOUNT_OUT_OF_RANGE"
   | "HOURS_OUT_OF_RANGE"
+  | "DAILY_SCHEDULED_HOURS_EXCEED_STANDARD_LIMIT"
   | "WORK_DAYS_OUT_OF_RANGE"
   | "MUST_BE_BOOLEAN";
 
@@ -46,7 +48,6 @@ export interface LaborPayResult {
   baseWeeklyPay: number;
   weeklyPayIncludingHoliday: number;
   monthlyEstimate: number | null;
-  appliedHolidayHourCap: boolean;
   isBelowMinimumWage: boolean;
   reasons: string[];
   warnings: string[];
@@ -107,7 +108,7 @@ export function validateLaborPayInput(
         field: "weeklyScheduledHours",
         code: "MUST_BE_POSITIVE",
       });
-    } else if (weeklyScheduledHours > 168) {
+    } else if (weeklyScheduledHours > MAX_WEEKLY_SCHEDULED_HOURS) {
       errors.push({
         field: "weeklyScheduledHours",
         code: "HOURS_OUT_OF_RANGE",
@@ -142,7 +143,7 @@ export function validateLaborPayInput(
         field: "averageWeeklyScheduledHours",
         code: "MUST_BE_NON_NEGATIVE",
       });
-    } else if (averageWeeklyScheduledHours > 168) {
+    } else if (averageWeeklyScheduledHours > MAX_WEEKLY_SCHEDULED_HOURS) {
       errors.push({
         field: "averageWeeklyScheduledHours",
         code: "HOURS_OUT_OF_RANGE",
@@ -157,6 +158,14 @@ export function validateLaborPayInput(
     errors.push({ field: "weeklyWorkDays", code: "INVALID_NUMBER" });
   } else if (weeklyWorkDays < 1 || weeklyWorkDays > 7) {
     errors.push({ field: "weeklyWorkDays", code: "WORK_DAYS_OUT_OF_RANGE" });
+  } else if (
+    isFiniteNumber(weeklyScheduledHours) &&
+    weeklyScheduledHours / weeklyWorkDays > MAX_DAILY_SCHEDULED_HOURS
+  ) {
+    errors.push({
+      field: "weeklyScheduledHours",
+      code: "DAILY_SCHEDULED_HOURS_EXCEED_STANDARD_LIMIT",
+    });
   }
 
   return errors;
@@ -191,24 +200,12 @@ export function calculateLaborPay(input: LaborPayInput): LaborPayResponse {
     );
   }
 
-  if (input.weeklyScheduledHours > 52) {
-    warnings.push(
-      "1주 소정근로시간이 52시간을 초과합니다. 근로시간 산정 기준을 다시 확인해 주세요.",
-    );
-  }
-
-  if (input.weeklyScheduledHours / input.weeklyWorkDays > 8) {
-    warnings.push(
-      "1일 평균 소정근로시간이 8시간을 초과합니다. 법정근로시간, 연장근로, 휴게시간 포함 여부를 확인해 주세요.",
-    );
-  }
-
   const isEligible = reasons.length === 0;
   const effectiveWorkDays = Math.max(input.weeklyWorkDays, 5);
-  const uncappedHolidayHours =
+  const calculatedHolidayHours =
     input.weeklyScheduledHours / effectiveWorkDays;
   const weeklyHolidayHours = isEligible
-    ? roundToHours(Math.min(uncappedHolidayHours, WEEKLY_HOLIDAY_HOUR_LIMIT))
+    ? roundToHours(calculatedHolidayHours)
     : 0;
   const weeklyHolidayPay = roundToWon(weeklyHolidayHours * input.hourlyWage);
   const baseWeeklyPay = roundToWon(input.weeklyActualHours * input.hourlyWage);
@@ -228,8 +225,6 @@ export function calculateLaborPay(input: LaborPayInput): LaborPayResponse {
       baseWeeklyPay,
       weeklyPayIncludingHoliday,
       monthlyEstimate,
-      appliedHolidayHourCap:
-        isEligible && uncappedHolidayHours > WEEKLY_HOLIDAY_HOUR_LIMIT,
       isBelowMinimumWage,
       reasons,
       warnings,

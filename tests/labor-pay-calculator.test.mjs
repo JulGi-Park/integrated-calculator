@@ -126,13 +126,25 @@ test("개근 false이면 지급 대상이 아니고 주휴수당은 0원이다",
   assert.ok(data.reasons.some((reason) => reason.includes("개근")));
 });
 
-test("주 50시간 입력 시 주휴시간은 8시간으로 상한 적용한다", () => {
-  const data = assertSuccess(
-    calculateLaborPay({ ...baseInput, weeklyScheduledHours: 50 }),
+test("1주 소정근로시간 40시간 초과는 일반 근로형태 범위 밖으로 오류 처리한다", () => {
+  assertHasError(
+    calculateLaborPay({ ...baseInput, weeklyScheduledHours: 41 }),
+    "weeklyScheduledHours",
+    "HOURS_OUT_OF_RANGE",
   );
+});
 
-  assert.equal(data.weeklyHolidayHours, 8);
-  assert.equal(data.appliedHolidayHourCap, true);
+test("1일 평균 소정근로시간 8시간 초과는 오류 처리한다", () => {
+  assertHasError(
+    calculateLaborPay({
+      ...baseInput,
+      weeklyScheduledHours: 20,
+      weeklyActualHours: 20,
+      weeklyWorkDays: 2,
+    }),
+    "weeklyScheduledHours",
+    "DAILY_SCHEDULED_HOURS_EXCEED_STANDARD_LIMIT",
+  );
 });
 
 test("4주 평균 주 소정근로시간이 있으면 지급 대상 판정에 우선 사용한다", () => {
@@ -239,16 +251,12 @@ test("2026년 최저임금 미만 시급이면 경고를 반환한다", () => {
   assert.ok(data.warnings.some((warning) => warning.includes("최저임금")));
 });
 
-test("주 근무일수 기준 1일 평균 8시간 초과 시 확인 경고를 반환한다", () => {
-  const data = assertSuccess(
-    calculateLaborPay({
-      ...baseInput,
-      weeklyScheduledHours: 45,
-      weeklyWorkDays: 5,
-    }),
+test("4주 평균 주 소정근로시간 40시간 초과는 오류 처리한다", () => {
+  assertHasError(
+    calculateLaborPay({ ...baseInput, averageWeeklyScheduledHours: 41 }),
+    "averageWeeklyScheduledHours",
+    "HOURS_OUT_OF_RANGE",
   );
-
-  assert.ok(data.warnings.some((warning) => warning.includes("8시간")));
 });
 
 test("월 환산 표시는 선택한 경우에만 참고용 금액을 반환한다", () => {

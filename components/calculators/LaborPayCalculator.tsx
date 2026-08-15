@@ -8,7 +8,9 @@ import {
 } from "react";
 import {
   calculateLaborPay,
+  MAX_DAILY_SCHEDULED_HOURS,
   MINIMUM_HOURLY_WAGE_2026,
+  MAX_WEEKLY_SCHEDULED_HOURS,
   MAX_HOURLY_WAGE,
   type LaborPayInput,
   type LaborPayInputField,
@@ -34,7 +36,13 @@ interface FieldDefinition {
 
 const fields: FieldDefinition[] = [
   { name: "hourlyWage", label: "시급", unit: "원" },
-  { name: "weeklyScheduledHours", label: "1주 소정근로시간", unit: "시간" },
+  {
+    name: "weeklyScheduledHours",
+    label: "1주 소정근로시간",
+    unit: "시간",
+    helper:
+      "일반적인 근로기준법 제50조 기준 근무형태만 안내합니다. 1주 40시간 이하, 1일 평균 8시간 이하로 입력해 주세요.",
+  },
   { name: "weeklyActualHours", label: "1주 실제 근로시간", unit: "시간" },
   {
     name: "averageWeeklyScheduledHours",
@@ -74,7 +82,11 @@ function getErrorMessage(error: LaborPayValidationError) {
     case "AMOUNT_OUT_OF_RANGE":
       return `${label}은 ${MAX_HOURLY_WAGE.toLocaleString("ko-KR")}원 이하로 입력해 주세요.`;
     case "HOURS_OUT_OF_RANGE":
-      return `${label}은 168시간 이하로 입력해 주세요.`;
+      return error.field === "weeklyScheduledHours"
+        ? `${label}은 ${MAX_WEEKLY_SCHEDULED_HOURS}시간 이하로 입력해 주세요.`
+        : `${label}은 168시간 이하로 입력해 주세요.`;
+    case "DAILY_SCHEDULED_HOURS_EXCEED_STANDARD_LIMIT":
+      return `1일 평균 소정근로시간은 ${MAX_DAILY_SCHEDULED_HOURS}시간 이하로 입력해 주세요. 탄력적·교대제 등 특수 근무형태는 이 계산기의 안내 범위에 포함되지 않습니다.`;
     case "WORK_DAYS_OUT_OF_RANGE":
       return "1주 소정근로일 수는 1일부터 7일 사이로 입력해 주세요.";
     case "MUST_BE_BOOLEAN":
@@ -423,10 +435,6 @@ export function LaborPayCalculator() {
                   <dd>
                     소정근로시간 / 적용 소정근로일 수 ({result.effectiveWorkDays}일)
                   </dd>
-                </div>
-                <div>
-                  <dt>8시간 상한</dt>
-                  <dd>{result.appliedHolidayHourCap ? "적용" : "미적용"}</dd>
                 </div>
                 <div>
                   <dt>주휴수당 계산식</dt>

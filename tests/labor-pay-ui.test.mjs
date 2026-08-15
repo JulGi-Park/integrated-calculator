@@ -125,6 +125,23 @@ test("필수값 누락과 음수 입력 오류를 필드별로 표시한다", as
   assert.equal(screen.getByLabelText("시급").getAttribute("aria-invalid"), "true");
 });
 
+test("일반 근로형태 범위를 벗어난 소정근로시간은 계산하지 않는다", async () => {
+  const user = userEvent.setup();
+  render(React.createElement(LaborPayCalculator));
+
+  await replaceValue(user, "1주 소정근로시간", "20");
+  await replaceValue(user, "1주 실제 근로시간", "20");
+  await replaceValue(user, "1주 소정근로일 수", "2");
+  await user.click(screen.getByRole("button", { name: "개근" }));
+  await user.click(screen.getByRole("button", { name: "주휴수당 계산하기" }));
+
+  assert.ok(
+    screen.getByText(
+      "1일 평균 소정근로시간은 8시간 이하로 입력해 주세요. 탄력적·교대제 등 특수 근무형태는 이 계산기의 안내 범위에 포함되지 않습니다.",
+    ),
+  );
+});
+
 test("개근 아님 선택과 다시 계산 버튼이 동작한다", async () => {
   const user = userEvent.setup();
   render(React.createElement(LaborPayCalculator));

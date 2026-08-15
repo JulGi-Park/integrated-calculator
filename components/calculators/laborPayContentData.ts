@@ -16,6 +16,18 @@ export const laborPayOfficialSources = [
   },
   {
     organization: "국가법령정보센터",
+    title: "근로기준법 제2조 제1항 제8호·제50조(소정근로시간·근로시간)",
+    url: "https://www.law.go.kr/LSW/lsInfoP.do?ancYnChk=0&chrClsCd=010202&efYd=20241022&joNo=006100&lsiSeq=265959&urlMode=lsInfoP",
+    supports: "일반 근로형태의 소정근로시간은 1주 40시간·1일 8시간 범위에서 정한다는 기준",
+  },
+  {
+    organization: "국가법령정보센터",
+    title: "근로기준법 제51조(탄력적 근로시간제)",
+    url: "https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1025590263",
+    supports: "탄력적 근로시간제에서는 일정 요건 아래 특정일 근로시간이 제50조 기준을 초과할 수 있어 이 계산기의 일반 안내 범위에서 제외",
+  },
+  {
+    organization: "국가법령정보센터",
     title: "근로기준법 시행령 제30조(휴일)",
     url: "https://www.law.go.kr/LSW//lsLinkCommonInfo.do?chrClsCd=010202&lspttninfSeq=148916",
     supports: "1주 동안의 소정근로일 개근 요건",
@@ -50,7 +62,7 @@ export const laborPayOfficialSources = [
 export const laborPayFormulas = [
   {
     title: "주휴시간",
-    formula: "1주 소정근로시간 ÷ 적용 소정근로일 수(5일 미만이면 5일), 최대 8시간",
+    formula: "1주 소정근로시간 ÷ 적용 소정근로일 수(5일 미만이면 5일)",
   },
   {
     title: "주휴수당",
@@ -145,7 +157,7 @@ export const laborPayFaqs = [
   {
     question: "주휴수당 계산식은 어떻게 되나요?",
     answer:
-      "주휴시간은 원칙적으로 1주 소정근로시간을 1주 소정근로일 수로 나누어 계산합니다. 일반적인 경우 소정근로일이 5일 미만이면 5일 기준으로 보정하고, 주휴수당은 주휴시간에 시급을 곱합니다. 계산기는 1일 8시간 기준을 넘지 않도록 주휴시간을 최대 8시간으로 제한합니다.",
+      "주휴시간은 원칙적으로 1주 소정근로시간을 1주 소정근로일 수로 나누어 계산합니다. 일반적인 경우 소정근로일이 5일 미만이면 5일 기준으로 보정하고, 주휴수당은 주휴시간에 시급을 곱합니다. 이 계산기는 1주 40시간·1일 평균 8시간 이하의 일반적인 근무형태를 안내하며, 탄력적·교대제 등은 근무표와 제도 적용 여부를 함께 확인해야 합니다.",
   },
   {
     question: "주급에 주휴수당은 어떻게 포함되나요?",

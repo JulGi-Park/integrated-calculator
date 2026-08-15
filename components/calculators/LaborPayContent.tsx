@@ -44,8 +44,7 @@ export function LaborPayContent() {
           <article className={styles.infoCard}>
             <h3>예상 주휴시간</h3>
             <p>
-              1주 소정근로시간을 적용 소정근로일 수로 나누어 계산하며 최대
-              8시간으로 제한합니다.
+              1주 소정근로시간을 적용 소정근로일 수로 나누어 계산합니다.
             </p>
           </article>
           <article className={styles.infoCard}>
@@ -60,8 +59,9 @@ export function LaborPayContent() {
           <h2 id="labor-requirements">주휴수당 발생 요건</h2>
           <p>
             주휴수당은 받을 수 있는지와 금액을 나누어 확인해야 합니다.
-            계산기는 입력값으로 예상 금액을 계산하지만, 근로자성이나 실제
-            지급 의무를 확정하지 않습니다.
+            계산기는 일반적인 근로기준법 제50조 기준의 근무형태를 전제로
+            입력값으로 예상 금액을 계산하며, 근로자성이나 실제 지급 의무를
+            확정하지 않습니다.
           </p>
         </div>
         <div className={styles.interpretationGrid}>
@@ -126,8 +126,9 @@ export function LaborPayContent() {
             기준으로 보정합니다.
           </li>
           <li>
-            계산기는 1일 8시간 기준을 넘지 않도록 주휴시간을 최대 8시간으로
-            제한합니다.
+            이 계산기는 1주 40시간·1일 평균 8시간 이하의 일반적인 근무형태를
+            안내합니다. 탄력적 근로시간제·교대제·격일제는 근무표와 제도 적용
+            여부에 따라 달라질 수 있습니다.
           </li>
           <li>
             월급제 근로자는 주휴수당이 월급에 이미 포함되어 있을 수 있으므로

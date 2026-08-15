@@ -39,6 +39,7 @@ test("콘텐츠 데이터에 기준일, 공식 출처, FAQ, 면책 문구가 준
 
   assert.match(dataSource, /2026-08-15/);
   assert.doesNotMatch(dataSource, /1주 소정근로시간 \/ 40 × 8/);
+  assert.doesNotMatch(dataSource, /주휴시간을 최대 8시간으로 제한/);
   assert.doesNotMatch(contentSource, /40시간 기준 8시간에 비례/);
   assert.ok(laborPayOfficialSources.length >= 6);
   for (const source of laborPayOfficialSources) {
@@ -62,6 +63,11 @@ test("콘텐츠 데이터에 기준일, 공식 출처, FAQ, 면책 문구가 준
   assert.equal(
     supremeCourtSource.url,
     "https://www.law.go.kr/LSW/precInfoP.do?mode=0&precSeq=608507",
+  );
+  assert.ok(
+    laborPayOfficialSources.some(
+      (source) => source.title.includes("제50조") && source.supports.includes("1주 40시간"),
+    ),
   );
   assert.ok(laborPayFaqs.length >= 9);
   assert.ok(laborPayFaqs.some((faq) => faq.question === "알바 주급은 어떻게 계산하나요?"));
