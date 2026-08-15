@@ -1,4 +1,4 @@
-export const laborPayBaseDate = "2026-07-10";
+export const laborPayBaseDate = "2026-08-15";
 export const laborPayMinimumWageText = "2026년 최저임금 시간급 10,320원";
 
 export const laborPayOfficialSources = [
@@ -10,9 +10,22 @@ export const laborPayOfficialSources = [
   },
   {
     organization: "국가법령정보센터",
+    title: "근로기준법 제18조 제3항(단시간근로자의 근로조건)",
+    url: "https://law.go.kr/LSW/lsLinkProc.do?joNo=001800&lnkJoNo=undefined&lsClsCd=L&lsId=001872&lsNm=%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95&mode=4",
+    supports: "4주 평균 1주 소정근로시간이 15시간 미만인 근로자에게 제55조를 적용하지 않는 기준",
+  },
+  {
+    organization: "국가법령정보센터",
     title: "근로기준법 시행령 제30조(휴일)",
     url: "https://www.law.go.kr/LSW//lsLinkCommonInfo.do?chrClsCd=010202&lspttninfSeq=148916",
     supports: "1주 동안의 소정근로일 개근 요건",
+  },
+  {
+    organization: "대법원",
+    title: "2022다291153 임금 판결",
+    url: "https://www.law.go.kr/LSW/precInfoP.do?mode=0&precSeq=608507",
+    supports:
+      "유급 주휴시간은 원칙적으로 1주 소정근로시간을 1주 소정근로일 수로 나눈 1일 평균 소정근로시간으로 산정",
   },
   {
     organization: "고용노동부 고객상담센터",
@@ -37,7 +50,7 @@ export const laborPayOfficialSources = [
 export const laborPayFormulas = [
   {
     title: "주휴시간",
-    formula: "1주 소정근로시간 / 40 × 8, 최대 8시간",
+    formula: "1주 소정근로시간 ÷ 적용 소정근로일 수(5일 미만이면 5일), 최대 8시간",
   },
   {
     title: "주휴수당",
@@ -57,6 +70,7 @@ export const laborPayExampleInput = [
   { label: "시급", value: "10,320원" },
   { label: "근무 일정", value: "하루 4시간 × 주 5일" },
   { label: "1주 소정근로시간", value: "20시간" },
+  { label: "1주 소정근로일 수", value: "5일" },
   { label: "1주 실제 근로시간", value: "20시간" },
   { label: "개근 여부", value: "개근" },
 ] as const;
@@ -106,7 +120,7 @@ export const laborPayFaqs = [
   {
     question: "하루 근무시간이 다르면 주급은 어떻게 계산하나요?",
     answer:
-      "요일별 시간이 달라도 1주 소정근로시간과 1주 실제 근로시간의 합계를 입력해 계산할 수 있습니다. 주 근무일수는 필요한 경우 참고값으로 입력합니다.",
+      "요일별 시간이 달라도 1주 소정근로시간과 1주 실제 근로시간의 합계, 근로계약상 1주 소정근로일 수를 입력해 계산할 수 있습니다. 교대제·격일제처럼 주 단위 입력만으로 정확히 표현하기 어려운 형태는 계약·취업규칙을 함께 확인하세요.",
   },
   {
     question: "월급제가 아니라 시급제도 계산할 수 있나요?",
@@ -131,7 +145,7 @@ export const laborPayFaqs = [
   {
     question: "주휴수당 계산식은 어떻게 되나요?",
     answer:
-      "기본식은 주휴시간 = 1주 소정근로시간 / 40 × 8, 주휴수당 = 주휴시간 × 시급입니다. 계산기는 주휴시간을 최대 8시간으로 제한합니다.",
+      "주휴시간은 원칙적으로 1주 소정근로시간을 1주 소정근로일 수로 나누어 계산합니다. 일반적인 경우 소정근로일이 5일 미만이면 5일 기준으로 보정하고, 주휴수당은 주휴시간에 시급을 곱합니다. 계산기는 1일 8시간 기준을 넘지 않도록 주휴시간을 최대 8시간으로 제한합니다.",
   },
   {
     question: "주급에 주휴수당은 어떻게 포함되나요?",

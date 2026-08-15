@@ -4,6 +4,7 @@ import test from "node:test";
 import { metadata } from "../app/calculators/labor-pay/page.tsx";
 import {
   laborPayFaqs,
+  laborPayFaqJsonLd,
   laborPayOfficialSources,
 } from "../components/calculators/laborPayContentData.ts";
 
@@ -36,8 +37,10 @@ test("콘텐츠 데이터에 기준일, 공식 출처, FAQ, 면책 문구가 준
     readFile("components/calculators/LaborPayContent.tsx", "utf8"),
   ]);
 
-  assert.match(dataSource, /2026-07-10/);
-  assert.ok(laborPayOfficialSources.length >= 5);
+  assert.match(dataSource, /2026-08-15/);
+  assert.doesNotMatch(dataSource, /1주 소정근로시간 \/ 40 × 8/);
+  assert.doesNotMatch(contentSource, /40시간 기준 8시간에 비례/);
+  assert.ok(laborPayOfficialSources.length >= 6);
   for (const source of laborPayOfficialSources) {
     assert.match(source.url, /^https:\/\//);
     assert.ok(source.supports.length > 0);
@@ -52,6 +55,14 @@ test("콘텐츠 데이터에 기준일, 공식 출처, FAQ, 면책 문구가 준
     laborContractSource.url,
     "https://1350.moel.go.kr/rtmview.do?id=1000059852",
   );
+  const supremeCourtSource = laborPayOfficialSources.find(
+    (source) => source.title === "2022다291153 임금 판결",
+  );
+  assert.ok(supremeCourtSource);
+  assert.equal(
+    supremeCourtSource.url,
+    "https://www.law.go.kr/LSW/precInfoP.do?mode=0&precSeq=608507",
+  );
   assert.ok(laborPayFaqs.length >= 9);
   assert.ok(laborPayFaqs.some((faq) => faq.question === "알바 주급은 어떻게 계산하나요?"));
   assert.ok(laborPayFaqs.some((faq) => faq.question === "주 15시간 미만도 주휴수당을 받을 수 있나요?"));
@@ -64,6 +75,21 @@ test("콘텐츠 데이터에 기준일, 공식 출처, FAQ, 면책 문구가 준
   assert.match(contentSource, /자주 묻는 질문/);
   assert.match(contentSource, /관련 계산기/);
   assert.match(contentSource, /계산 결과는 입력값을 바탕으로 한 참고용 예상값/);
+});
+
+test("주휴시간 FAQ와 FAQPage JSON-LD는 최신 계산 기준을 같은 문구로 제공한다", () => {
+  const formulaFaq = laborPayFaqs.find(
+    (faq) => faq.question === "주휴수당 계산식은 어떻게 되나요?",
+  );
+  assert.ok(formulaFaq);
+  assert.match(formulaFaq.answer, /1주 소정근로일 수/);
+  assert.match(formulaFaq.answer, /5일 기준으로 보정/);
+
+  const formulaJsonLd = laborPayFaqJsonLd.mainEntity.find(
+    (entry) => entry.name === formulaFaq.question,
+  );
+  assert.ok(formulaJsonLd);
+  assert.equal(formulaJsonLd.acceptedAnswer.text, formulaFaq.answer);
 });
 
 test("GSC에서 확인한 한 달 주휴수당 질문에 계산 범위를 직접 답한다", () => {

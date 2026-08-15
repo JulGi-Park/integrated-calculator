@@ -59,6 +59,8 @@ export function buildLaborPayResultText(
     "주휴수당 계산 결과",
     `시급: ${formatLaborPayWon(input.hourlyWage)}`,
     `1주 소정근로시간: ${formatLaborPayHours(input.weeklyScheduledHours)}`,
+    `1주 소정근로일 수: ${input.weeklyWorkDays}일`,
+    `적용 소정근로일 수: ${result.effectiveWorkDays}일`,
     `지급 대상 여부: ${result.isEligible ? "대상" : "대상 아님"}`,
     `예상 주휴시간: ${formatLaborPayHours(result.weeklyHolidayHours)}`,
     `예상 주휴수당: ${formatLaborPayWon(result.weeklyHolidayPay)}`,

@@ -28,7 +28,7 @@ export interface LaborPayInput {
   weeklyActualHours: number;
   isFullAttendance: boolean;
   averageWeeklyScheduledHours?: number;
-  weeklyWorkDays?: number;
+  weeklyWorkDays: number;
   includeMonthlyEstimate?: boolean;
 }
 
@@ -41,6 +41,7 @@ export interface LaborPayResult {
   isEligible: boolean;
   eligibilityBasisHours: number;
   weeklyHolidayHours: number;
+  effectiveWorkDays: number;
   weeklyHolidayPay: number;
   baseWeeklyPay: number;
   weeklyPayIncludingHoliday: number;
@@ -150,12 +151,12 @@ export function validateLaborPayInput(
   }
 
   const weeklyWorkDays = input.weeklyWorkDays;
-  if (typeof weeklyWorkDays !== "undefined" && weeklyWorkDays !== null) {
-    if (!isFiniteNumber(weeklyWorkDays)) {
-      errors.push({ field: "weeklyWorkDays", code: "INVALID_NUMBER" });
-    } else if (weeklyWorkDays < 1 || weeklyWorkDays > 7) {
-      errors.push({ field: "weeklyWorkDays", code: "WORK_DAYS_OUT_OF_RANGE" });
-    }
+  if (typeof weeklyWorkDays === "undefined" || weeklyWorkDays === null) {
+    errors.push({ field: "weeklyWorkDays", code: "REQUIRED" });
+  } else if (!isFiniteNumber(weeklyWorkDays)) {
+    errors.push({ field: "weeklyWorkDays", code: "INVALID_NUMBER" });
+  } else if (weeklyWorkDays < 1 || weeklyWorkDays > 7) {
+    errors.push({ field: "weeklyWorkDays", code: "WORK_DAYS_OUT_OF_RANGE" });
   }
 
   return errors;
@@ -196,18 +197,16 @@ export function calculateLaborPay(input: LaborPayInput): LaborPayResponse {
     );
   }
 
-  if (
-    typeof input.weeklyWorkDays === "number" &&
-    input.weeklyWorkDays > 0 &&
-    input.weeklyScheduledHours / input.weeklyWorkDays > 8
-  ) {
+  if (input.weeklyScheduledHours / input.weeklyWorkDays > 8) {
     warnings.push(
       "1일 평균 소정근로시간이 8시간을 초과합니다. 법정근로시간, 연장근로, 휴게시간 포함 여부를 확인해 주세요.",
     );
   }
 
   const isEligible = reasons.length === 0;
-  const uncappedHolidayHours = (input.weeklyScheduledHours / 40) * 8;
+  const effectiveWorkDays = Math.max(input.weeklyWorkDays, 5);
+  const uncappedHolidayHours =
+    input.weeklyScheduledHours / effectiveWorkDays;
   const weeklyHolidayHours = isEligible
     ? roundToHours(Math.min(uncappedHolidayHours, WEEKLY_HOLIDAY_HOUR_LIMIT))
     : 0;
@@ -224,6 +223,7 @@ export function calculateLaborPay(input: LaborPayInput): LaborPayResponse {
       isEligible,
       eligibilityBasisHours: roundToHours(eligibilityBasisHours),
       weeklyHolidayHours,
+      effectiveWorkDays,
       weeklyHolidayPay,
       baseWeeklyPay,
       weeklyPayIncludingHoliday,

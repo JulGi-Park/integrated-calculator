@@ -67,6 +67,7 @@ test("기본 입력 필드와 월 환산 선택을 표시한다", async () => {
   assert.equal(screen.getByLabelText("시급").value, "10320");
   assert.equal(screen.getByLabelText("1주 소정근로시간").value, "40");
   assert.equal(screen.getByLabelText("1주 실제 근로시간").value, "40");
+  assert.equal(screen.getByLabelText("1주 소정근로일 수").value, "");
   assert.ok(screen.getByRole("button", { name: "2026 최저임금 적용" }));
   assert.ok(screen.getByLabelText("월 환산 표시"));
   assert.equal(
@@ -82,6 +83,7 @@ test("정상 입력을 계산해 결과 요약과 상세 계산 내역을 표시
   await replaceValue(user, "시급", "10320");
   await replaceValue(user, "1주 소정근로시간", "20");
   await replaceValue(user, "1주 실제 근로시간", "20");
+  await replaceValue(user, "1주 소정근로일 수", "5");
   await user.click(screen.getByRole("button", { name: "개근" }));
   await user.click(screen.getByRole("button", { name: "주휴수당 계산하기" }));
 
@@ -90,6 +92,22 @@ test("정상 입력을 계산해 결과 요약과 상세 계산 내역을 표시
   assert.ok(within(result).getByText("41,280원"));
   assert.ok(within(result).getByText("4시간"));
   assert.ok(within(result).getByText("주휴시간 계산식"));
+  assert.ok(within(result).getByText("적용 소정근로일 수"));
+});
+
+test("주 6일 입력은 실제 소정근로일 수로 주휴시간 계산식을 표시한다", async () => {
+  const user = userEvent.setup();
+  render(React.createElement(LaborPayCalculator));
+
+  await replaceValue(user, "1주 소정근로시간", "18");
+  await replaceValue(user, "1주 실제 근로시간", "18");
+  await replaceValue(user, "1주 소정근로일 수", "6");
+  await user.click(screen.getByRole("button", { name: "개근" }));
+  await user.click(screen.getByRole("button", { name: "주휴수당 계산하기" }));
+
+  const result = screen.getByRole("region", { name: "주휴수당 계산 결과" });
+  assert.ok(within(result).getByText("3시간"));
+  assert.ok(within(result).getByText("소정근로시간 / 적용 소정근로일 수 (6일)"));
 });
 
 test("필수값 누락과 음수 입력 오류를 필드별로 표시한다", async () => {
@@ -101,6 +119,7 @@ test("필수값 누락과 음수 입력 오류를 필드별로 표시한다", as
   await user.click(screen.getByRole("button", { name: "주휴수당 계산하기" }));
 
   assert.ok(screen.getByText("시급 값을 숫자로 입력해 주세요."));
+  assert.ok(screen.getByText("1주 소정근로일 수 값을 숫자로 입력해 주세요."));
   assert.ok(screen.getByText("실제 근로시간은 0 이상으로 입력해 주세요."));
   assert.ok(screen.getByText("소정근로일 개근 여부를 선택해 주세요."));
   assert.equal(screen.getByLabelText("시급").getAttribute("aria-invalid"), "true");
@@ -110,6 +129,7 @@ test("개근 아님 선택과 다시 계산 버튼이 동작한다", async () =>
   const user = userEvent.setup();
   render(React.createElement(LaborPayCalculator));
 
+  await replaceValue(user, "1주 소정근로일 수", "5");
   await user.click(screen.getByRole("button", { name: "개근 아님" }));
   await user.click(screen.getByRole("button", { name: "주휴수당 계산하기" }));
 
@@ -129,6 +149,7 @@ test("결과 복사와 공유 fallback이 동작한다", async () => {
   });
 
   render(React.createElement(LaborPayCalculator));
+  await replaceValue(user, "1주 소정근로일 수", "5");
   await user.click(screen.getByRole("button", { name: "개근" }));
   await user.click(screen.getByRole("button", { name: "주휴수당 계산하기" }));
   await user.click(screen.getByRole("button", { name: "결과 복사" }));
@@ -153,6 +174,7 @@ test("Web Share 지원 환경에서는 native share를 호출한다", async () =
   });
 
   render(React.createElement(LaborPayCalculator));
+  await replaceValue(user, "1주 소정근로일 수", "5");
   await user.click(screen.getByRole("button", { name: "개근" }));
   await user.click(screen.getByRole("button", { name: "주휴수당 계산하기" }));
   await user.click(screen.getByRole("button", { name: "공유" }));
@@ -169,6 +191,7 @@ test("입력 수정 후 재계산하면 최신 결과로 갱신한다", async ()
 
   await replaceValue(user, "1주 소정근로시간", "20");
   await replaceValue(user, "1주 실제 근로시간", "20");
+  await replaceValue(user, "1주 소정근로일 수", "5");
   await user.click(screen.getByRole("button", { name: "개근" }));
   await user.click(screen.getByRole("button", { name: "주휴수당 계산하기" }));
   assert.ok(screen.getByText("41,280원"));
@@ -194,6 +217,7 @@ test("클립보드 실패 시 짧은 실패 안내를 표시한다", async () =>
   });
 
   render(React.createElement(LaborPayCalculator));
+  await replaceValue(user, "1주 소정근로일 수", "5");
   await user.click(screen.getByRole("button", { name: "개근" }));
   await user.click(screen.getByRole("button", { name: "주휴수당 계산하기" }));
   await user.click(screen.getByRole("button", { name: "결과 복사" }));

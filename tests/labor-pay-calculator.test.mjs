@@ -11,6 +11,7 @@ const baseInput = {
   hourlyWage: 10_320,
   weeklyScheduledHours: 40,
   weeklyActualHours: 40,
+  weeklyWorkDays: 5,
   isFullAttendance: true,
   includeMonthlyEstimate: false,
 };
@@ -51,6 +52,49 @@ test("주 20시간이면 주휴 4시간과 41,280원을 계산한다", () => {
 
   assert.equal(data.weeklyHolidayHours, 4);
   assert.equal(data.weeklyHolidayPay, 41_280);
+});
+
+test("주 18시간·주 6일이면 1일 평균 3시간으로 주휴시간을 계산한다", () => {
+  const data = assertSuccess(
+    calculateLaborPay({
+      ...baseInput,
+      weeklyScheduledHours: 18,
+      weeklyActualHours: 18,
+      weeklyWorkDays: 6,
+    }),
+  );
+
+  assert.equal(data.effectiveWorkDays, 6);
+  assert.equal(data.weeklyHolidayHours, 3);
+});
+
+test("주 18시간·주 4일이면 5일 보정으로 주휴 3.6시간을 계산한다", () => {
+  const data = assertSuccess(
+    calculateLaborPay({
+      ...baseInput,
+      weeklyScheduledHours: 18,
+      weeklyActualHours: 18,
+      weeklyWorkDays: 4,
+    }),
+  );
+
+  assert.equal(data.effectiveWorkDays, 5);
+  assert.equal(data.weeklyHolidayHours, 3.6);
+});
+
+test("주 15시간·주 3일이면 5일 보정으로 주휴 3시간을 계산한다", () => {
+  const data = assertSuccess(
+    calculateLaborPay({
+      ...baseInput,
+      weeklyScheduledHours: 15,
+      weeklyActualHours: 15,
+      weeklyWorkDays: 3,
+    }),
+  );
+
+  assert.equal(data.isEligible, true);
+  assert.equal(data.effectiveWorkDays, 5);
+  assert.equal(data.weeklyHolidayHours, 3);
 });
 
 test("주 14시간이면 지급 대상이 아니다", () => {
@@ -135,6 +179,19 @@ test("실제 근로시간 음수는 오류 처리한다", () => {
 test("근무일수 8은 오류 처리한다", () => {
   assertHasError(
     calculateLaborPay({ ...baseInput, weeklyWorkDays: 8 }),
+    "weeklyWorkDays",
+    "WORK_DAYS_OUT_OF_RANGE",
+  );
+});
+
+test("근무일수 미입력과 0일은 오류 처리한다", () => {
+  assertHasError(
+    calculateLaborPay({ ...baseInput, weeklyWorkDays: undefined }),
+    "weeklyWorkDays",
+    "REQUIRED",
+  );
+  assertHasError(
+    calculateLaborPay({ ...baseInput, weeklyWorkDays: 0 }),
     "weeklyWorkDays",
     "WORK_DAYS_OUT_OF_RANGE",
   );

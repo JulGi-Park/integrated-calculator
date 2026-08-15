@@ -44,9 +44,10 @@ const fields: FieldDefinition[] = [
   },
   {
     name: "weeklyWorkDays",
-    label: "주 근무일수 (선택)",
+    label: "1주 소정근로일 수",
     unit: "일",
-    helper: "1일부터 7일 사이로 입력합니다.",
+    helper:
+      "근로계약 등에서 정한 1주 소정근로일 수를 입력합니다. 5일 미만이면 주휴시간은 5일 기준으로 계산합니다.",
   },
 ];
 
@@ -56,7 +57,7 @@ const labels: Record<LaborPayInputField, string> = {
   weeklyActualHours: "실제 근로시간",
   isFullAttendance: "소정근로일 개근 여부",
   averageWeeklyScheduledHours: "4주 평균 주 소정근로시간",
-  weeklyWorkDays: "주 근무일수",
+  weeklyWorkDays: "1주 소정근로일 수",
 };
 
 function getErrorMessage(error: LaborPayValidationError) {
@@ -75,7 +76,7 @@ function getErrorMessage(error: LaborPayValidationError) {
     case "HOURS_OUT_OF_RANGE":
       return `${label}은 168시간 이하로 입력해 주세요.`;
     case "WORK_DAYS_OUT_OF_RANGE":
-      return "주 근무일수는 1일부터 7일 사이로 입력해 주세요.";
+      return "1주 소정근로일 수는 1일부터 7일 사이로 입력해 주세요.";
     case "MUST_BE_BOOLEAN":
       return "소정근로일 개근 여부를 선택해 주세요.";
   }
@@ -392,10 +393,14 @@ export function LaborPayCalculator() {
                   <dt>예상 주급 (주휴 포함)</dt>
                   <dd>{formatLaborPayWon(result.weeklyPayIncludingHoliday)}</dd>
                 </div>
-                <div>
-                  <dt>판정 기준 시간</dt>
-                  <dd>{formatLaborPayHours(result.eligibilityBasisHours)}</dd>
-                </div>
+              <div>
+                <dt>판정 기준 시간</dt>
+                <dd>{formatLaborPayHours(result.eligibilityBasisHours)}</dd>
+              </div>
+              <div>
+                <dt>적용 소정근로일 수</dt>
+                <dd>{result.effectiveWorkDays}일</dd>
+              </div>
                 {result.monthlyEstimate !== null ? (
                   <div>
                     <dt>참고용 월 환산액</dt>
@@ -415,7 +420,9 @@ export function LaborPayCalculator() {
               <dl className={styles.detailList} aria-label="상세 계산 내역">
                 <div>
                   <dt>주휴시간 계산식</dt>
-                  <dd>소정근로시간 / 40 × 8</dd>
+                  <dd>
+                    소정근로시간 / 적용 소정근로일 수 ({result.effectiveWorkDays}일)
+                  </dd>
                 </div>
                 <div>
                   <dt>8시간 상한</dt>

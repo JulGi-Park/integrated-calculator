@@ -43,7 +43,10 @@ export function LaborPayContent() {
           </article>
           <article className={styles.infoCard}>
             <h3>예상 주휴시간</h3>
-            <p>40시간 기준 8시간에 비례해 계산하며 최대 8시간으로 제한합니다.</p>
+            <p>
+              1주 소정근로시간을 적용 소정근로일 수로 나누어 계산하며 최대
+              8시간으로 제한합니다.
+            </p>
           </article>
           <article className={styles.infoCard}>
             <h3>예상 주급</h3>
@@ -79,8 +82,8 @@ export function LaborPayContent() {
           <article className={styles.infoCard}>
             <h3>계약과 실제 근무</h3>
             <p>
-              소정근로시간과 실제 근로시간이 다르면 지급 대상 판단과 지급액
-              산정이 달라질 수 있습니다.
+              소정근로시간·소정근로일 수와 실제 근로시간이 다르면 지급 대상
+              판단과 지급액 산정이 달라질 수 있습니다.
             </p>
           </article>
         </div>
@@ -118,11 +121,13 @@ export function LaborPayContent() {
         </div>
         <ul className={styles.exclusionList}>
           <li>
-            주 40시간 미만 단시간 근로자는 40시간 기준 8시간에 비례해
-            주휴시간을 계산합니다.
+            주휴시간은 원칙적으로 1주 소정근로시간을 1주 소정근로일 수로
+            나누어 계산합니다. 일반적인 경우 소정근로일이 5일 미만이면 5일
+            기준으로 보정합니다.
           </li>
           <li>
-            주 40시간 이상 입력은 주휴시간을 8시간으로 제한해 계산합니다.
+            계산기는 1일 8시간 기준을 넘지 않도록 주휴시간을 최대 8시간으로
+            제한합니다.
           </li>
           <li>
             월급제 근로자는 주휴수당이 월급에 이미 포함되어 있을 수 있으므로
@@ -194,7 +199,7 @@ export function LaborPayContent() {
       <section className={styles.section} aria-labelledby="labor-sources">
         <div className={styles.sectionHeading}>
           <h2 id="labor-sources">공식 출처</h2>
-          <p>계산 기준 문구는 아래 공식 자료를 2026년 7월 10일 확인해 정리했습니다.</p>
+          <p>계산 기준 문구는 아래 공식 자료를 2026년 8월 15일 확인해 정리했습니다.</p>
         </div>
         <ul className={styles.exclusionList}>
           {laborPayOfficialSources.map((source) => (
