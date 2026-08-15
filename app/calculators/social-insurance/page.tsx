@@ -14,7 +14,7 @@ import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
 
 const seo = PUBLIC_CALCULATOR_SEO["social-insurance"];
 const { title, description } = seo;
-const ogTitle = "국민연금 납부액·4대보험 계산기 2026 - 월급 공제액 확인";
+const ogTitle = "2026 국민연금 납부액·4대보험 계산기 | 월급 기준 근로자 부담액";
 const canonical = "https://gyesanbox.kr/calculators/social-insurance/";
 const ogImage = seo.image;
 

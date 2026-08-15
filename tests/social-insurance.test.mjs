@@ -563,8 +563,17 @@ test("소셜 보험 계산기 페이지는 공개 메타데이터와 계산기 U
   assert.match(source, /title="2026 국민연금 납부액·4대보험 계산기"/);
   assert.equal(
     metadata.title,
-    "국민연금 납부액·4대보험 계산기 2026 | 월급 공제액",
+    "2026 국민연금 납부액·4대보험 계산기 | 월급 기준 근로자 부담액",
   );
+  assert.equal(
+    metadata.description,
+    "월 급여와 비과세 금액을 입력하면 2026년 4대보험(국민연금·건강보험·장기요양보험·고용보험)의 근로자 부담액과 총 공제액을 계산합니다.",
+  );
+  assert.equal(
+    metadata.openGraph.title,
+    "2026 국민연금 납부액·4대보험 계산기 | 월급 기준 근로자 부담액",
+  );
+  assert.equal(metadata.openGraph.description, metadata.description);
   assert.deepEqual(metadata.robots, { index: true, follow: true });
   assert.deepEqual(metadata.alternates, {
     canonical: "https://gyesanbox.kr/calculators/social-insurance/",
