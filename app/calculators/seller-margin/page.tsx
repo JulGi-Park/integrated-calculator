@@ -13,9 +13,9 @@ import {
 
 const seo = PUBLIC_CALCULATOR_SEO["seller-margin"];
 const { title, description } = seo;
-const ogTitle = "판매자 마진 계산기 | 판매가·수수료·비용 순이익 계산";
+const ogTitle = "판매자 마진 계산기 | 판매금액에서 비용을 뺀 예상 순이익";
 const ogDescription =
-  "판매가와 수량으로 판매금액을 확인하고 원가, 할인, 배송비, 수수료와 광고비를 반영해 예상 순이익을 계산합니다.";
+  "판매가와 수량을 입력하고 원가·할인·배송비·수수료·광고비·기타 비용을 반영해 예상 정산금액, 순이익과 순이익률을 계산합니다.";
 const ogUrl = seo.path.startsWith("/") ? `https://gyesanbox.kr${seo.path}` : seo.path;
 const ogImage = seo.image;
 

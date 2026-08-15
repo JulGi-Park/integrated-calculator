@@ -164,11 +164,19 @@ test("관련 계산기에서 실제 내부 라우트만 링크한다", () => {
 test("seller-margin 전용 메타데이터에 가짜 URL 없이 SEO 정보를 설정한다", () => {
   assert.equal(
     metadata.title,
-    "판매자 마진 계산기 | 판매가·수수료·비용 순이익 계산",
+    "판매자 마진 계산기 | 판매금액에서 비용을 뺀 예상 순이익",
   );
   assert.equal(
     metadata.description,
-    "판매가와 수량으로 판매금액을 확인하고 원가, 할인, 배송비, 플랫폼·결제 수수료와 광고비를 반영해 예상 정산금액과 세전 순이익을 계산합니다.",
+    "판매가와 수량을 입력하고 원가·할인·배송비·수수료·광고비·기타 비용을 반영해 예상 정산금액, 순이익과 순이익률을 계산합니다.",
+  );
+  assert.equal(
+    metadata.openGraph.title,
+    "판매자 마진 계산기 | 판매금액에서 비용을 뺀 예상 순이익",
+  );
+  assert.equal(
+    metadata.openGraph.description,
+    "판매가와 수량을 입력하고 원가·할인·배송비·수수료·광고비·기타 비용을 반영해 예상 정산금액, 순이익과 순이익률을 계산합니다.",
   );
   assert.deepEqual(metadata.robots, { index: true, follow: true });
   assert.deepEqual(metadata.alternates, {

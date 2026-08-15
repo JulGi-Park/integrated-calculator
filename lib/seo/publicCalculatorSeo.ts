@@ -2,9 +2,9 @@ export const PUBLIC_CALCULATOR_SEO = {
   "seller-margin": {
     slug: "seller-margin",
     path: "/calculators/seller-margin/",
-    title: "판매자 마진 계산기 | 판매가·수수료·비용 순이익 계산",
+    title: "판매자 마진 계산기 | 판매금액에서 비용을 뺀 예상 순이익",
     description:
-      "판매가와 수량으로 판매금액을 확인하고 원가, 할인, 배송비, 플랫폼·결제 수수료와 광고비를 반영해 예상 정산금액과 세전 순이익을 계산합니다.",
+      "판매가와 수량을 입력하고 원가·할인·배송비·수수료·광고비·기타 비용을 반영해 예상 정산금액, 순이익과 순이익률을 계산합니다.",
     image: "https://gyesanbox.kr/og/seller-margin.png",
     imagePath: "/og/seller-margin.png",
     imageAlt: "판매자 마진 계산기 — 판매가·원가·수수료 기준 순이익 확인",
