@@ -92,12 +92,24 @@ test("실업급여 계산기 SEO 메타데이터를 검색 유입 페이지에 �
 
 test("페이지 상단은 H1 하나와 계산기, 본문 콘텐츠, JSON-LD 세 종류를 유지한다", () => {
   assert.equal((pageSource.match(/<CompactCalculatorHero\b/g) ?? []).length, 1);
+  assert.equal((pageSource.match(/title="실업급여 계산기"/g) ?? []).length, 1);
   assert.match(pageSource, /<UnemploymentCalculator \/>/);
   assert.match(pageSource, /<UnemploymentContent \/>/);
   assert.match(pageSource, /unemploymentWebApplicationJsonLd/);
   assert.match(pageSource, /unemploymentBreadcrumbJsonLd/);
   assert.match(pageSource, /unemploymentFaqJsonLd/);
   assert.match(pageSource, /<JsonLdScripts items=\{jsonLdItems\}/);
+});
+
+test("첫 화면은 계산기 입력과 핵심 결과를 직접 연결한다", () => {
+  assert.match(
+    pageSource,
+    /월급 또는 1일 평균임금, 고용보험 가입기간·연령·퇴직 사유를 입력해/,
+  );
+  assert.match(pageSource, /1일 예상 구직급여액/);
+  assert.match(pageSource, /상한·하한 적용 여부/);
+  assert.match(pageSource, /예상\s*소정급여일수/);
+  assert.match(pageSource, /총 지급액/);
 });
 
 test("주요 본문 섹션을 모두 렌더링한다", () => {
