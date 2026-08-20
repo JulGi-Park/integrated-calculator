@@ -63,9 +63,9 @@ const calculatorMetadataCases = [
   {
     slug: "seller-margin",
     modulePath: "../app/calculators/seller-margin/page.tsx",
-    title: "판매자 마진 계산기 | 판매가·수수료·비용 순이익 계산",
+    title: "판매자 마진 계산기 | 판매금액에서 비용을 뺀 예상 순이익",
     description:
-      "판매가와 수량으로 판매금액을 확인하고 원가, 할인, 배송비, 수수료와 광고비를 반영해 예상 순이익을 계산합니다.",
+      "판매가와 수량을 입력하고 원가·할인·배송비·수수료·광고비·기타 비용을 반영해 예상 정산금액, 순이익과 순이익률을 계산합니다.",
   },
   {
     slug: "vat-profit",
@@ -78,16 +78,16 @@ const calculatorMetadataCases = [
   {
     slug: "salary",
     modulePath: "../app/calculators/salary/page.tsx",
-    title: "연봉 실수령액 계산기 | 월급·비과세액·공제 후 금액",
+    title: "2026 연봉 실수령액 계산기 | 월급·4대보험·세금 공제 후 예상액",
     description:
-      "연봉을 월급으로 환산하고 월 비과세액, 가족·자녀 수를 입력해 세금과 사회보험료 공제 후 예상 월·연 실수령액을 확인하세요.",
+      "연봉을 입력하면 월급으로 환산하고 월 비과세액·가족·자녀 수를 반영해 4대보험과 소득세·지방소득세 공제 후 예상 월·연 실수령액을 확인하세요.",
   },
   {
     slug: "social-insurance",
     modulePath: "../app/calculators/social-insurance/page.tsx",
-    title: "국민연금 납부액·4대보험 계산기 2026 - 월급 공제액 확인",
+    title: "2026 국민연금 납부액·4대보험 계산기 | 월급 기준 근로자 부담액",
     description:
-      "월 급여와 비과세 금액을 입력해 2026년 국민연금 납부액과 건강보험·장기요양보험·고용보험의 근로자 공제액을 계산합니다.",
+      "월 급여와 비과세 금액을 입력하면 2026년 국민연금·건강보험(장기요양 포함)·고용보험의 근로자 부담액과 월 총 공제액을 계산합니다.",
     imageSlug: "social-insurance-hero",
   },
   {

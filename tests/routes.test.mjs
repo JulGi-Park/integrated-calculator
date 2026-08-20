@@ -7,7 +7,7 @@ const routes = [
   ["app/calculators/page.tsx", "계산박스 계산기 목록"],
   [
     "app/calculators/seller-margin/page.tsx",
-    "판매자 마진 계산기 | 판매가·수수료·비용 순이익 계산",
+    "판매자 마진 계산기 | 판매금액에서 비용을 뺀 예상 순이익",
   ],
   [
     "app/calculators/vat-profit/page.tsx",
@@ -15,11 +15,11 @@ const routes = [
   ],
   [
     "app/calculators/salary/page.tsx",
-    "2026 연봉 실수령액 계산기 | 월급·비과세액·공제 후 금액",
+    "2026 연봉 실수령액 계산기 | 월급·4대보험·세금 공제 후 예상액",
   ],
   [
     "app/calculators/social-insurance/page.tsx",
-    "국민연금 납부액·4대보험 계산기 2026 | 월급 공제액",
+    "2026 국민연금 납부액·4대보험 계산기 | 월급 기준 근로자 부담액",
   ],
   [
     "app/calculators/labor-pay/page.tsx",
@@ -73,7 +73,7 @@ test("연봉 계산기 페이지와 목록 링크가 실제 UI를 제공한다",
 
   assert.match(pageSource, /SalaryTakeHomeCalculator/);
   assert.match(pageSource, /<CompactCalculatorHero/);
-  assert.match(pageSource, /title="연봉 실수령액 계산기"/);
+  assert.match(pageSource, /title="2026 연봉 실수령액 계산기"/);
   assert.doesNotMatch(pageSource, /계산 기능 준비 중/);
   assert.match(listSource, /href="\/calculators\/salary\/"/);
   assert.match(contentSource, /href="\/calculators\/social-insurance\/"/);
