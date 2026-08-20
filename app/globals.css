@@ -67,8 +67,14 @@ a:focus-visible {
   display: flex;
   min-height: 72px;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 20px;
 }
+
+.site-header__mobile { display: none; }
+.site-header__desktop nav { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; justify-content: flex-end; }
+.site-header__desktop .nav-link { color: #38433c; font-size: .92rem; font-weight: 700; }
+.site-header__desktop .nav-link:hover { color: var(--accent); }
 
 .site-menu-trigger {
   display: inline-flex;
@@ -163,7 +169,9 @@ a:focus-visible {
 
 @media (max-width: 800px) {
   .site-header { position: sticky; top: 0; }
-  .site-header__inner { width: min(100% - 24px, var(--max-width)); min-height: 64px; gap: 8px; }
+  .site-header__desktop { display: none; }
+  .site-header__mobile { display: block; }
+  .site-header__mobile .site-header__inner { width: min(100% - 24px, var(--max-width)); min-height: 64px; justify-content: initial; gap: 8px; }
   .site-menu-trigger { min-width: 44px; padding: 6px 9px; }
   .site-menu-trigger > span:last-child { font-size: .82rem; }
   .brand { font-size: 1rem; }
