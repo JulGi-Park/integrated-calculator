@@ -45,7 +45,12 @@ function createFavorite(path: string): FavoriteItem {
   return { path, addedAt: Date.now() };
 }
 
-export function FavoritesHeader() {
+type FavoritesHeaderProps = {
+  showCurrent?: boolean;
+  showList?: boolean;
+};
+
+export function FavoritesHeader({ showCurrent = true, showList = true }: FavoritesHeaderProps) {
   const pathname = usePathname();
   const currentPath = normalizeFavoritePath(pathname);
   const currentPage = currentPath ? getFavoritePage(currentPath) : undefined;
@@ -113,7 +118,7 @@ export function FavoritesHeader() {
 
   return (
     <div className="favorites-header">
-      {currentPage && (
+      {showCurrent && currentPage && (
         <button
           type="button"
           className="favorites-current"
@@ -129,7 +134,7 @@ export function FavoritesHeader() {
           <span>{saved.has(currentPath!) ? "즐겨찾기 해제" : "즐겨찾기 추가"}</span>
         </button>
       )}
-      <button
+      {showList && <button
         ref={triggerRef}
         type="button"
         className="favorites-trigger"
@@ -141,8 +146,8 @@ export function FavoritesHeader() {
       >
         <span aria-hidden="true">★</span>
         <span>즐겨찾기 목록{items.length ? ` (${items.length})` : ""}</span>
-      </button>
-      {open && (
+      </button>}
+      {showList && open && (
         <div
           id="favorites-menu"
           className="favorites-menu"

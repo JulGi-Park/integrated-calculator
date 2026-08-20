@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { AdSenseScript } from "@/components/ads/AdSenseScript";
 import { GoogleAnalyticsPageView } from "@/components/analytics/GoogleAnalyticsPageView";
 import { GoogleTag } from "@/components/analytics/GoogleTag";
+import { BackToTop } from "@/components/common/BackToTop";
 import { SiteFooter } from "@/components/common/SiteFooter";
 import { SiteHeader } from "@/components/common/SiteHeader";
 import "./globals.css";
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           <SiteHeader />
           <main className="site-main">{children}</main>
           <SiteFooter />
+          <BackToTop />
         </div>
       </body>
     </html>
