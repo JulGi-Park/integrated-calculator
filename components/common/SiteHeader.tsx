@@ -27,6 +27,9 @@ export function SiteHeader() {
           <a className="nav-link" href="/contact/">
             문의
           </a>
+          <a className="nav-link" href="https://blog.gyesanbox.kr/">
+            블로그
+          </a>
           <FavoritesHeader />
         </nav>
       </div>

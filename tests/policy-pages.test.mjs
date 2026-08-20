@@ -200,13 +200,17 @@ test("푸터에 정책 페이지 링크와 기존 연락처가 있다", async ()
 
 test("헤더에서 주요 탐색과 신뢰성 페이지로 이동할 수 있다", async () => {
   const source = await readFile("components/common/SiteHeader.tsx", "utf8");
+  const styles = await readFile("app/globals.css", "utf8");
 
   assert.match(source, /href="\/calculators\/"/);
   assert.match(source, /href="\/about\/"/);
   assert.match(source, /href="\/methodology\/"/);
   assert.match(source, /href="\/updates\/"/);
   assert.match(source, /href="\/contact\/"/);
+  assert.match(source, /href="https:\/\/blog\.gyesanbox\.kr\/"/);
+  assert.match(source, />\s*블로그\s*</);
   assert.match(source, /aria-label="주요 메뉴"/);
+  assert.match(styles, /@media \(max-width: 340px\)[\s\S]*\.site-header nav \{ flex-basis: 100%; width: 100%; \}/);
 });
 
 test("홈 JSON-LD ItemList는 공개 계산기만 유지한다", async () => {
