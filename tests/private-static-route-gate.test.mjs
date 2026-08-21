@@ -9,6 +9,7 @@ import {
   pruneDisabledStaticRoutes,
 } from "../scripts/prune-disabled-static-routes.mjs";
 import { isTrainingCertificateCostCalculatorEnabled } from "../lib/calculators/training-certificate-cost/publication.ts";
+import { isRentConversionRateCalculatorEnabled } from "../lib/calculators/rent-conversion-rate/publication.ts";
 
 const featureEnvironmentVariable =
   "NEXT_PUBLIC_ENABLE_TRAINING_CERTIFICATE_COST_CALCULATOR";
@@ -29,6 +30,7 @@ async function pathExists(targetPath) {
 test("정확한 소문자 true만 정적 route를 활성화한다", () => {
   assert.equal(isStaticRouteEnabled("true"), true);
   assert.equal(isTrainingCertificateCostCalculatorEnabled("true"), true);
+  assert.equal(isRentConversionRateCalculatorEnabled("true"), true);
 
   for (const value of [undefined, "", "false", "TRUE", "1", "yes"]) {
     assert.equal(isStaticRouteEnabled(value), false, String(value));
@@ -37,6 +39,7 @@ test("정확한 소문자 true만 정적 route를 활성화한다", () => {
       false,
       String(value),
     );
+    assert.equal(isRentConversionRateCalculatorEnabled(value), false, String(value));
   }
 });
 
@@ -72,6 +75,7 @@ test("비활성 route 산출물만 제거하고 공개 산출물은 보존한다
 
     assert.deepEqual(removedRoutes, [
       "/calculators/training-certificate-cost/",
+      "/calculators/rent-conversion-rate/",
     ]);
     for (const targetPath of [
       privateRouteDirectory,
@@ -101,7 +105,10 @@ test("활성 route 산출물은 제거하지 않는다", async () => {
 
     const removedRoutes = await pruneDisabledStaticRoutes({
       outputDirectory,
-      environment: { [featureEnvironmentVariable]: "true" },
+      environment: {
+        [featureEnvironmentVariable]: "true",
+        NEXT_PUBLIC_ENABLE_RENT_CONVERSION_RATE_CALCULATOR: "true",
+      },
     });
 
     assert.deepEqual(removedRoutes, []);

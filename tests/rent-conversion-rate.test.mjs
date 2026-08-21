@@ -1,0 +1,10 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { calculateActualConversionRate, calculateDepositToRent, calculateRentToDeposit, getEffectiveStatutoryCeiling, validateAmount, validateRate } from "../lib/calculators/rent-conversion-rate/rentConversionRate.ts";
+test("2026-08-21 법정 참고 상한은 4.75%다",()=>assert.equal(getEffectiveStatutoryCeiling(),4.75));
+test("보증금 1억원을 4.75%로 전환하면 월세는 395,833원이다",()=>assert.deepEqual(calculateDepositToRent(100_000_000,4.75),{annualAmount:4_750_000,monthlyAmount:395_833,appliedRate:4.75,effectiveStatutoryCeiling:4.75,rateDifference:0,comparison:"equal"}));
+test("보증금 5천만원 전환 fixture를 계산한다",()=>{const r=calculateDepositToRent(50_000_000,4.75);assert.equal(r.annualAmount,2_375_000);assert.equal(r.monthlyAmount,197_917)});
+test("월세 40만원을 4.75%로 환산하면 보증금은 약 101,052,632원이다",()=>assert.equal(calculateRentToDeposit(400_000,4.75).monthlyAmount,101_052_632));
+test("보증금 1억원과 월세 40만원의 실제 전환율은 4.8%로 상한보다 0.05%p 높다",()=>{const r=calculateActualConversionRate(100_000_000,400_000);assert.equal(r.appliedRate,4.8);assert.equal(r.rateDifference,.05);assert.equal(r.comparison,"above")});
+test("상한 이하·동일·초과를 비교한다",()=>{assert.equal(calculateDepositToRent(1_000_000,4).comparison,"below");assert.equal(calculateDepositToRent(1_000_000,4.75).comparison,"equal");assert.equal(calculateDepositToRent(1_000_000,5).comparison,"above")});
+test("금액과 전환율의 빈값·0·음수·소수·과대 입력을 거부한다",()=>{for(const value of [undefined,0,-1,1.5,"1"])assert.ok(validateAmount(value,"금액"));for(const value of [undefined,0,-1,101,"4.75"])assert.ok(validateRate(value));});

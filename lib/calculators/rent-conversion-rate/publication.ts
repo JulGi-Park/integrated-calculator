@@ -1,0 +1,2 @@
+export const RENT_CONVERSION_RATE_PUBLICATION = { environmentVariable: "NEXT_PUBLIC_ENABLE_RENT_CONVERSION_RATE_CALCULATOR", slug: "rent-conversion-rate", path: "/calculators/rent-conversion-rate/", url: "https://gyesanbox.kr/calculators/rent-conversion-rate/" } as const;
+export function isRentConversionRateCalculatorEnabled(value: string | undefined = process.env.NEXT_PUBLIC_ENABLE_RENT_CONVERSION_RATE_CALCULATOR): boolean { return value === "true"; }

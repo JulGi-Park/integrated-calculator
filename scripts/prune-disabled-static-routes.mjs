@@ -9,6 +9,11 @@ export const privateStaticRoutes = [
       "NEXT_PUBLIC_ENABLE_TRAINING_CERTIFICATE_COST_CALCULATOR",
     expectedText: "국비지원 자격증 취득비용 계산기",
   },
+  {
+    pathname: "/calculators/rent-conversion-rate/",
+    environmentVariable: "NEXT_PUBLIC_ENABLE_RENT_CONVERSION_RATE_CALCULATOR",
+    expectedText: "전월세 전환율 계산기",
+  },
 ];
 
 export function isStaticRouteEnabled(value) {
