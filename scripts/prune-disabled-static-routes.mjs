@@ -9,6 +9,11 @@ export const privateStaticRoutes = [
       "NEXT_PUBLIC_ENABLE_TRAINING_CERTIFICATE_COST_CALCULATOR",
     expectedText: "국비지원 자격증 취득비용 계산기",
   },
+  {
+    pathname: "/calculators/withholding-tax/",
+    environmentVariable: "NEXT_PUBLIC_ENABLE_WITHHOLDING_TAX_CALCULATOR",
+    expectedText: "3.3% 원천징수 계산기",
+  },
 ];
 
 export function isStaticRouteEnabled(value) {

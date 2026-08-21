@@ -9,6 +9,7 @@ import {
   pruneDisabledStaticRoutes,
 } from "../scripts/prune-disabled-static-routes.mjs";
 import { isTrainingCertificateCostCalculatorEnabled } from "../lib/calculators/training-certificate-cost/publication.ts";
+import { isWithholdingTaxCalculatorEnabled } from "../lib/calculators/withholding-tax/publication.ts";
 
 const featureEnvironmentVariable =
   "NEXT_PUBLIC_ENABLE_TRAINING_CERTIFICATE_COST_CALCULATOR";
@@ -29,6 +30,7 @@ async function pathExists(targetPath) {
 test("정확한 소문자 true만 정적 route를 활성화한다", () => {
   assert.equal(isStaticRouteEnabled("true"), true);
   assert.equal(isTrainingCertificateCostCalculatorEnabled("true"), true);
+  assert.equal(isWithholdingTaxCalculatorEnabled("true"), true);
 
   for (const value of [undefined, "", "false", "TRUE", "1", "yes"]) {
     assert.equal(isStaticRouteEnabled(value), false, String(value));
@@ -37,7 +39,21 @@ test("정확한 소문자 true만 정적 route를 활성화한다", () => {
       false,
       String(value),
     );
+    assert.equal(isWithholdingTaxCalculatorEnabled(value), false, String(value));
   }
+});
+
+test("원천징수 계산기 비활성 산출물만 제거한다", async () => {
+  const outputDirectory = await mkdtemp(path.join(os.tmpdir(), "cal-private-static-route-"));
+  const [routeDirectory, ...flatRouteFiles] = getStaticRouteOutputPaths(outputDirectory, "/calculators/withholding-tax/");
+  try {
+    await mkdir(routeDirectory, { recursive: true });
+    await writeFile(path.join(routeDirectory, "index.html"), "private");
+    await Promise.all(flatRouteFiles.map((file) => writeFile(file, "private")));
+    const removedRoutes = await pruneDisabledStaticRoutes({ outputDirectory, environment: { NEXT_PUBLIC_ENABLE_WITHHOLDING_TAX_CALCULATOR: "false" } });
+    assert.ok(removedRoutes.includes("/calculators/withholding-tax/"));
+    for (const targetPath of [routeDirectory, ...flatRouteFiles]) assert.equal(await pathExists(targetPath), false, targetPath);
+  } finally { await rm(outputDirectory, { recursive: true, force: true }); }
 });
 
 test("비활성 route 산출물만 제거하고 공개 산출물은 보존한다", async () => {
@@ -72,6 +88,7 @@ test("비활성 route 산출물만 제거하고 공개 산출물은 보존한다
 
     assert.deepEqual(removedRoutes, [
       "/calculators/training-certificate-cost/",
+      "/calculators/withholding-tax/",
     ]);
     for (const targetPath of [
       privateRouteDirectory,
@@ -101,7 +118,10 @@ test("활성 route 산출물은 제거하지 않는다", async () => {
 
     const removedRoutes = await pruneDisabledStaticRoutes({
       outputDirectory,
-      environment: { [featureEnvironmentVariable]: "true" },
+      environment: {
+        [featureEnvironmentVariable]: "true",
+        NEXT_PUBLIC_ENABLE_WITHHOLDING_TAX_CALCULATOR: "true",
+      },
     });
 
     assert.deepEqual(removedRoutes, []);
