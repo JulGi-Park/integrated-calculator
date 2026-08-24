@@ -8,6 +8,8 @@ export interface AveragePriceRawInputs {
   currentAveragePrice: string;
   additionalQuantity: string;
   additionalPrice: string;
+  scenarioBQuantity: string;
+  scenarioBPrice: string;
   targetPrice: string;
 }
 
@@ -18,6 +20,8 @@ export const initialAveragePriceInput: AveragePriceRawInputs = {
   currentAveragePrice: "",
   additionalQuantity: "",
   additionalPrice: "",
+  scenarioBQuantity: "",
+  scenarioBPrice: "",
   targetPrice: "",
 };
 
@@ -79,10 +83,11 @@ export function buildAveragePriceResultText(
     `총 보유 수량: ${formatAveragePriceQuantity(result.totalQuantity)}`,
     `총 투자금액: ${formatAveragePriceWon(result.totalInvestmentAmount)}`,
     `신규 평균 단가: ${formatAveragePriceWon(result.newAveragePrice)}`,
+    `평균 단가 변화: ${formatAveragePriceWon(result.averagePriceChangeAmount)} (${formatAveragePriceRate(result.averagePriceChangeRate)})`,
   ];
 
   if (typeof input.targetPrice === "number") {
-    lines.push(`현재가 또는 목표 매도가: ${formatAveragePriceWon(input.targetPrice)}`);
+    lines.push(`현재가: ${formatAveragePriceWon(input.targetPrice)}`);
   }
 
   if (

@@ -55,6 +55,14 @@ const trainingCertificateCostReleaseUpdate = {
 const baseUpdates = [
   {
     date: "2026년 8월 24일",
+    target: "물타기·평단가 추가매수 시나리오 비교",
+    change: "추가매수 전후의 보유수량·평균단가·총 투입원금 변화와 두 가지 사용자 입력 조건을 비교하는 기능을 추가했습니다.",
+    reason: "새 평균단가 하나뿐 아니라 추가 투입금과 평균단가 변화율을 함께 확인할 수 있도록 하기 위해서입니다.",
+    evidence: "물타기·평단가 계산기 결과에서 전후 비교, 입력 순서의 시나리오 A·B, 현재가 기준 평균단가 도달 필요 변화율을 확인할 수 있습니다.",
+    href: "/calculators/average-price/",
+  },
+  {
+    date: "2026년 8월 24일",
     target: "계산기 검색과 핵심 결과 판단 안내",
     change: "21개 계산기를 이름·분류·사용 상황으로 찾는 로컬 검색을 추가하고, 핵심 계산기 8개의 결과 화면에 실제 입력과 계산 결과에 따른 적용 조건·변동 요인·확인 자료를 연결했습니다.",
     reason: "필요한 계산기를 빠르게 찾고, 계산값을 받은 뒤 실제 자료와 비교하거나 다음 판단에 활용할 수 있도록 하기 위해서입니다.",
@@ -210,8 +218,9 @@ const baseUpdates = [
 const updates = [
   baseUpdates[0],
   baseUpdates[1],
+  baseUpdates[2],
   trainingCertificateCostReleaseUpdate,
-  ...baseUpdates.slice(2),
+  ...baseUpdates.slice(3),
 ];
 
 export default function UpdatesPage() {

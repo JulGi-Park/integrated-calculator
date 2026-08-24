@@ -14,8 +14,8 @@ export function AveragePriceContent() {
         <div className={styles.sectionHeading}>
           <h2 id="interpretation-title">결과를 이렇게 해석하세요</h2>
           <p>
-            결과는 입력값으로 평균단가와 예상 손익을 설명하는 계산값입니다.
-            추가 매수 여부나 매도 판단을 제안하지 않습니다.
+            결과는 추가매수 전후의 평균단가와 투입원금 변화를 비교한
+            계산값입니다. 추가 매수 여부나 매도 판단을 제안하지 않습니다.
           </p>
         </div>
         <div className={styles.interpretationGrid}>
@@ -28,8 +28,8 @@ export function AveragePriceContent() {
             <p>현재까지 투입한 금액과 추가 매수 금액을 더한 값입니다.</p>
           </article>
           <article className={styles.infoCard}>
-            <h3>예상 손익</h3>
-            <p>현재가 또는 목표 매도가를 입력했을 때만 산출되는 단순 차액입니다.</p>
+            <h3>평단 도달 필요 변화율</h3>
+            <p>현재가를 입력했을 때 해당 가격에서 평균매입단가까지의 산술 변화율입니다.</p>
           </article>
         </div>
         <p className={styles.roundingNote}>
@@ -59,7 +59,7 @@ export function AveragePriceContent() {
       <section className={styles.section} aria-labelledby="example-title">
         <div className={styles.sectionHeading}>
           <h2 id="example-title">계산 예시</h2>
-          <p>아래 예시는 평균단가와 예상 손익 계산 흐름을 보여주는 고정 사례입니다.</p>
+          <p>아래 예시는 평균단가 변화와 현재가 기준 비교 흐름을 보여주는 고정 사례입니다.</p>
         </div>
         <div className={styles.exampleGrid}>
           <article className={styles.exampleCard}>

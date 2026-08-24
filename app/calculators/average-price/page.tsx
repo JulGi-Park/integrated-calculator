@@ -9,9 +9,9 @@ import {
   averagePriceWebApplicationJsonLd,
 } from "@/lib/calculators/average-price/content";
 
-const title = "물타기 계산기 | 주식·코인 평균단가 계산";
+const title = "물타기·평단가 계산기 | 추가매수 시나리오 비교";
 const description =
-  "현재 보유 수량, 평균 단가, 추가 매수 수량과 단가를 입력해 신규 평균단가, 총 투자금액, 예상 손익과 예상 수익률을 계산합니다.";
+  "추가매수 전후의 보유수량·평균단가·총 투입원금 변화와 두 가지 추가매수 시나리오를 비교합니다.";
 const ogUrl = "https://gyesanbox.kr/calculators/average-price/";
 const ogImage = "https://gyesanbox.kr/og/average-price.png";
 
@@ -51,12 +51,13 @@ export default function AveragePricePage() {
         <p className="page-heading__eyebrow">Average price</p>
         <h1>물타기 계산기</h1>
         <p>
-          현재 보유 수량과 평균 단가, 추가 매수 수량과 단가를 입력해 신규
-          평균단가와 총 투자금액을 계산합니다. 현재가 또는 목표 매도가를
-          입력하면 예상 손익과 수익률도 함께 확인할 수 있습니다.
+          현재 보유분과 추가매수 조건을 입력해 전후 수량·평균단가·총
+          투입원금의 변화를 확인합니다. 두 조건을 입력하면 사용자 입력
+          순서대로 비교하며, 현재가 입력 시 각 평균매입단가까지 필요한 가격
+          변화율을 함께 계산합니다.
         </p>
         <div className="seller-margin-meta">
-          <span>계산 기준일: 2026년 8월 9일</span>
+          <span>기능 확인일: 2026년 8월 24일</span>
           <span>수수료, 세금, 환율 등은 반영하지 않은 단순 계산값입니다.</span>
         </div>
       </div>

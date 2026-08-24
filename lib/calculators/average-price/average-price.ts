@@ -198,6 +198,9 @@ export function calculateAveragePrice(
   const totalInvestmentAmount =
     existingInvestmentAmount + additionalInvestmentAmount;
   const newAveragePrice = totalInvestmentAmount / totalQuantity;
+  const averagePriceChangeAmount = newAveragePrice - input.currentAveragePrice;
+  const averagePriceChangeRate =
+    (averagePriceChangeAmount / input.currentAveragePrice) * 100;
 
   const resultErrors: AveragePriceValidationError[] = [];
 
@@ -221,9 +224,21 @@ export function calculateAveragePrice(
     "총 투자금액",
   );
   assertFiniteResult(resultErrors, "result", newAveragePrice, "신규 평균 단가");
+  assertFiniteResult(
+    resultErrors,
+    "result",
+    averagePriceChangeRate,
+    "평균 단가 변화율",
+  );
 
   const targetPrice = input.targetPrice;
   const hasTargetPrice = isFiniteNumber(targetPrice);
+  const existingBreakEvenChangeRate = hasTargetPrice
+    ? ((input.currentAveragePrice - targetPrice) / targetPrice) * 100
+    : null;
+  const newBreakEvenChangeRate = hasTargetPrice
+    ? ((newAveragePrice - targetPrice) / targetPrice) * 100
+    : null;
   const expectedValuationAmount = hasTargetPrice
     ? totalQuantity * targetPrice
     : null;
@@ -253,6 +268,24 @@ export function calculateAveragePrice(
     assertFiniteResult(resultErrors, "result", expectedProfitRate, "예상 수익률");
   }
 
+  if (existingBreakEvenChangeRate !== null) {
+    assertFiniteResult(
+      resultErrors,
+      "result",
+      existingBreakEvenChangeRate,
+      "기존 평균 단가 도달 필요 변화율",
+    );
+  }
+
+  if (newBreakEvenChangeRate !== null) {
+    assertFiniteResult(
+      resultErrors,
+      "result",
+      newBreakEvenChangeRate,
+      "신규 평균 단가 도달 필요 변화율",
+    );
+  }
+
   if (resultErrors.length > 0) {
     return { success: false, errors: resultErrors };
   }
@@ -265,6 +298,16 @@ export function calculateAveragePrice(
       totalQuantity: roundToDecimalPlaces(totalQuantity, 8),
       totalInvestmentAmount: roundAveragePriceWon(totalInvestmentAmount),
       newAveragePrice: roundAveragePriceWon(newAveragePrice),
+      averagePriceChangeAmount: roundAveragePriceWon(averagePriceChangeAmount),
+      averagePriceChangeRate: roundToDecimalPlaces(averagePriceChangeRate, 2),
+      existingBreakEvenChangeRate:
+        existingBreakEvenChangeRate === null
+          ? null
+          : roundToDecimalPlaces(existingBreakEvenChangeRate, 2),
+      newBreakEvenChangeRate:
+        newBreakEvenChangeRate === null
+          ? null
+          : roundToDecimalPlaces(newBreakEvenChangeRate, 2),
       expectedValuationAmount:
         expectedValuationAmount === null
           ? null

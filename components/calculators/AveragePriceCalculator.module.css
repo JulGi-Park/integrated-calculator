@@ -61,6 +61,26 @@
   gap: 20px 16px;
 }
 
+.scenarioFieldset {
+  margin: 24px 0 0;
+  border: 1px solid #d5ddd7;
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.scenarioFieldset legend {
+  padding: 0 7px;
+  color: #38433c;
+  font-weight: 800;
+}
+
+.scenarioFieldset > p {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
 .field {
   min-width: 0;
 }
@@ -317,6 +337,36 @@
 .subheading {
   margin: 24px 0 0;
   font-size: 0.95rem;
+}
+
+.comparisonWrap {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.comparisonTable {
+  width: 100%;
+  min-width: 520px;
+  margin-top: 14px;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.comparisonTable th,
+.comparisonTable td {
+  border: 1px solid #dfe5e0;
+  padding: 10px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.comparisonTable th:first-child {
+  text-align: left;
+}
+
+.comparisonTable thead th {
+  background: #f2f6f3;
 }
 
 .resultActions {

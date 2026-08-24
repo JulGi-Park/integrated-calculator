@@ -15,6 +15,9 @@ const expected = new Map([
   ["대출", ["loan", "dsr"]],
   ["적금", ["savings", "youth-future-savings"]],
   ["전세", ["rent-vs-jeonse", "brokerage-fee"]],
+  ["물타기", ["average-price"]],
+  ["평단", ["average-price"]],
+  ["평균단가", ["average-price"]],
 ]);
 
 test("Registry는 공개 계산기 21개와 같은 canonical path를 단일 검색 원본으로 유지한다", () => {
@@ -54,12 +57,9 @@ test("검색은 URL을 오염시키지 않고 raw 검색어를 GA4 event paramet
 
 test("Flagship 8개와 21개 가치 등급이 Registry에 명시되어 있다", () => {
   assert.equal(CALCULATOR_REGISTRY.filter((calculator) => calculator.flagship).length, 8);
-  assert.equal(CALCULATOR_REGISTRY.filter((calculator) => calculator.valueGrade === "A").length, 15);
+  assert.equal(CALCULATOR_REGISTRY.filter((calculator) => calculator.valueGrade === "A").length, 16);
   assert.equal(CALCULATOR_REGISTRY.filter((calculator) => calculator.valueGrade === "B").length, 5);
-  assert.deepEqual(
-    CALCULATOR_REGISTRY.filter((calculator) => calculator.valueGrade === "C").map((calculator) => calculator.id),
-    ["average-price"],
-  );
+  assert.equal(CALCULATOR_REGISTRY.filter((calculator) => calculator.valueGrade === "C").length, 0);
 });
 
 test("Flagship 8개는 엔진 결과와 연결된 판단 레이어를 렌더링한다", async () => {

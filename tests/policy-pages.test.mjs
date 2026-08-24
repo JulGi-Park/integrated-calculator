@@ -268,6 +268,7 @@ test("변경 이력은 신규 10개 공개와 검증된 주요 변경을 올바�
     /<section><h2>([^<]+)<\/h2>[\s\S]*?<a href="([^"]+)">상세 페이지 보기<\/a><\/p><\/section>/g,
   )].map((match) => ({ target: match[1], href: match[2] }));
   const publicCalculators = [
+    ["물타기·평단가 추가매수 시나리오 비교", "/calculators/average-price/"],
     ["국비지원 자격증 취득비용 계산기 공개", "/calculators/training-certificate-cost/"],
     ["신규 계산기 10개 공개", "/calculators/"],
     ["DSR 공식 부채 산정·스트레스 DSR 정책", "/calculators/dsr/"],
@@ -297,7 +298,7 @@ test("변경 이력은 신규 10개 공개와 검증된 주요 변경을 올바�
     sections.filter(({ href }) => href.startsWith("/calculators/")).map(({ href }) => href),
   );
   assert.deepEqual(calculatorPaths, new Set(publicCalculators.map(([, href]) => href)));
-  assert.equal(new Set(publicCalculators.map(([name]) => name)).size, 15);
+  assert.equal(new Set(publicCalculators.map(([name]) => name)).size, 16);
   for (const name of [
     "ROAS", "예금·적금", "물타기·평단가", "카드 할부", "부동산 중개보수",
     "자동차 유지비", "연장·야간·휴일근로수당", "청년미래적금", "DSR", "근로·자녀장려금",
