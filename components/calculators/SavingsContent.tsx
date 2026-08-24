@@ -93,7 +93,7 @@ export function SavingsContent() {
         <div className={styles.sectionHeading}>
           <h2 id="exclusion-title">적용되지 않는 예외</h2>
           <p>
-            다음 항목은 1차 계산 범위에 포함하지 않습니다. 실제 상품 약관과 금융기관
+            다음 항목은 이 계산기에 반영하지 않습니다. 실제 상품 약관과 금융기관
             안내를 함께 확인해야 합니다.
           </p>
         </div>

@@ -127,7 +127,7 @@ export function ParentalLeaveContent() {
         <div className={styles.sectionHeading}>
           <h2 id="excluded-title">적용되지 않는 예외</h2>
           <p>
-            다음 항목은 1차 계산 범위에서 제외합니다. 개인별 요건과 특례 적용은
+            다음 항목은 이 계산기의 범위에서 제외합니다. 개인별 요건과 특례 적용은
             공식 기관에서 확인해 주세요.
           </p>
         </div>

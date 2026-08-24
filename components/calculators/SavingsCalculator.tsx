@@ -361,7 +361,7 @@ export function SavingsCalculator() {
               </label>
             </div>
             <p className={styles.fieldDescription}>
-              복리 계산은 1차 범위에 포함하지 않습니다.
+              복리 방식은 이 계산기에 반영하지 않습니다.
             </p>
           </div>
 

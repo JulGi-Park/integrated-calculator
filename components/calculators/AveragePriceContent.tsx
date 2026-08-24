@@ -90,7 +90,7 @@ export function AveragePriceContent() {
       <section className={styles.section} aria-labelledby="exclusion-title">
         <div className={styles.sectionHeading}>
           <h2 id="exclusion-title">자동 반영되지 않는 항목</h2>
-          <p>아래 항목은 1차 계산 범위에 포함하지 않습니다.</p>
+          <p>아래 항목은 이 계산기에 자동으로 반영하지 않습니다.</p>
         </div>
         <ul className={styles.exclusionList}>
           {averagePriceExclusions.map((item) => (

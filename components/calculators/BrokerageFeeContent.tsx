@@ -141,7 +141,7 @@ export function BrokerageFeeContent() {
 
       <section className={styles.section} aria-labelledby="exclusion-title">
         <div className={styles.sectionHeading}>
-          <h2 id="exclusion-title">1차 계산에 포함하지 않는 항목</h2>
+          <h2 id="exclusion-title">계산에 포함하지 않는 항목</h2>
           <p>아래 항목은 이 계산기가 자동으로 판단하거나 계산하지 않습니다.</p>
         </div>
         <ul className={styles.exclusionList}>

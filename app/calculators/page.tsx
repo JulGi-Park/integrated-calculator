@@ -300,7 +300,7 @@ export default function CalculatorsPage() {
           ["금융", "청년미래적금 계산기", "/calculators/youth-future-savings/", "정부기여금과 금리를 반영한 예상 만기수령액을 계산합니다."],
           ["금융", "DSR 계산기", "/calculators/dsr/", "기존·신규 대출 원리금과 스트레스 DSR을 비교합니다."],
           ["급여", "근로·자녀장려금 계산기", "/calculators/work-child-incentive/", "소득·재산 기준과 법정 산식으로 예상 장려금을 계산합니다."],
-          ["급여", "국비지원 자격증 취득비용 계산기", "/calculators/training-certificate-cost/", "내일배움카드 훈련비 본인부담금과 시험·교재·재료비 등을 합산해 자격증 취득 예상비용을 계산합니다."],
+          ["생활", "국비지원 자격증 취득비용 계산기", "/calculators/training-certificate-cost/", "내일배움카드 훈련비 본인부담금과 시험·교재·재료비 등을 합산해 자격증 취득 예상비용을 계산합니다."],
         ].map(([category, title, href, description]) => (
           <a className="calculator-card" data-category={category} href={href} key={href}>
             <div>

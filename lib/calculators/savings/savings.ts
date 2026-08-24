@@ -259,7 +259,7 @@ export function validateSavingsInput(
       errors,
       "interestType",
       "INVALID_INTEREST_TYPE",
-      "1차 계산기는 단리 기준만 지원합니다.",
+      "이 계산기는 단리 기준만 지원합니다.",
     );
   }
 
