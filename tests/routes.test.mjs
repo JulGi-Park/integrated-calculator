@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const routes = [
-  ["app/page.tsx", "계산박스 | 생활·금융·근로 계산기 모음"],
+  ["app/page.tsx", "계산박스 | 기준·공식·해석을 함께 제공하는 생활 계산 서비스"],
   ["app/calculators/page.tsx", "계산박스 계산기 목록"],
   [
     "app/calculators/seller-margin/page.tsx",

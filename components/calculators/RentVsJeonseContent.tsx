@@ -62,7 +62,7 @@ export function RentVsJeonseContent() {
 
       <section className={styles.section} aria-labelledby="example-title">
         <div className={styles.sectionHeading}>
-          <h2 id="example-title">계산 예시</h2>
+          <h2 id="example-title">계산 예시와 비교 결과 해석</h2>
           <p>
             예시는 설명용입니다. 실제 판단에는 계약 조건과 대출 가능 여부를
             따로 확인해야 합니다.

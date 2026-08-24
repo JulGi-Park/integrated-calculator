@@ -26,7 +26,7 @@ test("모든 공개 진입점은 환경변수 가드 없이 같은 공개 경로
     "app/calculators/training-certificate-cost/page.tsx",
     "app/page.tsx",
     "app/calculators/page.tsx",
-    "app/sitemap.ts",
+    "lib/site/publicRoutes.ts",
     "app/about/page.tsx",
     "app/updates/page.tsx",
     "lib/favorites.ts",

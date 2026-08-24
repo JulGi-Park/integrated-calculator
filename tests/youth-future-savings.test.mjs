@@ -247,7 +247,7 @@ test("라우트는 canonical을 가진 공개 페이지다", async () => {
 
 test("sitemap, 목록, 홈에는 청년미래적금 계산기를 노출한다", async () => {
   const files = [
-    "app/sitemap.ts",
+    "lib/site/publicRoutes.ts",
     "app/page.tsx",
     "app/calculators/page.tsx",
     "app/calculators/salary/page.tsx",

@@ -232,8 +232,8 @@ export function calculateSocialInsurance(
     policy.healthInsurance.employeeMonthlyPremiumMaximum,
   );
   const employeeLongTermCare = roundWon(
-    employeeHealthInsurance *
-      policy.longTermCareInsurance.healthInsuranceRate,
+    (employeeHealthInsurance * policy.longTermCareInsurance.incomeRate) /
+      policy.healthInsurance.totalRate,
   );
   const employeeEmploymentInsurance = roundWon(
     taxableMonthlyPay *

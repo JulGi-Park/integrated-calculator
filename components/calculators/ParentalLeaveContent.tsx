@@ -92,7 +92,7 @@ export function ParentalLeaveContent() {
 
       <section className={styles.section} aria-labelledby="example-title">
         <div className={styles.sectionHeading}>
-          <h2 id="example-title">계산 예시</h2>
+          <h2 id="example-title">계산 예시와 결과 해석</h2>
           <p>
             월 통상임금 300만원, 육아휴직 사용 개월 수 12개월을 입력한 예시입니다.
           </p>

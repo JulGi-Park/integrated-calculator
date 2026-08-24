@@ -133,16 +133,33 @@ export function CarCostContent() {
                 <span>{criterion}</span>
                 <span>확인일: {verifiedAt}</span>
               </div>
-              {href.startsWith("https://gyesanbox.kr") ? (
-                <span>개별 조건 확인</span>
-              ) : (
+              {href ? (
                 <a href={href} target="_blank" rel="noopener noreferrer">
                   {title} 보기
                 </a>
+              ) : (
+                <span>개별 조건 확인</span>
               )}
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className={styles.section} aria-labelledby="car-related-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="car-related-title">구매·보유 예산에 함께 반영할 계산</h2>
+          <p>차량 유지비와 별개로 할부·대출의 금융비용과 월 가용소득을 확인하세요.</p>
+        </div>
+        <div className={styles.relatedGrid}>
+          <a className={`${styles.relatedCard} ${styles.relatedLink}`} href="/calculators/loan/">
+            <h3>대출 이자 계산기</h3>
+            <p>차량 구입자금의 월 상환액과 총이자를 상환 방식별로 비교합니다.</p>
+          </a>
+          <a className={`${styles.relatedCard} ${styles.relatedLink}`} href="/calculators/salary/">
+            <h3>연봉 실수령액 계산기</h3>
+            <p>예상 월 실수령액과 차량 월 유지비를 서로 다른 계산으로 확인합니다.</p>
+          </a>
+        </div>
       </section>
 
       <aside className={styles.disclaimer} aria-label="면책 문구">

@@ -55,7 +55,7 @@ export function CardInstallmentContent() {
 
       <section className={styles.contentSection} aria-labelledby="example-title">
         <div className={styles.sectionHeading}>
-          <h2 id="example-title">계산 예시</h2>
+          <h2 id="example-title">계산 예시와 결과 해석</h2>
           <p>1,200,000원을 12개월, 연 12%로 결제하는 경우입니다.</p>
         </div>
         <div className={styles.exampleGrid}>

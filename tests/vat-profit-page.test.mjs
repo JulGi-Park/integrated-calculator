@@ -78,7 +78,7 @@ test("콘텐츠 데이터에 기준일, 공식 출처, FAQ, 면책 문구가 준
 
 test("sitemap, 홈, 계산기 목록, 판매자 마진 관련 계산기에 vat-profit가 공개 노출된다", async () => {
   const files = [
-    "app/sitemap.ts",
+    "lib/site/publicRoutes.ts",
     "app/page.tsx",
     "app/calculators/page.tsx",
     "components/calculators/SellerMarginContent.tsx",

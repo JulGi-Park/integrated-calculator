@@ -31,7 +31,7 @@ export function YouthFutureSavingsContent() {
       </section>
 
       <section className={styles.contentCard} aria-labelledby="youth-example-heading">
-        <h2 id="youth-example-heading">예시</h2>
+        <h2 id="youth-example-heading">계산 예시와 결과 해석</h2>
         <p>
           월 50만원, 36개월, 연 7%, 일반형 6%, 비과세로 계산하면 예상
           만기수령액은 {formatWon(youthFutureSavingsExampleResult.maturityAmount)}입니다.

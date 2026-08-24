@@ -253,7 +253,8 @@ async function verifyStaticOutput() {
         html,
         "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4273771596550595",
       ),
-      1,
+      0,
+      `${relativePath} must defer the route-eligible AdSense connection until hydration.`,
     );
   }
 
@@ -305,8 +306,8 @@ async function verifyStaticOutput() {
         html,
         "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4273771596550595",
       ),
-      1,
-      `${relativePath} must retain exactly one AdSense script.`,
+      0,
+      `${relativePath} must defer the route-eligible AdSense connection until hydration.`,
     );
   }
 

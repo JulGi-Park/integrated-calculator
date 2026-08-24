@@ -13,7 +13,7 @@ export function RoasContent() {
     <div className={styles.content}>
       <section className={styles.section} aria-labelledby="roas-standard-title">
         <div className={styles.sectionHeading}>
-          <h2 id="roas-standard-title">계산 기준 설명</h2>
+          <h2 id="roas-standard-title">계산 기준과 결과 해석</h2>
           <p>
             ROAS는 광고비 대비 광고 매출을 보는 지표입니다. ROAS가 높아도
             상품 원가, 배송비, 포장비, 수수료, 할인, 환불 등을 반영하면 실제

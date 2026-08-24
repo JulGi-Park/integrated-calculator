@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 
 const siteUrl = "https://gyesanbox.kr/";
-const homeTitle = "계산박스 | 생활·금융·근로 계산기 모음";
+const homeTitle = "계산박스 | 기준·공식·해석을 함께 제공하는 생활 계산 서비스";
 const homeDescription =
   "계산박스는 판매자 마진, 부가세, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여, 육아휴직급여, 전세·월세 비교 등 생활 계산을 한 곳에서 확인할 수 있는 참고용 계산 서비스입니다.";
-const ogTitle = "계산박스 - 생활 계산기 모음";
+const ogTitle = "계산박스 - 계산 기준과 결과 해석을 함께 확인하는 서비스";
 const ogDescription =
   "부가세, 연봉, 대출, 퇴직금, 육아휴직급여, 전세·월세 비교 등 실생활에 필요한 계산기를 한곳에서 확인할 수 있습니다.";
 const ogImage = "https://gyesanbox.kr/og/home.png";
@@ -231,7 +231,7 @@ export default function Home() {
       name: "계산박스",
       alternateName: "gyesanbox.kr",
       url: siteUrl,
-      description: "생활·금융·근로 계산기 모음 서비스",
+      description: "생활·금융·근로 계산의 기준과 결과 해석을 함께 제공하는 정보 서비스",
       publisher: { "@id": `${siteUrl}#organization` },
     },
     {
@@ -242,7 +242,7 @@ export default function Home() {
       url: siteUrl,
       logo: `${siteUrl}icon.png`,
       description:
-        "계산박스는 생활·금융·근로 계산을 간편하게 확인할 수 있는 무료 온라인 계산기 서비스입니다.",
+        "계산박스는 생활·금융·근로 계산의 기준, 공식, 사례와 결과 해석을 함께 제공하는 계산 전문 정보 서비스입니다.",
       sameAs: [
         "https://www.instagram.com/gyesanbox/",
         "https://www.threads.com/@gyesanbox",

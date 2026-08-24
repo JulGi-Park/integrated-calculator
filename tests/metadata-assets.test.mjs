@@ -8,7 +8,7 @@ const publicPageMetadataCases = [
     path: "/",
     imageFile: "home",
     modulePath: "../app/page.tsx",
-    title: "계산박스 - 생활 계산기 모음",
+    title: "계산박스 - 계산 기준과 결과 해석을 함께 확인하는 서비스",
     description:
       "부가세, 연봉, 대출, 퇴직금, 육아휴직급여, 전세·월세 비교 등 실생활에 필요한 계산기를 한곳에서 확인할 수 있습니다.",
   },
@@ -26,7 +26,7 @@ const publicPageMetadataCases = [
     modulePath: "../app/about/page.tsx",
     title: "계산박스 소개 - 생활 계산을 쉽게",
     description:
-      "계산박스는 실생활에 필요한 계산을 쉽고 빠르게 돕는 웹서비스입니다.",
+      "계산박스는 실생활 계산의 기준·공식·근거와 결과 해석을 함께 제공하는 정보 서비스입니다.",
   },
   {
     path: "/contact/",

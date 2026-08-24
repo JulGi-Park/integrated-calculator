@@ -8,10 +8,10 @@ import homeModule from "../app/page.tsx";
 const Home = homeModule.default;
 const metadata = homeModule.metadata;
 
-const expectedTitle = "계산박스 | 생활·금융·근로 계산기 모음";
+const expectedTitle = "계산박스 | 기준·공식·해석을 함께 제공하는 생활 계산 서비스";
 const expectedDescription =
   "계산박스는 판매자 마진, 부가세, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여, 육아휴직급여, 전세·월세 비교 등 생활 계산을 한 곳에서 확인할 수 있는 참고용 계산 서비스입니다.";
-const expectedOgTitle = "계산박스 - 생활 계산기 모음";
+const expectedOgTitle = "계산박스 - 계산 기준과 결과 해석을 함께 확인하는 서비스";
 const expectedOgDescription =
   "부가세, 연봉, 대출, 퇴직금, 육아휴직급여, 전세·월세 비교 등 실생활에 필요한 계산기를 한곳에서 확인할 수 있습니다.";
 const expectedOgImage = "https://gyesanbox.kr/og/home.png";
@@ -117,7 +117,10 @@ test("홈 JSON-LD는 화면 내용과 연락처 및 구현 완료 계산기만 �
   assert.equal(scripts[0]["@id"], "https://gyesanbox.kr/#website");
   assert.equal(scripts[0].alternateName, "gyesanbox.kr");
   assert.equal(scripts[0].url, "https://gyesanbox.kr/");
-  assert.equal(scripts[0].description, "생활·금융·근로 계산기 모음 서비스");
+  assert.equal(
+    scripts[0].description,
+    "생활·금융·근로 계산의 기준과 결과 해석을 함께 제공하는 정보 서비스",
+  );
   assert.deepEqual(scripts[0].publisher, { "@id": "https://gyesanbox.kr/#organization" });
   assert.equal(scripts[1]["@type"], "Organization");
   assert.equal(scripts[1]["@id"], "https://gyesanbox.kr/#organization");
@@ -127,7 +130,7 @@ test("홈 JSON-LD는 화면 내용과 연락처 및 구현 완료 계산기만 �
   assert.equal(scripts[1].logo, "https://gyesanbox.kr/icon.png");
   assert.equal(
     scripts[1].description,
-    "계산박스는 생활·금융·근로 계산을 간편하게 확인할 수 있는 무료 온라인 계산기 서비스입니다.",
+    "계산박스는 생활·금융·근로 계산의 기준, 공식, 사례와 결과 해석을 함께 제공하는 계산 전문 정보 서비스입니다.",
   );
   assert.deepEqual(scripts[1].sameAs, [
     "https://www.instagram.com/gyesanbox/",

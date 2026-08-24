@@ -15,7 +15,7 @@ export interface CarCostSource {
   title: string;
   criterion: string;
   verifiedAt: string;
-  href: string;
+  href?: string;
 }
 
 const wonFormatter = new Intl.NumberFormat("ko-KR", {
@@ -223,7 +223,6 @@ export const carCostSources: CarCostSource[] = [
     criterion:
       "보험료와 정비비는 운전자 조건, 차량 상태, 주행거리, 정비 항목에 따라 달라집니다.",
     verifiedAt: "2026년 8월 9일",
-    href: "https://gyesanbox.kr/calculators/car-cost",
   },
 ];
 
@@ -252,13 +251,13 @@ export const carCostBreadcrumbJsonLd = {
       "@type": "ListItem",
       position: 2,
       name: "계산기 목록",
-      item: "https://gyesanbox.kr/calculators",
+      item: "https://gyesanbox.kr/calculators/",
     },
     {
       "@type": "ListItem",
       position: 3,
       name: "자동차 유지비 계산기",
-      item: "https://gyesanbox.kr/calculators/car-cost",
+      item: "https://gyesanbox.kr/calculators/car-cost/",
     },
   ],
 };

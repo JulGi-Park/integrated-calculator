@@ -142,6 +142,23 @@ export function SavingsContent() {
         </ul>
       </section>
 
+      <section className={styles.section} aria-labelledby="savings-related-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="savings-related-title">저축 계획에 이어 확인할 계산</h2>
+          <p>정책형 청년 저축의 기여금 조건과 매월 납입 가능한 소득을 따로 확인하세요.</p>
+        </div>
+        <div className={styles.relatedGrid}>
+          <a className={`${styles.relatedCard} ${styles.relatedLink}`} href="/calculators/youth-future-savings/">
+            <h3>청년미래적금 계산기</h3>
+            <p>정부기여금 참고 유형과 금리를 반영한 만기 예상액을 확인합니다.</p>
+          </a>
+          <a className={`${styles.relatedCard} ${styles.relatedLink}`} href="/calculators/salary/">
+            <h3>연봉 실수령액 계산기</h3>
+            <p>월 공제 후 예상 소득을 계산해 납입 계획의 기준으로 삼습니다.</p>
+          </a>
+        </div>
+      </section>
+
       <aside className={styles.disclaimer} aria-label="면책 문구">
         계산 결과는 입력값 기준의 참고 계산입니다. 실제 지급 이자는 금융기관의
         약관, 일수 계산, 원미만 처리, 우대금리 충족 여부, 납입일, 중도해지 여부와

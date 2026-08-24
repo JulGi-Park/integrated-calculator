@@ -122,13 +122,13 @@ export const averagePriceBreadcrumbJsonLd = {
       "@type": "ListItem",
       position: 2,
       name: "계산기 목록",
-      item: "https://gyesanbox.kr/calculators",
+      item: "https://gyesanbox.kr/calculators/",
     },
     {
       "@type": "ListItem",
       position: 3,
       name: "물타기 계산기",
-      item: "https://gyesanbox.kr/calculators/average-price",
+      item: "https://gyesanbox.kr/calculators/average-price/",
     },
   ],
 };

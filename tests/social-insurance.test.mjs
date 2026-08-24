@@ -163,10 +163,10 @@ test("건강보험 근로자 부담 상한과 장기요양보험 연쇄를 적�
 
   assert.equal(data.employeePension, 313_020);
   assert.equal(data.employeeHealthInsurance, 4_591_740);
-  assert.equal(data.employeeLongTermCare, 603_355);
+  assert.equal(data.employeeLongTermCare, 603_376);
   assert.equal(data.employeeEmploymentInsurance, 9_000_000);
-  assert.equal(data.totalEmployeeContribution, 14_508_115);
-  assert.equal(data.afterContributionAmount, 985_491_885);
+  assert.equal(data.totalEmployeeContribution, 14_508_136);
+  assert.equal(data.afterContributionAmount, 985_491_864);
 });
 
 test("건강보험 하한·상한 경계와 보정된 건강보험료 기준 장기요양보험을 검증한다", () => {
@@ -186,9 +186,9 @@ test("건강보험 하한·상한 경계와 보정된 건강보험료 기준 장
     [firstMinimumRoundedSalary + 1, 10_080, 1_325],
   ];
   const upperCases = [
-    [firstAboveMaximumSalary - 1, 4_591_740, 603_355],
-    [firstAboveMaximumSalary, 4_591_740, 603_355],
-    [firstAboveMaximumSalary + 1, 4_591_740, 603_355],
+    [firstAboveMaximumSalary - 1, 4_591_740, 603_376],
+    [firstAboveMaximumSalary, 4_591_740, 603_376],
+    [firstAboveMaximumSalary + 1, 4_591_740, 603_376],
   ];
 
   for (const [monthlySalary, healthInsurance, longTermCare] of [
@@ -203,8 +203,9 @@ test("건강보험 하한·상한 경계와 보정된 건강보험료 기준 장
     assert.equal(
       data.employeeLongTermCare,
       Math.round(
-        data.employeeHealthInsurance *
-          SOCIAL_INSURANCE_POLICY_2026.longTermCareInsurance.healthInsuranceRate,
+        (data.employeeHealthInsurance *
+          SOCIAL_INSURANCE_POLICY_2026.longTermCareInsurance.incomeRate) /
+          SOCIAL_INSURANCE_POLICY_2026.healthInsurance.totalRate,
       ),
     );
   }
@@ -257,8 +258,9 @@ test("정상 계산 결과는 건강보험 범위와 총공제액 불변식을 �
     assert.equal(
       data.employeeLongTermCare,
       Math.round(
-        data.employeeHealthInsurance *
-          SOCIAL_INSURANCE_POLICY_2026.longTermCareInsurance.healthInsuranceRate,
+        (data.employeeHealthInsurance *
+          SOCIAL_INSURANCE_POLICY_2026.longTermCareInsurance.incomeRate) /
+          SOCIAL_INSURANCE_POLICY_2026.healthInsurance.totalRate,
       ),
     );
     assert.equal(
@@ -336,12 +338,12 @@ test("국민연금 절사 변경은 다른 근로자 부담 보험료를 바꾸�
 
   assert.equal(data.employeePension, 313_020);
   assert.equal(data.employeeHealthInsurance, 236_911);
-  assert.equal(data.employeeLongTermCare, 31_130);
+  assert.equal(data.employeeLongTermCare, 31_131);
   assert.equal(data.employeeEmploymentInsurance, 59_310);
-  assert.equal(data.totalEmployeeContribution, 640_371);
-  assert.equal(data.afterContributionAmount, 5_949_629);
+  assert.equal(data.totalEmployeeContribution, 640_372);
+  assert.equal(data.afterContributionAmount, 5_949_628);
   assert.match(buildSocialInsuranceResultText(input, data), /국민연금: 313,020원/);
-  assert.match(buildSocialInsuranceResultText(input, data), /총 공제액: 640,371원/);
+  assert.match(buildSocialInsuranceResultText(input, data), /총 공제액: 640,372원/);
 });
 
 test("복사·공유 공용 결과 문자열은 참고용 예상값 안내를 한 번 포함한다", async () => {
@@ -657,7 +659,7 @@ test("월 급여 한도 오류 문구는 자연스러운 조사와 검증용 명
 
 test("sitemap, 목록, 홈과 연봉 관련 계산기에 공개 4대보험 계산기를 노출한다", async () => {
   const files = [
-    "app/sitemap.ts",
+    "lib/site/publicRoutes.ts",
     "app/page.tsx",
     "app/calculators/page.tsx",
     "components/calculators/SalaryTakeHomeContent.tsx",

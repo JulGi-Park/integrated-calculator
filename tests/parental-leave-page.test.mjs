@@ -17,7 +17,7 @@ test("육아휴직급여 계산기는 홈, 목록, sitemap에 공개되고 robot
   const [home, list, sitemap, robots] = await Promise.all([
     readFile("app/page.tsx", "utf8"),
     readFile("app/calculators/page.tsx", "utf8"),
-    readFile("app/sitemap.ts", "utf8"),
+    readFile("lib/site/publicRoutes.ts", "utf8"),
     readFile("app/robots.ts", "utf8"),
   ]);
 
