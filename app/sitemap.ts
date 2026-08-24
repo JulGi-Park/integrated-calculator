@@ -1,9 +1,4 @@
 import type { MetadataRoute } from "next";
-import {
-  isTrainingCertificateCostCalculatorEnabled,
-  TRAINING_CERTIFICATE_COST_PUBLICATION,
-} from "@/lib/calculators/training-certificate-cost/publication";
-
 const baseUrl = "https://gyesanbox.kr";
 
 export const dynamic = "force-static";
@@ -31,6 +26,7 @@ const publicCalculatorRoutes = [
   "/calculators/youth-future-savings/",
   "/calculators/dsr/",
   "/calculators/work-child-incentive/",
+  "/calculators/training-certificate-cost/",
 ] as const;
 
 const policyRoutes = [
@@ -45,9 +41,6 @@ const policyRoutes = [
 
 const routes = [
   ...publicCalculatorRoutes,
-  ...(isTrainingCertificateCostCalculatorEnabled()
-    ? [TRAINING_CERTIFICATE_COST_PUBLICATION.path]
-    : []),
   ...policyRoutes,
 ];
 

@@ -11,10 +11,7 @@ export type BookmarkablePage = {
   bookmarkable: true;
 };
 
-export function getBookmarkablePages(
-  trainingCertificateCostEnabled =
-    isTrainingCertificateCostCalculatorEnabled(),
-): BookmarkablePage[] {
+export function getBookmarkablePages(): BookmarkablePage[] {
   return [
   ["calculators", "/calculators/", "계산기 목록", "hub"],
   ["salary", "/calculators/salary/", "연봉 실수령액 계산기", "calculator"],
@@ -37,14 +34,7 @@ export function getBookmarkablePages(
   ["youth-future-savings", "/calculators/youth-future-savings/", "청년미래적금 계산기", "calculator"],
   ["dsr", "/calculators/dsr/", "DSR 계산기", "calculator"],
   ["work-child-incentive", "/calculators/work-child-incentive/", "근로·자녀장려금 계산기", "calculator"],
-  ...(trainingCertificateCostEnabled
-    ? [[
-        TRAINING_CERTIFICATE_COST_PUBLICATION.slug,
-        TRAINING_CERTIFICATE_COST_PUBLICATION.path,
-        TRAINING_CERTIFICATE_COST_PUBLICATION.name,
-        "calculator",
-      ]]
-    : []),
+  ["training-certificate-cost", "/calculators/training-certificate-cost/", "국비지원 자격증 취득비용 계산기", "calculator"],
   ["methodology", "/methodology/", "계산 방법론", "guide"],
   ["updates", "/updates/", "계산기 변경 이력", "guide"],
   ].map(
@@ -98,7 +88,3 @@ export function parseFavorites(raw: string | null): FavoriteItem[] {
 export function serializeFavorites(items: FavoriteItem[]): string {
   return JSON.stringify(items.slice(0, MAX_FAVORITES));
 }
-import {
-  isTrainingCertificateCostCalculatorEnabled,
-  TRAINING_CERTIFICATE_COST_PUBLICATION,
-} from "@/lib/calculators/training-certificate-cost/publication";

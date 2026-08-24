@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { TrainingCertificateCostCalculator } from "@/components/calculators/TrainingCertificateCostCalculator";
 import { TrainingCertificateCostContent } from "@/components/calculators/TrainingCertificateCostContent";
@@ -9,7 +8,6 @@ import {
   trainingCertificateCostSeo,
   trainingCertificateCostWebApplicationJsonLd,
 } from "@/components/calculators/trainingCertificateCostContentData";
-import { isTrainingCertificateCostCalculatorEnabled } from "@/lib/calculators/training-certificate-cost/publication";
 
 const ogImage = "https://gyesanbox.kr/og/training-certificate-cost.png";
 
@@ -42,10 +40,6 @@ export const metadata: Metadata = {
 };
 
 export default function TrainingCertificateCostPage() {
-  if (!isTrainingCertificateCostCalculatorEnabled()) {
-    notFound();
-  }
-
   const jsonLdItems = [
     trainingCertificateCostWebApplicationJsonLd,
     trainingCertificateCostBreadcrumbJsonLd,

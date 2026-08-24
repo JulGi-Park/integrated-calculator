@@ -275,23 +275,15 @@ test("초기화는 입력·오류·결과를 지우고 응시 횟수를 1회로 
   assert.equal(document.activeElement, screen.getByLabelText("총 훈련비"));
 });
 
-test("page는 공통 strict 공개 helper와 notFound로 보호된다", async () => {
+test("page는 환경변수 가드 없이 공개 metadata를 제공한다", async () => {
   const pageSource = await readFile(
     "app/calculators/training-certificate-cost/page.tsx",
     "utf8",
   );
-  const publicationSource = await readFile(
-    "lib/calculators/training-certificate-cost/publication.ts",
-    "utf8",
+  assert.doesNotMatch(
+    pageSource,
+    /isTrainingCertificateCostCalculatorEnabled|NEXT_PUBLIC_ENABLE_TRAINING_CERTIFICATE_COST_CALCULATOR|notFound\(/,
   );
-
-  assert.match(pageSource, /isTrainingCertificateCostCalculatorEnabled\(\)/);
-  assert.match(
-    publicationSource,
-    /NEXT_PUBLIC_ENABLE_TRAINING_CERTIFICATE_COST_CALCULATOR/,
-  );
-  assert.match(publicationSource, /return value === ["']true["']/);
-  assert.match(pageSource, /notFound\(\)/);
   assert.match(pageSource, /export const metadata/);
   assert.match(pageSource, /canonical/);
 });

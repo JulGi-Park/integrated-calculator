@@ -2,14 +2,7 @@ import { rm } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-export const privateStaticRoutes = [
-  {
-    pathname: "/calculators/training-certificate-cost/",
-    environmentVariable:
-      "NEXT_PUBLIC_ENABLE_TRAINING_CERTIFICATE_COST_CALCULATOR",
-    expectedText: "국비지원 자격증 취득비용 계산기",
-  },
-];
+export const privateStaticRoutes = [];
 
 export function isStaticRouteEnabled(value) {
   return value === "true";

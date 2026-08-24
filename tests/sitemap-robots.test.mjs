@@ -29,6 +29,7 @@ const expectedUrls = [
   "https://gyesanbox.kr/calculators/youth-future-savings/",
   "https://gyesanbox.kr/calculators/dsr/",
   "https://gyesanbox.kr/calculators/work-child-incentive/",
+  "https://gyesanbox.kr/calculators/training-certificate-cost/",
   "https://gyesanbox.kr/about/",
   "https://gyesanbox.kr/methodology/",
   "https://gyesanbox.kr/updates/",
@@ -38,14 +39,14 @@ const expectedUrls = [
   "https://gyesanbox.kr/disclaimer/",
 ];
 
-test("sitemap은 운영 도메인과 구현 완료 페이지 및 정책 페이지 29개를 포함한다", () => {
+test("sitemap은 운영 도메인과 구현 완료 페이지 및 정책 페이지 30개를 포함한다", () => {
   const entries = sitemap();
 
   assert.deepEqual(
     entries.map((entry) => entry.url),
     expectedUrls,
   );
-  assert.equal(entries.length, 29);
+  assert.equal(entries.length, 30);
   assert.equal(new Set(entries.map((entry) => entry.url)).size, entries.length);
 
   for (const entry of entries) {

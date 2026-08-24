@@ -1,46 +1,28 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import {
-  isTrainingCertificateCostCalculatorEnabled,
-  TRAINING_CERTIFICATE_COST_PUBLICATION,
-} from "../lib/calculators/training-certificate-cost/publication.ts";
+import { TRAINING_CERTIFICATE_COST_PUBLICATION } from "../lib/calculators/training-certificate-cost/publication.ts";
+import sitemapModule from "../app/sitemap.ts";
 
-test("공개 조건은 정확한 소문자 true만 허용한다", () => {
-  for (const [value, expected] of [
-    [undefined, false],
-    ["", false],
-    ["false", false],
-    ["TRUE", false],
-    ["1", false],
-    ["yes", false],
-    ["true", true],
-  ]) {
-    assert.equal(
-      isTrainingCertificateCostCalculatorEnabled(value),
-      expected,
-      String(value),
-    );
-  }
-});
+const path = "/calculators/training-certificate-cost/";
+const canonical = `https://gyesanbox.kr${path}`;
 
-test("공개 정보는 canonical 경로와 2026-08-12 공개 준비 기준을 유지한다", () => {
+test("국비지원 자격증 취득비용 계산기는 조건 없이 공개 경로를 유지한다", () => {
   assert.deepEqual(TRAINING_CERTIFICATE_COST_PUBLICATION, {
-    environmentVariable:
-      "NEXT_PUBLIC_ENABLE_TRAINING_CERTIFICATE_COST_CALCULATOR",
     name: "국비지원 자격증 취득비용 계산기",
     slug: "training-certificate-cost",
-    path: "/calculators/training-certificate-cost/",
-    url: "https://gyesanbox.kr/calculators/training-certificate-cost/",
+    path,
+    url: canonical,
     category: "급여",
     description:
       "내일배움카드 훈련비 본인부담금과 시험·교재·재료비 등을 합산해 자격증 취득 예상비용을 계산합니다.",
     releasedAt: "2026-08-12",
   });
+  assert.ok(sitemapModule.default().some((entry) => entry.url === canonical));
 });
 
-test("모든 공개 진입점과 Registry는 같은 strict helper를 사용한다", async () => {
-  for (const path of [
+test("모든 공개 진입점은 환경변수 가드 없이 같은 공개 경로를 제공한다", async () => {
+  for (const file of [
     "app/calculators/training-certificate-cost/page.tsx",
     "app/page.tsx",
     "app/calculators/page.tsx",
@@ -49,8 +31,9 @@ test("모든 공개 진입점과 Registry는 같은 strict helper를 사용한�
     "app/updates/page.tsx",
     "lib/favorites.ts",
   ]) {
-    const source = await readFile(path, "utf8");
-    assert.match(source, /isTrainingCertificateCostCalculatorEnabled\(\)/, path);
+    const source = await readFile(file, "utf8");
+    assert.match(source, /training-certificate-cost/);
+    assert.doesNotMatch(source, /NEXT_PUBLIC_ENABLE_TRAINING_CERTIFICATE_COST_CALCULATOR|notFound\(|isTrainingCertificateCostCalculatorEnabled/);
   }
 });
 

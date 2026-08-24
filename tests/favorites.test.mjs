@@ -12,20 +12,17 @@ import {
 
 test("즐겨찾기 레지스트리는 공개 계산기와 반복 방문 허브만 포함한다", () => {
   assert.equal(FAVORITES_STORAGE_KEY, "gyesanbox:favorites:v1");
-  assert.equal(BOOKMARKABLE_PAGES.filter((page) => page.type === "calculator").length, 20);
+  assert.equal(BOOKMARKABLE_PAGES.filter((page) => page.type === "calculator").length, 21);
   assert.ok(BOOKMARKABLE_PAGES.some((page) => page.path === "/calculators/"));
   assert.equal(BOOKMARKABLE_PAGES.some((page) => page.path === "/privacy-policy/"), false);
 });
 
-test("즐겨찾기 레지스트리는 공개 조건에 따라 계산기 20개와 21개를 구분한다", () => {
-  const disabled = getBookmarkablePages(false);
-  const enabled = getBookmarkablePages(true);
+test("즐겨찾기 레지스트리는 공개 계산기 21개를 항상 포함한다", () => {
+  const pages = getBookmarkablePages();
   const releasePath = "/calculators/training-certificate-cost/";
 
-  assert.equal(disabled.filter((page) => page.type === "calculator").length, 20);
-  assert.equal(enabled.filter((page) => page.type === "calculator").length, 21);
-  assert.equal(disabled.some((page) => page.path === releasePath), false);
-  assert.equal(enabled.filter((page) => page.path === releasePath).length, 1);
+  assert.equal(pages.filter((page) => page.type === "calculator").length, 21);
+  assert.equal(pages.filter((page) => page.path === releasePath).length, 1);
 });
 
 test("즐겨찾기 경로는 내부 canonical path로 정규화한다", () => {

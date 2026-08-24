@@ -37,6 +37,7 @@ const calculators = [
   ["청년미래적금 계산기", "/calculators/youth-future-savings/", "https://gyesanbox.kr/calculators/youth-future-savings/"],
   ["DSR 계산기", "/calculators/dsr/", "https://gyesanbox.kr/calculators/dsr/"],
   ["근로·자녀장려금 계산기", "/calculators/work-child-incentive/", "https://gyesanbox.kr/calculators/work-child-incentive/"],
+  ["국비지원 자격증 취득비용 계산기", "/calculators/training-certificate-cost/", "https://gyesanbox.kr/calculators/training-certificate-cost/"],
 ];
 
 test("홈 메타데이터가 계산박스 운영 도메인 기준 SEO 정보를 가진다", () => {
@@ -86,7 +87,7 @@ test("공통 metadataBase가 계산박스 운영 도메인을 기준으로 한�
   assert.doesNotMatch(layoutSource, /integrated-calculator\.pages\.dev|localhost|127\.0\.0\.1|example\.com/);
 });
 
-test("홈 화면에서 구현 완료 계산기 20개로 이동할 수 있다", () => {
+test("홈 화면에서 구현 완료 계산기 21개로 이동할 수 있다", () => {
   const html = renderToStaticMarkup(React.createElement(Home));
 
   assert.match(html, /계산박스/);
@@ -142,7 +143,7 @@ test("홈 JSON-LD는 화면 내용과 연락처 및 구현 완료 계산기만 �
     scripts[3].itemListElement.map((item) => [item.name, item.url]),
     calculators.map(([name, , url]) => [name, url]),
   );
-  assert.equal(scripts[3].itemListElement.length, 20);
+  assert.equal(scripts[3].itemListElement.length, 21);
 
   const serialized = JSON.stringify(scripts);
   assert.doesNotMatch(

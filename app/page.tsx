@@ -1,9 +1,5 @@
 import type { Metadata } from "next";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
-import {
-  isTrainingCertificateCostCalculatorEnabled,
-  TRAINING_CERTIFICATE_COST_PUBLICATION,
-} from "@/lib/calculators/training-certificate-cost/publication";
 
 const siteUrl = "https://gyesanbox.kr/";
 const homeTitle = "계산박스 | 생활·금융·근로 계산기 모음";
@@ -14,7 +10,7 @@ const ogDescription =
   "부가세, 연봉, 대출, 퇴직금, 육아휴직급여, 전세·월세 비교 등 실생활에 필요한 계산기를 한곳에서 확인할 수 있습니다.";
 const ogImage = "https://gyesanbox.kr/og/home.png";
 
-const baseCalculators = [
+const calculators = [
   {
     name: "판매자 마진 계산기",
     href: "/calculators/seller-margin/",
@@ -145,19 +141,14 @@ const baseCalculators = [
     url: "https://gyesanbox.kr/calculators/work-child-incentive/",
     description: "가구·소득·재산 조건과 법정 산식으로 장려금 신청 가능성과 예상액을 확인합니다.",
   },
+  {
+    name: "국비지원 자격증 취득비용 계산기",
+    href: "/calculators/training-certificate-cost/",
+    url: "https://gyesanbox.kr/calculators/training-certificate-cost/",
+    description:
+      "내일배움카드 훈련비 본인부담금과 시험·교재·재료비 등을 합산해 자격증 취득 예상비용을 계산합니다.",
+  },
 ] as const;
-
-const calculators = isTrainingCertificateCostCalculatorEnabled()
-  ? [
-      ...baseCalculators,
-      {
-        name: TRAINING_CERTIFICATE_COST_PUBLICATION.name,
-        href: TRAINING_CERTIFICATE_COST_PUBLICATION.path,
-        url: TRAINING_CERTIFICATE_COST_PUBLICATION.url,
-        description: TRAINING_CERTIFICATE_COST_PUBLICATION.description,
-      },
-    ]
-  : baseCalculators;
 
 const servicePrinciples = [
   {

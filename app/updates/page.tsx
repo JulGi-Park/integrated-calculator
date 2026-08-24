@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
-import {
-  isTrainingCertificateCostCalculatorEnabled,
-  TRAINING_CERTIFICATE_COST_PUBLICATION,
-} from "@/lib/calculators/training-certificate-cost/publication";
 
 const canonical = "https://gyesanbox.kr/updates/";
 const title = "계산기 변경 이력 | 계산박스";
@@ -53,7 +49,7 @@ const trainingCertificateCostReleaseUpdate = {
     "내일배움카드 과정의 지원 자격을 판정하지 않고, 사용자가 확인한 훈련비와 자격증 취득 과정의 추가 비용을 한 번에 비교할 수 있도록 하기 위해서입니다.",
   evidence:
     "계산기 페이지에서 입력 항목, 총 본인부담 예상액, 국비지원 예상액, 재응시 비용 비교와 공식 출처를 확인할 수 있습니다.",
-  href: TRAINING_CERTIFICATE_COST_PUBLICATION.path,
+  href: "/calculators/training-certificate-cost/",
 } as const;
 
 const baseUpdates = [
@@ -203,9 +199,7 @@ const baseUpdates = [
   },
 ] as const;
 
-const updates = isTrainingCertificateCostCalculatorEnabled()
-  ? [trainingCertificateCostReleaseUpdate, ...baseUpdates]
-  : baseUpdates;
+const updates = [baseUpdates[0], trainingCertificateCostReleaseUpdate, ...baseUpdates.slice(1)];
 
 export default function UpdatesPage() {
   return (

@@ -140,7 +140,7 @@ test("정책 페이지는 H1, SEO metadata, canonical과 연락처를 가진다"
   }
 });
 
-test("소개 페이지는 현재 공개 계산기 20개를 최신 URL로 안내한다", async () => {
+test("소개 페이지는 현재 공개 계산기 21개를 최신 URL로 안내한다", async () => {
   const source = await readFile("app/about/page.tsx", "utf8");
   const publicRoutes = [
     "/calculators/seller-margin/",
@@ -163,8 +163,9 @@ test("소개 페이지는 현재 공개 계산기 20개를 최신 URL로 안내�
     "/calculators/youth-future-savings/",
     "/calculators/dsr/",
     "/calculators/work-child-incentive/",
+    "/calculators/training-certificate-cost/",
   ];
-  assert.equal((source.match(/href="\/calculators\//g) ?? []).length, 20);
+  assert.equal((source.match(/href="\/calculators\//g) ?? []).length, 21);
   for (const route of publicRoutes) assert.match(source, new RegExp(`href="${route}"`));
 });
 
@@ -266,6 +267,7 @@ test("변경 이력은 신규 10개 공개와 검증된 주요 변경을 올바�
     /<section><h2>([^<]+)<\/h2>[\s\S]*?<a href="([^"]+)">상세 페이지 보기<\/a><\/p><\/section>/g,
   )].map((match) => ({ target: match[1], href: match[2] }));
   const publicCalculators = [
+    ["국비지원 자격증 취득비용 계산기 공개", "/calculators/training-certificate-cost/"],
     ["신규 계산기 10개 공개", "/calculators/"],
     ["DSR 공식 부채 산정·스트레스 DSR 정책", "/calculators/dsr/"],
     ["연장·야간·휴일근로수당 가산수당 합계", "/calculators/overtime-pay/"],
@@ -294,7 +296,7 @@ test("변경 이력은 신규 10개 공개와 검증된 주요 변경을 올바�
     sections.filter(({ href }) => href.startsWith("/calculators/")).map(({ href }) => href),
   );
   assert.deepEqual(calculatorPaths, new Set(publicCalculators.map(([, href]) => href)));
-  assert.equal(new Set(publicCalculators.map(([name]) => name)).size, 14);
+  assert.equal(new Set(publicCalculators.map(([name]) => name)).size, 15);
   for (const name of [
     "ROAS", "예금·적금", "물타기·평단가", "카드 할부", "부동산 중개보수",
     "자동차 유지비", "연장·야간·휴일근로수당", "청년미래적금", "DSR", "근로·자녀장려금",

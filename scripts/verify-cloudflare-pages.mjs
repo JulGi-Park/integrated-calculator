@@ -364,15 +364,13 @@ async function verifyStaticOutput() {
     }
   }
 
-  const trainingRoute = privateStaticRoutes.find(
-    (route) => route.pathname === "/calculators/training-certificate-cost/",
-  );
-  assert.ok(trainingRoute, "The training certificate publication route must stay configured.");
-  const trainingEnabled = isStaticRouteEnabled(
-    process.env[trainingRoute.environmentVariable],
-  );
-  const trainingPath = trainingRoute.pathname;
+  const trainingPath = "/calculators/training-certificate-cost/";
   const trainingCanonical = `https://gyesanbox.kr${trainingPath}`;
+  const trainingRouteHtml = await readFile(
+    path.join(projectRoot, "out", "calculators", "training-certificate-cost", "index.html"),
+    "utf8",
+  );
+  const [trainingRouteHead = "", trainingRouteBody = ""] = trainingRouteHtml.split(/<\/head>/i);
   const homeBody = await readFile(path.join(projectRoot, "out/index.html"), "utf8");
   const calculatorsBody = await readFile(
     path.join(projectRoot, "out/calculators/index.html"),
@@ -387,53 +385,27 @@ async function verifyStaticOutput() {
     "utf8",
   );
 
-  if (trainingEnabled) {
-    assert.equal(countMatches(homeBody, /href="\/calculators\/training-certificate-cost\/"/g), 1);
-    assert.equal(countMatches(calculatorsBody, /href="\/calculators\/training-certificate-cost\/"/g), 1);
-    assert.equal(countMatches(aboutBody, /href="\/calculators\/training-certificate-cost\/"/g), 1);
-    assert.equal(countMatches(updatesBody, /href="\/calculators\/training-certificate-cost\/"/g), 1);
-    assert.match(
-      calculatorsBody,
-      /현재 공개 운영 중인 계산기\s*(?:<!-- -->)?21(?:<!-- -->)?개/,
-    );
-    assert.match(
-      aboutBody,
-      /현재 공개 운영 중인 계산기\s*(?:<!-- -->)?21(?:<!-- -->)?개/,
-    );
-    assert.match(updatesBody, /국비지원 자격증 취득비용 계산기 공개/);
-    assert.equal(countMatches(sitemap, new RegExp(trainingCanonical, "g")), 1);
-  } else {
-    for (const [name, body] of [
-      ["home", homeBody],
-      ["calculators", calculatorsBody],
-      ["about", aboutBody],
-      ["updates", updatesBody],
-    ]) {
-      assert.doesNotMatch(
-        body,
-        /training-certificate-cost|국비지원 자격증 취득비용 계산기/,
-        `${name} must not expose the disabled calculator.`,
-      );
-    }
-    assert.match(
-      calculatorsBody,
-      /현재 공개 운영 중인 계산기\s*(?:<!-- -->)?20(?:<!-- -->)?개/,
-    );
-    assert.match(
-      aboutBody,
-      /현재 공개 운영 중인 계산기\s*(?:<!-- -->)?20(?:<!-- -->)?개/,
-    );
-    assert.doesNotMatch(sitemap, /training-certificate-cost/);
-  }
-
-  for (const [relativePath] of requiredStaticFiles.slice(2)) {
-    const body = await readFile(path.join(projectRoot, relativePath), "utf8");
-    assert.doesNotMatch(
-      body,
-      /href="\/calculators\/training-certificate-cost\/"/,
-      `${relativePath} must not expose an unreviewed inbound release link.`,
-    );
-  }
+  assert.match(trainingRouteHtml, /국비지원 자격증 취득비용 계산기/);
+  assert.equal((trainingRouteBody.match(/<h1\b/gi) ?? []).length, 1);
+  assert.match(
+    trainingRouteHead,
+    /<link[^>]+rel="canonical"[^>]+href="https:\/\/gyesanbox\.kr\/calculators\/training-certificate-cost\/"|<link[^>]+href="https:\/\/gyesanbox\.kr\/calculators\/training-certificate-cost\/"[^>]+rel="canonical"/i,
+  );
+  assert.doesNotMatch(trainingRouteHead, /name="robots"[^>]+noindex|content="[^"']*noindex/i);
+  assert.equal(countMatches(homeBody, /href="\/calculators\/training-certificate-cost\/"/g), 1);
+  assert.equal(countMatches(calculatorsBody, /href="\/calculators\/training-certificate-cost\/"/g), 1);
+  assert.equal(countMatches(aboutBody, /href="\/calculators\/training-certificate-cost\/"/g), 1);
+  assert.equal(countMatches(updatesBody, /href="\/calculators\/training-certificate-cost\/"/g), 1);
+  assert.match(
+    calculatorsBody,
+    /현재 공개 운영 중인 계산기\s*(?:<!-- -->)?21(?:<!-- -->)?개/,
+  );
+  assert.match(
+    aboutBody,
+    /현재 공개 운영 중인 계산기\s*(?:<!-- -->)?21(?:<!-- -->)?개/,
+  );
+  assert.match(updatesBody, /국비지원 자격증 취득비용 계산기 공개/);
+  assert.equal(countMatches(sitemap, new RegExp(trainingCanonical, "g")), 1);
 }
 
 await verifyNextConfig();

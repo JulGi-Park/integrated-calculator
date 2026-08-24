@@ -31,6 +31,7 @@ const routeFiles = [
   ["app/calculators/youth-future-savings/page.tsx", "/calculators/youth-future-savings/"],
   ["app/calculators/dsr/page.tsx", "/calculators/dsr/"],
   ["app/calculators/work-child-incentive/page.tsx", "/calculators/work-child-incentive/"],
+  ["app/calculators/training-certificate-cost/page.tsx", "/calculators/training-certificate-cost/"],
   ["app/about/page.tsx", "/about/"],
   ["app/methodology/page.tsx", "/methodology/"],
   ["app/updates/page.tsx", "/updates/"],

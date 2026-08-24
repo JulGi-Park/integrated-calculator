@@ -218,16 +218,12 @@ test("금지 표현을 포함하지 않고 지원 자격 판정 한계를 명시
   assert.match(combined, /지원 자격이나 과정 지원 여부를 판정하지 않습니다/);
 });
 
-test("strict 공개 helper를 route와 공개 진입점이 함께 사용한다", async () => {
+test("공개 route와 모든 진입점은 환경변수 가드 없이 제공된다", async () => {
   const pageSource = await readFile(
     "app/calculators/training-certificate-cost/page.tsx",
     "utf8",
   );
-  assert.match(
-    pageSource,
-    /isTrainingCertificateCostCalculatorEnabled\(\)/,
-  );
-  assert.match(pageSource, /notFound\(\)/);
+  assert.doesNotMatch(pageSource, /isTrainingCertificateCostCalculatorEnabled|notFound\(/);
 
   for (const path of [
     "app/page.tsx",
@@ -238,11 +234,11 @@ test("strict 공개 helper를 route와 공개 진입점이 함께 사용한다",
     "lib/favorites.ts",
   ]) {
     const source = await readFile(path, "utf8");
-    assert.match(
+    assert.match(source, /training-certificate-cost/, path);
+    assert.doesNotMatch(
       source,
-      /isTrainingCertificateCostCalculatorEnabled\(\)/,
+      /isTrainingCertificateCostCalculatorEnabled|NEXT_PUBLIC_ENABLE_TRAINING_CERTIFICATE_COST_CALCULATOR/,
       path,
     );
-    assert.match(source, /TRAINING_CERTIFICATE_COST_PUBLICATION/, path);
   }
 });
