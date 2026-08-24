@@ -265,7 +265,7 @@ test("sitemap, 목록, 홈에는 근로·자녀장려금 계산기를 노출한�
   const files = [
     "lib/site/publicRoutes.ts",
     "app/page.tsx",
-    "app/calculators/page.tsx",
+    "lib/calculatorRegistry.ts",
     "app/calculators/salary/page.tsx",
     "app/calculators/loan/page.tsx",
     "app/calculators/seller-margin/page.tsx",

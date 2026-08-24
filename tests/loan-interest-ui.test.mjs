@@ -290,7 +290,8 @@ test("일반 대출의 결과 요약과 세 방식 고정값을 표시한다", a
   assert.ok(within(summary).getByText("원금균등상환"));
   assert.ok(within(summary).getByText("만기일시상환"));
 
-  const cards = screen.getAllByRole("article");
+  const comparison = screen.getByRole("region", { name: "세 상환방식을 비교하세요" });
+  const cards = within(comparison).getAllByRole("article");
   assert.equal(cards.length, 3);
   assert.ok(within(cards[0]).getByText("506,685원"));
   assert.ok(within(cards[0]).getByText("506,926원"));

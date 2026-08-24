@@ -65,7 +65,10 @@ test("카테고리 필터는 접근 가능한 버튼과 비동기 없는 상태 
   assert.match(source, /type="button"/);
   assert.match(source, /aria-pressed=/);
   assert.match(source, /setSelectedCategory\(category\)/);
-  assert.match(source, /hidden: isHidden/);
+  assert.match(source, /role="search"/);
+  assert.match(source, /aria-controls="calculator-search-results"/);
+  assert.match(source, /onCompositionStart/);
+  assert.match(source, /calculator_search_select/);
   assert.match(source, /role="status"/);
-  assert.doesNotMatch(source, /localStorage|location\.search|router\./);
+  assert.doesNotMatch(source, /localStorage|location\.search|location\.hash|router\./);
 });

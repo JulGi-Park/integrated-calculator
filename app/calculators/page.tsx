@@ -1,41 +1,24 @@
 import type { Metadata } from "next";
 import { CalculatorCategoryFilter } from "@/components/calculators/CalculatorCategoryFilter";
-import { TRAINING_CERTIFICATE_COST_PUBLICATION } from "@/lib/calculators/training-certificate-cost/publication";
+import { CALCULATOR_REGISTRY } from "@/lib/calculatorRegistry";
 
 const ogTitle = "계산기 모음 - 부가세·연봉·4대보험·대출 계산";
-const ogDescription =
-  "계산박스에서 제공하는 생활 계산기 목록입니다. 필요한 계산기를 선택해 빠르게 확인해보세요.";
+const ogDescription = "계산박스에서 제공하는 생활 계산기 목록입니다. 필요한 계산기를 선택해 빠르게 확인해보세요.";
 const ogUrl = "https://gyesanbox.kr/calculators/";
 const ogImage = "https://gyesanbox.kr/og/calculators.png";
-const publicCalculatorCount = 21;
 
 export const metadata: Metadata = {
   title: "계산박스 계산기 목록",
-  description:
-    "계산박스에서 급여·금융·주거·사업·투자·생활 분야의 계산기를 한곳에서 확인하세요. 연봉, 대출, 주거비, 판매 수익, 투자 손익, 생활 비용을 목적에 맞게 계산할 수 있습니다.",
-  alternates: {
-    canonical: ogUrl,
-  },
+  description: "계산박스에서 급여·금융·주거·사업·투자·생활 분야의 계산기를 한곳에서 확인하세요. 연봉, 대출, 주거비, 판매 수익, 투자 손익, 생활 비용을 목적에 맞게 계산할 수 있습니다.",
+  alternates: { canonical: ogUrl },
   openGraph: {
     title: ogTitle,
     description: ogDescription,
     url: ogUrl,
     type: "website",
-    images: [
-      {
-        url: ogImage,
-        width: 1200,
-        height: 630,
-        alt: ogTitle,
-      },
-    ],
+    images: [{ url: ogImage, width: 1200, height: 630, alt: ogTitle }],
   },
-  twitter: {
-    card: "summary_large_image",
-    title: ogTitle,
-    description: ogDescription,
-    images: [ogImage],
-  },
+  twitter: { card: "summary_large_image", title: ogTitle, description: ogDescription, images: [ogImage] },
 };
 
 export default function CalculatorsPage() {
@@ -45,279 +28,21 @@ export default function CalculatorsPage() {
         <p className="page-heading__eyebrow">Calculators</p>
         <h1>계산기 목록</h1>
         <p>
-          현재 공개 운영 중인 계산기 {publicCalculatorCount}개를 모았습니다. 각 계산기는 입력값,
+          현재 공개 운영 중인 계산기 {CALCULATOR_REGISTRY.length}개를 모았습니다. 각 계산기는 입력값,
           계산 기준, 결과 해석과 주의사항을 함께 제공합니다.
         </p>
       </div>
 
       <div className="calculator-guide" aria-label="계산기 선택 안내">
-        <article>
-          <h2>급여</h2>
-          <p>연봉 실수령액, 4대보험, 주휴수당, 퇴직금, 실업급여 등 급여·근로·지원 관련 계산을 확인합니다.</p>
-        </article>
-        <article>
-          <h2>금융</h2>
-          <p>대출 이자, 예금·적금, 카드 할부, DSR, 청년미래적금 등 금리·상환·저축 조건을 비교합니다.</p>
-        </article>
-        <article>
-          <h2>주거</h2>
-          <p>전세 vs 월세와 부동산 중개보수 등 주거비와 거래비용을 살펴봅니다.</p>
-        </article>
-        <article>
-          <h2>사업</h2>
-          <p>판매자 마진, 부가세, ROAS 등 판매·세금·광고 수익성을 계산합니다.</p>
-        </article>
-        <article>
-          <h2>투자</h2>
-          <p>물타기·평단가처럼 추가 매수 후 평균단가와 손익 기준을 확인합니다.</p>
-        </article>
-        <article>
-          <h2>생활</h2>
-          <p>자동차 유지비와 국비지원 자격증 취득비용 등 생활 과정의 비용을 계산합니다.</p>
-        </article>
+        <article><h2>급여</h2><p>연봉 실수령액, 4대보험, 주휴수당, 퇴직금, 실업급여 등 급여·근로·지원 관련 계산을 확인합니다.</p></article>
+        <article><h2>금융</h2><p>대출 이자, 예금·적금, 카드 할부, DSR, 청년미래적금 등 금리·상환·저축 조건을 비교합니다.</p></article>
+        <article><h2>주거</h2><p>전세 vs 월세와 부동산 중개보수 등 주거비와 거래비용을 살펴봅니다.</p></article>
+        <article><h2>사업</h2><p>판매자 마진, 부가세, ROAS 등 판매·세금·광고 수익성을 계산합니다.</p></article>
+        <article><h2>투자</h2><p>물타기·평단가처럼 추가 매수 후 평균단가와 손익 기준을 확인합니다.</p></article>
+        <article><h2>생활</h2><p>자동차 유지비와 국비지원 자격증 취득비용 등 생활 과정의 비용을 계산합니다.</p></article>
       </div>
 
-      <CalculatorCategoryFilter>
-        <a
-          className="calculator-card"
-          data-category="금융"
-          href="/calculators/loan/"
-        >
-          <div>
-            <span className="calculator-card__category">금융</span>
-            <h2>대출 이자 계산기</h2>
-            <p>
-              원리금균등·원금균등·만기일시상환의 이자와 월별 일정을
-              비교합니다.
-            </p>
-            <p>
-              대표 입력값: 대출금액, 연이율, 기간 · 결과: 월 납입액,
-              총이자, 상환 일정
-            </p>
-          </div>
-          <span className="calculator-card__arrow" aria-hidden="true">
-            →
-          </span>
-        </a>
-
-        <a
-          className="calculator-card"
-          data-category="주거"
-          href="/calculators/rent-vs-jeonse/"
-        >
-          <div>
-            <span className="calculator-card__category">주거</span>
-            <h2>전세 vs 월세 비교 계산기</h2>
-            <p>전세대출 이자와 보증금 기회비용, 월세·관리비를 함께 비교합니다.</p>
-            <p>
-              대표 입력값: 보증금, 대출금리, 월세, 관리비, 거주기간 · 결과:
-              월 부담, 총비용, 조건부 비교
-            </p>
-          </div>
-          <span className="calculator-card__arrow" aria-hidden="true">→</span>
-        </a>
-
-        <a
-          className="calculator-card"
-          data-category="급여"
-          href="/calculators/salary/"
-        >
-          <div>
-            <span className="calculator-card__category">급여</span>
-            <h2>연봉 실수령액 계산기</h2>
-            <p>
-              2026년 기준 4대보험과 간이세액표를 적용한 예상 실수령액을
-              확인합니다.
-            </p>
-            <p>
-              대표 입력값: 연봉, 월 비과세액, 가족 수 · 결과: 월 실수령액,
-              공제 항목별 금액
-            </p>
-          </div>
-          <span className="calculator-card__arrow" aria-hidden="true">
-            →
-          </span>
-        </a>
-
-        <a
-          className="calculator-card"
-          data-category="급여"
-          href="/calculators/social-insurance/"
-        >
-          <div>
-            <span className="calculator-card__category">급여</span>
-            <h2>4대보험 계산기</h2>
-            <p>
-              월 급여와 비과세 금액으로 국민연금, 건강보험, 장기요양보험,
-              고용보험 근로자 부담액을 계산합니다.
-            </p>
-            <p>
-              대표 입력값: 월 급여, 비과세 금액 · 결과: 보험별 공제액,
-              총 공제액, 공제 후 참고 금액
-            </p>
-          </div>
-          <span className="calculator-card__arrow" aria-hidden="true">
-            →
-          </span>
-        </a>
-
-        <a
-          className="calculator-card"
-          data-category="사업"
-          href="/calculators/seller-margin/"
-        >
-          <div>
-            <span className="calculator-card__category">사업</span>
-            <h2>판매자 마진 계산기</h2>
-            <p>판매 비용을 바탕으로 마진과 순이익을 확인하는 계산기입니다.</p>
-            <p>
-              대표 입력값: 판매가, 수량, 원가, 수수료, 배송비 · 결과:
-              정산금액, 순이익, 순이익률
-            </p>
-          </div>
-          <span className="calculator-card__arrow" aria-hidden="true">
-            →
-          </span>
-        </a>
-
-        <a
-          className="calculator-card"
-          data-category="사업"
-          href="/calculators/vat-profit/"
-        >
-          <div>
-            <span className="calculator-card__category">사업</span>
-            <h2>부가세 계산기</h2>
-            <p>
-              공급가액 또는 합계금액으로 매출세액과 예상 납부세액을
-              계산합니다.
-            </p>
-            <p>
-              대표 입력값: 매출 금액, 입력 기준, 매입세액 · 결과: 공급가액,
-              매출세액, 예상 납부세액
-            </p>
-          </div>
-          <span className="calculator-card__arrow" aria-hidden="true">
-            →
-          </span>
-        </a>
-
-        <a
-          className="calculator-card"
-          data-category="급여"
-          href="/calculators/labor-pay/"
-        >
-          <div>
-            <span className="calculator-card__category">급여</span>
-            <h2>주휴수당 계산기</h2>
-            <p>
-              시급과 소정근로시간, 실제 근로시간, 개근 여부로 예상
-              주휴수당을 계산합니다.
-            </p>
-            <p>
-              대표 입력값: 시급, 주 소정근로시간, 실제 근로시간, 개근 여부 ·
-              결과: 주휴시간, 주휴수당, 주휴 포함 주급
-            </p>
-          </div>
-          <span className="calculator-card__arrow" aria-hidden="true">
-            →
-          </span>
-        </a>
-
-        <a
-          className="calculator-card"
-          data-category="급여"
-          href="/calculators/severance/"
-        >
-          <div>
-            <span className="calculator-card__category">급여</span>
-            <h2>퇴직금 계산기</h2>
-            <p>
-              입사일과 퇴직 전 임금을 바탕으로 법정 퇴직금 예상액과 대상
-              여부를 확인합니다.
-            </p>
-            <p>
-              대표 입력값: 입사일, 퇴직일, 임금총액, 상여금 · 결과:
-              평균임금, 예상 퇴직금
-            </p>
-          </div>
-          <span className="calculator-card__arrow" aria-hidden="true">
-            →
-          </span>
-        </a>
-
-        <a
-          className="calculator-card"
-          data-category="급여"
-          href="/calculators/unemployment/"
-        >
-          <div>
-            <span className="calculator-card__category">급여</span>
-            <h2>실업급여 계산기</h2>
-            <p>
-              월급 또는 1일 평균임금과 고용보험 가입기간으로 예상 구직급여를
-              계산합니다.
-            </p>
-            <p>
-              대표 입력값: 임금, 가입기간, 나이 구간, 퇴직 사유 · 결과:
-              1일 급여액, 지급일수, 총액
-            </p>
-          </div>
-          <span className="calculator-card__arrow" aria-hidden="true">
-            →
-          </span>
-        </a>
-
-        <a
-          className="calculator-card"
-          data-category="급여"
-          href="/calculators/parental-leave/"
-        >
-          <div>
-            <span className="calculator-card__category">급여</span>
-            <h2>육아휴직급여 계산기</h2>
-            <p>
-              월 통상임금과 휴직 기간, 특례 조건으로 월별 예상 급여와 총액을
-              계산합니다.
-            </p>
-            <p>
-              대표 입력값: 월 통상임금, 사용 개월 수, 특례 조건 · 결과:
-              월별 예상액, 상·하한 적용, 총 예상액
-            </p>
-          </div>
-          <span className="calculator-card__arrow" aria-hidden="true">
-            →
-          </span>
-        </a>
-
-        {[
-          ["사업", "ROAS 계산기", "/calculators/roas/", "광고비 대비 매출과 손익분기 ROAS를 비교합니다."],
-          ["금융", "예금·적금 계산기", "/calculators/savings/", "금리와 과세 방식에 따른 만기 예상액을 계산합니다."],
-          ["투자", "물타기 계산기", "/calculators/average-price/", "추가 매수 후 평균단가와 손익분기 가격을 계산합니다."],
-          ["금융", "카드 할부 계산기", "/calculators/card-installment/", "할부 월 납입액과 총 수수료를 계산합니다."],
-          ["주거", "부동산 중개보수 계산기", "/calculators/brokerage-fee/", "거래 유형과 금액별 중개보수 상한을 계산합니다."],
-          ["생활", "자동차 유지비 계산기", "/calculators/car-cost/", "연료비·보험료·세금 등 월·연간 차량 비용을 계산합니다."],
-          ["급여", "연장·야간·휴일근로수당 계산기", "/calculators/overtime-pay/", "근로기준법 가산율에 따른 예상 지급액을 계산합니다."],
-          ["금융", "청년미래적금 계산기", "/calculators/youth-future-savings/", "정부기여금과 금리를 반영한 예상 만기수령액을 계산합니다."],
-          ["금융", "DSR 계산기", "/calculators/dsr/", "기존·신규 대출 원리금과 스트레스 DSR을 비교합니다."],
-          ["급여", "근로·자녀장려금 계산기", "/calculators/work-child-incentive/", "소득·재산 기준과 법정 산식으로 예상 장려금을 계산합니다."],
-          [
-            TRAINING_CERTIFICATE_COST_PUBLICATION.category,
-            TRAINING_CERTIFICATE_COST_PUBLICATION.name,
-            TRAINING_CERTIFICATE_COST_PUBLICATION.path,
-            TRAINING_CERTIFICATE_COST_PUBLICATION.description,
-          ],
-        ].map(([category, title, href, description]) => (
-          <a className="calculator-card" data-category={category} href={href} key={href}>
-            <div>
-              <span className="calculator-card__category">{category}</span>
-              <h2>{title}</h2>
-              <p>{description}</p>
-            </div>
-            <span className="calculator-card__arrow" aria-hidden="true">→</span>
-          </a>
-        ))}
-      </CalculatorCategoryFilter>
+      <CalculatorCategoryFilter calculators={CALCULATOR_REGISTRY} />
     </section>
   );
 }

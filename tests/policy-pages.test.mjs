@@ -317,8 +317,10 @@ test("변경 이력은 신규 공개와 전세·월세 변경을 최신순으로
     .map(([, year, month, day]) => Date.UTC(Number(year), Number(month) - 1, Number(day)));
 
   assert.ok(dates.length > 0);
-  assert.equal(dates[0], Date.UTC(2026, 7, 13));
+  assert.equal(dates[0], Date.UTC(2026, 7, 24));
   assert.deepEqual(dates, [...dates].sort((a, b) => b - a));
+  assert.match(html, /계산기 검색과 핵심 결과 판단 안내/);
+  assert.match(html, /핵심 계산기 8개의 결과 화면/);
   assert.match(html, /계산박스 상표등록출원 및 브랜드 식별 신호/);
   assert.match(html, /계산박스 상표등록출원을 완료/);
   assert.doesNotMatch(html, /상표등록 완료/);

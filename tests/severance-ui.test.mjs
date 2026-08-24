@@ -44,9 +44,9 @@ const { SELLER_MARGIN_STORAGE_KEY } = await import(
   "../components/calculators/sellerMarginClientUtils.ts"
 );
 const React = await import("react");
+const { CALCULATOR_REGISTRY } = await import("../lib/calculatorRegistry.ts");
 
 const pageSource = await readFile("app/calculators/severance/page.tsx", "utf8");
-const listPageSource = await readFile("app/calculators/page.tsx", "utf8");
 
 const officialExampleInput = {
   employmentStartDate: "2014-10-02",
@@ -115,11 +115,14 @@ test("페이지 제목과 기준일 안내를 표시한다", () => {
 });
 
 test("계산기 목록에 퇴직금 계산기 링크를 활성화하고 기존 링크를 유지한다", () => {
-  assert.match(listPageSource, /href="\/calculators\/loan\/"/);
-  assert.match(listPageSource, /href="\/calculators\/salary\/"/);
-  assert.match(listPageSource, /href="\/calculators\/seller-margin\/"/);
-  assert.match(listPageSource, /href="\/calculators\/severance\/"/);
-  assert.match(listPageSource, /퇴직금 계산기/);
+  for (const path of [
+    "/calculators/loan/",
+    "/calculators/salary/",
+    "/calculators/seller-margin/",
+    "/calculators/severance/",
+  ]) {
+    assert.ok(CALCULATOR_REGISTRY.some((calculator) => calculator.path === path));
+  }
 });
 
 test("엔진 입력 필드를 렌더링하고 선택 입력을 구분한다", () => {

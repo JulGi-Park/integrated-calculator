@@ -80,7 +80,7 @@ test("sitemap, 홈, 계산기 목록, 판매자 마진 관련 계산기에 vat-p
   const files = [
     "lib/site/publicRoutes.ts",
     "app/page.tsx",
-    "app/calculators/page.tsx",
+    "lib/calculatorRegistry.ts",
     "components/calculators/SellerMarginContent.tsx",
   ];
   const sources = await Promise.all(files.map((file) => readFile(file, "utf8")));

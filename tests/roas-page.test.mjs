@@ -3,6 +3,7 @@ import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 import sitemapModule from "../app/sitemap.ts";
 import { metadata } from "../app/calculators/roas/page.tsx";
+import { CALCULATOR_REGISTRY } from "../lib/calculatorRegistry.ts";
 import { serializeJsonLd } from "../components/common/JsonLdScripts.tsx";
 import {
   roasBreadcrumbJsonLd,
@@ -20,7 +21,6 @@ const contentSource = await readFile(
   "components/calculators/RoasContent.tsx",
   "utf8",
 );
-const calculatorListSource = await readFile("app/calculators/page.tsx", "utf8");
 const homeSource = await readFile("app/page.tsx", "utf8");
 const sitemapSource = await readFile("lib/site/publicRoutes.ts", "utf8");
 
@@ -121,7 +121,7 @@ test("ROAS는 sitemap, 메인 서비스 목록, 계산기 목록에 공개 연�
     sitemapUrls.includes("https://gyesanbox.kr/calculators/roas/"),
     true,
   );
-  assert.match(calculatorListSource, /\/calculators\/roas|ROAS 계산기/);
+  assert.ok(CALCULATOR_REGISTRY.some((calculator) => calculator.id === "roas"));
   assert.match(homeSource, /\/calculators\/roas|ROAS 계산기/);
 });
 

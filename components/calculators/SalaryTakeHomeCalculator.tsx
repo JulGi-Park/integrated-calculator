@@ -28,6 +28,7 @@ import {
   serializeSalaryTakeHomeInputs,
   type SalaryTakeHomeRawInputs,
 } from "./salaryTakeHomeClientUtils";
+import { ResultDecisionLayer } from "./ResultDecisionLayer";
 import styles from "./SalaryTakeHomeCalculator.module.css";
 
 interface FieldDefinition {
@@ -522,6 +523,28 @@ export function SalaryTakeHomeCalculator() {
                     <dd>{formatWon(result.totalMonthlyDeductions)}</dd>
                   </div>
                 </dl>
+
+                <ResultDecisionLayer
+                  meaning={`월 급여의 약 ${Math.round((result.estimatedMonthlyTakeHome / result.monthlyGrossSalary) * 100)}%가 예상 실수령액입니다. 연봉을 비교할 때는 세전 금액보다 이 월 예상액과 공제 구성을 함께 보세요.`}
+                  appliedRules={[
+                    `월 비과세액 ${formatWon(calculatedNonTaxableAmount ?? 0)} 반영`,
+                    `건강보험 ${result.healthInsurance === policy.healthInsurance.maximumTotalMonthlyPremium / 2 ? "근로자 부담 상한 적용" : "근로자 부담 상한 미적용"}`,
+                    `공제대상 가족 ${calculatedInput?.dependentCount ?? 0}명·자녀 ${calculatedInput?.childCount ?? 0}명 간이세액표 적용`,
+                  ]}
+                  drivers={[
+                    "연봉이 바뀌면 월 급여와 보험료·세금이 함께 달라집니다.",
+                    "월 비과세액은 과세 급여를 낮춰 보험료와 세금에 영향을 줍니다.",
+                    "공제대상 가족과 자녀 수는 간이세액표 소득세를 바꿉니다.",
+                  ]}
+                  verificationHints={[
+                    "근로계약서의 연봉에 퇴직금과 비정기 상여가 포함됐는지 확인하세요.",
+                    "급여명세서의 과세·비과세 항목과 공제대상 가족 신고 내역을 비교하세요.",
+                  ]}
+                  differenceReasons={[
+                    "회사별 비과세 처리와 상여 지급 시점, 입퇴사월 일할 계산은 포함하지 않습니다.",
+                    "연말정산·건강보험 정산과 회사별 추가 공제로 실제 수령액이 달라질 수 있습니다.",
+                  ]}
+                />
 
                 <div className={styles.detailSection}>
                   <h3>상세 공제</h3>

@@ -16,7 +16,7 @@ test("육아휴직급여 페이지는 공개 계산기 UI와 구조화 데이터
 test("육아휴직급여 계산기는 홈, 목록, sitemap에 공개되고 robots는 그대로 유지된다", async () => {
   const [home, list, sitemap, robots] = await Promise.all([
     readFile("app/page.tsx", "utf8"),
-    readFile("app/calculators/page.tsx", "utf8"),
+    readFile("lib/calculatorRegistry.ts", "utf8"),
     readFile("lib/site/publicRoutes.ts", "utf8"),
     readFile("app/robots.ts", "utf8"),
   ]);

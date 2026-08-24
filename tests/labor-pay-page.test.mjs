@@ -111,7 +111,7 @@ test("sitemap, 메인, 계산기 목록, 연봉 관련 계산기에 labor-pay가
   const files = [
     "lib/site/publicRoutes.ts",
     "app/page.tsx",
-    "app/calculators/page.tsx",
+    "lib/calculatorRegistry.ts",
     "components/calculators/SalaryTakeHomeContent.tsx",
   ];
   const sources = await Promise.all(files.map((file) => readFile(file, "utf8")));

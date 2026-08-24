@@ -28,6 +28,7 @@ import {
   serializeDsrInputs,
   type DsrRawInputs,
 } from "./dsrClientUtils";
+import { ResultDecisionLayer } from "./ResultDecisionLayer";
 import styles from "./DsrCalculator.module.css";
 
 const repaymentOptions: Array<{
@@ -685,6 +686,28 @@ export function DsrCalculator() {
             </dl>
 
             <p className={styles.notice}>{result.base.newLoanPayment.assessmentReason}</p>
+
+            <ResultDecisionLayer
+              meaning={`${result.base.interpretation} 공식 스트레스 DSR은 ${formatRate(result.officialStressed.dsrRate)}로, 일반 DSR과 별도로 심사 여유를 확인하는 값입니다.`}
+              appliedRules={[
+                `일반 DSR 기준 대비 ${result.base.remainingDsrRateRoom >= 0 ? "여유" : "초과"} ${formatRate(Math.abs(result.base.remainingDsrRateRoom))}`,
+                `공식 스트레스 금리 ${formatPercentPoint(result.officialStressPolicy.finalStressRate)} ${result.officialStressPolicy.applicable ? "적용" : "미적용"}`,
+                `DSR 산정만기 ${result.base.newLoanPayment.assessmentMaturityMonths}개월`,
+              ]}
+              drivers={[
+                "연소득이 높아지면 같은 원리금에서도 DSR 비율이 낮아집니다.",
+                "기존 대출 연간 원리금과 신규 대출금액·상환방식이 결과를 크게 바꿉니다.",
+                "대출 종류·지역·금리 유형은 공식 스트레스 금리 적용값을 바꿀 수 있습니다.",
+              ]}
+              verificationHints={[
+                "금융기관이 인정하는 연소득과 기존 대출별 DSR 산정 원리금을 확인하세요.",
+                "상품의 분할상환 인정요건, 거치기간과 만기상환 원금을 상담 자료와 비교하세요.",
+              ]}
+              differenceReasons={[
+                "금융기관별 소득 인정, 제외대출과 상품 세부 산정만기는 다를 수 있습니다.",
+                "스트레스 금리는 심사용 가산값이며 실제 약정금리에 더해지는 이자가 아닙니다.",
+              ]}
+            />
 
             <p className={styles.notice}>
               공식 스트레스 금리는 DSR 심사용 가산금리이며 실제 대출 약정금리에

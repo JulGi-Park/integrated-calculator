@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import sitemapModule from "../app/sitemap.ts";
+import { CALCULATOR_REGISTRY } from "../lib/calculatorRegistry.ts";
 
 const calculators = [
   ["roas", "ROAS 계산기"],
@@ -47,16 +48,15 @@ test("신규 공개 계산기 10개는 비공개 가드 없이 H1·계산기·�
 });
 
 test("신규 공개 계산기 10개는 sitemap·홈·목록에서 발견할 수 있다", async () => {
-  const [home, list] = await Promise.all([
+  const [home] = await Promise.all([
     readFile("app/page.tsx", "utf8"),
-    readFile("app/calculators/page.tsx", "utf8"),
   ]);
   const sitemapUrls = sitemapModule.default().map((entry) => entry.url);
 
   for (const [slug] of calculators) {
     const path = `/calculators/${slug}/`;
     assert.match(home, new RegExp(path));
-    assert.match(list, new RegExp(path));
+    assert.ok(CALCULATOR_REGISTRY.some((calculator) => calculator.path === path));
     assert.ok(sitemapUrls.includes(`https://gyesanbox.kr${path}`));
   }
 });
