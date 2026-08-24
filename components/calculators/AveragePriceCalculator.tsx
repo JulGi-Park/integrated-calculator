@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { calculateAveragePrice } from "@/lib/calculators/average-price/average-price";
+import { ResultDecisionLayer } from "./ResultDecisionLayer";
 import type {
   AveragePriceInput,
   AveragePriceInputField,
@@ -35,7 +36,7 @@ interface FieldDefinition {
   description?: string;
 }
 
-const fields: FieldDefinition[] = [
+const baseFields: FieldDefinition[] = [
   {
     name: "currentQuantity",
     label: "현재 보유 수량",
@@ -50,22 +51,30 @@ const fields: FieldDefinition[] = [
     description: "코인·해외주식 소수 수량 가능",
   },
   { name: "additionalPrice", label: "추가 매수 단가", unit: "원" },
-  {
-    name: "targetPrice",
-    label: "현재가 또는 목표 매도가",
-    unit: "원",
-    optional: true,
-    description: "입력하면 예상 손익과 수익률을 계산",
-  },
 ];
 
+const scenarioAFields = baseFields.slice(2);
+const holdingFields = baseFields.slice(0, 2);
+const optionalFields: FieldDefinition[] = [
+  {
+    name: "targetPrice",
+    label: "현재가",
+    unit: "원",
+    optional: true,
+    description: "입력하면 각 평균단가까지 필요한 가격 변화율을 비교",
+  },
+];
+const fields = [...holdingFields, ...scenarioAFields, ...optionalFields];
+
 const labels = Object.fromEntries(
-  fields.map(({ name, label }) => [name, label]),
+  [...baseFields, ...optionalFields].map(({ name, label }) => [name, label]),
 ) as Record<keyof AveragePriceRawInputs, string>;
 
 function parseInput(input: AveragePriceRawInputs): Record<string, unknown> {
   return Object.fromEntries(
-    Object.entries(input).map(([field, value]) => [
+    Object.entries(input)
+      .filter(([field]) => !field.startsWith("scenarioB"))
+      .map(([field, value]) => [
       field,
       value.trim() === "" ? undefined : Number(value),
     ]),
@@ -91,19 +100,15 @@ function getErrorMessage(error: AveragePriceValidationError) {
 }
 
 function getResultStatus(result: AveragePriceResult) {
-  if (result.expectedProfitLoss === null) {
-    return { label: "평균단가 계산", tone: styles.neutral };
+  if (result.averagePriceChangeRate < 0) {
+    return { label: "평균단가 하락", tone: styles.profit };
   }
 
-  if (result.expectedProfitLoss > 0) {
-    return { label: "예상 이익", tone: styles.profit };
+  if (result.averagePriceChangeRate > 0) {
+    return { label: "평균단가 상승", tone: styles.loss };
   }
 
-  if (result.expectedProfitLoss < 0) {
-    return { label: "예상 손실", tone: styles.loss };
-  }
-
-  return { label: "손익분기", tone: styles.neutral };
+  return { label: "평균단가 동일", tone: styles.neutral };
 }
 
 export function AveragePriceCalculator() {
@@ -112,6 +117,9 @@ export function AveragePriceCalculator() {
   );
   const [errors, setErrors] = useState<AveragePriceValidationError[]>([]);
   const [result, setResult] = useState<AveragePriceResult | null>(null);
+  const [scenarioBResult, setScenarioBResult] =
+    useState<AveragePriceResult | null>(null);
+  const [scenarioBError, setScenarioBError] = useState("");
   const [calculatedInput, setCalculatedInput] =
     useState<AveragePriceInput | null>(null);
   const [isResultStale, setIsResultStale] = useState(false);
@@ -179,6 +187,7 @@ export function AveragePriceCalculator() {
 
     setInput(nextInput);
     setErrors([]);
+    setScenarioBError("");
     setActionMessage("");
 
     if (result) {
@@ -202,10 +211,19 @@ export function AveragePriceCalculator() {
 
     const parsedInput = parseInput(input);
     const response = calculateAveragePrice(parsedInput);
+    const hasScenarioBQuantity = input.scenarioBQuantity.trim() !== "";
+    const hasScenarioBPrice = input.scenarioBPrice.trim() !== "";
+
+    if (hasScenarioBQuantity !== hasScenarioBPrice) {
+      setScenarioBError("시나리오 B는 추가 매수 수량과 단가를 모두 입력해 주세요.");
+      setScenarioBResult(null);
+      return;
+    }
 
     if (!response.success) {
       setErrors(response.errors);
       setResult(null);
+      setScenarioBResult(null);
       setCalculatedInput(null);
       setIsResultStale(false);
       setActionMessage("");
@@ -223,8 +241,31 @@ export function AveragePriceCalculator() {
       return;
     }
 
+    let nextScenarioBResult: AveragePriceResult | null = null;
+    if (hasScenarioBQuantity && hasScenarioBPrice) {
+      const scenarioBResponse = calculateAveragePrice({
+        ...parsedInput,
+        additionalQuantity: Number(input.scenarioBQuantity),
+        additionalPrice: Number(input.scenarioBPrice),
+      });
+
+      if (!scenarioBResponse.success) {
+        setScenarioBError(
+          scenarioBResponse.errors.map(getErrorMessage).join(" "),
+        );
+        setScenarioBResult(null);
+        setResult(null);
+        setCalculatedInput(null);
+        return;
+      }
+
+      nextScenarioBResult = scenarioBResponse.data;
+    }
+
     setErrors([]);
+    setScenarioBError("");
     setResult(response.data);
+    setScenarioBResult(nextScenarioBResult);
     setCalculatedInput(parsedInput as unknown as AveragePriceInput);
     setIsResultStale(false);
     setActionMessage("");
@@ -240,6 +281,8 @@ export function AveragePriceCalculator() {
     setInput(initialAveragePriceInput);
     setErrors([]);
     setResult(null);
+    setScenarioBResult(null);
+    setScenarioBError("");
     setCalculatedInput(null);
     setIsResultStale(false);
     setActionMessage("");
@@ -403,6 +446,44 @@ export function AveragePriceCalculator() {
           })}
         </div>
 
+        <fieldset className={styles.scenarioFieldset}>
+          <legend>시나리오 B (선택 비교)</legend>
+          <p>다른 추가매수 조건을 직접 입력하면 시나리오 A와 나란히 비교합니다.</p>
+          <div className={styles.fieldGrid}>
+            <div className={styles.field}>
+              <label htmlFor="scenarioBQuantity">추가 매수 수량</label>
+              <div className={styles.inputShell}>
+                <input
+                  id="scenarioBQuantity"
+                  name="scenarioBQuantity"
+                  type="text"
+                  inputMode="decimal"
+                  autoComplete="off"
+                  value={input.scenarioBQuantity}
+                  onChange={handleChange}
+                />
+                <span aria-hidden="true">주/개</span>
+              </div>
+            </div>
+            <div className={styles.field}>
+              <label htmlFor="scenarioBPrice">추가 매수 단가</label>
+              <div className={styles.inputShell}>
+                <input
+                  id="scenarioBPrice"
+                  name="scenarioBPrice"
+                  type="text"
+                  inputMode="decimal"
+                  autoComplete="off"
+                  value={input.scenarioBPrice}
+                  onChange={handleChange}
+                />
+                <span aria-hidden="true">원</span>
+              </div>
+            </div>
+          </div>
+          {scenarioBError && <p className={styles.fieldError}>{scenarioBError}</p>}
+        </fieldset>
+
         {errors.length > 0 && (
           <div className={styles.errorSummary} role="alert">
             입력값을 확인해 주세요.
@@ -436,7 +517,7 @@ export function AveragePriceCalculator() {
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>02 · 결과</p>
-            <h2 id="result-heading">평균단가와 예상 손익</h2>
+            <h2 id="result-heading">추가매수 전후와 시나리오 비교</h2>
           </div>
         </div>
 
@@ -476,50 +557,107 @@ export function AveragePriceCalculator() {
 
               <dl className={styles.resultList}>
                 <div>
-                  <dt>총 투자금액</dt>
-                  <dd>{formatAveragePriceWon(result.totalInvestmentAmount)}</dd>
-                </div>
-                <div>
-                  <dt>예상 평가금액</dt>
+                  <dt>평균단가 변화</dt>
                   <dd>
-                    {result.expectedValuationAmount === null
-                      ? "현재가 미입력"
-                      : formatAveragePriceWon(result.expectedValuationAmount)}
+                    {formatAveragePriceWon(result.averagePriceChangeAmount)}
+                    {" · "}{formatAveragePriceRate(result.averagePriceChangeRate)}
                   </dd>
                 </div>
                 <div>
-                  <dt>예상 손익</dt>
+                  <dt>추가 투입금</dt>
+                  <dd>{formatAveragePriceWon(result.additionalInvestmentAmount)}</dd>
+                </div>
+                <div>
+                  <dt>총 원금 변화</dt>
+                  <dd>+{formatAveragePriceWon(result.additionalInvestmentAmount)}</dd>
+                </div>
+                <div>
+                  <dt>보유수량 변화</dt>
+                  <dd>+{formatAveragePriceQuantity(calculatedInput?.additionalQuantity ?? 0)}</dd>
+                </div>
+                <div>
+                  <dt>현재가 → 기존 평단 필요 변화율</dt>
                   <dd>
-                    {result.expectedProfitLoss === null
+                    {result.existingBreakEvenChangeRate === null
                       ? "현재가 미입력"
-                      : formatAveragePriceWon(result.expectedProfitLoss)}
+                      : formatAveragePriceRate(result.existingBreakEvenChangeRate)}
                   </dd>
                 </div>
                 <div>
-                  <dt>예상 수익률</dt>
+                  <dt>현재가 → 새 평단 필요 변화율</dt>
                   <dd>
-                    {result.expectedProfitRate === null
+                    {result.newBreakEvenChangeRate === null
                       ? "현재가 미입력"
-                      : formatAveragePriceRate(result.expectedProfitRate)}
+                      : formatAveragePriceRate(result.newBreakEvenChangeRate)}
+                  </dd>
+                </div>
+                <div>
+                  <dt>현재가 기준 예상 평가금액</dt>
+                  <dd>{result.expectedValuationAmount === null ? "현재가 미입력" : formatAveragePriceWon(result.expectedValuationAmount)}</dd>
+                </div>
+                <div>
+                  <dt>현재가 기준 예상 손익</dt>
+                  <dd>{result.expectedProfitLoss === null ? "현재가 미입력" : formatAveragePriceWon(result.expectedProfitLoss)}</dd>
+                </div>
+                <div>
+                  <dt>현재가 기준 예상 수익률</dt>
+                  <dd>{result.expectedProfitRate === null ? "현재가 미입력" : formatAveragePriceRate(result.expectedProfitRate)}</dd>
+                </div>
+              </dl>
+
+              <h3 className={styles.subheading}>추가매수 전후</h3>
+              <dl className={styles.detailList}>
+                <div>
+                  <dt>전: 수량 · 평단 · 총 원금</dt>
+                  <dd>
+                    {formatAveragePriceQuantity(calculatedInput?.currentQuantity ?? 0)} · {formatAveragePriceWon(calculatedInput?.currentAveragePrice ?? 0)} · {formatAveragePriceWon(result.existingInvestmentAmount)}
+                  </dd>
+                </div>
+                <div>
+                  <dt>후: 수량 · 평단 · 총 원금</dt>
+                  <dd>
+                    {formatAveragePriceQuantity(result.totalQuantity)} · {formatAveragePriceWon(result.newAveragePrice)} · {formatAveragePriceWon(result.totalInvestmentAmount)}
                   </dd>
                 </div>
               </dl>
 
-              <h3 className={styles.subheading}>상세 계산 내역</h3>
-              <dl className={styles.detailList}>
-                <div>
-                  <dt>기존 투자금액</dt>
-                  <dd>{formatAveragePriceWon(result.existingInvestmentAmount)}</dd>
+              {scenarioBResult && (
+                <div className={styles.comparisonWrap}>
+                  <h3 className={styles.subheading}>입력 순서 시나리오 비교</h3>
+                  <table className={styles.comparisonTable}>
+                    <thead>
+                      <tr><th>항목</th><th>시나리오 A</th><th>시나리오 B</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><th>추가 투입금</th><td>{formatAveragePriceWon(result.additionalInvestmentAmount)}</td><td>{formatAveragePriceWon(scenarioBResult.additionalInvestmentAmount)}</td></tr>
+                      <tr><th>새 평균단가</th><td>{formatAveragePriceWon(result.newAveragePrice)}</td><td>{formatAveragePriceWon(scenarioBResult.newAveragePrice)}</td></tr>
+                      <tr><th>평단 변화율</th><td>{formatAveragePriceRate(result.averagePriceChangeRate)}</td><td>{formatAveragePriceRate(scenarioBResult.averagePriceChangeRate)}</td></tr>
+                      <tr><th>총 투입원금</th><td>{formatAveragePriceWon(result.totalInvestmentAmount)}</td><td>{formatAveragePriceWon(scenarioBResult.totalInvestmentAmount)}</td></tr>
+                      <tr><th>현재가 → 새 평단</th><td>{result.newBreakEvenChangeRate === null ? "현재가 미입력" : formatAveragePriceRate(result.newBreakEvenChangeRate)}</td><td>{scenarioBResult.newBreakEvenChangeRate === null ? "현재가 미입력" : formatAveragePriceRate(scenarioBResult.newBreakEvenChangeRate)}</td></tr>
+                    </tbody>
+                  </table>
                 </div>
-                <div>
-                  <dt>추가 투자금액</dt>
-                  <dd>{formatAveragePriceWon(result.additionalInvestmentAmount)}</dd>
-                </div>
-                <div>
-                  <dt>총 보유 수량</dt>
-                  <dd>{formatAveragePriceQuantity(result.totalQuantity)}</dd>
-                </div>
-              </dl>
+              )}
+
+              <ResultDecisionLayer
+                meaning={`추가매수 후 평균매입단가는 ${formatAveragePriceRate(Math.abs(result.averagePriceChangeRate))} ${result.averagePriceChangeRate < 0 ? "낮아졌고" : result.averagePriceChangeRate > 0 ? "높아졌고" : "변하지 않았고"}, 총 투입원금은 ${formatAveragePriceWon(result.additionalInvestmentAmount)} 증가했습니다.`}
+                appliedRules={[
+                  "기존 총매입금액과 추가매입금액을 합산해 총 수량으로 나눴습니다.",
+                  "시나리오는 사용자가 입력한 A, B 순서를 유지하며 좋음·나쁨 순위를 매기지 않습니다.",
+                ]}
+                drivers={[
+                  `추가 매수 단가 ${formatAveragePriceWon(calculatedInput?.additionalPrice ?? 0)}`,
+                  `추가 매수 수량 ${formatAveragePriceQuantity(calculatedInput?.additionalQuantity ?? 0)}`,
+                ]}
+                verificationHints={[
+                  "현재 보유 수량과 평균매입단가를 거래 계좌에서 확인하세요.",
+                  "현재가는 계속 변하므로 입력 시점과 실제 체결 가격을 구분하세요.",
+                ]}
+                differenceReasons={[
+                  "거래 수수료, 세금, 환율과 체결 가격 차이는 포함하지 않았습니다.",
+                  "이 비교는 투자 권유나 특정 추가매수 조건의 추천이 아닙니다.",
+                ]}
+              />
 
               {!isResultStale && calculatedInput && (
                 <div className={styles.resultActions}>

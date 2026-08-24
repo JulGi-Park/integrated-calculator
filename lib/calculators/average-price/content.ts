@@ -18,7 +18,7 @@ export const averagePriceExampleInput: AveragePriceContentItem[] = [
   { label: "현재 평균 단가", value: "50,000원" },
   { label: "추가 매수 수량", value: "5주" },
   { label: "추가 매수 단가", value: "40,000원" },
-  { label: "현재가 또는 목표 매도가", value: "45,000원" },
+  { label: "현재가", value: "45,000원" },
 ];
 
 export const averagePriceExampleResult: AveragePriceContentItem[] = [
@@ -27,6 +27,9 @@ export const averagePriceExampleResult: AveragePriceContentItem[] = [
   { label: "총 보유 수량", value: "15주" },
   { label: "총 투자금액", value: "700,000원" },
   { label: "신규 평균 단가", value: "46,666.67원" },
+  { label: "평균단가 변화율", value: "-6.67%" },
+  { label: "현재가에서 기존 평단까지", value: "+11.11%" },
+  { label: "현재가에서 새 평단까지", value: "+3.70%" },
   { label: "예상 평가금액", value: "675,000원" },
   { label: "예상 손익", value: "-25,000원" },
   { label: "예상 수익률", value: "-3.57%" },
@@ -39,8 +42,16 @@ export const averagePriceFormulas: AveragePriceFormula[] = [
   { title: "총 투자금액", formula: "기존 투자금액 + 추가 투자금액" },
   { title: "신규 평균 단가", formula: "총 투자금액 ÷ 총 보유 수량" },
   {
+    title: "평균단가 변화율",
+    formula: "(신규 평균 단가 - 기존 평균 단가) ÷ 기존 평균 단가 × 100",
+  },
+  {
+    title: "현재가에서 평균단가까지 필요한 가격 변화율",
+    formula: "(평균 단가 - 현재가) ÷ 현재가 × 100",
+  },
+  {
     title: "예상 평가금액",
-    formula: "총 보유 수량 × 현재가 또는 목표 매도가",
+    formula: "총 보유 수량 × 현재가",
   },
   { title: "예상 손익", formula: "예상 평가금액 - 총 투자금액" },
   { title: "예상 수익률", formula: "예상 손익 ÷ 총 투자금액 × 100" },
@@ -67,9 +78,9 @@ export const averagePriceFaqs: AveragePriceFaq[] = [
       "네. 현재 보유 수량과 추가 매수 수량은 소수 입력을 허용합니다. 국내주식, 해외주식, 코인처럼 수량 단위가 다른 경우에도 같은 평균단가 공식으로 계산합니다.",
   },
   {
-    question: "현재가와 목표 매도가는 꼭 입력해야 하나요?",
+    question: "현재가는 꼭 입력해야 하나요?",
     answer:
-      "아니요. 현재가 또는 목표 매도가는 선택 입력입니다. 입력하지 않으면 평균단가와 총 투자금액까지만 계산하고, 입력하면 예상 평가금액·예상 손익·예상 수익률을 함께 계산합니다.",
+      "아니요. 현재가는 선택 입력입니다. 입력하지 않으면 평균단가와 총 투자금액까지만 계산하고, 입력하면 현재가에서 기존·신규 평균매입단가까지 필요한 가격 변화율과 예상 평가금액을 함께 계산합니다.",
   },
   {
     question: "수수료와 세금도 반영되나요?",
@@ -87,9 +98,9 @@ export const averagePriceFaqs: AveragePriceFaq[] = [
       "기존 투자금액과 추가 투자금액을 더한 뒤, 현재 보유 수량과 추가 매수 수량을 더한 총 보유 수량으로 나눕니다.",
   },
   {
-    question: "예상 수익률은 어떤 기준인가요?",
+    question: "현재가 기준 예상 수익률은 어떤 값인가요?",
     answer:
-      "현재가 또는 목표 매도가를 입력했을 때 예상 손익을 총 투자금액으로 나눈 비율입니다. 입력값을 기준으로 한 산술 계산이며 투자 판단을 대신하지 않습니다.",
+      "입력한 현재가의 예상 손익을 총 투자금액으로 나눈 비율입니다. 현재가 입력 시점의 산술 비교이며 미래 수익이나 투자 성과를 예측하지 않습니다.",
   },
   {
     question: "결과가 실제 계좌 손익과 다를 수 있나요?",
@@ -103,7 +114,7 @@ export const averagePriceWebApplicationJsonLd = {
   "@type": "WebApplication",
   name: "물타기 계산기",
   description:
-    "현재 보유 수량, 평균 단가, 추가 매수 수량과 단가를 입력해 신규 평균단가, 총 투자금액, 예상 손익을 계산합니다.",
+    "추가매수 전후의 평균단가와 총 투입원금 변화를 계산하고 두 가지 사용자 입력 시나리오를 비교합니다.",
   applicationCategory: "FinanceApplication",
   operatingSystem: "Web",
 };

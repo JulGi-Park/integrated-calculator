@@ -55,6 +55,10 @@ test("추가 매수 단가가 기존 평균 단가보다 낮으면 평균 단가
     totalQuantity: 15,
     totalInvestmentAmount: 700_000,
     newAveragePrice: 46_666.67,
+    averagePriceChangeAmount: -3_333.33,
+    averagePriceChangeRate: -6.67,
+    existingBreakEvenChangeRate: null,
+    newBreakEvenChangeRate: null,
     expectedValuationAmount: null,
     expectedProfitLoss: null,
     expectedProfitRate: null,
@@ -109,7 +113,38 @@ test("현재가 입력 시 예상 평가금액, 손익, 수익률을 계산한�
   assert.equal(data.expectedValuationAmount, 675_000);
   assert.equal(data.expectedProfitLoss, -25_000);
   assert.equal(data.expectedProfitRate, -3.57);
+  assert.equal(data.existingBreakEvenChangeRate, 11.11);
+  assert.equal(data.newBreakEvenChangeRate, 3.7);
 });
+
+test("동일 수량을 4만원에 추가하면 전후 원금과 평단 변화율을 정확히 계산한다", () => {
+  const data = assertSuccess(calculateAveragePrice({
+    currentQuantity: 10,
+    currentAveragePrice: 50_000,
+    additionalQuantity: 10,
+    additionalPrice: 40_000,
+  }));
+
+  assert.equal(data.existingInvestmentAmount, 500_000);
+  assert.equal(data.additionalInvestmentAmount, 400_000);
+  assert.equal(data.totalQuantity, 20);
+  assert.equal(data.totalInvestmentAmount, 900_000);
+  assert.equal(data.newAveragePrice, 45_000);
+  assert.equal(data.averagePriceChangeAmount, -5_000);
+  assert.equal(data.averagePriceChangeRate, -10);
+});
+
+for (const [targetPrice, existingRate, newRate] of [
+  [40_000, 25, 16.67],
+  [50_000, 0, -6.67],
+  [60_000, -16.67, -22.22],
+]) {
+  test(`현재가 ${targetPrice}원에서 평균단가 도달 변화율 부호를 구분한다`, () => {
+    const data = assertSuccess(calculateAveragePrice({ ...baseInput, targetPrice }));
+    assert.equal(data.existingBreakEvenChangeRate, existingRate);
+    assert.equal(data.newBreakEvenChangeRate, newRate);
+  });
+}
 
 for (const field of [
   "currentQuantity",

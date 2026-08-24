@@ -12,6 +12,10 @@ export interface AveragePriceResult {
   totalQuantity: number;
   totalInvestmentAmount: number;
   newAveragePrice: number;
+  averagePriceChangeAmount: number;
+  averagePriceChangeRate: number;
+  existingBreakEvenChangeRate: number | null;
+  newBreakEvenChangeRate: number | null;
   expectedValuationAmount: number | null;
   expectedProfitLoss: number | null;
   expectedProfitRate: number | null;
