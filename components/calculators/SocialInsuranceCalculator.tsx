@@ -23,6 +23,7 @@ import {
   SOCIAL_INSURANCE_STORAGE_KEY,
   type SocialInsuranceRawInputs,
 } from "./socialInsuranceClientUtils";
+import { ResultDecisionLayer } from "./ResultDecisionLayer";
 import styles from "./SocialInsuranceCalculator.module.css";
 
 interface FieldDefinition {
@@ -486,6 +487,27 @@ export function SocialInsuranceCalculator() {
                     <dd>{formatWon(result.afterContributionAmount)}</dd>
                   </div>
                 </dl>
+
+                <ResultDecisionLayer
+                  meaning={`과세기준급여 ${formatWon(result.taxableMonthlyPay)}에서 근로자 부담 보험료 ${formatWon(result.totalEmployeeContribution)}를 뺀 참고 금액입니다. 사업주 부담분을 합산한 총 보험료가 아닙니다.`}
+                  appliedRules={[
+                    `국민연금 기준소득월액 ${getPensionBaseStatusLabel(result.pensionBaseStatus)}`,
+                    `건강보험 ${result.employeeHealthInsurance === policy.healthInsurance.employeeMonthlyPremiumMaximum ? "근로자 부담 상한 적용" : result.employeeHealthInsurance === policy.healthInsurance.employeeMonthlyPremiumMinimum ? "근로자 부담 하한 적용" : "상·하한 미적용"}`,
+                    `장기요양보험은 보정된 건강보험 근로자 부담액 ${formatWon(result.employeeHealthInsurance)}을 기준으로 계산`,
+                  ]}
+                  drivers={[
+                    "월 급여에서 비과세 금액을 뺀 과세기준급여가 보험료의 출발점입니다.",
+                    "국민연금과 건강보험 상·하한 구간에서는 급여가 변해도 일부 보험료가 고정될 수 있습니다.",
+                  ]}
+                  verificationHints={[
+                    "급여명세서의 과세기준급여와 사업장이 신고한 보수월액을 확인하세요.",
+                    "4대사회보험 정보연계센터 또는 각 공단 고지 내역에서 실제 부과액을 비교하세요.",
+                  ]}
+                  differenceReasons={[
+                    "사업장 신고 보수월액, 입퇴사일, 휴직과 건강보험 정산 시점에 따라 달라집니다.",
+                    "산재보험과 소득세·지방소득세, 회사별 공제는 이 결과에 포함되지 않습니다.",
+                  ]}
+                />
 
                 <div className={styles.detailSection}>
                   <h3>상세 계산</h3>

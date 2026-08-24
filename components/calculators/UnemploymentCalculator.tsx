@@ -21,6 +21,7 @@ import {
   buildUnemploymentResultText,
   UNEMPLOYMENT_RESULT_CANONICAL_URL,
 } from "./unemploymentClientUtils";
+import { ResultDecisionLayer } from "./ResultDecisionLayer";
 import styles from "./UnemploymentCalculator.module.css";
 
 type RawInputs = {
@@ -640,6 +641,28 @@ export function UnemploymentCalculator() {
                     <dd>{result.isLowerLimitApplied ? "적용" : "미적용"}</dd>
                   </div>
                 </dl>
+
+                <ResultDecisionLayer
+                  meaning={`1일 예상액 ${formatWon(result.dailyBenefitAmount)}과 소정급여일수 ${result.prescribedBenefitDays}일을 곱한 예상 총액입니다. 지급 가능 여부는 금액 계산과 별도로 이직 사유와 고용보험 기록을 확인해야 합니다.`}
+                  appliedRules={[
+                    `1일 구직급여 ${result.isUpperLimitApplied ? "상한 적용" : result.isLowerLimitApplied ? "하한 적용" : "상·하한 미적용"}`,
+                    `${getScheduledDailyHoursLabel(result.scheduledDailyHours)} 하한 기준`,
+                    `고용보험 가입기간 ${result.insuredMonths}개월·선택한 퇴직 사유 반영`,
+                  ]}
+                  drivers={[
+                    "퇴직 전 평균임금은 1일 구직급여액을 바꾸지만 상·하한 구간에서는 제한됩니다.",
+                    "고용보험 가입기간과 연령 구간은 소정급여일수를 바꿉니다.",
+                    "퇴직 사유는 금액보다 실제 수급 가능성 판단에 더 큰 영향을 줍니다.",
+                  ]}
+                  verificationHints={[
+                    "고용24에서 피보험단위기간과 이직확인서 처리 상태를 확인하세요.",
+                    "급여명세서와 고용센터가 산정한 퇴직 전 평균임금을 비교하세요.",
+                  ]}
+                  differenceReasons={[
+                    "가입기간은 단순 재직개월과 다르고 피보험단위기간으로 심사됩니다.",
+                    "자발적 퇴사 예외, 재취업 활동과 실업인정 결과는 계산만으로 확정할 수 없습니다.",
+                  ]}
+                />
 
                 <div className={styles.detailSection}>
                   <h3>상세 계산</h3>

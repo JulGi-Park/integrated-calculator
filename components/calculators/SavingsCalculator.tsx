@@ -16,6 +16,7 @@ import {
   type SavingsTaxType,
   type SavingsValidationError,
 } from "@/lib/calculators/savings/savings";
+import { ResultDecisionLayer } from "./ResultDecisionLayer";
 import styles from "./SavingsCalculator.module.css";
 
 type RawInputs = {
@@ -517,6 +518,28 @@ export function SavingsCalculator() {
                 <dd>{getTaxTypeLabel(result.taxType)}</dd>
               </div>
             </dl>
+
+            <ResultDecisionLayer
+              meaning={`원금 ${formatWon(result.principalTotal)}에 세후 이자 ${formatWon(result.netInterest)}를 더한 예상 만기 수령액입니다. 상품 비교에서는 표시 금리보다 세후 이자와 납입 방식이 같은지 먼저 확인하세요.`}
+              appliedRules={[
+                `${getProductLabel(result.productType)}·${result.termMonths}개월·연 ${formatPercent(result.annualInterestRate)}`,
+                `${getTaxTypeLabel(result.taxType)} 세율 ${formatPercent(result.appliedTaxRate * 100)} 적용`,
+                "단리와 원 단위 반올림 기준",
+              ]}
+              drivers={[
+                "금액과 기간, 연 이율이 세전 이자를 직접 바꿉니다.",
+                "예금은 전액 예치, 적금은 매월 납입하므로 같은 표시 금리라도 이자가 다릅니다.",
+                "비과세 여부는 세후 이자와 만기 수령액을 바꿉니다.",
+              ]}
+              verificationHints={[
+                "상품 약관에서 우대금리 충족 조건과 실제 납입일을 확인하세요.",
+                "중도해지 금리, 세제 한도와 만기 자동연장 조건을 별도로 비교하세요.",
+              ]}
+              differenceReasons={[
+                "우대금리 미충족, 납입 지연과 중도해지는 계산 금리보다 낮은 이자를 만들 수 있습니다.",
+                "금융기관별 이자 계산일수와 세금 원 단위 처리에 따라 소액 차이가 생길 수 있습니다.",
+              ]}
+            />
 
             <div className={styles.resultActions}>
               <button type="button" onClick={handleCopy}>

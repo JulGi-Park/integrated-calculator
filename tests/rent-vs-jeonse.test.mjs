@@ -237,7 +237,7 @@ test("라우트는 공개되며 홈·목록·sitemap·정적 검증에 등록된
     verifyScriptSource,
   ] = await Promise.all([
     readFile("app/calculators/rent-vs-jeonse/page.tsx", "utf8"),
-    readFile("app/calculators/page.tsx", "utf8"),
+    readFile("lib/calculatorRegistry.ts", "utf8"),
     readFile("app/page.tsx", "utf8"),
     readFile("lib/site/publicRoutes.ts", "utf8"),
     readFile("scripts/verify-cloudflare-pages.mjs", "utf8"),

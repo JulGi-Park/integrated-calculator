@@ -661,7 +661,7 @@ test("sitemap, 목록, 홈과 연봉 관련 계산기에 공개 4대보험 계�
   const files = [
     "lib/site/publicRoutes.ts",
     "app/page.tsx",
-    "app/calculators/page.tsx",
+    "lib/calculatorRegistry.ts",
     "components/calculators/SalaryTakeHomeContent.tsx",
   ];
   const sources = await Promise.all(files.map((file) => readFile(file, "utf8")));

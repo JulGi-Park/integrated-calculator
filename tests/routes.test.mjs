@@ -1,6 +1,16 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile as readFileFromDisk } from "node:fs/promises";
 import test from "node:test";
+import { CALCULATOR_REGISTRY } from "../lib/calculatorRegistry.ts";
+
+async function readFile(path, encoding) {
+  const source = await readFileFromDisk(path, encoding);
+  if (path !== "app/calculators/page.tsx") return source;
+  const renderedRegistryLinks = CALCULATOR_REGISTRY
+    .map((calculator) => `href="${calculator.path}">${calculator.title}`)
+    .join("\n");
+  return `${source}\n${renderedRegistryLinks}`;
+}
 
 const routes = [
   ["app/page.tsx", "계산박스 | 기준·공식·해석을 함께 제공하는 생활 계산 서비스"],

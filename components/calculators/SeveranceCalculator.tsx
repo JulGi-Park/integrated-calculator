@@ -27,6 +27,7 @@ import {
   serializeSeveranceInputs,
   type SeveranceRawInputs,
 } from "./severanceClientUtils";
+import { ResultDecisionLayer } from "./ResultDecisionLayer";
 import styles from "./SeveranceCalculator.module.css";
 
 type FieldDefinition = {
@@ -686,6 +687,32 @@ export function SeveranceCalculator() {
                     <dd>{formatKoreanDate(result.policyVerifiedAt)}</dd>
                   </div>
                 </dl>
+
+                <ResultDecisionLayer
+                  meaning={result.isBasicallyEligible
+                    ? `재직 ${result.totalServiceDays.toLocaleString("ko-KR")}일과 주 15시간 요건을 충족한 조건에서 ${formatWon(result.estimatedSeverance)}이 예상됩니다.`
+                    : `입력한 근무 조건에서는 ${getIneligibilityMessage(result)} 금액보다 대상 요건을 먼저 확인해야 합니다.`}
+                  appliedRules={[
+                    `${result.averageWagePeriodDays}일 동안의 임금총액으로 1일 평균임금 계산`,
+                    result.ordinaryWageSubstituted
+                      ? "입력한 통상임금이 평균임금보다 높아 최종 1일 임금으로 선택"
+                      : "평균임금을 최종 1일 임금으로 선택",
+                    `계속근로 1년 ${result.meetsContinuousServiceRequirement ? "충족" : "미충족"}·주 15시간 ${result.meetsWeeklyHoursRequirement ? "충족" : "미충족"}`,
+                  ]}
+                  drivers={[
+                    "퇴직 전 3개월 임금총액과 반영 대상 상여금·연차수당이 평균임금을 바꿉니다.",
+                    "입사일·퇴직일은 재직일수와 평균임금 산정기간을 함께 바꿉니다.",
+                    "입력한 통상임금이 평균임금보다 높으면 실제 적용 1일 임금이 달라집니다.",
+                  ]}
+                  verificationHints={[
+                    "퇴직일은 마지막 근무일의 다음 날인지 인사자료와 확인하세요.",
+                    "퇴직 전 3개월 급여대장, 상여금 지급내역과 연차수당 반영 대상을 비교하세요.",
+                  ]}
+                  differenceReasons={[
+                    "평균임금 산정 제외기간과 회사 취업규칙의 추가 퇴직급여는 자동 반영하지 않습니다.",
+                    "실제 지급 자료의 임금 해당 여부와 중간정산 이력에 따라 금액이 달라질 수 있습니다.",
+                  ]}
+                />
 
                 <div className={styles.detailSection}>
                   <h3>상세 결과</h3>

@@ -413,6 +413,122 @@ a:focus-visible {
   line-height: 1.7;
 }
 
+.calculator-search-panel {
+  display: grid;
+  gap: 18px;
+  margin: 0 0 16px;
+  padding: 24px;
+  border: 1px solid #bfd0c5;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(234, 244, 237, 0.92), rgba(255, 255, 255, 0.9));
+}
+
+.calculator-search-panel__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.calculator-search-panel__heading h2 {
+  margin: 0 0 6px;
+  font-size: 1.25rem;
+}
+
+.calculator-search-panel__heading p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.calculator-search-panel__heading strong {
+  flex: 0 0 auto;
+  padding: 7px 11px;
+  border-radius: 999px;
+  color: var(--accent);
+  background: var(--surface);
+  font-size: 0.84rem;
+}
+
+.calculator-search {
+  display: grid;
+  gap: 8px;
+}
+
+.calculator-search > label {
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.calculator-search__control {
+  position: relative;
+}
+
+.calculator-search__control input {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 84px 12px 16px;
+  border: 1px solid #a9bdb0;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+}
+
+.calculator-search__control input:focus-visible {
+  border-color: var(--accent);
+  outline: 3px solid rgba(35, 97, 68, 0.2);
+  outline-offset: 2px;
+}
+
+.calculator-search__clear {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 64px;
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 10px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.calculator-search-empty {
+  margin-top: 8px;
+  padding: 42px 24px;
+  border: 1px dashed #b9c9bf;
+  border-radius: 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.calculator-search-empty h2,
+.calculator-search-empty p {
+  margin: 0;
+}
+
+.calculator-search-empty p {
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+.calculator-search-empty button {
+  min-height: 44px;
+  margin-top: 20px;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--accent);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .calculator-filter {
   display: grid;
   gap: 12px;
@@ -684,6 +800,15 @@ a:focus-visible {
 
   .calculator-guide {
     grid-template-columns: 1fr;
+  }
+
+  .calculator-search-panel {
+    padding: 20px;
+  }
+
+  .calculator-search-panel__heading {
+    display: grid;
+    gap: 12px;
   }
 
   .home-calculators {

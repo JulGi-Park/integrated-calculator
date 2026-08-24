@@ -27,6 +27,7 @@ import {
   serializeLoanInterestInputs,
   type LoanInterestRawInputs,
 } from "./loanInterestClientUtils";
+import { ResultDecisionLayer } from "./ResultDecisionLayer";
 import styles from "./LoanInterestCalculator.module.css";
 
 const INITIAL_VISIBLE_INSTALLMENTS = 20;
@@ -579,6 +580,28 @@ export function LoanInterestCalculator() {
                   </strong>
                 </div>
               </div>
+
+              <ResultDecisionLayer
+                meaning={`${formatTypeList(result.lowestTotalInterestTypes)}이(가) 총이자 기준으로 가장 낮고, ${formatTypeList(result.lowestFirstMonthPaymentTypes)}이(가) 첫 달 부담 기준으로 가장 낮습니다. 두 기준은 같은 선택을 의미하지 않을 수 있습니다.`}
+                appliedRules={[
+                  `대출원금 ${formatWon(calculatedInput.principal)}·연 ${formatRate(calculatedInput.annualInterestRate)}·${formatTerm(calculatedInput.termMonths)}`,
+                  "원리금균등·원금균등·만기일시상환을 같은 원금·금리·기간으로 비교",
+                  `원리금균등 월 납입액 ${formatWon(result.equalPayment.regularMonthlyPayment)}`,
+                ]}
+                drivers={[
+                  "연이율은 매 회차 이자와 총이자를 직접 바꿉니다.",
+                  "기간을 늘리면 월 부담은 낮아질 수 있지만 총이자는 커질 수 있습니다.",
+                  "상환방식은 초기 현금흐름과 만기 원금 부담을 다르게 만듭니다.",
+                ]}
+                verificationHints={[
+                  "금융기관 상품설명서의 실제 금리, 변동 주기와 중도상환수수료를 확인하세요.",
+                  "상환 예정일과 월 소득 흐름에 첫 달·마지막 달 납입액을 대입해 보세요.",
+                ]}
+                differenceReasons={[
+                  "실제 상품의 일할 이자, 납입일, 우대금리와 수수료는 포함하지 않습니다.",
+                  "금리 변동형 상품은 계산에 입력한 고정 연이율과 실제 상환액이 달라질 수 있습니다.",
+                ]}
+              />
 
               {!isResultStale && calculatedInput && (
                 <div className={styles.resultActions}>

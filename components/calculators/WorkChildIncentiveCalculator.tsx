@@ -25,6 +25,7 @@ import {
   type WorkChildIncentiveRawInputs,
 } from "./workChildIncentiveClientUtils";
 import { workChildIncentivePolicySummary } from "./workChildIncentiveContentData";
+import { ResultDecisionLayer } from "./ResultDecisionLayer";
 import styles from "./WorkChildIncentiveCalculator.module.css";
 
 const amountFields: WorkChildIncentiveInputField[] = [
@@ -449,6 +450,28 @@ export function WorkChildIncentiveCalculator() {
                   <dd>{result.reductionReasons.length > 0 ? result.reductionReasons.join(", ") : "추가 안내 없음"}</dd>
                 </div>
               </dl>
+
+              <ResultDecisionLayer
+                meaning={`${result.interpretation} 예상액은 가구 유형·총소득·총급여액·재산 기준을 함께 적용한 값이므로 소득 하나만으로 지급 여부를 판단할 수 없습니다.`}
+                appliedRules={[
+                  `근로장려금 ${result.work.status === "eligible" ? "소득 기준 통과" : result.work.status === "excluded" ? "대상 제외" : "미신청"}`,
+                  `자녀장려금 ${result.child.status === "eligible" ? "소득·자녀 기준 통과" : result.child.status === "excluded" ? "대상 제외" : "미신청"}`,
+                  `재산 기준 ${result.propertyStatus === "pass" ? "통과" : result.propertyStatus === "reduced" ? "감액 구간" : "제외 구간"}`,
+                ]}
+                drivers={[
+                  "부부합산 총소득은 신청 가능 구간을, 총급여액 등은 구간별 예상액을 바꿉니다.",
+                  "가구 유형과 배우자 소득은 적용되는 소득 기준과 산식을 바꿉니다.",
+                  "재산 합계액과 기한 후 신청 여부는 감액 또는 제외에 영향을 줍니다.",
+                ]}
+                verificationHints={[
+                  "홈택스 장려금 미리보기의 가구원·소득자료와 재산자료를 확인하세요.",
+                  "배우자 소득, 부양자녀 나이와 재산 기준일의 가구원 합산 범위를 비교하세요.",
+                ]}
+                differenceReasons={[
+                  "국세청이 확인한 사업·종교인소득과 재산 평가액은 사용자가 입력한 값과 다를 수 있습니다.",
+                  "체납 충당, 자녀세액공제 중복과 반기 정산은 최종 지급액을 바꿀 수 있습니다.",
+                ]}
+              />
 
               <div className={styles.detailSection}>
                 <h3>상세 계산</h3>

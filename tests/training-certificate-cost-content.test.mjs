@@ -227,7 +227,7 @@ test("공개 route와 모든 진입점은 환경변수 가드 없이 제공된�
 
   for (const path of [
     "app/page.tsx",
-    "app/calculators/page.tsx",
+    "lib/calculatorRegistry.ts",
     "lib/site/publicRoutes.ts",
     "app/about/page.tsx",
     "app/updates/page.tsx",

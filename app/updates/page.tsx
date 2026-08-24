@@ -54,6 +54,14 @@ const trainingCertificateCostReleaseUpdate = {
 
 const baseUpdates = [
   {
+    date: "2026년 8월 24일",
+    target: "계산기 검색과 핵심 결과 판단 안내",
+    change: "21개 계산기를 이름·분류·사용 상황으로 찾는 로컬 검색을 추가하고, 핵심 계산기 8개의 결과 화면에 실제 입력과 계산 결과에 따른 적용 조건·변동 요인·확인 자료를 연결했습니다.",
+    reason: "필요한 계산기를 빠르게 찾고, 계산값을 받은 뒤 실제 자료와 비교하거나 다음 판단에 활용할 수 있도록 하기 위해서입니다.",
+    evidence: "계산기 목록의 검색·초기화·결과 없음 화면과 연봉, 4대보험, 대출, DSR, 예금·적금, 퇴직금, 실업급여, 근로·자녀장려금 결과 화면에서 확인할 수 있습니다.",
+    href: "/calculators/",
+  },
+  {
     date: "2026년 8월 13일",
     target: "계산박스 상표등록출원 및 브랜드 식별 신호",
     change: "계산박스 상표등록출원을 완료하고, 홈페이지의 브랜드·공식 도메인 안내와 WebSite·Organization 구조화 데이터를 정리했습니다.",
@@ -199,7 +207,12 @@ const baseUpdates = [
   },
 ] as const;
 
-const updates = [baseUpdates[0], trainingCertificateCostReleaseUpdate, ...baseUpdates.slice(1)];
+const updates = [
+  baseUpdates[0],
+  baseUpdates[1],
+  trainingCertificateCostReleaseUpdate,
+  ...baseUpdates.slice(2),
+];
 
 export default function UpdatesPage() {
   return (
