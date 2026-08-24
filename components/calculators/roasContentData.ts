@@ -130,13 +130,13 @@ export const roasBreadcrumbJsonLd = {
       "@type": "ListItem",
       position: 2,
       name: "계산기 목록",
-      item: "https://gyesanbox.kr/calculators",
+      item: "https://gyesanbox.kr/calculators/",
     },
     {
       "@type": "ListItem",
       position: 3,
       name: "ROAS 계산기",
-      item: "https://gyesanbox.kr/calculators/roas",
+      item: "https://gyesanbox.kr/calculators/roas/",
     },
   ],
 };

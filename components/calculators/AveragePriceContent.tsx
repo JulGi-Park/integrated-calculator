@@ -113,6 +113,26 @@ export function AveragePriceContent() {
         </div>
       </section>
 
+      <section className={styles.section} aria-labelledby="average-related-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="average-related-title">다음 판단에 필요한 계산</h2>
+          <p>
+            추가 매수에 투입할 자금의 대안 수익과 카드 분할 비용을 따로 비교할
+            때 사용할 수 있습니다.
+          </p>
+        </div>
+        <div className={styles.relatedGrid}>
+          <a className={`${styles.relatedCard} ${styles.relatedLink}`} href="/calculators/savings/">
+            <h3>예금·적금 계산기</h3>
+            <p>같은 자금을 저축했을 때의 세후 이자와 만기 예상액을 확인합니다.</p>
+          </a>
+          <a className={`${styles.relatedCard} ${styles.relatedLink}`} href="/calculators/card-installment/">
+            <h3>카드 할부 계산기</h3>
+            <p>분할 결제에 따른 월 납입액과 총 수수료를 별도로 계산합니다.</p>
+          </a>
+        </div>
+      </section>
+
       <aside className={styles.disclaimer} aria-label="계산 결과 안내">
         이 계산기는 투자 권유 도구가 아니라 입력값을 바탕으로 평균단가와 예상
         손익을 계산하는 도구입니다. 결과는 수수료, 세금, 환율 등을 반영하지

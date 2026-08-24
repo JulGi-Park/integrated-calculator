@@ -657,7 +657,7 @@ test("월 급여 한도 오류 문구는 자연스러운 조사와 검증용 명
 
 test("sitemap, 목록, 홈과 연봉 관련 계산기에 공개 4대보험 계산기를 노출한다", async () => {
   const files = [
-    "app/sitemap.ts",
+    "lib/site/publicRoutes.ts",
     "app/page.tsx",
     "app/calculators/page.tsx",
     "components/calculators/SalaryTakeHomeContent.tsx",

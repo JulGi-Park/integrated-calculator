@@ -252,13 +252,13 @@ export const carCostBreadcrumbJsonLd = {
       "@type": "ListItem",
       position: 2,
       name: "계산기 목록",
-      item: "https://gyesanbox.kr/calculators",
+      item: "https://gyesanbox.kr/calculators/",
     },
     {
       "@type": "ListItem",
       position: 3,
       name: "자동차 유지비 계산기",
-      item: "https://gyesanbox.kr/calculators/car-cost",
+      item: "https://gyesanbox.kr/calculators/car-cost/",
     },
   ],
 };

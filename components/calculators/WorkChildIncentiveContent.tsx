@@ -33,7 +33,7 @@ export function WorkChildIncentiveContent() {
 
       <section className={styles.section} aria-labelledby="work-child-example">
         <div className={styles.sectionHeading}>
-          <h2 id="work-child-example">계산 예시</h2>
+          <h2 id="work-child-example">계산 예시와 결과 해석</h2>
           <p>예시는 현재 계산 엔진에 고정 입력을 적용해 생성한 예상값입니다.</p>
         </div>
         <dl className={styles.exampleList}>

@@ -53,7 +53,7 @@ export function SocialInsuranceContent() {
       </section>
 
       <section className={styles.contentSection}>
-        <h2>급여명세서와 달라질 수 있는 경우</h2>
+        <h2>계산 결과 해석과 급여명세서 차이</h2>
         <ul className={styles.checkList}>
           {socialInsuranceExceptions.map((item) => (
             <li key={item}>{item}</li>

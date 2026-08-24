@@ -31,7 +31,7 @@ export function DsrContent() {
       </section>
 
       <section className={styles.contentCard} aria-labelledby="dsr-example-heading">
-        <h2 id="dsr-example-heading">예시</h2>
+        <h2 id="dsr-example-heading">계산 예시와 결과 해석</h2>
         <p>
           연소득 6,000만원, 기존 대출 연간 DSR 원리금 800만원, 신규 주택담보대출 2억원,
           연 4.5%, 30년 원리금균등상환 조건의 예시입니다.

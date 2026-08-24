@@ -22,7 +22,7 @@ const contentSource = await readFile(
 );
 const calculatorListSource = await readFile("app/calculators/page.tsx", "utf8");
 const homeSource = await readFile("app/page.tsx", "utf8");
-const sitemapSource = await readFile("app/sitemap.ts", "utf8");
+const sitemapSource = await readFile("lib/site/publicRoutes.ts", "utf8");
 
 test("ROAS 페이지는 로컬 라우트와 계산기 UI, 기준일을 가진다", () => {
   assert.equal((pageSource.match(/<h1/g) ?? []).length, 1);

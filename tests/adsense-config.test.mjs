@@ -9,6 +9,10 @@ import {
   getValidAdSenseClient,
   hasValidAdSenseClient,
 } from "../lib/adsense.ts";
+import {
+  isAdSenseEligiblePath,
+  PUBLIC_CALCULATOR_PATHS,
+} from "../lib/site/publicRoutes.ts";
 
 test("AdSense client 검증은 비어 있거나 잘못된 값을 차단한다", () => {
   const invalidValues = [
@@ -55,6 +59,28 @@ test("AdSenseScript는 hydration 이후 전역 연결 스크립트를 로드하�
   assert.match(source, /pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/);
   assert.match(source, /crossOrigin="anonymous"/);
   assert.match(source, /strategy="afterInteractive"/);
+  assert.match(source, /usePathname/);
+  assert.match(source, /isAdSenseEligiblePath/);
+});
+
+test("AdSense 연결은 홈과 검수된 계산기에서만 허용한다", () => {
+  assert.equal(isAdSenseEligiblePath("/"), true);
+  for (const pathname of PUBLIC_CALCULATOR_PATHS) {
+    assert.equal(isAdSenseEligiblePath(pathname), true);
+    assert.equal(isAdSenseEligiblePath(pathname.slice(0, -1)), true);
+  }
+
+  for (const pathname of [
+    null,
+    "/404/",
+    "/calculators/",
+    "/calculators/not-public/",
+    "/about/",
+    "/contact/",
+    "/privacy-policy/",
+  ]) {
+    assert.equal(isAdSenseEligiblePath(pathname), false);
+  }
 });
 
 test("AdSenseScript는 환경변수가 없거나 잘못되면 빈 스크립트를 렌더링하지 않는다", () => {

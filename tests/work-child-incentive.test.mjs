@@ -263,7 +263,7 @@ test("2026 신청 기준 SEO 콘텐츠는 귀속연도·기한후·자녀장려�
 
 test("sitemap, 목록, 홈에는 근로·자녀장려금 계산기를 노출한다", async () => {
   const files = [
-    "app/sitemap.ts",
+    "lib/site/publicRoutes.ts",
     "app/page.tsx",
     "app/calculators/page.tsx",
     "app/calculators/salary/page.tsx",

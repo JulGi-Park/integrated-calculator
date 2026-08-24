@@ -3,6 +3,8 @@ import { ContactEmail } from "@/components/common/ContactEmail";
 
 const footerLinks = [
   { href: "/about/", label: "소개" },
+  { href: "/methodology/", label: "계산 방법론" },
+  { href: "/updates/", label: "변경 이력" },
   { href: "/contact/", label: "문의" },
   { href: "/privacy-policy/", label: "개인정보처리방침" },
   { href: "/terms/", label: "이용약관" },

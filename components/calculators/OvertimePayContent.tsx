@@ -139,7 +139,7 @@ export function OvertimePayContent() {
 
       <section className={styles.section} aria-labelledby="overtime-example">
         <div className={styles.sectionHeading}>
-          <h2 id="overtime-example">계산 예시</h2>
+          <h2 id="overtime-example">계산 예시와 결과 해석</h2>
           <p>야간근로는 추가 가산 시간이므로 겹치는 시간만큼 함께 입력하는 방식입니다.</p>
         </div>
         <div className={styles.exampleGrid}>

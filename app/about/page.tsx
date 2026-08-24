@@ -4,7 +4,7 @@ import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
 
 const ogTitle = "계산박스 소개 - 생활 계산을 쉽게";
 const ogDescription =
-  "계산박스는 실생활에 필요한 계산을 쉽고 빠르게 돕는 웹서비스입니다.";
+  "계산박스는 실생활 계산의 기준·공식·근거와 결과 해석을 함께 제공하는 정보 서비스입니다.";
 const ogUrl = "https://gyesanbox.kr/about/";
 const ogImage = "https://gyesanbox.kr/og/about.png";
 const publicCalculatorCount = 21;
@@ -12,7 +12,7 @@ const publicCalculatorCount = 21;
 export const metadata: Metadata = {
   title: "계산박스 소개 | 계산박스",
   description:
-    "계산박스는 판매자 마진, 부가세, 연봉 실수령액, 4대보험, 주휴수당, 대출 이자, 퇴직금, 실업급여, 육아휴직급여, 전세·월세 비교 등 생활·금융·근로·사업·판매·주거 계산기를 제공하는 온라인 계산기 모음입니다.",
+    "계산박스는 판매자 마진, 급여, 금융, 근로와 주거 계산의 기준·공식·근거·사례와 결과 해석을 함께 제공하는 계산 전문 정보 서비스입니다.",
   alternates: {
     canonical: ogUrl,
   },
@@ -43,16 +43,18 @@ export default function AboutPage() {
     <PolicyPageLayout
       eyebrow="About"
       title="계산박스 소개"
-      description="계산박스는 대한민국 사용자를 위한 생활·금융·근로·사업·판매·주거 계산기 모음 서비스입니다."
+      description="계산박스는 대한민국 사용자가 생활·금융·근로·사업·주거 계산의 기준과 결과를 함께 이해하도록 돕는 계산 전문 정보 서비스입니다."
     >
       <section>
         <h2>서비스 목적</h2>
         <p>
           계산박스의 공식 웹사이트는 gyesanbox.kr입니다. 계산박스는 일상과
           업무에 자주 필요한 계산을 한곳에서 빠르게 살펴볼 수 있도록 제공하는
-          온라인 계산기 모음입니다. 사용자가 숫자를 입력하면 결과만 던져주는
-          화면이 아니라, 어떤 입력값이 필요한지와 어떤 기준으로 계산되는지를
-          함께 확인할 수 있도록 운영합니다.
+          계산 전문 정보 서비스입니다. 검색 유입을 위한 도구 수 확대보다
+          사용자가 숫자의 전제를 검증하고 실제 판단에 활용하는 일을 우선합니다.
+          숫자를 입력하면 결과만 보여주는 화면이 아니라, 입력값의 의미와 계산
+          기준·공식·근거·대표 사례·결과 해석·적용 한계를 함께 확인하도록
+          운영합니다.
         </p>
       </section>
 

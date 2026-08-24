@@ -42,7 +42,7 @@ test("예금 적금 JSON-LD는 공개 라우트 페이지 정보를 담는다", 
   assert.equal(savingsBreadcrumbJsonLd["@type"], "BreadcrumbList");
   assert.equal(
     savingsBreadcrumbJsonLd.itemListElement.at(-1).item,
-    "https://gyesanbox.kr/calculators/savings",
+    "https://gyesanbox.kr/calculators/savings/",
   );
 });
 
@@ -71,7 +71,7 @@ test("예금 적금 페이지는 JSON-LD와 콘텐츠 컴포넌트를 사용한�
   assert.doesNotMatch(source, /index:\s*false|notFound\(\)/);
 });
 
-test("예금 적금 콘텐츠에 금지 표현과 관련 계산기 내부 링크를 추가하지 않는다", async () => {
+test("예금 적금 콘텐츠는 금지 표현 없이 다음 저축 판단으로 연결한다", async () => {
   const sources = await Promise.all([
     readFile("components/calculators/SavingsContent.tsx", "utf8"),
     readFile("components/calculators/savingsContentData.ts", "utf8"),
@@ -84,6 +84,7 @@ test("예금 적금 콘텐츠에 금지 표현과 관련 계산기 내부 링크
     assert.doesNotMatch(combinedSource, new RegExp(phrase));
   }
 
-  assert.doesNotMatch(sources[0], /href="\/calculators\//);
-  assert.doesNotMatch(sources[0], /관련 계산기/);
+  assert.match(sources[0], /href="\/calculators\/youth-future-savings\/"/);
+  assert.match(sources[0], /href="\/calculators\/salary\/"/);
+  assert.match(sources[0], /저축 계획에 이어 확인할 계산/);
 });

@@ -165,6 +165,23 @@ export function BrokerageFeeContent() {
         </div>
       </section>
 
+      <section className={styles.section} aria-labelledby="brokerage-related-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="brokerage-related-title">거래 전에 함께 비교할 계산</h2>
+          <p>중개보수 외에 주거기간 비용과 대출 상환 부담을 각각 확인하세요.</p>
+        </div>
+        <div className={styles.relatedGrid}>
+          <a className={`${styles.relatedCard} ${styles.relatedLink}`} href="/calculators/rent-vs-jeonse/">
+            <h3>전세 vs 월세 비교 계산기</h3>
+            <p>보증금 기회비용, 이자, 월세와 관리비를 같은 기간으로 비교합니다.</p>
+          </a>
+          <a className={`${styles.relatedCard} ${styles.relatedLink}`} href="/calculators/loan/">
+            <h3>대출 이자 계산기</h3>
+            <p>대출 조건별 월 납입액과 총이자, 상환 일정을 확인합니다.</p>
+          </a>
+        </div>
+      </section>
+
       <aside className={styles.disclaimer} aria-label="계산 결과 안내">
         이 부동산 중개보수 계산기는 주택 거래의 상한보수와 부가세 포함 예상
         금액을 계산하는 참고 도구입니다. 실제 지급액, 부가세 청구 여부, 실비,

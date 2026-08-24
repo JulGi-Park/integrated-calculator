@@ -109,7 +109,7 @@ test("GSC에서 확인한 한 달 주휴수당 질문에 계산 범위를 직접
 
 test("sitemap, 메인, 계산기 목록, 연봉 관련 계산기에 labor-pay가 공개 노출된다", async () => {
   const files = [
-    "app/sitemap.ts",
+    "lib/site/publicRoutes.ts",
     "app/page.tsx",
     "app/calculators/page.tsx",
     "components/calculators/SalaryTakeHomeContent.tsx",

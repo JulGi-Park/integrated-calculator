@@ -155,6 +155,17 @@ test("AdSense 전역 스크립트는 루트 레이아웃에서 한 번만 삽입
   assert.deepEqual(usages, ["app/layout.tsx"]);
 });
 
+test("404는 noindex이며 광고 없는 복구 경로를 제공한다", async () => {
+  const source = await readFile("app/not-found.tsx", "utf8");
+
+  assert.match(source, /index:\s*false/);
+  assert.match(source, /follow:\s*false/);
+  assert.match(source, /페이지를 찾을 수 없습니다/);
+  assert.match(source, /href="\/"/);
+  assert.match(source, /href="\/calculators\/"/);
+  assert.doesNotMatch(source, /AdSense|adsbygoogle|data-ad-slot/);
+});
+
 test("ads.txt는 공개 publisher ID를 유지하고 AdSense client는 환경변수만 사용한다", async () => {
   const [adsTxt, adsenseSource, componentSource] = await Promise.all([
     readFile("public/ads.txt", "utf8"),

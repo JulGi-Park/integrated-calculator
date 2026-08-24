@@ -145,6 +145,23 @@ export function CarCostContent() {
         </ul>
       </section>
 
+      <section className={styles.section} aria-labelledby="car-related-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="car-related-title">구매·보유 예산에 함께 반영할 계산</h2>
+          <p>차량 유지비와 별개로 할부·대출의 금융비용과 월 가용소득을 확인하세요.</p>
+        </div>
+        <div className={styles.relatedGrid}>
+          <a className={`${styles.relatedCard} ${styles.relatedLink}`} href="/calculators/loan/">
+            <h3>대출 이자 계산기</h3>
+            <p>차량 구입자금의 월 상환액과 총이자를 상환 방식별로 비교합니다.</p>
+          </a>
+          <a className={`${styles.relatedCard} ${styles.relatedLink}`} href="/calculators/salary/">
+            <h3>연봉 실수령액 계산기</h3>
+            <p>예상 월 실수령액과 차량 월 유지비를 서로 다른 계산으로 확인합니다.</p>
+          </a>
+        </div>
+      </section>
+
       <aside className={styles.disclaimer} aria-label="면책 문구">
         계산 결과는 입력값 기준의 단순 추정값입니다. 실제 지출액과 다를 수
         있으며 보험료, 세금, 유류비, 정비비는 개인 조건과 시점에 따라 달라질 수

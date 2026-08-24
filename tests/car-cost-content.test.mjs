@@ -28,7 +28,7 @@ test("자동차 유지비 JSON-LD는 공개 라우트 페이지 정보를 담는
   assert.equal(carCostBreadcrumbJsonLd["@type"], "BreadcrumbList");
   assert.equal(
     carCostBreadcrumbJsonLd.itemListElement.at(-1).item,
-    "https://gyesanbox.kr/calculators/car-cost",
+    "https://gyesanbox.kr/calculators/car-cost/",
   );
 });
 
@@ -52,9 +52,10 @@ test("자동차 유지비 페이지는 JSON-LD와 콘텐츠 컴포넌트를 사�
   assert.doesNotMatch(source, /index:\s*false|notFound\(\)/);
 });
 
-test("자동차 유지비 콘텐츠에 관련 계산기 내부 링크를 추가하지 않는다", async () => {
+test("자동차 유지비 콘텐츠는 다음 예산 판단에 필요한 계산기로 연결한다", async () => {
   const source = await readFile("components/calculators/CarCostContent.tsx", "utf8");
 
-  assert.doesNotMatch(source, /href="\/calculators\//);
-  assert.doesNotMatch(source, /관련 계산기/);
+  assert.match(source, /href="\/calculators\/loan\/"/);
+  assert.match(source, /href="\/calculators\/salary\/"/);
+  assert.match(source, /구매·보유 예산에 함께 반영할 계산/);
 });
