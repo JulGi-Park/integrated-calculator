@@ -3,6 +3,7 @@ import test from "node:test";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import calculatorsModule from "../app/calculators/page.tsx";
+import { TRAINING_CERTIFICATE_COST_PUBLICATION } from "../lib/calculators/training-certificate-cost/publication.ts";
 
 const CalculatorsPage = calculatorsModule.default;
 
@@ -37,6 +38,12 @@ test("계산기 목록은 Registry 카드 전체를 정적 HTML에 유지한다"
     assert.match(html, new RegExp(`href="${path.replaceAll("/", "\\/")}"`));
   }
   assert.equal((html.match(/class="calculator-card"/g) ?? []).length, 21);
+  assert.match(
+    html,
+    new RegExp(
+      `data-category="${TRAINING_CERTIFICATE_COST_PUBLICATION.category}"[\\s\\S]*?href="${TRAINING_CERTIFICATE_COST_PUBLICATION.path.replaceAll("/", "\\/")}"[\\s\\S]*?>${TRAINING_CERTIFICATE_COST_PUBLICATION.name}<`,
+    ),
+  );
   assert.match(html, /계산기 카테고리 선택/);
   assert.match(html, /aria-pressed="true"/);
   for (const category of ["전체", "급여", "금융", "주거", "사업", "투자", "생활"]) {
