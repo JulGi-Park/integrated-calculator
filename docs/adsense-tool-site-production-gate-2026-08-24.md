@@ -31,7 +31,7 @@
 | source SHA | `6dbe0fb9dbcd9ea2475b0cb4f561ad09afe46e14` |
 | status | SUCCESS |
 | production URL | <https://gyesanbox.kr> |
-| deployment check time | 2026-08-24 05:12 KST 무렵 |
+| deployment check time | 2026-08-24 05:12 UTC / 14:12 KST 무렵 |
 | custom domain | HTTPS 200, Cloudflare 응답, 최신 콘텐츠 확인 |
 
 감사 문서와 Production 감사 스크립트만 추가하는 최종 커밋은 별도 main push로 배포 상태와 source SHA를 다시 확인한다. 이 변경은 사이트 런타임 콘텐츠를 바꾸지 않는다.
