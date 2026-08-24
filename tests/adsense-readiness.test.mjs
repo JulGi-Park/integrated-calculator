@@ -159,7 +159,7 @@ test("404는 noindex이며 광고 없는 복구 경로를 제공한다", async (
   const source = await readFile("app/not-found.tsx", "utf8");
 
   assert.match(source, /index:\s*false/);
-  assert.match(source, /follow:\s*false/);
+  assert.match(source, /follow:\s*true/);
   assert.match(source, /페이지를 찾을 수 없습니다/);
   assert.match(source, /href="\/"/);
   assert.match(source, /href="\/calculators\/"/);

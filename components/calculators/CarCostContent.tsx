@@ -133,12 +133,12 @@ export function CarCostContent() {
                 <span>{criterion}</span>
                 <span>확인일: {verifiedAt}</span>
               </div>
-              {href.startsWith("https://gyesanbox.kr") ? (
-                <span>개별 조건 확인</span>
-              ) : (
+              {href ? (
                 <a href={href} target="_blank" rel="noopener noreferrer">
                   {title} 보기
                 </a>
+              ) : (
+                <span>개별 조건 확인</span>
               )}
             </li>
           ))}

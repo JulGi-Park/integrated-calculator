@@ -10,7 +10,8 @@
     "test": "node --import ./tests/register-css.mjs --import tsx --test",
     "prune:private-routes": "node scripts/prune-disabled-static-routes.mjs",
     "verify:cloudflare": "node scripts/verify-cloudflare-pages.mjs",
-    "audit:publisher": "node scripts/audit-publisher-content.mjs"
+    "audit:publisher": "node scripts/audit-publisher-content.mjs",
+    "audit:similarity": "node scripts/audit-calculator-similarity.mjs"
   },
   "dependencies": {
     "next": "16.3.0",

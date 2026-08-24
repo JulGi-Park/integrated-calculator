@@ -22,7 +22,7 @@ export const SALARY_TAKE_HOME_POLICY_2026 = {
   healthInsurance: {
     totalRateBasisPoints: 719,
     employeeShareDenominator: 2,
-    maximumTotalMonthlyPremium: 4_591_740,
+    maximumTotalMonthlyPremium: 9_183_480,
   },
   longTermCareInsurance: {
     incomeRatePartsPerMillion: 9_448,

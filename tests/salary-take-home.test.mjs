@@ -395,6 +395,23 @@ test("극저소득과 최대 허용 연봉에서도 실수령액이 음수가 �
   }
 });
 
+test("2026 건강보험 보수월액보험료 상한은 근로자 부담 절반을 정확히 적용한다", () => {
+  const data = assertSuccess(
+    calculateSalaryTakeHome({
+      ...baseInput,
+      annualSalary: SALARY_TAKE_HOME_POLICY_2026.maximumAnnualSalary,
+      monthlyNonTaxableAmount: 0,
+    }),
+  );
+
+  assert.equal(
+    SALARY_TAKE_HOME_POLICY_2026.healthInsurance.maximumTotalMonthlyPremium,
+    9_183_480,
+  );
+  assert.equal(data.healthInsurance, 4_591_740);
+  assert.equal(data.longTermCareInsurance, 603_376);
+});
+
 test("공제대상가족 입력 설명은 본인을 포함한다고 명시한다", () => {
   assert.equal(SALARY_TAKE_HOME_INPUT_METADATA.dependentCount.includesSelf, true);
   assert.match(

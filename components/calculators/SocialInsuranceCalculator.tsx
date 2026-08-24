@@ -511,7 +511,10 @@ export function SocialInsuranceCalculator() {
                     </div>
                     <div>
                       <dt>장기요양 계산식</dt>
-                      <dd>{formatWon(result.employeeHealthInsurance)} × 13.14%</dd>
+                      <dd>
+                        {formatWon(result.employeeHealthInsurance)} × 0.9448% ÷
+                        7.19%
+                      </dd>
                     </div>
                     <div>
                       <dt>고용보험 계산식</dt>

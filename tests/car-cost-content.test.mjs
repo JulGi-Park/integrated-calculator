@@ -40,6 +40,12 @@ test("자동차 유지비 예시와 출처 안내는 확정 평균값을 단정�
       organization.includes("한국석유공사"),
     ),
   );
+  assert.ok(
+    carCostSources.some(
+      ({ organization, href }) =>
+        organization === "개별 보험사·정비업체" && href === undefined,
+    ),
+  );
 });
 
 test("자동차 유지비 페이지는 JSON-LD와 콘텐츠 컴포넌트를 사용한다", async () => {

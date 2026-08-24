@@ -110,7 +110,7 @@ export const socialInsuranceCriteria = [
   },
   {
     title: "장기요양보험",
-    description: `장기요양보험료는 건강보험료와 별도로 표시되는 공제이며, 본 계산기는 상·하한이 보정된 근로자 건강보험료 × ${formatRate(policy.longTermCareInsurance.healthInsuranceRate)} 방식으로 계산합니다.`,
+    description: `장기요양보험료는 건강보험료와 별도로 표시되는 공제입니다. 본 계산기는 상·하한이 보정된 근로자 건강보험료 × 장기요양보험료율 ${formatRate(policy.longTermCareInsurance.incomeRate)} ÷ 건강보험료율 ${formatRate(policy.healthInsurance.totalRate)} 방식으로 계산합니다. 환산 비율은 약 ${formatRate(policy.longTermCareInsurance.healthInsuranceRate)}입니다.`,
   },
   {
     title: "고용보험",
@@ -161,7 +161,7 @@ export const socialInsuranceFaqs: SocialInsuranceFaq[] = [
   {
     question: "장기요양보험료는 왜 건강보험료에 다시 곱하나요?",
     answer:
-      "장기요양보험료는 건강보험료를 기준으로 부과되는 별도 보험료입니다. 그래서 화면과 계산식 모두 건강보험료 × 13.14% 방식으로 표시합니다.",
+      "장기요양보험료는 건강보험료를 기준으로 부과되는 별도 보험료입니다. 2026년 장기요양보험료율 0.9448%를 건강보험료율 7.19%로 나눈 비율을 건강보험료에 적용하며, 환산하면 약 13.14%입니다.",
   },
   {
     question: "고용보험은 근로자와 회사가 똑같이 내나요?",

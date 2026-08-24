@@ -60,7 +60,11 @@ test("AdSenseScript는 hydration 이후 전역 연결 스크립트를 로드하�
   assert.match(source, /crossOrigin="anonymous"/);
   assert.match(source, /strategy="afterInteractive"/);
   assert.match(source, /usePathname/);
+  assert.match(source, /useEffect/);
   assert.match(source, /isAdSenseEligiblePath/);
+  assert.match(source, /id=\{ADSENSE_SCRIPT_ID\}/);
+  assert.match(source, /document\.getElementById\(ADSENSE_SCRIPT_ID\)/);
+  assert.match(source, /window\.location\.reload\(\)/);
 });
 
 test("AdSense 연결은 홈과 검수된 계산기에서만 허용한다", () => {
@@ -73,11 +77,22 @@ test("AdSense 연결은 홈과 검수된 계산기에서만 허용한다", () =>
   for (const pathname of [
     null,
     "/404/",
+    "/404.html",
     "/calculators/",
     "/calculators/not-public/",
     "/about/",
+    "/methodology/",
+    "/updates/",
     "/contact/",
     "/privacy-policy/",
+    "/terms/",
+    "/disclaimer/",
+    "/error/",
+    "/loading/",
+    "/test/",
+    "/results/",
+    "/?preview=true",
+    "/calculators/salary/?result=1",
   ]) {
     assert.equal(isAdSenseEligiblePath(pathname), false);
   }

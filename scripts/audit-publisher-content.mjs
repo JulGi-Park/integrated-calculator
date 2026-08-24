@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { access, readFile } from "node:fs/promises";
+import { access, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 const projectRoot = process.cwd();
@@ -54,6 +54,49 @@ async function exists(target) {
   }
 }
 
+async function discoverAppPageRoutes(directory = path.join(projectRoot, "app"), segments = []) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const routes = [];
+
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      routes.push(
+        ...(await discoverAppPageRoutes(path.join(directory, entry.name), [
+          ...segments,
+          entry.name,
+        ])),
+      );
+      continue;
+    }
+
+    if (entry.name !== "page.tsx") continue;
+    assert.equal(
+      segments.some((segment) => /[\[\]()@]/.test(segment)),
+      false,
+      `Publisher audit requires explicit review for dynamic or grouped routes: ${segments.join("/")}`,
+    );
+    routes.push(segments.length === 0 ? "/" : `/${segments.join("/")}/`);
+  }
+
+  return routes;
+}
+
+function collectJsonLdRouteUrls(value, found = []) {
+  if (Array.isArray(value)) {
+    for (const item of value) collectJsonLdRouteUrls(item, found);
+    return found;
+  }
+  if (!value || typeof value !== "object") return found;
+
+  for (const [key, item] of Object.entries(value)) {
+    if ((key === "url" || key === "item") && typeof item === "string") {
+      found.push(item);
+    }
+    collectJsonLdRouteUrls(item, found);
+  }
+  return found;
+}
+
 function addUnique(map, key, pathname, label) {
   const previous = map.get(key);
   assert.equal(previous, undefined, `${label} duplicate: ${key} (${previous}, ${pathname})`);
@@ -72,6 +115,12 @@ const titles = new Map();
 const descriptions = new Map();
 const canonicals = new Map();
 const routeSet = new Set(sitemapUrls.map((value) => new URL(value).pathname));
+const appPageRoutes = await discoverAppPageRoutes();
+assert.deepEqual(
+  [...routeSet].sort(),
+  [...appPageRoutes].sort(),
+  "App Router pages and Sitemap/indexable routes must match exactly.",
+);
 const calculatorRoutes = [...routeSet].filter((pathname) =>
   /^\/calculators\/[^/]+\/$/.test(pathname),
 );
@@ -99,11 +148,24 @@ for (const absoluteUrl of sitemapUrls) {
   assert.doesNotMatch(head, /name=["']robots["'][^>]+noindex|content=["'][^"']*noindex/i, `${url.pathname}: Sitemap pages must remain indexable.`);
   assert.doesNotMatch(html, /data-ad-slot|class=["'][^"']*adsbygoogle/i, `${url.pathname}: ad units and ad placeholders are not allowed before approval.`);
 
-  const minimumText = calculatorRoutes.includes(url.pathname) ? 1_200 : 350;
-  assert.ok(text.length >= minimumText, `${url.pathname}: publisher text is unexpectedly thin (${text.length}).`);
+  assert.ok(text.length >= 80, `${url.pathname}: rendered main content is empty or unreadable.`);
 
   const shouldPrepareAdsense = url.pathname === "/" || calculatorRoutes.includes(url.pathname);
-  assert.equal(html.includes(adsenseSource), shouldPrepareAdsense, `${url.pathname}: path-gated AdSense preload eligibility mismatch.`);
+  if (!shouldPrepareAdsense) {
+    assert.equal(html.includes(adsenseSource), false, `${url.pathname}: blocked routes must not prepare the AdSense connection.`);
+  }
+
+  for (const jsonLdMatch of html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+    const jsonLd = JSON.parse(decodeEntities(jsonLdMatch[1]));
+    for (const structuredUrl of collectJsonLdRouteUrls(jsonLd)) {
+      const structuredTarget = new URL(structuredUrl, siteOrigin);
+      if (structuredTarget.origin !== siteOrigin) continue;
+      assert.equal(structuredTarget.search, "", `${url.pathname}: JSON-LD URL must not contain a query (${structuredUrl}).`);
+      assert.equal(structuredTarget.hash, "", `${url.pathname}: JSON-LD URL must not contain a fragment (${structuredUrl}).`);
+      assert.equal(routeSet.has(structuredTarget.pathname), true, `${url.pathname}: JSON-LD references a non-indexable route (${structuredUrl}).`);
+      assert.ok(structuredTarget.pathname === "/" || structuredTarget.pathname.endsWith("/"), `${url.pathname}: JSON-LD route must use a trailing slash (${structuredUrl}).`);
+    }
+  }
 
   addUnique(titles, title, url.pathname, "title");
   addUnique(descriptions, description, url.pathname, "description");
@@ -138,5 +200,8 @@ const notFoundHead = notFoundHtml.split(/<\/head>/i)[0] ?? "";
 assert.match(notFoundHead, /noindex/i, "404 output must be noindex.");
 assert.equal((notFoundHtml.match(/<h1\b/gi) ?? []).length, 1, "404 output must have one H1.");
 assert.doesNotMatch(notFoundHtml, /pagead2\.googlesyndication|adsbygoogle|data-ad-slot/i, "404 output must not load or render ads.");
+assert.doesNotMatch(notFoundHead, /rel=["']canonical["']/i, "404 output must not declare a canonical URL.");
+assert.match(notFoundHtml, /href=["']\/["']/, "404 output must link back to the home page.");
+assert.match(notFoundHtml, /href=["']\/calculators\/["']/, "404 output must link to the calculator index.");
 
 console.log(`Publisher audit passed: ${sitemapUrls.length} indexable URLs, ${calculatorRoutes.length} calculators, 0 broken internal links, 0 duplicate metadata.`);

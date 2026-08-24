@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "페이지를 찾을 수 없습니다 | 계산박스",
   description: "요청한 계산박스 페이지를 찾을 수 없습니다.",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
 };
 
 export default function NotFound() {
