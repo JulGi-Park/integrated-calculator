@@ -32,6 +32,7 @@ export const metadata: Metadata = {
   },
   other: {
     "naver-site-verification": "76f6c949e0161b082d322460a1b7a9883fa21c73",
+    "p:domain_verify": "65ff6315fb9a14024c3d51a72fb9b327",
   },
 };
 
