@@ -2,7 +2,12 @@ import { rm } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-export const privateStaticRoutes = [];
+export const privateStaticRoutes = [
+  {
+    pathname: "/calculators/housing-acquisition-tax/",
+    environmentVariable: "NEXT_PUBLIC_ENABLE_HOUSING_ACQUISITION_TAX_CALCULATOR",
+  },
+];
 
 export function isStaticRouteEnabled(value) {
   return value === "true";

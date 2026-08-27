@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { access, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import { privateStaticRoutes } from "./prune-disabled-static-routes.mjs";
 
 const projectRoot = process.cwd();
 const outputRoot = path.join(projectRoot, "out");
@@ -115,7 +116,10 @@ const titles = new Map();
 const descriptions = new Map();
 const canonicals = new Map();
 const routeSet = new Set(sitemapUrls.map((value) => new URL(value).pathname));
-const appPageRoutes = await discoverAppPageRoutes();
+const privateRoutePaths = new Set(privateStaticRoutes.map((route) => route.pathname));
+const appPageRoutes = (await discoverAppPageRoutes()).filter(
+  (pathname) => !privateRoutePaths.has(pathname),
+);
 assert.deepEqual(
   [...routeSet].sort(),
   [...appPageRoutes].sort(),
