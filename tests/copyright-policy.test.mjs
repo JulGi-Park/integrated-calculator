@@ -5,7 +5,7 @@ import test from "node:test";
 test("푸터에 저작권 문구와 정책 링크, 연락처가 함께 유지된다", async () => {
   const source = await readFile("components/common/SiteFooter.tsx", "utf8");
 
-  assert.match(source, /© 2026 계산박스\. All rights reserved\./);
+  assert.match(source, /© 2026 줄기Dev\. All rights reserved\./);
   assert.match(source, /계산박스는 대한민국 상표 출원 중입니다/);
   for (const path of [
     "/about/",
@@ -34,7 +34,7 @@ test("이용약관은 저작권과 콘텐츠 이용 제한을 명확히 안내�
   for (const text of [
     "상표·저작권과 콘텐츠 이용 제한",
     "계산박스 명칭은 대한민국 상표 출원 중입니다",
-    "저작권은 계산박스 또는 정당한 권리자",
+    String.raw`저작권은 줄기Dev\(계산박스\) 또는 정당한 권리자`,
     "개인적인 참고 목적",
     "무단 복제, 배포, 전재, 재가공, 크롤링",
     "상업적으로 이용해서는 안 됩니다",

@@ -89,7 +89,7 @@ const pages = [
       "상표·저작권과 콘텐츠 이용 제한",
       "계산박스 명칭은 대한민국 상표 출원 중입니다",
       "텍스트, 계산기 구성, 화면 구성, 설명 콘텐츠",
-      "저작권은 계산박스 또는 정당한 권리자",
+      "저작권은 줄기Dev(계산박스) 또는 정당한 권리자",
       "개인적인 참고 목적",
       "무단 복제, 배포, 전재, 재가공, 크롤링",
       "상업적으로 이용해서는 안 됩니다",
@@ -194,7 +194,7 @@ test("푸터에 정책 페이지 링크와 기존 연락처가 있다", async ()
   }
   assert.match(source, /href="\/contact\/"/);
   assert.match(source, /<ContactEmail \/>/);
-  assert.match(source, /© 2026 계산박스\. All rights reserved\./);
+  assert.match(source, /© 2026 줄기Dev\. All rights reserved\./);
   assert.match(source, /계산박스는 대한민국 상표 출원 중입니다/);
   assert.match(source, /계산 결과는 참고용입니다/);
 });
