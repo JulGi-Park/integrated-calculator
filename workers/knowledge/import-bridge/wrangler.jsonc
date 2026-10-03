@@ -1,0 +1,14 @@
+{
+  "name": "gyesanbox-knowledge-preview-import-local-only",
+  "main": "index.ts",
+  "compatibility_date": "2026-10-03",
+  "workers_dev": false,
+  "preview_urls": false,
+  "services": [
+    {
+      "binding": "KNOWLEDGE_IMPORT",
+      "service": "gyesanbox-knowledge-preview",
+      "entrypoint": "KnowledgeImportEntrypoint"
+    }
+  ]
+}

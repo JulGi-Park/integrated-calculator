@@ -1,0 +1,2 @@
+TURNSTILE_SECRET=replace-with-preview-turnstile-secret
+AUTHOR_TOKEN_PEPPER=replace-with-random-preview-secret

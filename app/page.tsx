@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
+import { KnowledgeLatestQuestions } from "@/components/knowledge/KnowledgeLatestQuestions";
 
 const siteUrl = "https://gyesanbox.kr/";
 const homeTitle = "계산박스 | 기준·공식·해석을 함께 제공하는 생활 계산 서비스";
@@ -315,6 +316,10 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {process.env.NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW === "true" ? (
+        <KnowledgeLatestQuestions apiBase={process.env.NEXT_PUBLIC_KNOWLEDGE_API_BASE ?? ""} />
+      ) : null}
 
       <section className="home-calculators" aria-labelledby="home-principles-title">
         <div>

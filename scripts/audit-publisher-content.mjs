@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { access, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import { privateStaticRoutes } from "./prune-disabled-static-routes.mjs";
 
 const projectRoot = process.cwd();
 const outputRoot = path.join(projectRoot, "out");
@@ -116,9 +117,10 @@ const descriptions = new Map();
 const canonicals = new Map();
 const routeSet = new Set(sitemapUrls.map((value) => new URL(value).pathname));
 const appPageRoutes = await discoverAppPageRoutes();
+const privatePaths = new Set(privateStaticRoutes.map((route) => route.pathname));
 assert.deepEqual(
   [...routeSet].sort(),
-  [...appPageRoutes].sort(),
+  appPageRoutes.filter((route) => !privatePaths.has(route)).sort(),
   "App Router pages and Sitemap/indexable routes must match exactly.",
 );
 const calculatorRoutes = [...routeSet].filter((pathname) =>

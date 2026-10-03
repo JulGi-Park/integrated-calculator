@@ -2,7 +2,9 @@ import { rm } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-export const privateStaticRoutes = [];
+export const privateStaticRoutes = [
+  { pathname: "/knowledge/", environmentVariable: "NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW", expectedText: "계산박스 지식센터" },
+];
 
 export function isStaticRouteEnabled(value) {
   return value === "true";

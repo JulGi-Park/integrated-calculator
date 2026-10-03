@@ -331,6 +331,11 @@ async function verifyStaticOutput() {
         new RegExp(route.expectedText),
         `${route.pathname} must be exported when ${route.environmentVariable}=true.`,
       );
+      if (route.pathname === "/knowledge/") {
+        assert.match(routeHead, /rel="canonical" href="https:\/\/gyesanbox\.kr\/knowledge\/"/i);
+        assert.match(routeHead, /name="robots" content="noindex, nofollow"/i);
+        continue;
+      }
       assert.match(
         routeHead,
         /<link[^>]+rel="canonical"[^>]+href="https:\/\/gyesanbox\.kr\/calculators\/training-certificate-cost\/"|<link[^>]+href="https:\/\/gyesanbox\.kr\/calculators\/training-certificate-cost\/"[^>]+rel="canonical"/i,

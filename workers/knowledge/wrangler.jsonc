@@ -1,0 +1,29 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "gyesanbox-knowledge-preview",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-03",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    { "pattern": "knowledge-preview.gyesanbox.kr", "custom_domain": true }
+  ],
+  "observability": { "enabled": true, "head_sampling_rate": 1 },
+  "vars": {
+    "ENVIRONMENT": "preview",
+    "KNOWLEDGE_ADMIN_ENABLED": "true",
+    "KNOWLEDGE_API_HOST": "knowledge-preview.gyesanbox.kr",
+    "KNOWLEDGE_PUBLIC_ORIGIN": "https://know-02-preview.integrated-calculator.pages.dev"
+  },
+  "d1_databases": [
+    {
+      "binding": "KNOWLEDGE_DB",
+      "database_name": "gyesanbox-knowledge-preview",
+      "database_id": "a4f1f029-4a2d-4984-b155-3b2970210a38",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "ratelimits": [
+    { "name": "KNOWLEDGE_WRITE_LIMITER", "namespace_id": "30011", "simple": { "limit": 3, "period": 60 } }
+  ]
+}

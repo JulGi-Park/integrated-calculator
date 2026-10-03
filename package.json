@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && npm run prune:private-routes && npm run verify:cloudflare && npm run audit:publisher",
+    "build": "next build && npm run prune:private-routes && npm run verify:cloudflare && npm run audit:publisher && npm run routes:pages-functions",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "node --import ./tests/register-css.mjs --import tsx --test",
     "prune:private-routes": "node scripts/prune-disabled-static-routes.mjs",
+    "routes:pages-functions": "node scripts/write-pages-function-routes.mjs",
     "verify:cloudflare": "node scripts/verify-cloudflare-pages.mjs",
     "audit:publisher": "node scripts/audit-publisher-content.mjs",
     "audit:similarity": "node scripts/audit-calculator-similarity.mjs",

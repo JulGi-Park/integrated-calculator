@@ -1,0 +1,25 @@
+{
+  "name": "gyesanbox-knowledge-worker",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "check": "wrangler check",
+    "types": "wrangler types src/env.d.ts --include-runtime false --strict-vars false --env-file .dev.vars.example",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src tests",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "deploy:dry-run": "wrangler deploy --dry-run"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.8.57",
+    "@cloudflare/workers-types": "5.20260917.1",
+    "@eslint/js": "^9.39.4",
+    "eslint": "^9.39.4",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1",
+    "vitest": "^3.2.4",
+    "wrangler": "4.133.0"
+  }
+}
