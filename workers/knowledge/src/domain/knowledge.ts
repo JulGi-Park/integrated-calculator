@@ -11,6 +11,14 @@ export const knowledgeCategory = (value: unknown): KnowledgeCategory => {
 // Shared by visitor/admin APIs and the import service; no parallel validators.
 // eslint-disable-next-line no-control-regex -- preserve existing knowledge content contract.
 export const text = (value: unknown, label: string, min: number, max: number): string => { if (typeof value !== "string") throw new ApiError(400, "INVALID_INPUT", `${label} 형식이 올바르지 않습니다.`); const v = value.normalize("NFC").trim(); if (Array.from(v).length < min || Array.from(v).length > max || /[\u0000-\u001F\u007F-\u009F<>]/u.test(v)) throw new ApiError(400, "INVALID_INPUT", `${label} 형식이 올바르지 않습니다.`); return v; };
+export const passwordInput = (value: unknown): string => {
+  // Passwords are credentials, not display text. Never trim or normalize before hashing/comparison.
+  // eslint-disable-next-line no-control-regex -- keep the existing control-character/input restrictions.
+  if (typeof value !== "string" || Array.from(value).length < 4 || Array.from(value).length > 128 || !/\S/u.test(value) || /[\u0000-\u001F\u007F-\u009F<>]/u.test(value)) {
+    throw new ApiError(400, "INVALID_INPUT", "질문 비밀번호 형식이 올바르지 않습니다.");
+  }
+  return value;
+};
 const b64 = (bytes: Uint8Array) => btoa(String.fromCharCode(...bytes)).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/u, "");
 const unb64 = (value: string) => Uint8Array.from(atob(value.replaceAll("-", "+").replaceAll("_", "/") + "===".slice((value.length + 3) % 4)), c => c.charCodeAt(0));
 export const hashPassword = async (password: string): Promise<string> => { const salt = crypto.getRandomValues(new Uint8Array(16)); const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]); const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" }, key, 256); return `v1$pbkdf2-sha256$100000$${b64(salt)}$${b64(new Uint8Array(bits))}`; };

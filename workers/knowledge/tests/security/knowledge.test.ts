@@ -3,6 +3,7 @@ import catalogMigration from "../../migrations/0002_service_catalog.sql?raw";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { applyD1Migrations, env } from "cloudflare:test";
 import { route } from "../../src/router";
+import { hashPassword, passwordInput, verifyPassword } from "../../src/domain/knowledge";
 import { buildVisitorQuestionCreatePayload } from "../../../../lib/knowledge/visitor-contract";
 
 
@@ -20,6 +21,73 @@ const json = async (r: Awaited<ReturnType<typeof admin>>) => r.response.json() a
 describe("knowledge center schema and admin API", () => {
   beforeAll(async () => { vi.stubGlobal("fetch", async () => new Response(JSON.stringify({ success: true, hostname: "test.integrated-calculator.pages.dev" }), { status: 200, headers: { "Content-Type": "application/json" } })); await applyD1Migrations(env.KNOWLEDGE_DB, migrations); });
   afterAll(() => vi.unstubAllGlobals());
+  it("compares exact password characters without whitespace or Unicode normalization", async () => {
+    const password = " café-current-password ";
+    const hash = await hashPassword(passwordInput(password));
+    expect(await verifyPassword(passwordInput(password), hash)).toBe(true);
+    expect(await verifyPassword(passwordInput(password.trim()), hash)).toBe(false);
+    expect(await verifyPassword(passwordInput(password.normalize("NFD")), hash)).toBe(false);
+    expect(() => passwordInput("")).toThrow();
+    expect(() => passwordInput("    ")).toThrow();
+  });
+  it("authenticates the current visitor password before editing and leaves every question field and relation unchanged on rejection", async () => {
+    const created = await admin("POST", "/api/knowledge/v1/questions", { title: "수정 보안 fixture", body: "변경 전 질문", category: "금융", isAnonymous: false, nickname: "작성자", password: "original-password", serviceIds: [LABOR], turnstile_token: "test-token" });
+    const id = (await json(created)).data.id as string;
+    const path = `/api/knowledge/v1/questions/${id}`;
+    const snapshot = async () => ({
+      question: await env.KNOWLEDGE_DB.prepare("SELECT * FROM knowledge_questions WHERE id=?1").bind(id).first(),
+      services: (await env.KNOWLEDGE_DB.prepare("SELECT * FROM knowledge_question_services WHERE question_id=?1 ORDER BY service_id").bind(id).all()).results,
+      audit: (await env.KNOWLEDGE_DB.prepare("SELECT * FROM knowledge_audit_actions WHERE question_id=?1 ORDER BY id").bind(id).all()).results,
+      answers: (await env.KNOWLEDGE_DB.prepare("SELECT * FROM knowledge_answers WHERE question_id=?1").bind(id).all()).results,
+    });
+    const before = await snapshot();
+    const patch = { title: "공격자가 바꾼 제목", body: "공격자가 바꾼 내용", nickname: "다른작성자", password: "wrong-password", turnstile_token: "test-token" };
+    await expect(admin("POST", `${path}/verify-password`, { password: "wrong-password", turnstile_token: "test-token" })).rejects.toMatchObject({ status: 403, code: "FORBIDDEN" });
+    await expect(admin("PATCH", path, patch)).rejects.toMatchObject({ status: 403, code: "FORBIDDEN" });
+    expect(await snapshot()).toEqual(before);
+    await expect(admin("PATCH", path, { ...patch, password: "original-password " })).rejects.toMatchObject({ status: 403, code: "FORBIDDEN" });
+    expect(await snapshot()).toEqual(before);
+    for (const password of ["", "   "]) {
+      await expect(admin("PATCH", path, { ...patch, password })).rejects.toMatchObject({ status: 400, code: "INVALID_INPUT" });
+      expect(await snapshot()).toEqual(before);
+    }
+    await expect(admin("PATCH", `/api/knowledge/v1/questions/${crypto.randomUUID()}`, { ...patch, password: "original-password" })).rejects.toMatchObject({ status: 404 });
+    const verified = await admin("POST", `${path}/verify-password`, { password: "original-password", turnstile_token: "test-token" });
+    expect(await verified.response.clone().json()).toMatchObject({ data: { verified: true } });
+    expect(await verified.response.text()).not.toMatch(/original-password|password_hash|pbkdf2/);
+    expect(await snapshot()).toEqual(before);
+    const saved = await admin("PATCH", path, { ...patch, password: "original-password" });
+    expect(saved.response.status).toBe(200);
+    const after = await snapshot();
+    expect(after.question).toMatchObject({ title: patch.title, body: patch.body, password_hash: before.question!.password_hash });
+    expect(after.services).toEqual(before.services);
+    expect(after.audit).toEqual(before.audit);
+    await admin("POST", `/api/knowledge/v1/admin/questions/${id}/answer`, { body: "공식답변 잠금" });
+    const answered = await snapshot();
+    for (const password of ["original-password", "wrong-password"]) {
+      await expect(admin("PATCH", path, { ...patch, password })).rejects.toMatchObject({ status: 409, code: "INVALID_STATE" });
+      await expect(admin("POST", `${path}/verify-password`, { password, turnstile_token: "test-token" })).rejects.toMatchObject({ status: 409, code: "INVALID_STATE" });
+      expect(await snapshot()).toEqual(answered);
+    }
+  });
+  it("keeps Turnstile mandatory for password verification and rechecks concurrent answer/password changes at UPDATE", async () => {
+    const id = (await json(await admin("POST", "/api/knowledge/v1/admin/questions", { title: "동시 수정 보안", body: "원문 유지", category: "금융", password: "original-password", serviceIds: [LABOR] }))).data.id as string;
+    const path = `/api/knowledge/v1/questions/${id}`;
+    const input = { password: "original-password", turnstile_token: "test-token", body: "변경 시도" };
+    await expect(admin("POST", `${path}/verify-password`, { password: input.password })).rejects.toMatchObject({ code: "TURNSTILE_REQUIRED" });
+    const previousFetch = globalThis.fetch;
+    try {
+      vi.stubGlobal("fetch", async () => new Response(JSON.stringify({ success: false }), { status: 200 }));
+      await expect(admin("PATCH", path, input)).rejects.toMatchObject({ code: "TURNSTILE_FAILED" });
+      expect(await env.KNOWLEDGE_DB.prepare("SELECT body FROM knowledge_questions WHERE id=?1").bind(id).first()).toMatchObject({ body: "원문 유지" });
+      vi.stubGlobal("fetch", async () => {
+        await env.KNOWLEDGE_DB.prepare("UPDATE knowledge_questions SET password_hash='changed-by-admin' WHERE id=?1").bind(id).run();
+        return new Response(JSON.stringify({ success: true, hostname: "test.integrated-calculator.pages.dev" }));
+      });
+      await expect(admin("PATCH", path, input)).rejects.toMatchObject({ status: 409 });
+      expect(await env.KNOWLEDGE_DB.prepare("SELECT body,password_hash FROM knowledge_questions WHERE id=?1").bind(id).first()).toMatchObject({ body: "원문 유지", password_hash: "changed-by-admin" });
+    } finally { vi.stubGlobal("fetch", previousFetch); }
+  });
   it("supports admin_seed, official answer lifecycle, and public redaction", async () => {
     const created = await admin("POST", "/api/knowledge/v1/admin/questions", { category: "근로·고용", body: "관리자 시드 질문", password: "temporary-pass", serviceIds: [LABOR] });
     expect(created.response.status).toBe(201);

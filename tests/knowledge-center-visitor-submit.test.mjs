@@ -18,7 +18,7 @@ Object.defineProperties(globalThis, {
   IS_REACT_ACT_ENVIRONMENT: { value: true, configurable: true, writable: true },
 });
 
-const { act, cleanup, render, screen, waitFor } = await import("@testing-library/react");
+const { act, cleanup, render, screen, waitFor, within } = await import("@testing-library/react");
 const userEvent = (await import("@testing-library/user-event")).default;
 const React = await import("react");
 const { KnowledgeCenter } = await import("../components/knowledge/KnowledgeCenter.tsx");
@@ -50,6 +50,7 @@ afterEach(() => {
   cleanup();
   delete window.turnstile;
   delete globalThis.fetch;
+  delete window.matchMedia;
 });
 
 function jsonResponse(status, payload) {
@@ -242,6 +243,121 @@ function installPaginatedApi() {
 function questionRow(number) {
   return screen.getAllByRole("button").find((button) => button.querySelector("strong")?.textContent === `질문 ${number}`);
 }
+
+test("edit begins with password verification and never prefills the new-question composer", async () => {
+  const user = userEvent.setup();
+  installPaginatedApi();
+  render(React.createElement(KnowledgeCenter, { apiBase }));
+  await screen.findByText("질문 1", { selector: "strong" });
+  await user.click(questionRow(1));
+  await screen.findByTestId("desktop-question-detail");
+  await user.click(screen.getAllByRole("button", { name: "질문 수정" })[1]);
+  assert.equal(screen.getByLabelText("제목").value, "");
+  assert.equal(screen.getByLabelText("질문 내용").value, "");
+  assert.ok(screen.getByLabelText("현재 비밀번호"));
+  assert.equal(screen.queryByLabelText("수정 제목"), null);
+});
+
+function installEditApi({ answered = false } = {}) {
+  const question = { ...paginatedQuestions(1)[0], answer: answered ? { id: "answer-1", body: "공식답변" } : null };
+  const mutations = [];
+  globalThis.fetch = async (input, init = {}) => {
+    const url = String(input);
+    if (url.endsWith("/services")) return jsonResponse(200, { ok: true, data: { items: [] } });
+    if (url.includes("/questions?")) return jsonResponse(200, { ok: true, data: { items: [question], page: 1, total: 1, total_pages: 1 } });
+    if (init.method === "POST" || init.method === "PATCH") {
+      const body = JSON.parse(init.body);
+      mutations.push({ url, method: init.method, body });
+      if (question.answer) return jsonResponse(409, { ok: false, error: { message: "공식답변이 등록되어 수정할 수 없습니다." } });
+      if (body.password !== "current-password") return jsonResponse(403, { ok: false, error: { message: "비밀번호가 일치하지 않습니다." } });
+      if (url.endsWith("/verify-password")) return jsonResponse(200, { ok: true, data: { verified: true } });
+      assert.equal(init.method, "PATCH");
+      Object.assign(question, { title: body.title, body: body.body });
+      return jsonResponse(200, { ok: true, data: { id: question.id } });
+    }
+    if (url.endsWith(`/questions/${question.id}`)) return jsonResponse(200, { ok: true, data: { question } });
+    throw new Error(`Unexpected request: ${url}`);
+  };
+  return { question, mutations };
+}
+
+test("wrong password never opens edit fields; verified inline editing PATCHes the same ID with the current password", async () => {
+  const user = userEvent.setup();
+  const { question, mutations } = installEditApi();
+  render(React.createElement(KnowledgeCenter, { apiBase }));
+  await screen.findByText(question.title, { selector: "strong" });
+  await user.type(screen.getByLabelText("제목"), "작성 중인 새 질문");
+  await user.click(questionRow(1));
+  const detail = await screen.findByTestId("desktop-question-detail");
+  await user.click(within(detail).getByRole("button", { name: "질문 수정" }));
+  const editor = screen.getByTestId("question-editor");
+  assert.ok(detail.contains(editor));
+  assert.equal(screen.queryByLabelText("수정 제목"), null);
+  await user.type(within(editor).getByLabelText("현재 비밀번호"), "wrong-password");
+  await act(async () => turnstileCallback("test-only-token"));
+  await user.click(within(editor).getByRole("button", { name: "비밀번호 확인" }));
+  await within(editor).findByRole("alert");
+  assert.match(editor.textContent, /비밀번호가 일치하지 않습니다/);
+  assert.equal(screen.queryByLabelText("수정 질문 내용"), null);
+  assert.equal(mutations.filter(request => request.method === "PATCH").length, 0);
+  assert.equal(screen.getByLabelText("제목").value, "작성 중인 새 질문");
+  await user.clear(within(editor).getByLabelText("현재 비밀번호"));
+  await user.type(within(editor).getByLabelText("현재 비밀번호"), "current-password");
+  await act(async () => turnstileCallback("fresh-auth-token"));
+  await user.click(within(editor).getByRole("button", { name: "비밀번호 확인" }));
+  await within(editor).findByLabelText("수정 제목");
+  assert.equal(within(editor).queryByLabelText("현재 비밀번호"), null);
+  assert.equal(within(editor).getByLabelText("수정 질문 내용").value, question.body);
+  await user.clear(within(editor).getByLabelText("수정 제목"));
+  await user.type(within(editor).getByLabelText("수정 제목"), "인증 후 수정 제목");
+  await act(async () => turnstileCallback("fresh-save-token"));
+  await user.click(within(editor).getByRole("button", { name: "수정 저장" }));
+  await waitFor(() => assert.equal(screen.queryByTestId("question-editor"), null));
+  assert.ok(screen.getAllByRole("heading", { name: "인증 후 수정 제목" }).length);
+  assert.equal(screen.getByLabelText("제목").value, "작성 중인 새 질문");
+  assert.equal(screen.getByRole("status").textContent, "질문이 수정되었습니다.");
+  const patched = mutations.find(request => request.method === "PATCH");
+  assert.equal(patched.url, `${apiBase}/questions/${question.id}`);
+  assert.equal(patched.body.password, "current-password");
+  assert.equal(patched.body.turnstile_token, "fresh-save-token");
+  assert.equal(mutations.some(request => request.url === `${apiBase}/questions`), false);
+});
+
+test("mobile editor stays inside the selected question and cancel never changes the original or composer", async () => {
+  window.matchMedia = () => ({ matches: true, addEventListener() {}, removeEventListener() {} });
+  const user = userEvent.setup();
+  const { question, mutations } = installEditApi();
+  const original = question.body;
+  render(React.createElement(KnowledgeCenter, { apiBase }));
+  await screen.findByText(question.title, { selector: "strong" });
+  await user.click(questionRow(1));
+  const detail = await screen.findByTestId("inline-question-detail");
+  await user.click(within(detail).getByRole("button", { name: "질문 수정" }));
+  const editor = screen.getByTestId("question-editor");
+  assert.ok(detail.contains(editor));
+  assert.equal(screen.getAllByTestId("question-editor").length, 1);
+  await user.type(within(editor).getByLabelText("현재 비밀번호"), "current-password");
+  await act(async () => turnstileCallback("test-only-token"));
+  await user.click(within(editor).getByRole("button", { name: "비밀번호 확인" }));
+  await within(editor).findByLabelText("수정 질문 내용");
+  await user.type(within(editor).getByLabelText("수정 질문 내용"), "취소할 변경");
+  await user.click(within(editor).getByRole("button", { name: "취소" }));
+  assert.equal(screen.queryByTestId("question-editor"), null);
+  assert.equal(question.body, original);
+  assert.equal(screen.getByLabelText("질문 내용").value, "");
+  assert.equal(mutations.filter(request => request.method === "PATCH").length, 0);
+});
+
+test("answered questions have no edit entry point", async () => {
+  const user = userEvent.setup();
+  const { question } = installEditApi({ answered: true });
+  render(React.createElement(KnowledgeCenter, { apiBase }));
+  await screen.findByText(question.title, { selector: "strong" });
+  await user.click(questionRow(1));
+  await screen.findByTestId("desktop-question-detail");
+  assert.equal(screen.queryByRole("button", { name: "질문 수정" }), null);
+  assert.equal(screen.queryByTestId("question-editor"), null);
+});
 
 test("selected question detail is inserted directly below its list item and moves with a new selection", async () => {
   const user = userEvent.setup();
