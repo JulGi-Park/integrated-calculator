@@ -14,7 +14,7 @@ export function KnowledgeQuestionEditor({ question, sitekey, call, onSaved, onCa
   onCancel: () => void;
 }) {
   const [password, setPassword] = useState("");
-  const [authenticated, setAuthenticated] = useState(false);
+  const [mode, setMode] = useState<"password" | "edit">("password");
   const [form, setForm] = useState({ title: "", body: "", nickname: "" });
   const [token, setToken] = useState("");
   const [busy, setBusy] = useState(false);
@@ -51,12 +51,12 @@ export function KnowledgeQuestionEditor({ question, sitekey, call, onSaved, onCa
     setBusy(true); setError("");
     try {
       if (!token) throw new Error("사람인지 확인을 완료해 주세요.");
-      if (!authenticated) {
+      if (mode === "password") {
         const result = await call<{ verified: boolean }>(`/questions/${question.id}/verify-password`, { method: "POST", body: JSON.stringify({ password, turnstile_token: token }) });
         if (!result.verified) throw new Error("비밀번호가 일치하지 않습니다.");
         if (!active.current) return;
         setForm({ title: question.title, body: question.body, nickname: question.nickname || "" });
-        setAuthenticated(true);
+        setMode("edit");
       } else {
         // The current password is checked again on PATCH; it is never a replacement password.
         await call(`/questions/${question.id}`, { method: "PATCH", body: JSON.stringify({ ...form, password, turnstile_token: token }) });
@@ -69,17 +69,17 @@ export function KnowledgeQuestionEditor({ question, sitekey, call, onSaved, onCa
     }
   };
 
-  return <section className={styles.inlineEditor} aria-label={authenticated ? "질문 수정폼" : "비밀번호 확인"} data-testid="question-editor">
-    <h3>{authenticated ? "질문 수정" : "비밀번호 확인"}</h3>
+  return <section className={styles.inlineEditor} aria-label={mode === "edit" ? "질문 수정폼" : "비밀번호 확인"} data-testid="question-editor">
+    <h3>{mode === "edit" ? "질문 수정" : "비밀번호 확인"}</h3>
     {error ? <p role="alert" className={styles.error}>{error}</p> : null}
     <form onSubmit={submit}>
-      {!authenticated ? <label>현재 비밀번호<input type="password" autoComplete="current-password" value={password} onChange={event => setPassword(event.target.value)} minLength={4} maxLength={128} required /></label> : <>
+      {mode === "password" ? <label>현재 비밀번호<input type="password" autoComplete="current-password" value={password} onChange={event => setPassword(event.target.value)} minLength={4} maxLength={128} required /></label> : <>
         <label>수정 제목<input value={form.title} onChange={event => setForm({ ...form, title: event.target.value })} maxLength={120} required /></label>
         {!question.isAnonymous ? <label>수정 닉네임<input value={form.nickname} onChange={event => setForm({ ...form, nickname: event.target.value })} minLength={2} maxLength={40} required /></label> : null}
         <label>수정 질문 내용<textarea value={form.body} onChange={event => setForm({ ...form, body: event.target.value })} maxLength={4000} required /></label>
       </>}
       <div ref={widgetRef} className={styles.turnstile} />
-      <div className={styles.editorActions}><button className={styles.primary} type="submit" disabled={busy}>{busy ? "확인 중..." : authenticated ? "수정 저장" : "비밀번호 확인"}</button><button type="button" onClick={onCancel} disabled={busy}>취소</button></div>
+      <div className={styles.editorActions}><button className={styles.primary} type="submit" disabled={busy}>{busy ? "확인 중..." : mode === "edit" ? "수정 저장" : "비밀번호 확인"}</button><button type="button" onClick={onCancel} disabled={busy}>취소</button></div>
     </form>
   </section>;
 }

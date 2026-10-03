@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { KnowledgeQuestionEditor } from "./KnowledgeQuestionEditor";
 import { buildVisitorQuestionCreatePayload } from "../../lib/knowledge/visitor-contract";
 import { KNOWLEDGE_CATEGORIES } from "../../lib/knowledge/categories";
@@ -12,14 +12,10 @@ type Answer = { id: string; body: string; created_at: string; updated_at: string
 type Question = { id: string; title: string; body: string; category: string | null; isAnonymous: boolean; nickname: string | null; status: string; createdAt: string; updatedAt: string; answer: Answer; relatedServices: Service[] };
 type Envelope<T> = { ok: boolean; data?: T; error?: { message?: string } };
 const TURNSTILE_SITEKEY = "0x4AAAAAAE59wsbNGbwWKWMC";
-const mobileQuery = "(max-width: 760px)";
-const subscribeViewport = (callback: () => void) => {
-  const media = typeof window.matchMedia === "function" ? window.matchMedia(mobileQuery) : null;
-  media?.addEventListener("change", callback);
-  return () => media?.removeEventListener("change", callback);
-};
-const mobileSnapshot = () => typeof window.matchMedia === "function" && window.matchMedia(mobileQuery).matches;
-const serverSnapshot = () => false;
+const isMobileViewport = () => typeof window.matchMedia === "function"
+  ? window.matchMedia("(max-width: 760px)").matches
+  : window.innerWidth <= 760;
+type EditSession = { questionId: string; placement: "inline" | "desktop" };
 
 const date = (value: string) => new Intl.DateTimeFormat("ko-KR", { dateStyle: "medium" }).format(new Date(value));
 
@@ -48,8 +44,9 @@ export function KnowledgeCenter({ apiBase }: { apiBase: string }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const [editing, setEditing] = useState(false);
-  const mobile = useSyncExternalStore(subscribeViewport, mobileSnapshot, serverSnapshot);
+  // The edit session is bound to both its record and the responsive detail
+  // surface selected at click time. The create form below remains independent.
+  const [editSession, setEditSession] = useState<EditSession | null>(null);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const widgetRef = useRef<HTMLDivElement>(null);
@@ -69,7 +66,7 @@ export function KnowledgeCenter({ apiBase }: { apiBase: string }) {
 
   const loadServices = useCallback(async () => setServices((await call<{ items: Service[] }>("/services")).items), [call]);
   const loadList = useCallback(async (nextPage = 1, nextQuery = queryRef.current, nextCategory = categoryRef.current) => {
-    if (nextPage !== currentPageRef.current) { setSelected(null); setEditing(false); }
+    if (nextPage !== currentPageRef.current) { setSelected(null); setEditSession(null); }
     setLoading(true); setError("");
     try {
       const params = new URLSearchParams({ limit: "10", page: String(nextPage) });
@@ -92,22 +89,27 @@ export function KnowledgeCenter({ apiBase }: { apiBase: string }) {
 
   const resetToken = () => { const w = window as Window & { turnstile?: { reset: (id?: unknown) => void } }; if (w.turnstile) w.turnstile.reset(widgetId.current || undefined); setTurnstileToken(""); };
   const toggleService = (id: string) => setForm((value) => ({ ...value, serviceIds: value.serviceIds.includes(id) ? value.serviceIds.filter((item) => item !== id) : [...value.serviceIds, id] }));
-  const openQuestion = useCallback(async (id: string, preserveNotice = false) => { try { const detail = await call<{ question: Question }>(`/questions/${id}`); setSelected(detail.question); setEditing(false); setError(""); if (!preserveNotice) setNotice(""); return true; } catch (cause) { setError(cause instanceof Error ? cause.message : "질문을 불러오지 못했습니다."); return false; } }, [call]);
+  const openQuestion = useCallback(async (id: string, preserveNotice = false) => { try { const detail = await call<{ question: Question }>(`/questions/${id}`); setSelected(detail.question); setEditSession(null); setError(""); if (!preserveNotice) setNotice(""); return true; } catch (cause) { setError(cause instanceof Error ? cause.message : "질문을 불러오지 못했습니다."); return false; } }, [call]);
   const toggleQuestion = (id: string) => {
     if (selected?.id === id) {
       setSelected(null);
-      setEditing(false);
+      setEditSession(null);
       setError("");
       setNotice("");
       return;
     }
     setSelected(null);
-    setEditing(false);
+    setEditSession(null);
     void openQuestion(id);
   };
   // eslint-disable-next-line react-hooks/set-state-in-effect -- query-string deep links select the requested question after mount.
   useEffect(() => { if (!apiBase || typeof window === "undefined") return; const id = new URLSearchParams(window.location.search).get("id"); if (id) void openQuestion(id); }, [apiBase, openQuestion]);
-  const startEdit = () => { if (!selected || selected.answer) return; setEditing(true); setNotice(""); };
+  const startEdit = (questionId: string) => {
+    if (!selected || selected.id !== questionId || selected.answer) return;
+    setEditSession({ questionId, placement: isMobileViewport() ? "inline" : "desktop" });
+    setNotice("");
+    setError("");
+  };
   const submit = async (event: React.FormEvent) => { event.preventDefault(); if (submitting) return; setSubmitting(true); setNotice(""); setError(""); try { if (!turnstileToken) throw new Error("사람인지 확인을 완료해 주세요."); const result = await call<{ id: string }>("/questions", { method: "POST", body: JSON.stringify(buildVisitorQuestionCreatePayload(form, turnstileToken)) }); await loadList(1); await openQuestion(result.id, true); setForm({ title: "", category: "", website: "", anonymous: true, nickname: "", password: "", body: "", serviceIds: [] }); setNotice("질문이 등록되었습니다."); } catch (cause) { setError(cause instanceof Error ? cause.message : "저장하지 못했습니다."); } finally { resetToken(); setSubmitting(false); } };
 
   const submitSearch = (event: React.FormEvent) => {
@@ -117,7 +119,7 @@ export function KnowledgeCenter({ apiBase }: { apiBase: string }) {
     setQuery(nextQuery);
     queryRef.current = nextQuery;
     setSelected(null);
-    setEditing(false);
+    setEditSession(null);
     setNotice("");
     void loadList(1, nextQuery, categoryRef.current);
   };
@@ -126,7 +128,7 @@ export function KnowledgeCenter({ apiBase }: { apiBase: string }) {
     setQuery("");
     queryRef.current = "";
     setSelected(null);
-    setEditing(false);
+    setEditSession(null);
     setNotice("");
     void loadList(1, "", categoryRef.current);
   };
@@ -134,17 +136,17 @@ export function KnowledgeCenter({ apiBase }: { apiBase: string }) {
     setCategory(nextCategory);
     categoryRef.current = nextCategory;
     setSelected(null);
-    setEditing(false);
+    setEditSession(null);
     setNotice("");
     void loadList(1, queryRef.current, nextCategory);
   };
 
   const selectedServices = useMemo(() => selected?.relatedServices || [], [selected]);
   const renderQuestionDetail = (className: string, testId: string) => selected ? <div className={`${styles.detail} ${className}`} data-testid={testId} role="region" aria-label={`질문 상세: ${selected.title}`}>
-    <div className={styles.detailHead}><div><p className={styles.eyebrow}>{selected.isAnonymous ? "익명" : selected.nickname}</p><h2>{selected.title}</h2><time>{date(selected.createdAt)}</time>{selected.category ? <p>{selected.category}</p> : null}</div>{!selected.answer ? <><span className={styles.editable}>답변 전 수정 가능</span><button type="button" onClick={startEdit}>질문 수정</button></> : <span className={styles.locked}>공식답변 후 수정 잠금</span>}</div>
+    <div className={styles.detailHead}><div><p className={styles.eyebrow}>{selected.isAnonymous ? "익명" : selected.nickname}</p><h2>{selected.title}</h2><time>{date(selected.createdAt)}</time>{selected.category ? <p>{selected.category}</p> : null}</div>{!selected.answer ? <><span className={styles.editable}>답변 전 수정 가능</span><button type="button" onClick={() => startEdit(selected.id)}>질문 수정</button></> : <span className={styles.locked}>공식답변 후 수정 잠금</span>}</div>
     <p className={styles.body}>{selected.body}</p><div className={styles.services}>{selectedServices.map((service) => <a key={service.id} href={`/calculators/${service.slug}/`}>{service.name}</a>)}</div>
     <section className={styles.answer}><h3>계산박스 공식답변</h3>{selected.answer ? <p className={styles.body}>{selected.answer.body}</p> : <p>아직 공식답변이 없습니다. 답변 대기 중입니다.</p>}</section>
-    {editing && !selected.answer && (mobile ? testId === "inline-question-detail" : testId === "desktop-question-detail") ? <KnowledgeQuestionEditor key={selected.id} question={selected} sitekey={TURNSTILE_SITEKEY} call={call} onCancel={() => setEditing(false)} onSaved={async () => { const id = selected.id; setEditing(false); if (await openQuestion(id, true)) { await loadList(page); setNotice("질문이 수정되었습니다."); } }} /> : null}
+    {editSession?.questionId === selected.id && !selected.answer && ((editSession.placement === "inline" && testId === "inline-question-detail") || (editSession.placement === "desktop" && testId === "desktop-question-detail")) ? <KnowledgeQuestionEditor key={editSession.questionId} question={selected} sitekey={TURNSTILE_SITEKEY} call={call} onCancel={() => setEditSession(null)} onSaved={async () => { const id = editSession.questionId; if (selected.id !== id) return; setEditSession(null); if (await openQuestion(id, true)) { await loadList(page); setNotice("질문이 수정되었습니다."); } }} /> : null}
   </div> : null;
   if (!apiBase) return <section className={styles.shell}><p className={styles.error}>Preview에서만 제공되는 지식센터입니다.</p></section>;
   return <main className={styles.shell} aria-labelledby="knowledge-title">

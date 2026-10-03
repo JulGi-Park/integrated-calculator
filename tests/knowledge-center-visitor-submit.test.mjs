@@ -258,13 +258,13 @@ test("edit begins with password verification and never prefills the new-question
   assert.equal(screen.queryByLabelText("수정 제목"), null);
 });
 
-function installEditApi({ answered = false } = {}) {
+function installEditApi({ answered = false, totalPages = 1 } = {}) {
   const question = { ...paginatedQuestions(1)[0], answer: answered ? { id: "answer-1", body: "공식답변" } : null };
   const mutations = [];
   globalThis.fetch = async (input, init = {}) => {
     const url = String(input);
     if (url.endsWith("/services")) return jsonResponse(200, { ok: true, data: { items: [] } });
-    if (url.includes("/questions?")) return jsonResponse(200, { ok: true, data: { items: [question], page: 1, total: 1, total_pages: 1 } });
+    if (url.includes("/questions?")) return jsonResponse(200, { ok: true, data: { items: [question], page: 1, total: totalPages, total_pages: totalPages } });
     if (init.method === "POST" || init.method === "PATCH") {
       const body = JSON.parse(init.body);
       mutations.push({ url, method: init.method, body });
@@ -283,7 +283,7 @@ function installEditApi({ answered = false } = {}) {
 
 test("wrong password never opens edit fields; verified inline editing PATCHes the same ID with the current password", async () => {
   const user = userEvent.setup();
-  const { question, mutations } = installEditApi();
+  const { question, mutations } = installEditApi({ totalPages: 21 });
   render(React.createElement(KnowledgeCenter, { apiBase }));
   await screen.findByText(question.title, { selector: "strong" });
   await user.type(screen.getByLabelText("제목"), "작성 중인 새 질문");
@@ -300,6 +300,8 @@ test("wrong password never opens edit fields; verified inline editing PATCHes th
   assert.match(editor.textContent, /비밀번호가 일치하지 않습니다/);
   assert.equal(screen.queryByLabelText("수정 질문 내용"), null);
   assert.equal(mutations.filter(request => request.method === "PATCH").length, 0);
+  assert.equal(question.title, "질문 1");
+  assert.equal(question.body, "질문 본문 1");
   assert.equal(screen.getByLabelText("제목").value, "작성 중인 새 질문");
   await user.clear(within(editor).getByLabelText("현재 비밀번호"));
   await user.type(within(editor).getByLabelText("현재 비밀번호"), "current-password");
@@ -326,7 +328,7 @@ test("wrong password never opens edit fields; verified inline editing PATCHes th
 test("mobile editor stays inside the selected question and cancel never changes the original or composer", async () => {
   window.matchMedia = () => ({ matches: true, addEventListener() {}, removeEventListener() {} });
   const user = userEvent.setup();
-  const { question, mutations } = installEditApi();
+  const { question, mutations } = installEditApi({ totalPages: 21 });
   const original = question.body;
   render(React.createElement(KnowledgeCenter, { apiBase }));
   await screen.findByText(question.title, { selector: "strong" });
@@ -335,6 +337,9 @@ test("mobile editor stays inside the selected question and cancel never changes 
   await user.click(within(detail).getByRole("button", { name: "질문 수정" }));
   const editor = screen.getByTestId("question-editor");
   assert.ok(detail.contains(editor));
+  const selectedItem = questionRow(1).parentElement;
+  assert.ok(selectedItem.contains(editor));
+  assert.ok(selectedItem.compareDocumentPosition(screen.getByTestId("mobile-pagination")) & Node.DOCUMENT_POSITION_FOLLOWING);
   assert.equal(screen.getAllByTestId("question-editor").length, 1);
   await user.type(within(editor).getByLabelText("현재 비밀번호"), "current-password");
   await act(async () => turnstileCallback("test-only-token"));
@@ -346,6 +351,32 @@ test("mobile editor stays inside the selected question and cancel never changes 
   assert.equal(question.body, original);
   assert.equal(screen.getByLabelText("질문 내용").value, "");
   assert.equal(mutations.filter(request => request.method === "PATCH").length, 0);
+});
+
+test("mobile edit placement uses the viewport at the tap, not a stale responsive snapshot", async () => {
+  let narrowViewport = false;
+  window.matchMedia = () => ({ matches: narrowViewport, addEventListener() {}, removeEventListener() {} });
+  const user = userEvent.setup();
+  const { question } = installEditApi({ totalPages: 21 });
+  render(React.createElement(KnowledgeCenter, { apiBase }));
+  await screen.findByText(question.title, { selector: "strong" });
+  await user.click(questionRow(1));
+  const inlineDetail = await screen.findByTestId("inline-question-detail");
+
+  // Model a phone whose layout viewport changed without a matchMedia change
+  // event reaching the component before the user taps the edit control.
+  narrowViewport = true;
+  await user.click(within(inlineDetail).getByRole("button", { name: "질문 수정" }));
+
+  const editor = screen.getByTestId("question-editor");
+  assert.ok(inlineDetail.contains(editor));
+  assert.ok(questionRow(1).parentElement.contains(editor));
+  assert.ok(questionRow(1).parentElement.compareDocumentPosition(screen.getByTestId("mobile-pagination")) & Node.DOCUMENT_POSITION_FOLLOWING);
+  assert.equal(screen.getAllByTestId("question-editor").length, 1);
+  assert.equal(screen.queryByLabelText("수정 제목"), null);
+  assert.equal(screen.queryByLabelText("수정 질문 내용"), null);
+  assert.equal(screen.getByLabelText("제목").value, "");
+  assert.equal(screen.getByLabelText("질문 내용").value, "");
 });
 
 test("answered questions have no edit entry point", async () => {
