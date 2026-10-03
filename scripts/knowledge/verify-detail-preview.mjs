@@ -6,7 +6,7 @@ const previewOrigin = process.argv[2] ?? "https://know-02-preview.integrated-cal
 const origin = new URL(previewOrigin);
 assert.equal(origin.protocol, "https:");
 assert.match(origin.hostname, /^[a-z0-9-]+\.integrated-calculator\.pages\.dev$/u);
-const apiBase = "https://community-preview.gyesanbox.kr/api/knowledge/v1";
+const apiBase = process.env.KNOWLEDGE_API_BASE ?? "https://knowledge-preview.gyesanbox.kr/api/knowledge/v1";
 async function getJson(url) {
   const response = await fetch(url, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(15000) });
   assert.equal(response.status, 200, `API ${response.status}: ${url}`);
