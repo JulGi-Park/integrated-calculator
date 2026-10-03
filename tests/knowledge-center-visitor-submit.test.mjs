@@ -51,6 +51,7 @@ afterEach(() => {
   delete window.turnstile;
   delete globalThis.fetch;
   delete window.matchMedia;
+  delete window.confirm;
 });
 
 function jsonResponse(status, payload) {
@@ -261,10 +262,19 @@ test("edit begins with password verification and never prefills the new-question
 function installEditApi({ answered = false, totalPages = 1 } = {}) {
   const question = { ...paginatedQuestions(1)[0], answer: answered ? { id: "answer-1", body: "공식답변" } : null };
   const mutations = [];
+  let deleted = false;
   globalThis.fetch = async (input, init = {}) => {
     const url = String(input);
     if (url.endsWith("/services")) return jsonResponse(200, { ok: true, data: { items: [] } });
-    if (url.includes("/questions?")) return jsonResponse(200, { ok: true, data: { items: [question], page: 1, total: totalPages, total_pages: totalPages } });
+    if (url.includes("/questions?")) return jsonResponse(200, { ok: true, data: { items: deleted ? [] : [question], page: 1, total: deleted ? 0 : totalPages, total_pages: deleted ? 1 : totalPages } });
+    if (init.method === "DELETE") {
+      const body = JSON.parse(init.body);
+      mutations.push({ url, method: init.method, body });
+      if (question.answer) return jsonResponse(409, { ok: false, error: { message: "공식답변이 등록되어 삭제할 수 없습니다." } });
+      if (body.password !== "current-password") return jsonResponse(403, { ok: false, error: { message: "비밀번호가 일치하지 않습니다." } });
+      deleted = true;
+      return jsonResponse(200, { ok: true, data: { id: question.id, deleted: true } });
+    }
     if (init.method === "POST" || init.method === "PATCH") {
       const body = JSON.parse(init.body);
       mutations.push({ url, method: init.method, body });
@@ -275,7 +285,9 @@ function installEditApi({ answered = false, totalPages = 1 } = {}) {
       Object.assign(question, { title: body.title, body: body.body });
       return jsonResponse(200, { ok: true, data: { id: question.id } });
     }
-    if (url.endsWith(`/questions/${question.id}`)) return jsonResponse(200, { ok: true, data: { question } });
+    if (url.endsWith(`/questions/${question.id}`)) return deleted
+      ? jsonResponse(404, { ok: false, error: { message: "지식센터 질문을 찾을 수 없습니다." } })
+      : jsonResponse(200, { ok: true, data: { question } });
     throw new Error(`Unexpected request: ${url}`);
   };
   return { question, mutations };
@@ -388,6 +400,52 @@ test("answered questions have no edit entry point", async () => {
   await screen.findByTestId("desktop-question-detail");
   assert.equal(screen.queryByRole("button", { name: "질문 수정" }), null);
   assert.equal(screen.queryByTestId("question-editor"), null);
+});
+
+test("visitor delete is only available after password confirmation and stays bound to the selected mobile question", async () => {
+  window.matchMedia = () => ({ matches: true, addEventListener() {}, removeEventListener() {} });
+  const user = userEvent.setup();
+  const { question, mutations } = installEditApi();
+  let confirmCalls = 0;
+  window.confirm = (message) => { confirmCalls++; assert.match(message, /삭제하시겠습니까/u); assert.match(message, /복구할 수 없습니다/u); return false; };
+  render(React.createElement(KnowledgeCenter, { apiBase }));
+  await screen.findByText(question.title, { selector: "strong" });
+  await user.type(screen.getByLabelText("제목"), "새 질문 초안은 유지");
+  await user.click(questionRow(1));
+  const detail = await screen.findByTestId("inline-question-detail");
+  const item = questionRow(1).parentElement;
+  await user.click(within(detail).getByRole("button", { name: "질문 수정" }));
+  const editor = screen.getByTestId("question-editor");
+  assert.ok(item.contains(editor));
+  assert.equal(within(editor).queryByRole("button", { name: "질문 삭제" }), null);
+  assert.equal(screen.queryByRole("button", { name: "질문 삭제" }), null);
+
+  await user.type(within(editor).getByLabelText("현재 비밀번호"), "current-password");
+  await act(async () => turnstileCallback("verify-token"));
+  await user.click(within(editor).getByRole("button", { name: "비밀번호 확인" }));
+  await within(editor).findByLabelText("수정 제목");
+  const deleteButton = within(editor).getByRole("button", { name: "질문 삭제" });
+  assert.ok(item.contains(deleteButton));
+
+  await act(async () => turnstileCallback("delete-token-cancel"));
+  await user.click(deleteButton);
+  assert.equal(confirmCalls, 1);
+  assert.equal(mutations.some(request => request.method === "DELETE"), false);
+  assert.equal(screen.getByTestId("question-editor"), editor);
+  assert.equal(question.title, "질문 1");
+
+  window.confirm = () => true;
+  await act(async () => turnstileCallback("delete-token-success"));
+  await user.click(within(editor).getByRole("button", { name: "질문 삭제" }));
+  await waitFor(() => assert.equal(screen.queryByTestId("question-editor"), null));
+  const deletion = mutations.find(request => request.method === "DELETE");
+  assert.equal(deletion.url, `${apiBase}/questions/${question.id}`);
+  assert.equal(deletion.body.password, "current-password");
+  assert.equal(deletion.body.turnstile_token, "delete-token-success");
+  assert.equal(mutations.some(request => request.url === `${apiBase}/questions`), false);
+  assert.equal(screen.getByLabelText("제목").value, "새 질문 초안은 유지");
+  assert.equal(screen.getByRole("status").textContent, "질문을 삭제했습니다.");
+  assert.equal(screen.queryByText(question.title, { selector: "strong" }), null);
 });
 
 test("selected question detail is inserted directly below its list item and moves with a new selection", async () => {

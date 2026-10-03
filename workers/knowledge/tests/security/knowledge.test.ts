@@ -70,6 +70,63 @@ describe("knowledge center schema and admin API", () => {
       expect(await snapshot()).toEqual(answered);
     }
   });
+  it("allows visitors to delete only their own unanswered published question after password and Turnstile checks", async () => {
+    const createUser = async (suffix: string) => {
+      const response = await admin("POST", "/api/knowledge/v1/questions", { title: `visitor delete ${suffix}`, body: `delete fixture body ${suffix}`, category: "금융", isAnonymous: true, password: `delete-pass-${suffix}`, serviceIds: [LABOR], turnstile_token: "test-token" });
+      return { id: (await json(response)).data.id as string, password: `delete-pass-${suffix}` };
+    };
+    const target = await createUser(`target-${crypto.randomUUID()}`);
+    const other = await createUser(`other-${crypto.randomUUID()}`);
+    const targetId = target.id, otherId = other.id;
+    const targetPath = `/api/knowledge/v1/questions/${targetId}`;
+    const snapshot = async (id: string) => ({
+      question: await env.KNOWLEDGE_DB.prepare("SELECT * FROM knowledge_questions WHERE id=?1").bind(id).first(),
+      answers: (await env.KNOWLEDGE_DB.prepare("SELECT * FROM knowledge_answers WHERE question_id=?1 ORDER BY id").bind(id).all()).results,
+      services: (await env.KNOWLEDGE_DB.prepare("SELECT * FROM knowledge_question_services WHERE question_id=?1 ORDER BY service_id").bind(id).all()).results,
+      imports: (await env.KNOWLEDGE_DB.prepare("SELECT * FROM knowledge_imports WHERE question_id=?1").bind(id).all()).results,
+      audit: (await env.KNOWLEDGE_DB.prepare("SELECT * FROM knowledge_audit_actions WHERE question_id=?1 ORDER BY id").bind(id).all()).results,
+      guards: (await env.KNOWLEDGE_DB.prepare("SELECT * FROM knowledge_submission_guards WHERE question_id=?1 ORDER BY id").bind(id).all()).results,
+    });
+    const before = await snapshot(targetId);
+    await expect(admin("DELETE", targetPath, { password: target.password })).rejects.toMatchObject({ status: 400, code: "TURNSTILE_REQUIRED" });
+    expect(await snapshot(targetId)).toEqual(before);
+    await expect(admin("DELETE", targetPath, { password: "wrong-password", turnstile_token: "test-token" })).rejects.toMatchObject({ status: 403, code: "FORBIDDEN" });
+    expect(await snapshot(targetId)).toEqual(before);
+    await expect(admin("DELETE", targetPath, { password: other.password, turnstile_token: "test-token" })).rejects.toMatchObject({ status: 403, code: "FORBIDDEN" });
+    expect(await snapshot(targetId)).toEqual(before);
+    await expect(admin("DELETE", `/api/knowledge/v1/questions/${crypto.randomUUID()}`, { password: "a-valid-looking-password", turnstile_token: "test-token" })).rejects.toMatchObject({ status: 404, code: "NOT_FOUND" });
+
+    const answered = await createUser(`answered-${crypto.randomUUID()}`), answeredId = answered.id;
+    await admin("POST", `/api/knowledge/v1/admin/questions/${answeredId}/answer`, { body: "official answer" });
+    const answeredBefore = await snapshot(answeredId);
+    for (const password of ["wrong-password", answered.password]) {
+      await expect(admin("DELETE", `/api/knowledge/v1/questions/${answeredId}`, { password, turnstile_token: "test-token" })).rejects.toMatchObject({ status: 409, code: "INVALID_STATE" });
+      expect(await snapshot(answeredId)).toEqual(answeredBefore);
+    }
+    const seedId = (await json(await admin("POST", "/api/knowledge/v1/admin/questions", { title: "관리자 seed 삭제 거부", body: "관리자 원문", category: "금융", password: "seed-pass" }))).data.id as string;
+    const seedBefore = await snapshot(seedId);
+    await expect(admin("DELETE", `/api/knowledge/v1/questions/${seedId}`, { password: "seed-pass", turnstile_token: "test-token" })).rejects.toMatchObject({ status: 403, code: "FORBIDDEN" });
+    expect(await snapshot(seedId)).toEqual(seedBefore);
+
+    const otherBefore = await snapshot(otherId);
+    const answersBefore = Number((await env.KNOWLEDGE_DB.prepare("SELECT COUNT(*) count FROM knowledge_answers").first<{ count: number }>())?.count);
+    const servicesBefore = Number((await env.KNOWLEDGE_DB.prepare("SELECT COUNT(*) count FROM services").first<{ count: number }>())?.count);
+    const linksBefore = Number((await env.KNOWLEDGE_DB.prepare("SELECT COUNT(*) count FROM knowledge_question_services").first<{ count: number }>())?.count);
+    const success = await admin("DELETE", targetPath, { password: target.password, turnstile_token: "test-token" });
+    expect(success.response.status).toBe(200);
+    expect(success.response.headers.get("Cache-Control")).toBe("no-store");
+    expect(await success.response.json()).toMatchObject({ data: { id: targetId, deleted: true } });
+    expect(await env.KNOWLEDGE_DB.prepare("SELECT id FROM knowledge_questions WHERE id=?1").bind(targetId).first()).toBeNull();
+    expect(await env.KNOWLEDGE_DB.prepare("SELECT * FROM knowledge_question_services WHERE question_id=?1").bind(targetId).all()).toMatchObject({ results: [] });
+    expect(await env.KNOWLEDGE_DB.prepare("SELECT question_id FROM knowledge_submission_guards WHERE id=?1").bind(targetId).first()).toMatchObject({ question_id: null });
+    expect(await snapshot(otherId)).toEqual(otherBefore);
+    expect(await snapshot(answeredId)).toEqual(answeredBefore);
+    expect(Number((await env.KNOWLEDGE_DB.prepare("SELECT COUNT(*) count FROM knowledge_answers").first<{ count: number }>())?.count)).toBe(answersBefore);
+    expect(Number((await env.KNOWLEDGE_DB.prepare("SELECT COUNT(*) count FROM services").first<{ count: number }>())?.count)).toBe(servicesBefore);
+    expect(Number((await env.KNOWLEDGE_DB.prepare("SELECT COUNT(*) count FROM knowledge_question_services").first<{ count: number }>())?.count)).toBe(linksBefore - 1);
+    expect(await env.KNOWLEDGE_DB.prepare("SELECT COUNT(*) count FROM knowledge_answers a LEFT JOIN knowledge_questions q ON q.id=a.question_id WHERE q.id IS NULL").first()).toMatchObject({ count: 0 });
+    expect(await env.KNOWLEDGE_DB.prepare("SELECT COUNT(*) count FROM knowledge_question_services r LEFT JOIN knowledge_questions q ON q.id=r.question_id LEFT JOIN services s ON s.id=r.service_id WHERE q.id IS NULL OR s.id IS NULL").first()).toMatchObject({ count: 0 });
+  });
   it("keeps Turnstile mandatory for password verification and rechecks concurrent answer/password changes at UPDATE", async () => {
     const id = (await json(await admin("POST", "/api/knowledge/v1/admin/questions", { title: "동시 수정 보안", body: "원문 유지", category: "금융", password: "original-password", serviceIds: [LABOR] }))).data.id as string;
     const path = `/api/knowledge/v1/questions/${id}`;

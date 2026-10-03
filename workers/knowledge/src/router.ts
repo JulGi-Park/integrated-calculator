@@ -8,7 +8,7 @@ import {
   deleteAdminKnowledgeQuestion, getKnowledgeQuestion, getPublicKnowledgeQuestion,
   hideAdminKnowledgeQuestion, listKnowledgeQuestions, listPublicKnowledgeQuestions,
   listPublicKnowledgeServices, patchAdminKnowledgeAnswer, patchAdminKnowledgeQuestion,
-  patchKnowledgeQuestion, publishAdminKnowledgeQuestion, verifyKnowledgeQuestionPassword,
+  patchKnowledgeQuestion, deleteKnowledgeQuestion, publishAdminKnowledgeQuestion, verifyKnowledgeQuestionPassword,
 } from "./api/knowledge";
 
 type Result = { response: Response; meta: { turnstile: "pass" | "fail" | "unavailable" | "not_required"; rateLimit: "pass" | "limited" | "not_applied" } };
@@ -65,5 +65,6 @@ export async function route(request: Request, env: Env, ctx: ExecutionContext, r
   if (passwordCheck && method === "POST") return verifyKnowledgeQuestionPassword(request, env, requestId, passwordCheck[1]);
   if (detail && method === "GET") return getPublicKnowledgeQuestion(env, requestId, detail[1]);
   if (detail && method === "PATCH") return patchKnowledgeQuestion(request, env, requestId, detail[1]);
+  if (detail && method === "DELETE") return deleteKnowledgeQuestion(request, env, requestId, detail[1]);
   return missing();
 }

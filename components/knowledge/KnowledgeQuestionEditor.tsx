@@ -6,11 +6,12 @@ import styles from "./KnowledgeCenter.module.css";
 type EditableQuestion = { id: string; title: string; body: string; isAnonymous: boolean; nickname: string | null };
 type Turnstile = { render: (element: HTMLElement, options: Record<string, unknown>) => unknown; reset: (id?: unknown) => void; remove?: (id: unknown) => void };
 
-export function KnowledgeQuestionEditor({ question, sitekey, call, onSaved, onCancel }: {
+export function KnowledgeQuestionEditor({ question, sitekey, call, onSaved, onDeleted, onCancel }: {
   question: EditableQuestion;
   sitekey: string;
   call: <T>(path: string, init?: RequestInit) => Promise<T>;
   onSaved: () => Promise<void>;
+  onDeleted: (id: string) => Promise<void>;
   onCancel: () => void;
 }) {
   const [password, setPassword] = useState("");
@@ -69,6 +70,21 @@ export function KnowledgeQuestionEditor({ question, sitekey, call, onSaved, onCa
     }
   };
 
+  const deleteQuestion = async () => {
+    if (busy || mode !== "edit") return;
+    if (!window.confirm("질문을 삭제하시겠습니까?\n삭제한 질문은 복구할 수 없습니다.")) return;
+    setBusy(true); setError("");
+    try {
+      if (!token) throw new Error("삭제하기 전에 사람인지 확인을 완료해 주세요.");
+      await call(`/questions/${question.id}`, { method: "DELETE", body: JSON.stringify({ password, turnstile_token: token }) });
+      if (active.current) await onDeleted(question.id);
+    } catch (cause) {
+      if (active.current) setError(cause instanceof Error ? cause.message : "질문을 삭제하지 못했습니다.");
+    } finally {
+      if (active.current) { resetToken(); setBusy(false); }
+    }
+  };
+
   return <section className={styles.inlineEditor} aria-label={mode === "edit" ? "질문 수정폼" : "비밀번호 확인"} data-testid="question-editor">
     <h3>{mode === "edit" ? "질문 수정" : "비밀번호 확인"}</h3>
     {error ? <p role="alert" className={styles.error}>{error}</p> : null}
@@ -79,7 +95,7 @@ export function KnowledgeQuestionEditor({ question, sitekey, call, onSaved, onCa
         <label>수정 질문 내용<textarea value={form.body} onChange={event => setForm({ ...form, body: event.target.value })} maxLength={4000} required /></label>
       </>}
       <div ref={widgetRef} className={styles.turnstile} />
-      <div className={styles.editorActions}><button className={styles.primary} type="submit" disabled={busy}>{busy ? "확인 중..." : mode === "edit" ? "수정 저장" : "비밀번호 확인"}</button><button type="button" onClick={onCancel} disabled={busy}>취소</button></div>
+      <div className={styles.editorActions}><button className={styles.primary} type="submit" disabled={busy}>{busy ? "확인 중..." : mode === "edit" ? "수정 저장" : "비밀번호 확인"}</button>{mode === "edit" ? <button className={styles.danger} type="button" onClick={() => void deleteQuestion()} disabled={busy}>질문 삭제</button> : null}<button type="button" onClick={onCancel} disabled={busy}>취소</button></div>
     </form>
   </section>;
 }
