@@ -1,6 +1,6 @@
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { ApiError } from "./domain/errors";
-import { importBatch, importResult, importStatus, publishVerifiedImports } from "./domain/knowledge-import";
+import { assertImportEnabled, importBatch, importResult, importStatus, publishVerifiedImports } from "./domain/knowledge-import";
 import { hmacHash } from "./security/tokens";
 
 // An account-managed, named Service Binding capability. No public HTTP route,
@@ -8,6 +8,7 @@ import { hmacHash } from "./security/tokens";
 export class KnowledgeImportEntrypoint extends WorkerEntrypoint<Env> {
   async call(tool: string, input: unknown) {
     try {
+      assertImportEnabled(this.env);
       const actor = { hash: await hmacHash(this.env.AUTHOR_TOKEN_PEPPER, "admin", "gyesanbox-knowledge-gpt-preview") };
       let data: unknown;
       if (tool === "knowledge_preview_status") data = await importStatus(this.env);

@@ -33,10 +33,15 @@ const resolveServices = async (db: D1Database, slugs: string[]) => {
   if (rows.length !== slugs.length) return null;
   const ids = rows.map(r => r.id); await assertServices(db, ids); return ids;
 };
-export const assertImportPreview = (env: Env) => { if (env.ENVIRONMENT !== "preview" || env.KNOWLEDGE_ADMIN_ENABLED !== "true") throw new ApiError(403, "FORBIDDEN", "Preview 가져오기만 허용됩니다."); };
+export const assertImportEnabled = (env: Env) => {
+  const adminEnabled = env.KNOWLEDGE_ADMIN_ENABLED === "true";
+  const previewAllowed = env.ENVIRONMENT === "preview" && adminEnabled;
+  const productionAllowed = env.ENVIRONMENT === "production" && adminEnabled && env.KNOWLEDGE_IMPORT_ENABLED === "1";
+  if (!previewAllowed && !productionAllowed) throw new ApiError(403, "FORBIDDEN", "지식센터 가져오기가 허용되지 않았습니다.");
+};
 
 export const importBatch = async (env: Env, actor: AdminActor, value: unknown, write: boolean) => {
-  assertImportPreview(env);
+  assertImportEnabled(env);
   const batch = parseBatch(value), outcomes: Outcome[] = [];
   for (const raw of batch.items) {
     let sourceKey: string | null = null;
@@ -73,13 +78,13 @@ export const importBatch = async (env: Env, actor: AdminActor, value: unknown, w
   return { batchId: batch.batchId, attempted: outcomes.length, inserted: outcomes.filter(x => x.status === "inserted").length, existing: outcomes.filter(x => x.status === "existing").length, valid: outcomes.filter(x => x.status === "valid").length, failed: outcomes.filter(x => x.status === "failed").length, items: outcomes };
 };
 export const importStatus = async (env: Env) => {
-  assertImportPreview(env);
+  assertImportEnabled(env);
   const counts = await env.KNOWLEDGE_DB.prepare("SELECT (SELECT COUNT(*) FROM knowledge_questions) questions,(SELECT COUNT(*) FROM knowledge_answers) answers,(SELECT COUNT(*) FROM knowledge_question_services) serviceLinks").first<{ questions: number; answers: number; serviceLinks: number }>();
   const services = (await env.KNOWLEDGE_DB.prepare("SELECT slug,name FROM services WHERE status='active' ORDER BY slug").all()).results;
-  return { environment: "preview", maxBatch: MAX_IMPORT_BATCH, ...counts, services };
+  return { environment: env.ENVIRONMENT, maxBatch: MAX_IMPORT_BATCH, ...counts, services };
 };
 export const importResult = async (env: Env, value: unknown) => {
-  assertImportPreview(env);
+  assertImportEnabled(env);
   const raw = object(value); keys(raw, ["batchId", "sourceKey"]);
   if (raw.sourceKey === undefined && raw.batchId === undefined) throw new ApiError(400, "INVALID_INPUT", "batchId 또는 sourceKey가 필요합니다.");
   const conditions: string[] = [], values: string[] = [];
@@ -92,7 +97,7 @@ export const importResult = async (env: Env, value: unknown) => {
 // The initial approved Preview set can be published only as a complete, intact
 // import. This capability is exposed solely through a named Worker service binding.
 export const publishVerifiedImports = async (env: Env, actor: AdminActor, value: unknown) => {
-  assertImportPreview(env);
+  assertImportEnabled(env);
   const raw = object(value); keys(raw, ["sourceKeys", "sourceSha256"]);
   if (raw.sourceSha256 !== "6c3d6aca606d4f0eb63377765ff9e2ce8e937c4c60d7701bc27e9dbcd9d7dd7f") {
     throw new ApiError(409, "INVALID_STATE", "승인 정본 해시가 일치하지 않습니다.");

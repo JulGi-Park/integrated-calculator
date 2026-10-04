@@ -68,12 +68,109 @@ describe("knowledge draft import", () => {
     expect(results.reduce((n,r)=>n+r.existing,0)).toBe(1);
     expect(await counts()).toEqual(before.map(x=>Number(x)+1));
   });
-  it("denies public HTTP admin access and Production domain service calls", async () => {
-    await expect(route(new Request("https://knowledge-preview.gyesanbox.kr/api/knowledge/v1/admin/import", {method:"POST"}),testEnv,{} as ExecutionContext,"req")).rejects.toMatchObject({status:401});
-    await expect(importStatus({...testEnv,ENVIRONMENT:"production"})).rejects.toMatchObject({status:403});
-    const rpc = new KnowledgeImportEntrypoint({} as ExecutionContext,testEnv);
-    expect(await rpc.call("publish",{})).toMatchObject({ok:false,error:{status:403}});
-    expect(await rpc.call("knowledge_preview_status",{})).toMatchObject({ok:true,data:{environment:"preview",services:expect.any(Array)}});
+  it("keeps Preview imports enabled and denies every Production import operation by default", async () => {
+    expect((await importBatch(testEnv, actor, payload([sample("preview-default")]), false)).valid).toBe(1);
+    let dbTouches = 0;
+    const guardedDb = new Proxy(testEnv.KNOWLEDGE_DB, {
+      get(target, property) {
+        if (["prepare", "batch", "exec"].includes(String(property))) {
+          return () => { dbTouches += 1; throw new Error("Production gate touched D1"); };
+        }
+        return Reflect.get(target, property, target) as unknown;
+      },
+    });
+    const blockedValues = [undefined, "0", "true", "1 "];
+    for (const value of blockedValues) {
+      const prod = { ...testEnv, ENVIRONMENT: "production" as const, KNOWLEDGE_IMPORT_ENABLED: value, KNOWLEDGE_DB: guardedDb } as Env;
+      await expect(importBatch(prod, actor, payload([sample("gate-off")]), false)).rejects.toMatchObject({status:403,code:"FORBIDDEN"});
+      await expect(importBatch(prod, actor, payload([sample("gate-off")]), true)).rejects.toMatchObject({status:403,code:"FORBIDDEN"});
+      await expect(importStatus(prod)).rejects.toMatchObject({status:403,code:"FORBIDDEN"});
+      await expect(importResult(prod, {sourceKey:"kin-261001-001"})).rejects.toMatchObject({status:403,code:"FORBIDDEN"});
+      await expect(publishVerifiedImports(prod, actor, {})).rejects.toMatchObject({status:403,code:"FORBIDDEN"});
+      const rpc = new KnowledgeImportEntrypoint({} as ExecutionContext,prod);
+      expect(await rpc.call("knowledge_validate_import",payload([sample("gate-off-rpc")]))).toMatchObject({ok:false,error:{status:403,code:"FORBIDDEN"}});
+    }
+    expect(dbTouches).toBe(0);
+    const unknownEnvironment = {...testEnv,ENVIRONMENT:"staging"} as unknown as Env;
+    await expect(importStatus(unknownEnvironment)).rejects.toMatchObject({status:403,code:"FORBIDDEN"});
+    const disabledAdmin = { ...testEnv, KNOWLEDGE_ADMIN_ENABLED: "false", KNOWLEDGE_IMPORT_ENABLED: "1" } as Env;
+    await expect(importStatus(disabledAdmin)).rejects.toMatchObject({status:403,code:"FORBIDDEN"});
+    const prodOff = {...testEnv,ENVIRONMENT:"production" as const,KNOWLEDGE_IMPORT_ENABLED:"0"} as Env;
+    const adminCtx = {access:{getIdentity:async()=>({user_uuid:"test-production-admin"})}} as unknown as ExecutionContext;
+    await expect(route(new Request("https://knowledge-preview.gyesanbox.kr/api/knowledge/v1/admin/import/status"),prodOff,adminCtx,"prod-http-off")).rejects.toMatchObject({status:403,code:"FORBIDDEN"});
+  });
+  it("allows gate-on Production validation only through authenticated admin HTTP or the configured binding", async () => {
+    const prod = {
+      ...testEnv,
+      ENVIRONMENT: "production" as const,
+      KNOWLEDGE_ADMIN_ENABLED: "true",
+      KNOWLEDGE_IMPORT_ENABLED: "1",
+      KNOWLEDGE_API_HOST: "knowledge.gyesanbox.kr",
+      KNOWLEDGE_PUBLIC_ORIGIN: "https://gyesanbox.kr",
+      KNOWLEDGE_PUBLIC_ENABLED: "false",
+      KNOWLEDGE_INDEX_ENABLED: "false",
+    } as Env;
+    const before = await counts();
+    const root = "https://knowledge.gyesanbox.kr/api/knowledge/v1/admin/";
+    await expect(route(new Request(`${root}import/validate`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload([sample("production-http")]))}),prod,{} as ExecutionContext,"prod-http-unauth")).rejects.toMatchObject({status:401});
+    await expect(route(new Request("https://knowledge.gyesanbox.kr/api/knowledge/v1/questions/import",{method:"POST"}),prod,{} as ExecutionContext,"prod-visitor-import")).rejects.toMatchObject({status:404});
+
+    const adminCtx = {access:{getIdentity:async()=>({user_uuid:"test-production-admin"})}} as unknown as ExecutionContext;
+    const http = await route(new Request(`${root}import/validate`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload([sample("production-http")]))}),prod,adminCtx,"prod-http-auth");
+    expect(http.response.status).toBe(200);
+    expect(await http.response.json()).toMatchObject({data:{valid:1,inserted:0,failed:0}});
+
+    const rpc = new KnowledgeImportEntrypoint({} as ExecutionContext,prod);
+    expect(await rpc.call("knowledge_validate_import",payload([sample("production-rpc")]))).toMatchObject({ok:true,data:{valid:1,inserted:0,failed:0}});
+    expect(await rpc.call("knowledge_preview_status",{})).toMatchObject({ok:true,data:{environment:"production",services:expect.any(Array)}});
+    const httpWrite = await route(new Request(`${root}import`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload([sample("production-http-write")]))}),prod,adminCtx,"prod-http-write");
+    expect(await httpWrite.response.json()).toMatchObject({data:{inserted:1,failed:0}});
+    expect(await rpc.call("knowledge_import_drafts",payload([sample("production-rpc-write")]))).toMatchObject({ok:true,data:{inserted:1,failed:0}});
+    expect(await rpc.call("knowledge_import_drafts",payload([sample("production-rpc-write")]))).toMatchObject({ok:true,data:{inserted:0,existing:1,failed:0}});
+    const publicList = await route(new Request("https://knowledge.gyesanbox.kr/api/knowledge/v1/questions"),prod,{} as ExecutionContext,"prod-public-list");
+    expect(publicList.response.status).toBe(200);
+    expect(await publicList.response.json()).toMatchObject({data:{total:0,items:[]}});
+    expect(await counts()).toEqual([Number(before[0])+2,Number(before[1])+2,Number(before[2])]);
+  });
+  it("retries a failed sourceKey and replays the successful item without duplicates", async () => {
+    const before = await counts();
+    const rejected = await importBatch(testEnv,actor,payload([sample("retry-after-invalid",["unknown-service"]) ]),true);
+    expect(rejected.failed).toBe(1);
+    expect(await counts()).toEqual(before);
+    const accepted = await importBatch(testEnv,actor,payload([sample("retry-after-invalid")]),true);
+    const replayed = await importBatch(testEnv,actor,payload([sample("retry-after-invalid")]),true);
+    expect(accepted.inserted).toBe(1);
+    expect(replayed.existing).toBe(1);
+    expect(replayed.inserted).toBe(0);
+    expect(replayed.items[0].questionId).toBe(accepted.items[0].questionId);
+    expect(await counts()).toEqual([Number(before[0])+1,Number(before[1])+1,Number(before[2])]);
+  });
+  it("makes a repeated publish of already published imports a no-op", async () => {
+    const sourceKeys = Array.from({length:200},(_,index)=>`publish-${String(index+1).padStart(3,"0")}`);
+    let writes = 0;
+    const fakeDb = {
+      prepare(sql: string) {
+        let values: unknown[] = [];
+        const statement = {
+          bind(...params: unknown[]) { values = params; return statement; },
+          async all() {
+            return {results: values.filter((value): value is string => typeof value === "string" && sourceKeys.includes(value)).map((sourceKey,index)=>({id:`question-${sourceKey}-${index}`,status:"published"}))};
+          },
+          async first() {
+            if (sql.includes("dangling_answers")) return {questions:200,answers:200,imports:200,links:109,services:21,dangling_answers:0,dangling_links:0};
+            if (sql.includes("WHERE status='published'")) return {count:200};
+            throw new Error("Unexpected publish verification query");
+          },
+        };
+        return statement;
+      },
+      async batch() { writes += 1; throw new Error("Published replay attempted a write"); },
+    } as unknown as D1Database;
+    const prod = {...testEnv,ENVIRONMENT:"production" as const,KNOWLEDGE_IMPORT_ENABLED:"1",KNOWLEDGE_DB:fakeDb} as Env;
+    const request = {sourceSha256:"6c3d6aca606d4f0eb63377765ff9e2ce8e937c4c60d7701bc27e9dbcd9d7dd7f",sourceKeys};
+    expect(await publishVerifiedImports(prod,actor,request)).toMatchObject({published:200});
+    expect(await publishVerifiedImports(prod,actor,request)).toMatchObject({published:200});
+    expect(writes).toBe(0);
   });
   it("keeps authenticated human admin routes and imported draft detail available", async () => {
     const ctx = {access:{getIdentity:async()=>({user_uuid:"test-human-admin"})}} as unknown as ExecutionContext;

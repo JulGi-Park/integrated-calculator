@@ -3,6 +3,7 @@ interface Env {
   KNOWLEDGE_WRITE_LIMITER: RateLimit;
   ENVIRONMENT: "preview" | "production";
   KNOWLEDGE_ADMIN_ENABLED: string;
+  KNOWLEDGE_IMPORT_ENABLED?: string;
   KNOWLEDGE_PUBLIC_ORIGIN: string;
   KNOWLEDGE_API_HOST: string;
   TURNSTILE_SECRET: string;
