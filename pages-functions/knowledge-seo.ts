@@ -6,6 +6,7 @@ import {
   knowledgeSeoRobots,
   normalizeKnowledgeQuestionId,
 } from "../lib/knowledge/seo";
+import { knowledgeGates, type KnowledgeGateEnv } from "../lib/knowledge/gates";
 
 export type KnowledgePageFunctionContext = {
   request: Request;
@@ -13,7 +14,8 @@ export type KnowledgePageFunctionContext = {
   params: Record<string, string | undefined>;
 };
 
-type Runtime = { apiBaseUrl: string; environment: "preview" | "production" };
+type Runtime = { apiBaseUrl: string; environment: "preview" | "production";
+  publicEnabled: boolean; indexEnabled: boolean; curatedEnabled: boolean };
 export type PublicListQuestion = { id: string; title: string; category: string | null };
 type PublicQuestionPage = { items: PublicListQuestion[]; page: number; total: number; totalPages: number };
 export type PublicQuestion = {
@@ -37,7 +39,7 @@ const PUBLIC_PAGE_SIZE = 10;
 const MAX_SITEMAP_PAGES = 100;
 const RELATED_QUESTION_LIMIT = 5;
 
-export type KnowledgePagesEnv = {
+export type KnowledgePagesEnv = KnowledgeGateEnv & {
   NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW?: string;
   KNOWLEDGE_ENV?: string;
   KNOWLEDGE_PUBLIC_ENABLED?: string;
@@ -59,7 +61,8 @@ export function resolveKnowledgeRuntime(url: URL, env: KnowledgePagesEnv): Runti
     const api = new URL(configured);
     if (api.protocol !== "https:" || !KNOWLEDGE_HOST.test(api.hostname)
       || api.pathname !== "/api/knowledge/v1" || api.search || api.hash || api.username || api.password) return null;
-    return { apiBaseUrl: api.toString().replace(/\/$/u, ""), environment: production ? "production" : "preview" };
+    const environment = production ? "production" : "preview";
+    return { apiBaseUrl: api.toString().replace(/\/$/u, ""), environment, ...knowledgeGates(environment, env) };
   } catch {
     return null;
   }
@@ -207,9 +210,10 @@ export async function fetchPublishedQuestion(runtime: Runtime, id: string): Prom
 
 const paragraphs = (body: string) => body.split(/\n{2,}/u).map((part) => `<p>${escape(part).replace(/\n/gu, "<br>")}</p>`).join("");
 
-export function renderKnowledgeQuestion(question: PublicQuestion, environment: "preview" | "production" = "preview", related: PublicListQuestion[] = [], metadata?: { title: string; description: string }): string {
-  const seo = { ...knowledgeSeo(question), ...(environment === "preview" ? metadata : {}) };
-  const robots = knowledgeSeoRobots({ environment, status: question.status });
+export function renderKnowledgeQuestion(question: PublicQuestion, environment: "preview" | "production" = "preview", related: PublicListQuestion[] = [], metadata?: { title: string; description: string }, gates?: { publicEnabled: boolean; indexEnabled: boolean }): string {
+  const seo = { ...knowledgeSeo(question), ...metadata };
+  const robots = knowledgeSeoRobots({ environment, status: question.status,
+    productionPublicEnabled: gates?.publicEnabled, productionIndexEnabled: gates?.indexEnabled });
   const robotsContent = robots.index ? "index, follow" : PREVIEW_ROBOTS;
   const canonical = escape(seo.canonical);
   const title = escape(seo.title);

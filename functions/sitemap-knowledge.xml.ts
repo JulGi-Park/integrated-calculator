@@ -2,7 +2,7 @@ import { fetchAllPublishedKnowledgeQuestions, knowledgeSitemapHeaders, notFound,
 
 export const onRequestGet = async (context: KnowledgePageFunctionContext): Promise<Response> => {
   const runtime = resolveKnowledgeRuntime(new URL(context.request.url), context.env);
-  if (!runtime) return notFound();
+  if (!runtime || (runtime.environment === "production" && !runtime.indexEnabled)) return notFound();
   try {
     const items = await fetchAllPublishedKnowledgeQuestions(runtime);
     const headers = new Headers(knowledgeSitemapHeaders);

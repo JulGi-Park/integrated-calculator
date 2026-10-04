@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { access, readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
+import { knowledgeBuildGates } from "../lib/knowledge/gates.mjs";
 import {
   getStaticRouteOutputPaths,
   isStaticRouteEnabled,
@@ -316,9 +317,7 @@ async function verifyStaticOutput() {
       path.join(projectRoot, "out"),
       route.pathname,
     );
-    const enabled = isStaticRouteEnabled(
-      process.env[route.environmentVariable],
-    );
+    const enabled = route.pathname === "/knowledge/" ? knowledgeBuildGates(process.env).publicEnabled : isStaticRouteEnabled(process.env[route.environmentVariable]);
 
     if (enabled) {
       const routeHtml = await readFile(
@@ -333,7 +332,8 @@ async function verifyStaticOutput() {
       );
       if (route.pathname === "/knowledge/") {
         assert.match(routeHead, /rel="canonical" href="https:\/\/gyesanbox\.kr\/knowledge\/"/i);
-        assert.match(routeHead, /name="robots" content="noindex, nofollow"/i);
+        assert.match(routeHead, knowledgeBuildGates(process.env).indexEnabled
+          ? /name="robots" content="index, follow"/i : /name="robots" content="noindex, nofollow"/i);
         continue;
       }
       assert.match(

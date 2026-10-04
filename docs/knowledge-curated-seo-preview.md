@@ -1,4 +1,4 @@
-# Curated Knowledge SEO (Preview only)
+# Curated Knowledge SEO and fail-closed Production gates
 
 Runtime source: `pages-functions/data/knowledge-seo-enhancement-261004.json`.
 This is the byte-identical reviewed artifact, not a regenerated mapping.
@@ -20,7 +20,22 @@ Preview Pages configuration:
 - Application access is SELECT-only. The platform D1 binding is not an inherently
   read-only credential; `IdentityDatabase` exposes no write methods and the resolver
   prepares only a parameterized, minimal identity SELECT.
-- No Production binding/gate changes; curated rendering also explicitly requires Preview.
+- No Production binding/gate changes in this implementation task.
+- Preview uses `NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW=true` and is always noindex.
+- Production runtime requires the `gyesanbox.kr` hostname, `KNOWLEDGE_ENV=production`,
+  `KNOWLEDGE_PUBLIC_ENABLED=true`, and an explicitly configured Knowledge API base.
+- `KNOWLEDGE_INDEX_ENABLED=true` is the single new index environment binding for the
+  existing `productionIndexEnabled` helper; no earlier index env binding existed.
+  Indexing additionally requires public ON; missing values remain OFF. The Preview
+  build flag must not be set in Production (it forces noindex).
+- Curated permission derives from the explicit public gate, independently of index.
+  Both environments still require their own identity binding and exact fingerprints.
+  Production environment alone never enables curated metadata or indexing.
+- Static list build metadata and route pruning use the same gate helper. A list-only
+  Pages Function reapplies the runtime public/index decision to the final HTML,
+  fails closed when static robots markup is missing/ambiguous, and prevents stale
+  build metadata from enabling Preview indexing. Production public OFF returns 404;
+  public ON/index OFF allows noindex detail/list but keeps the sitemap at 404.
 
 Metadata requires exact SHA-256 matches for title, raw question body, raw official
 answer, category and their combined JSON fingerprint. Missing identities, invalid
@@ -28,7 +43,7 @@ manifests, unavailable reads, new user questions and stale content use existing
 deterministic metadata without exposing review diagnostics. Ten
 `REVIEW_BEFORE_APPLY` records retain fallback metadata even if fingerprints match.
 
-Related links use only approved candidates, resolving sourceKeys through Preview
+Related links use only approved candidates, resolving sourceKeys through environment
 imports and re-reading each published target via the public API. Missing/private,
 self, duplicate or changed-title targets are omitted, never filled from global or
 category lists. At most five links are rendered. Calculator links remain entirely

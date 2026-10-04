@@ -3,8 +3,8 @@ import path from "node:path";
 
 const routes = {
   version: 1,
-  include: ["/knowledge/*", "/sitemap-knowledge.xml"],
-  exclude: ["/knowledge", "/knowledge/"],
+  include: ["/knowledge", "/knowledge/*", "/sitemap-knowledge.xml"],
+  exclude: [],
 };
 
 await writeFile(path.join(process.cwd(), "out", "_routes.json"), `${JSON.stringify(routes, null, 2)}\n`, "utf8");

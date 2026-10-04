@@ -1,6 +1,7 @@
 import { rm } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { knowledgeBuildGates } from "../lib/knowledge/gates.mjs";
 
 export const privateStaticRoutes = [
   { pathname: "/knowledge/", environmentVariable: "NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW", expectedText: "계산박스 지식센터" },
@@ -60,7 +61,7 @@ export async function pruneDisabledStaticRoutes({
   const removedRoutes = [];
 
   for (const route of privateStaticRoutes) {
-    if (isStaticRouteEnabled(environment[route.environmentVariable])) {
+    if (route.pathname === "/knowledge/" ? knowledgeBuildGates(environment).publicEnabled : isStaticRouteEnabled(environment[route.environmentVariable])) {
       continue;
     }
 

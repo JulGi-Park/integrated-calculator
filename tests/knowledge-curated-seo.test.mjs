@@ -26,7 +26,7 @@ function database(rows, calls = []) {
   } };
 }
 const options = (q=question, r=record, db=database([{source_key:r.sourceKey, question_id:q.id}])) => ({
-  environment:"preview", question:q, db, records:new Map([[r.sourceKey,r]]), readPublished:async () => null });
+  environment:"preview", curatedEnabled:true, question:q, db, records:new Map([[r.sourceKey,r]]), readPublished:async () => null });
 
 test("approved artifact is exact, valid 200 records with required fields and review guard 10", () => {
   assert.equal(sha(fs.readFileSync(new URL("../pages-functions/data/knowledge-seo-enhancement-261004.json",import.meta.url))),
@@ -70,8 +70,8 @@ test("all 10 review records keep deterministic metadata even with matching verif
   }
 });
 
-test("unresolved, invalid manifest, new user and production safely fall back without private data",async () => {
-  for(const extra of [{db:undefined},{db:database([])},{records:null},{environment:"production"},
+test("unresolved, invalid manifest, new user and disabled gate safely fall back without private data",async () => {
+  for(const extra of [{db:undefined},{db:database([])},{records:null},{curatedEnabled:false},
     {db:{prepare(){throw Error("unavailable");}}}]) {
     const result=await curatedKnowledgeSeo({...options(),...extra});assert.equal(result.metadata,undefined);assert.deepEqual(result.related,[]);
   }

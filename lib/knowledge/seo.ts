@@ -28,9 +28,11 @@ export function knowledgeSeoRobots(options: {
   environment: "preview" | "production";
   status: "draft" | "published" | "hidden";
   productionIndexEnabled?: boolean;
+  productionPublicEnabled?: boolean;
 }) {
   const index = options.environment === "production"
     && options.status === "published"
+    && options.productionPublicEnabled === true
     && options.productionIndexEnabled === true;
   return { index, follow: index };
 }

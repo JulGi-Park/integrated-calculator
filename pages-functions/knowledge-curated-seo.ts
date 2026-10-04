@@ -84,13 +84,14 @@ export async function resolveImportIdentities(db: IdentityDatabase, keys: string
 
 export async function curatedKnowledgeSeo(options: {
   environment: "preview" | "production";
+  curatedEnabled?: boolean;
   db?: IdentityDatabase;
   question: PublicQuestion;
   readPublished: (id: string) => Promise<PublicQuestion | null>;
   records?: CuratedManifest | null;
 }): Promise<CuratedResult> {
   const fallback = (reason: CuratedResult["reason"]): CuratedResult => ({ reason, related: [] });
-  if (options.environment !== "preview") return fallback("disabled");
+  if (options.curatedEnabled !== true) return fallback("disabled");
   const records = options.records === undefined ? manifest : options.records;
   if (!records || !options.db) return fallback("unresolved");
   try {

@@ -62,7 +62,8 @@ test("robots defaults gate off; Preview and nonpublished cannot be indexed", () 
       }
     }
   }
-  assert.equal(knowledgeSeoRobots({ environment: "production", status: "published", productionIndexEnabled: true }).index, true);
+  assert.equal(knowledgeSeoRobots({ environment: "production", status: "published", productionIndexEnabled: true }).index, false);
+  assert.equal(knowledgeSeoRobots({ environment: "production", status: "published", productionPublicEnabled: true, productionIndexEnabled: true }).index, true);
 });
 
 function fixture() {

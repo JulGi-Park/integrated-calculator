@@ -26,9 +26,11 @@ export const onRequestGet = async (context: KnowledgePageFunctionContext): Promi
     const question = await fetchPublishedQuestion(runtime, id);
     if (!question) return notFound();
     const curated = await curatedKnowledgeSeo({ environment: runtime.environment,
+      curatedEnabled: runtime.curatedEnabled,
       db: context.env.KNOWLEDGE_SEO_IDENTITY_DB, question,
       readPublished: (targetId) => fetchPublishedQuestion(runtime, targetId) });
-    return new Response(renderKnowledgeQuestion(question, runtime.environment, curated.related, curated.metadata), { status: 200, headers: responseHeaders(runtime.environment) });
+    const headers = responseHeaders(runtime.environment);
+    return new Response(renderKnowledgeQuestion(question, runtime.environment, curated.related, curated.metadata, runtime), { status: 200, headers });
   } catch {
     return unavailable();
   }
