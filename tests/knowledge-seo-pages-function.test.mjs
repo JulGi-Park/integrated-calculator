@@ -65,7 +65,8 @@ test("published detail returns metadata and question/answer in escaped initial H
     assert.match(source, /name="twitter:description"/);
     assert.match(source, /name="twitter:image"/);
     assert.match(source, /href="\/calculators\/labor-pay\/">주휴수당 &lt;script&gt;x&lt;\/script&gt; 계산하기/);
-    assert.match(source, new RegExp(`href="/knowledge/${relatedId}/">&lt;관련 질문&gt; &amp; &#39;`));
+    // Unmapped questions use deterministic metadata and never receive global filler links.
+    assert.doesNotMatch(source, /aria-labelledby="related-questions"/u);
     assert.match(source, /href="\/knowledge\/">계산박스 지식센터 목록/);
     const dom = new JSDOM(source);
     assert.equal(dom.window.document.querySelectorAll("script").length, 0);

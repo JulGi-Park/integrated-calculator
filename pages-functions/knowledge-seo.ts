@@ -9,14 +9,14 @@ import {
 
 export type KnowledgePageFunctionContext = {
   request: Request;
-  env: Record<string, string | undefined>;
+  env: KnowledgePagesEnv;
   params: Record<string, string | undefined>;
 };
 
 type Runtime = { apiBaseUrl: string; environment: "preview" | "production" };
-type PublicListQuestion = { id: string; title: string; category: string | null };
+export type PublicListQuestion = { id: string; title: string; category: string | null };
 type PublicQuestionPage = { items: PublicListQuestion[]; page: number; total: number; totalPages: number };
-type PublicQuestion = {
+export type PublicQuestion = {
   id: string;
   title: string;
   body: string;
@@ -37,7 +37,16 @@ const PUBLIC_PAGE_SIZE = 10;
 const MAX_SITEMAP_PAGES = 100;
 const RELATED_QUESTION_LIMIT = 5;
 
-export function resolveKnowledgeRuntime(url: URL, env: Record<string, string | undefined>): Runtime | null {
+export type KnowledgePagesEnv = {
+  NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW?: string;
+  KNOWLEDGE_ENV?: string;
+  KNOWLEDGE_PUBLIC_ENABLED?: string;
+  KNOWLEDGE_API_BASE?: string;
+  NEXT_PUBLIC_KNOWLEDGE_API_BASE?: string;
+  KNOWLEDGE_SEO_IDENTITY_DB?: import("./knowledge-curated-seo").IdentityDatabase;
+};
+
+export function resolveKnowledgeRuntime(url: URL, env: KnowledgePagesEnv): Runtime | null {
   const preview = PREVIEW_HOST.test(url.hostname)
     && env.NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW === "true";
   const production = url.hostname === "gyesanbox.kr"
@@ -198,8 +207,8 @@ export async function fetchPublishedQuestion(runtime: Runtime, id: string): Prom
 
 const paragraphs = (body: string) => body.split(/\n{2,}/u).map((part) => `<p>${escape(part).replace(/\n/gu, "<br>")}</p>`).join("");
 
-export function renderKnowledgeQuestion(question: PublicQuestion, environment: "preview" | "production" = "preview", related: PublicListQuestion[] = []): string {
-  const seo = knowledgeSeo(question);
+export function renderKnowledgeQuestion(question: PublicQuestion, environment: "preview" | "production" = "preview", related: PublicListQuestion[] = [], metadata?: { title: string; description: string }): string {
+  const seo = { ...knowledgeSeo(question), ...(environment === "preview" ? metadata : {}) };
   const robots = knowledgeSeoRobots({ environment, status: question.status });
   const robotsContent = robots.index ? "index, follow" : PREVIEW_ROBOTS;
   const canonical = escape(seo.canonical);

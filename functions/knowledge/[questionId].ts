@@ -1,4 +1,5 @@
-import { fetchPublishedQuestion, fetchRelatedKnowledgeQuestions, notFound, renderKnowledgeQuestion, resolveKnowledgeRuntime, unavailable, type KnowledgePageFunctionContext } from "../../pages-functions/knowledge-seo";
+import { fetchPublishedQuestion, notFound, renderKnowledgeQuestion, resolveKnowledgeRuntime, unavailable, type KnowledgePageFunctionContext } from "../../pages-functions/knowledge-seo";
+import { curatedKnowledgeSeo } from "../../pages-functions/knowledge-curated-seo";
 import { knowledgeDetailPath, normalizeKnowledgeQuestionId } from "../../lib/knowledge/seo";
 
 const responseHeaders = (environment: "preview" | "production") => ({
@@ -24,13 +25,10 @@ export const onRequestGet = async (context: KnowledgePageFunctionContext): Promi
   try {
     const question = await fetchPublishedQuestion(runtime, id);
     if (!question) return notFound();
-    let related: Awaited<ReturnType<typeof fetchRelatedKnowledgeQuestions>> = [];
-    try {
-      related = await fetchRelatedKnowledgeQuestions(runtime, question);
-    } catch (error) {
-      console.error("knowledge_related_questions_unavailable", { errorName: error instanceof Error ? error.name : "UnknownError" });
-    }
-    return new Response(renderKnowledgeQuestion(question, runtime.environment, related), { status: 200, headers: responseHeaders(runtime.environment) });
+    const curated = await curatedKnowledgeSeo({ environment: runtime.environment,
+      db: context.env.KNOWLEDGE_SEO_IDENTITY_DB, question,
+      readPublished: (targetId) => fetchPublishedQuestion(runtime, targetId) });
+    return new Response(renderKnowledgeQuestion(question, runtime.environment, curated.related, curated.metadata), { status: 200, headers: responseHeaders(runtime.environment) });
   } catch {
     return unavailable();
   }
