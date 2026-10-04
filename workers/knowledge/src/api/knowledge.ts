@@ -6,7 +6,7 @@ import { text, passwordInput, hashPassword, verifyPassword, assertServices, audi
 import { assertIdempotencyKey, assertUuid, parseLimit, readJson } from "../security/validation";
 import { verifyTurnstile, type TurnstileCategory } from "../security/turnstile";
 import { assertIdempotencyMatch, findIdempotency, requestHash } from "../security/idempotency";
-import { VISITOR_QUESTION_CREATE_FIELDS } from "../../../../lib/knowledge/visitor-contract";
+import { VISITOR_QUESTION_CREATE_FIELDS, visitorPasswordPolicyError } from "../../../../lib/knowledge/visitor-contract";
 import { assertKnowledgeSpamInput, assertKnowledgeAdmission, knowledgeAdmission, knowledgeAdmissionPredicate, expiredKnowledgeGuards } from "../security/knowledge-spam";
 
 type Result = { response: Response; meta: { turnstile: TurnstileCategory; rateLimit: "pass" | "limited" | "not_applied" } };
@@ -28,6 +28,8 @@ export const getKnowledgeQuestion = async (env: Env, requestId: string, id: stri
 export const getPublicKnowledgeQuestion = async (env: Env, requestId: string, id: string): Promise<Result> => { assertUuid(id); const row = await env.KNOWLEDGE_DB.prepare("SELECT * FROM knowledge_questions WHERE id=?1 AND status='published'").bind(id).first<Record<string, unknown>>(); if (!row) throw new ApiError(404, "NOT_FOUND", "지식센터 질문을 찾을 수 없습니다."); return result(requestId, { question: await publicQuestionPayload(env.KNOWLEDGE_DB, row) }); };
 export const createKnowledgeQuestion = async (request: Request, env: Env, requestId: string): Promise<Result> => {
   const input = parseQuestion(await readJson(request));
+  const passwordPolicyError = visitorPasswordPolicyError(input.password);
+  if (passwordPolicyError) throw new ApiError(400, "INVALID_INPUT", passwordPolicyError);
   if (!input.token) throw new ApiError(400, "TURNSTILE_REQUIRED", "Turnstile 토큰이 필요합니다.");
   const turnstile = await verifyTurnstile(input.token, env.TURNSTILE_SECRET, env);
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";

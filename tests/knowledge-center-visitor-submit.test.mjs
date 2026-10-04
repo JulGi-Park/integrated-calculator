@@ -204,6 +204,31 @@ test("create API error keeps /knowledge/ and preserves entered values for correc
   assert.deepEqual(turnstileReset, ["widget-1"]);
 });
 
+test("new visitor password hint and weak-password validation run before Turnstile or POST", async () => {
+  const user = userEvent.setup();
+  const requests = [];
+  globalThis.fetch = async (input, init = {}) => {
+    requests.push({ url: String(input), method: init.method || "GET" });
+    if (String(input).endsWith("/services")) return jsonResponse(200, { ok: true, data: { items: [] } });
+    if (String(input).endsWith("/questions?limit=10&page=1")) return jsonResponse(200, emptyList());
+    throw new Error(`Unexpected request: ${String(input)}`);
+  };
+
+  render(React.createElement(KnowledgeCenter, { apiBase }));
+  await screen.findByRole("heading", { name: "계산박스 지식센터" });
+  await waitFor(() => assert.ok(turnstileCallback));
+  await user.selectOptions(screen.getAllByRole("combobox")[1], "근로·고용");
+  await user.type(screen.getByLabelText("제목"), "약한 비밀번호 차단 질문");
+  await user.type(screen.getByLabelText("비밀번호"), "aaaaaa");
+  await user.type(screen.getByLabelText("질문 내용"), "클라이언트에서 약한 비밀번호가 차단되는지 확인합니다.");
+  assert.equal(screen.getByText("6자 이상으로 입력해 주세요. 연속되거나 같은 문자 반복은 사용할 수 없습니다.").textContent.length > 0, true);
+  await user.click(screen.getByRole("button", { name: "질문 등록" }));
+
+  assert.match((await screen.findByRole("alert")).textContent, /너무 단순한 비밀번호입니다/);
+  assert.equal(requests.some(({ method, url }) => method === "POST" && url.endsWith("/questions")), false);
+  assert.equal(screen.getByLabelText("비밀번호").value, "aaaaaa");
+});
+
 function paginatedQuestions(page) {
   const start = (page - 1) * 10;
   return Array.from({ length: Math.min(10, 201 - start) }, (_, offset) => {

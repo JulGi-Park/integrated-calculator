@@ -4,7 +4,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { applyD1Migrations, env } from "cloudflare:test";
 import { route } from "../../src/router";
 import { hashPassword, passwordInput, verifyPassword } from "../../src/domain/knowledge";
-import { buildVisitorQuestionCreatePayload } from "../../../../lib/knowledge/visitor-contract";
+import { buildVisitorQuestionCreatePayload, visitorPasswordPolicyError } from "../../../../lib/knowledge/visitor-contract";
 
 
 const LABOR = "2759964a-549f-45b7-aa5b-ea719cfe0ffd";
@@ -29,6 +29,76 @@ describe("knowledge center schema and admin API", () => {
     expect(await verifyPassword(passwordInput(password.normalize("NFD")), hash)).toBe(false);
     expect(() => passwordInput("")).toThrow();
     expect(() => passwordInput("    ")).toThrow();
+  });
+  it("applies the shared minimum and deterministic weak-password rules only to new visitor registrations", async () => {
+    for (const password of ["1111", "111111", "000000", "123456", "234567", "654321", "987654", "aaaaaa", "!!!!!!", "12345678", "password", "qwerty", "abc123", "a", "ab", "abc", "abcd", "abcde"]) {
+      expect(visitorPasswordPolicyError(password), password).not.toBeNull();
+    }
+    for (const password of ["48276019436", "bluepaper", "calc2026", "!@#$%^", "지식센터암호", " xylophone "]) {
+      expect(visitorPasswordPolicyError(password), password).toBeNull();
+    }
+
+    const before = await env.KNOWLEDGE_DB.prepare(`SELECT
+      (SELECT COUNT(*) FROM knowledge_questions) questions,
+      (SELECT COUNT(*) FROM knowledge_answers) answers,
+      (SELECT COUNT(*) FROM knowledge_question_services) services,
+      (SELECT COUNT(*) FROM knowledge_audit_actions) audit,
+      (SELECT COUNT(*) FROM knowledge_submission_guards) guards,
+      (SELECT COUNT(*) FROM knowledge_imports) imports`).first();
+    await expect(admin("POST", "/api/knowledge/v1/questions", {
+      title: `weak-password-no-token-${crypto.randomUUID()}`, body: "Turnstile 유무와 무관한 약한 비밀번호 거부", category: "금융",
+      isAnonymous: true, password: "123456", serviceIds: [], turnstile_token: "",
+    })).rejects.toMatchObject({ status: 400, code: "INVALID_INPUT" });
+    for (const password of ["1111", "111111", "000000", "123456", "654321", "aaaaaa", "password"]) {
+      await expect(admin("POST", "/api/knowledge/v1/questions", {
+        title: `weak-password-${crypto.randomUUID()}`, body: "약한 비밀번호 등록 거부 검증 질문", category: "금융",
+        isAnonymous: true, password, serviceIds: [LABOR], turnstile_token: "test-token",
+      })).rejects.toMatchObject({ status: 400, code: "INVALID_INPUT" });
+    }
+    const after = await env.KNOWLEDGE_DB.prepare(`SELECT
+      (SELECT COUNT(*) FROM knowledge_questions) questions,
+      (SELECT COUNT(*) FROM knowledge_answers) answers,
+      (SELECT COUNT(*) FROM knowledge_question_services) services,
+      (SELECT COUNT(*) FROM knowledge_audit_actions) audit,
+      (SELECT COUNT(*) FROM knowledge_submission_guards) guards,
+      (SELECT COUNT(*) FROM knowledge_imports) imports`).first();
+    expect(after).toEqual(before);
+
+    for (const [index, password] of ["48276019436", "bluepaper", "calc2026", "!@#$%^", "지식센터암호", " xylophone "].entries()) {
+      const response = await route(new Request("https://knowledge-preview.gyesanbox.kr/api/knowledge/v1/questions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "CF-Connecting-IP": `192.0.2.${index + 10}` },
+        body: JSON.stringify({
+        title: `accepted-password-${index}-${crypto.randomUUID()}`, body: `정책 허용 비밀번호 등록 검증 질문 ${index}`, category: "금융",
+        isAnonymous: true, password, serviceIds: [], turnstile_token: "test-token",
+        }),
+      }), testEnv, ctx, crypto.randomUUID());
+      expect(response.response.status).toBe(201);
+      const id = (await json(response)).data.id as string;
+      const stored = await env.KNOWLEDGE_DB.prepare("SELECT password_hash FROM knowledge_questions WHERE id=?1").bind(id).first<{ password_hash: string }>();
+      expect(stored).not.toBeNull();
+      expect(await verifyPassword(password, stored!.password_hash)).toBe(true);
+    }
+  });
+  it("continues to verify and use a legacy four-character password for existing visitor edit and delete", async () => {
+    const created = await admin("POST", "/api/knowledge/v1/questions", {
+      title: "legacy password compatibility", body: "legacy short password edit then delete", category: "금융",
+      isAnonymous: true, password: "modern-passphrase", serviceIds: [], turnstile_token: "test-token",
+    });
+    const id = (await json(created)).data.id as string;
+    const legacyHash = await hashPassword(passwordInput("1111"));
+    await env.KNOWLEDGE_DB.prepare("UPDATE knowledge_questions SET password_hash=?1 WHERE id=?2").bind(legacyHash, id).run();
+
+    const path = `/api/knowledge/v1/questions/${id}`;
+    const verified = await admin("POST", `${path}/verify-password`, { password: "1111", turnstile_token: "test-token" });
+    expect(verified.response.status).toBe(200);
+    expect((await json(verified)).data).toMatchObject({ verified: true });
+    const patched = await admin("PATCH", path, { password: "1111", body: "legacy password still permits edit", turnstile_token: "test-token" });
+    expect(patched.response.status).toBe(200);
+    expect(await env.KNOWLEDGE_DB.prepare("SELECT body,password_hash FROM knowledge_questions WHERE id=?1").bind(id).first()).toMatchObject({ body: "legacy password still permits edit", password_hash: legacyHash });
+    const deleted = await admin("DELETE", path, { password: "1111", turnstile_token: "test-token" });
+    expect(deleted.response.status).toBe(200);
+    expect(await env.KNOWLEDGE_DB.prepare("SELECT id FROM knowledge_questions WHERE id=?1").bind(id).first()).toBeNull();
   });
   it("authenticates the current visitor password before editing and leaves every question field and relation unchanged on rejection", async () => {
     const created = await admin("POST", "/api/knowledge/v1/questions", { title: "수정 보안 fixture", body: "변경 전 질문", category: "금융", isAnonymous: false, nickname: "작성자", password: "original-password", serviceIds: [LABOR], turnstile_token: "test-token" });
