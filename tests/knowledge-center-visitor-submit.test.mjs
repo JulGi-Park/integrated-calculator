@@ -76,6 +76,35 @@ async function fillVisitorForm(user, { anonymous = true } = {}) {
   await user.type(screen.getByLabelText("질문 내용"), "질문 등록 이후 상세 화면을 확인합니다.");
 }
 
+async function openVisitorComposer(user) {
+  await user.click(screen.getByRole("button", { name: "질문 작성하기" }));
+  await waitFor(() => assert.ok(turnstileCallback));
+  assert.equal(screen.getByTestId("question-create-form").hidden, false);
+}
+
+test("question registration entry sits between discovery controls and the list, and form is lazy until opened", async () => {
+  const user = userEvent.setup();
+  globalThis.fetch = async (input) => {
+    const url = String(input);
+    if (url.endsWith("/services")) return jsonResponse(200, { ok: true, data: { items: [] } });
+    if (url.endsWith("/questions?limit=10&page=1")) return jsonResponse(200, emptyList());
+    throw new Error(`Unexpected request: ${url}`);
+  };
+
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
+  await screen.findByRole("heading", { name: "계산박스 지식센터" });
+  const searchTools = screen.getByTestId("knowledge-search-tools");
+  const registration = screen.getByTestId("question-registration");
+  const questionList = screen.getByTestId("knowledge-question-list");
+  assert.ok(searchTools.compareDocumentPosition(registration) & Node.DOCUMENT_POSITION_FOLLOWING);
+  assert.ok(registration.compareDocumentPosition(questionList) & Node.DOCUMENT_POSITION_FOLLOWING);
+  assert.equal(screen.queryByTestId("question-create-form"), null);
+  assert.equal(turnstileCallback, null);
+
+  await openVisitorComposer(user);
+  assert.ok(registration.contains(screen.getByLabelText("제목")));
+});
+
 test("visitor form submits through fetch, opens the wrapped detail response, and stays on /knowledge/", async () => {
   const user = userEvent.setup();
   const postBodies = [];
@@ -111,7 +140,7 @@ test("visitor form submits through fetch, opens the wrapped detail response, and
   };
 
   render(React.createElement(KnowledgeCenter, { enabled: true }));
-  await waitFor(() => assert.ok(turnstileCallback));
+  await openVisitorComposer(user);
   await fillVisitorForm(user);
   assert.equal(screen.getByLabelText("비밀번호").getAttribute("autocomplete"), "new-password");
   await act(async () => turnstileCallback("test-only-token"));
@@ -162,7 +191,7 @@ test("named visitor submits the same create contract with nickname and selected 
   };
 
   render(React.createElement(KnowledgeCenter, { enabled: true }));
-  await waitFor(() => assert.ok(turnstileCallback));
+  await openVisitorComposer(user);
   await fillVisitorForm(user, { anonymous: false });
   await user.click(screen.getByRole("checkbox", { name: /주휴수당 계산기/ }));
   await act(async () => turnstileCallback("test-only-token-2"));
@@ -190,7 +219,7 @@ test("create API error keeps /knowledge/ and preserves entered values for correc
   };
 
   render(React.createElement(KnowledgeCenter, { enabled: true }));
-  await waitFor(() => assert.ok(turnstileCallback));
+  await openVisitorComposer(user);
   await fillVisitorForm(user);
   await act(async () => turnstileCallback("test-only-token"));
   const pathnameBeforeSubmit = window.location.pathname;
@@ -216,7 +245,7 @@ test("new visitor password hint and weak-password validation run before Turnstil
 
   render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByRole("heading", { name: "계산박스 지식센터" });
-  await waitFor(() => assert.ok(turnstileCallback));
+  await openVisitorComposer(user);
   await user.selectOptions(screen.getAllByRole("combobox")[1], "근로·고용");
   await user.type(screen.getByLabelText("제목"), "약한 비밀번호 차단 질문");
   await user.type(screen.getByLabelText("비밀번호"), "aaaaaa");
@@ -275,6 +304,7 @@ test("edit begins with password verification and never prefills the new-question
   installPaginatedApi();
   render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByText("질문 1", { selector: "strong" });
+  await openVisitorComposer(user);
   await user.click(questionRow(1));
   await screen.findByTestId("desktop-question-detail");
   await user.click(screen.getAllByRole("button", { name: "질문 수정" })[1]);
@@ -323,6 +353,7 @@ test("wrong password never opens edit fields; verified inline editing PATCHes th
   const { question, mutations } = installEditApi({ totalPages: 21 });
   render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByText(question.title, { selector: "strong" });
+  await openVisitorComposer(user);
   await user.type(screen.getByLabelText("제목"), "작성 중인 새 질문");
   await user.click(questionRow(1));
   const detail = await screen.findByTestId("desktop-question-detail");
@@ -369,6 +400,7 @@ test("mobile editor stays inside the selected question and cancel never changes 
   const original = question.body;
   render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByText(question.title, { selector: "strong" });
+  await openVisitorComposer(user);
   await user.click(questionRow(1));
   const detail = await screen.findByTestId("inline-question-detail");
   await user.click(within(detail).getByRole("button", { name: "질문 수정" }));
@@ -397,6 +429,7 @@ test("mobile edit placement uses the viewport at the tap, not a stale responsive
   const { question } = installEditApi({ totalPages: 21 });
   render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByText(question.title, { selector: "strong" });
+  await openVisitorComposer(user);
   await user.click(questionRow(1));
   const inlineDetail = await screen.findByTestId("inline-question-detail");
 
@@ -435,6 +468,7 @@ test("visitor delete is only available after password confirmation and stays bou
   window.confirm = (message) => { confirmCalls++; assert.match(message, /삭제하시겠습니까/u); assert.match(message, /복구할 수 없습니다/u); return false; };
   render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByText(question.title, { selector: "strong" });
+  await openVisitorComposer(user);
   await user.type(screen.getByLabelText("제목"), "새 질문 초안은 유지");
   await user.click(questionRow(1));
   const detail = await screen.findByTestId("inline-question-detail");
