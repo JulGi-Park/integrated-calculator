@@ -3,9 +3,11 @@ import { logRequest } from "./observability";
 import { assertKnowledgeHost, assertStateChangingOrigin, corsHeaders, validKnowledgeOrigin } from "./security/cors";
 import { route } from "./router";
 import type { TurnstileCategory } from "./security/turnstile";
+import { WorkerEntrypoint } from "cloudflare:workers";
+import { isKnowledgeVisitorRequest } from "../../../lib/knowledge/public-api";
 export { KnowledgeImportEntrypoint } from "./knowledge-import-entrypoint";
 
-export default {
+const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const requestId = crypto.randomUUID();
     const started = Date.now();
@@ -53,3 +55,20 @@ export default {
     return response ?? fail(requestId, new ApiError(500, "INTERNAL_ERROR", "일시적인 오류가 발생했습니다."));
   },
 } satisfies ExportedHandler<Env>;
+
+/** Public-only binding capability; the import entrypoint stays separate. */
+export class KnowledgePublicEntrypoint extends WorkerEntrypoint<Env> {
+  async fetch(request: Request): Promise<Response> {
+    const url = new URL(request.url);
+    if (!isKnowledgeVisitorRequest(url.pathname, request.method)) {
+      return fail(crypto.randomUUID(), new ApiError(404, "NOT_FOUND", "존재하지 않는 경로입니다."));
+    }
+    // Internal dispatch reuses all existing Origin/password/Turnstile/rate-limit checks.
+    url.hostname = this.env.KNOWLEDGE_API_HOST;
+    url.protocol = "https:";
+    url.port = "";
+    return worker.fetch(new Request(url, request), this.env, this.ctx);
+  }
+}
+
+export default worker;

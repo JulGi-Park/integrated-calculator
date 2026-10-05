@@ -4,6 +4,7 @@ import { notFound, resolveKnowledgeRuntime, unavailable, type KnowledgePageFunct
 export const onRequestGet = async (context: KnowledgePageFunctionContext & { next(): Promise<Response> }): Promise<Response> => {
   const runtime = resolveKnowledgeRuntime(new URL(context.request.url), context.env);
   if (!runtime) return notFound();
+  if (!runtime.KNOWLEDGE_SERVICE) return unavailable();
   const response = await context.next();
   if (response.status !== 200 || !response.headers.get("content-type")?.includes("text/html")) return response;
   const html = await response.text();

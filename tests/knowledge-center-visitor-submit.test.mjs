@@ -24,7 +24,7 @@ const React = await import("react");
 const { KnowledgeCenter } = await import("../components/knowledge/KnowledgeCenter.tsx");
 const { KnowledgeLatestQuestions } = await import("../components/knowledge/KnowledgeLatestQuestions.tsx");
 
-const apiBase = "https://knowledge-preview.gyesanbox.kr/api/knowledge/v1";
+const apiBase = "/api/knowledge/v1";
 let turnstileReset;
 let turnstileCallback;
 
@@ -110,7 +110,7 @@ test("visitor form submits through fetch, opens the wrapped detail response, and
     throw new Error(`Unexpected request: ${url}`);
   };
 
-  render(React.createElement(KnowledgeCenter, { apiBase }));
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
   await waitFor(() => assert.ok(turnstileCallback));
   await fillVisitorForm(user);
   assert.equal(screen.getByLabelText("비밀번호").getAttribute("autocomplete"), "new-password");
@@ -161,7 +161,7 @@ test("named visitor submits the same create contract with nickname and selected 
     throw new Error(`Unexpected request: ${url}`);
   };
 
-  render(React.createElement(KnowledgeCenter, { apiBase }));
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
   await waitFor(() => assert.ok(turnstileCallback));
   await fillVisitorForm(user, { anonymous: false });
   await user.click(screen.getByRole("checkbox", { name: /주휴수당 계산기/ }));
@@ -189,7 +189,7 @@ test("create API error keeps /knowledge/ and preserves entered values for correc
     throw new Error(`Unexpected request: ${url}`);
   };
 
-  render(React.createElement(KnowledgeCenter, { apiBase }));
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
   await waitFor(() => assert.ok(turnstileCallback));
   await fillVisitorForm(user);
   await act(async () => turnstileCallback("test-only-token"));
@@ -214,7 +214,7 @@ test("new visitor password hint and weak-password validation run before Turnstil
     throw new Error(`Unexpected request: ${String(input)}`);
   };
 
-  render(React.createElement(KnowledgeCenter, { apiBase }));
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByRole("heading", { name: "계산박스 지식센터" });
   await waitFor(() => assert.ok(turnstileCallback));
   await user.selectOptions(screen.getAllByRole("combobox")[1], "근로·고용");
@@ -254,7 +254,7 @@ function installPaginatedApi() {
     const url = String(input);
     if (url.endsWith("/services")) return jsonResponse(200, { ok: true, data: { items: [{ id: "service-1", slug: "labor-pay", name: "주휴수당 계산기" }] } });
     if (url.includes("/questions?limit=10&page=")) {
-      const page = Number(new URL(url).searchParams.get("page"));
+      const page = Number(new URL(url, window.location.origin).searchParams.get("page"));
       return jsonResponse(200, { ok: true, data: { items: paginatedQuestions(page), page, total_pages: 21 } });
     }
     const id = url.match(/\/questions\/(00000000-0000-4000-8000-\d{12})$/)?.[1];
@@ -273,7 +273,7 @@ function questionRow(number) {
 test("edit begins with password verification and never prefills the new-question composer", async () => {
   const user = userEvent.setup();
   installPaginatedApi();
-  render(React.createElement(KnowledgeCenter, { apiBase }));
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByText("질문 1", { selector: "strong" });
   await user.click(questionRow(1));
   await screen.findByTestId("desktop-question-detail");
@@ -321,7 +321,7 @@ function installEditApi({ answered = false, totalPages = 1 } = {}) {
 test("wrong password never opens edit fields; verified inline editing PATCHes the same ID with the current password", async () => {
   const user = userEvent.setup();
   const { question, mutations } = installEditApi({ totalPages: 21 });
-  render(React.createElement(KnowledgeCenter, { apiBase }));
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByText(question.title, { selector: "strong" });
   await user.type(screen.getByLabelText("제목"), "작성 중인 새 질문");
   await user.click(questionRow(1));
@@ -367,7 +367,7 @@ test("mobile editor stays inside the selected question and cancel never changes 
   const user = userEvent.setup();
   const { question, mutations } = installEditApi({ totalPages: 21 });
   const original = question.body;
-  render(React.createElement(KnowledgeCenter, { apiBase }));
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByText(question.title, { selector: "strong" });
   await user.click(questionRow(1));
   const detail = await screen.findByTestId("inline-question-detail");
@@ -395,7 +395,7 @@ test("mobile edit placement uses the viewport at the tap, not a stale responsive
   window.matchMedia = () => ({ matches: narrowViewport, addEventListener() {}, removeEventListener() {} });
   const user = userEvent.setup();
   const { question } = installEditApi({ totalPages: 21 });
-  render(React.createElement(KnowledgeCenter, { apiBase }));
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByText(question.title, { selector: "strong" });
   await user.click(questionRow(1));
   const inlineDetail = await screen.findByTestId("inline-question-detail");
@@ -419,7 +419,7 @@ test("mobile edit placement uses the viewport at the tap, not a stale responsive
 test("answered questions have no edit entry point", async () => {
   const user = userEvent.setup();
   const { question } = installEditApi({ answered: true });
-  render(React.createElement(KnowledgeCenter, { apiBase }));
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByText(question.title, { selector: "strong" });
   await user.click(questionRow(1));
   await screen.findByTestId("desktop-question-detail");
@@ -433,7 +433,7 @@ test("visitor delete is only available after password confirmation and stays bou
   const { question, mutations } = installEditApi();
   let confirmCalls = 0;
   window.confirm = (message) => { confirmCalls++; assert.match(message, /삭제하시겠습니까/u); assert.match(message, /복구할 수 없습니다/u); return false; };
-  render(React.createElement(KnowledgeCenter, { apiBase }));
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByText(question.title, { selector: "strong" });
   await user.type(screen.getByLabelText("제목"), "새 질문 초안은 유지");
   await user.click(questionRow(1));
@@ -476,7 +476,7 @@ test("visitor delete is only available after password confirmation and stays bou
 test("selected question detail is inserted directly below its list item and moves with a new selection", async () => {
   const user = userEvent.setup();
   installPaginatedApi();
-  render(React.createElement(KnowledgeCenter, { apiBase }));
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByText("질문 1", { selector: "strong" });
   const first = questionRow(1);
   assert.equal(first.parentElement.querySelector("a")?.getAttribute("href"), "/knowledge/00000000-0000-4000-8000-000000000001/");
@@ -501,7 +501,7 @@ test("home latest question title is a permanent detail anchor", async () => {
     id: "5e0221de-67a8-47ec-9211-7d28b8614dba", title: "홈 최신 질문", isAnonymous: true,
     nickname: null, answer: { body: "공식답변" },
   }] } });
-  render(React.createElement(KnowledgeLatestQuestions, { apiBase }));
+  render(React.createElement(KnowledgeLatestQuestions, { enabled: true }));
   const link = await screen.findByRole("link", { name: /홈 최신 질문/u });
   assert.equal(link.getAttribute("href"), "/knowledge/5e0221de-67a8-47ec-9211-7d28b8614dba/");
 });
@@ -509,7 +509,7 @@ test("home latest question title is a permanent detail anchor", async () => {
 test("clicking the selected question again collapses it, while selecting another replaces the detail", async () => {
   const user = userEvent.setup();
   installPaginatedApi();
-  render(React.createElement(KnowledgeCenter, { apiBase }));
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByText("질문 1", { selector: "strong" });
   const first = questionRow(1);
   const second = questionRow(2);
@@ -541,7 +541,7 @@ test("clicking the selected question again collapses it, while selecting another
 test("pagination keeps numeric buttons compact, offers mobile summary, and clears selected detail on page change", async () => {
   const user = userEvent.setup();
   installPaginatedApi();
-  render(React.createElement(KnowledgeCenter, { apiBase }));
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByText("질문 1", { selector: "strong" });
   const desktop = screen.getByTestId("desktop-pagination");
   const mobile = screen.getByTestId("mobile-pagination");
@@ -579,7 +579,7 @@ test("server search combines with category, resets pagination and selection, and
   globalThis.fetch = async (input) => {
     const url = String(input);
     if (url.endsWith("/services")) return jsonResponse(200, { ok: true, data: { items: [] } });
-    const parsed = new URL(url);
+    const parsed = new URL(url, window.location.origin);
     if (parsed.pathname.endsWith("/questions")) {
       const params = parsed.searchParams;
       requests.push({ q: params.get("q"), category: params.get("category"), page: Number(params.get("page")) });
@@ -594,7 +594,7 @@ test("server search combines with category, resets pagination and selection, and
     throw new Error(`Unexpected request: ${url}`);
   };
 
-  render(React.createElement(KnowledgeCenter, { apiBase }));
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
   await screen.findByText("질문 1", { selector: "strong" });
   await user.click(questionRow(1));
   await screen.findByTestId("inline-question-detail");

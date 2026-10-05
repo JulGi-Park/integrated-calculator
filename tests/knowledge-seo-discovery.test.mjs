@@ -4,8 +4,8 @@ import { JSDOM } from "jsdom";
 import { onRequestGet as sitemapRoute } from "../functions/sitemap-knowledge.xml.ts";
 import { fetchRelatedKnowledgeQuestions, renderKnowledgeQuestion } from "../pages-functions/knowledge-seo.ts";
 
-const base = "https://knowledge-preview.gyesanbox.kr/api/knowledge/v1";
-const env = { NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW: "true", NEXT_PUBLIC_KNOWLEDGE_API_BASE: base };
+const env = { NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW: "true",
+  KNOWLEDGE_SERVICE: { fetch: request => globalThis.fetch(request.url, { redirect: request.redirect }) } };
 const preview = "https://know-02-preview.integrated-calculator.pages.dev";
 const id = (number) => `00000000-0000-4000-8000-${String(number).padStart(12, "0")}`;
 const json = (data) => Response.json({ ok: true, data });
@@ -76,7 +76,7 @@ test("related questions use published list data, exclude self, cap links, and es
       title: `질문 ${index + 1}`, category: "근로·고용" })), 1, 200));
   };
   try {
-    const related = await fetchRelatedKnowledgeQuestions({ apiBaseUrl: base }, { id: id(1), category: "사업" });
+    const related = await fetchRelatedKnowledgeQuestions(env, { id: id(1), category: "사업" });
     assert.deepEqual(requested, ["사업", null]);
     assert.deepEqual(related.map((item) => item.id), [id(2), id(3), id(4), id(5), id(6)]);
     const html = renderKnowledgeQuestion({ id: id(1), title: "현재 질문", body: "본문", category: "사업",

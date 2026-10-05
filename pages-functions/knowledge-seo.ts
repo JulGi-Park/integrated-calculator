@@ -7,6 +7,7 @@ import {
   normalizeKnowledgeQuestionId,
 } from "../lib/knowledge/seo";
 import { knowledgeGates, type KnowledgeGateEnv } from "../lib/knowledge/gates";
+import { knowledgeServiceFetch, knowledgeReadRequest, type KnowledgeTransportEnv } from "./knowledge-transport";
 
 export type KnowledgePageFunctionContext = {
   request: Request;
@@ -14,7 +15,7 @@ export type KnowledgePageFunctionContext = {
   params: Record<string, string | undefined>;
 };
 
-type Runtime = { apiBaseUrl: string; environment: "preview" | "production";
+type Runtime = KnowledgeTransportEnv & { environment: "preview" | "production";
   publicEnabled: boolean; indexEnabled: boolean; curatedEnabled: boolean };
 export type PublicListQuestion = { id: string; title: string; category: string | null };
 type PublicQuestionPage = { items: PublicListQuestion[]; page: number; total: number; totalPages: number };
@@ -31,7 +32,6 @@ export type PublicQuestion = {
 };
 
 const PREVIEW_HOST = /^[a-z0-9-]+\.integrated-calculator\.pages\.dev$/u;
-const KNOWLEDGE_HOST = /^knowledge(?:-[a-z0-9-]+)?\.gyesanbox\.kr$/u;
 const PREVIEW_ROBOTS = "noindex, nofollow, noarchive";
 const NO_STORE = { "Cache-Control": "no-store", "X-Robots-Tag": PREVIEW_ROBOTS };
 const escape = escapeKnowledgeSeoHtml;
@@ -39,12 +39,10 @@ const PUBLIC_PAGE_SIZE = 10;
 const MAX_SITEMAP_PAGES = 100;
 const RELATED_QUESTION_LIMIT = 5;
 
-export type KnowledgePagesEnv = KnowledgeGateEnv & {
+export type KnowledgePagesEnv = KnowledgeGateEnv & KnowledgeTransportEnv & {
   NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW?: string;
   KNOWLEDGE_ENV?: string;
   KNOWLEDGE_PUBLIC_ENABLED?: string;
-  KNOWLEDGE_API_BASE?: string;
-  NEXT_PUBLIC_KNOWLEDGE_API_BASE?: string;
   KNOWLEDGE_SEO_IDENTITY_DB?: import("./knowledge-curated-seo").IdentityDatabase;
 };
 
@@ -55,17 +53,8 @@ export function resolveKnowledgeRuntime(url: URL, env: KnowledgePagesEnv): Runti
     && env.KNOWLEDGE_ENV === "production"
     && env.KNOWLEDGE_PUBLIC_ENABLED === "true";
   if (!preview && !production) return null;
-  const configured = (env.KNOWLEDGE_API_BASE ?? env.NEXT_PUBLIC_KNOWLEDGE_API_BASE)?.trim();
-  if (!configured) return null;
-  try {
-    const api = new URL(configured);
-    if (api.protocol !== "https:" || !KNOWLEDGE_HOST.test(api.hostname)
-      || api.pathname !== "/api/knowledge/v1" || api.search || api.hash || api.username || api.password) return null;
-    const environment = production ? "production" : "preview";
-    return { apiBaseUrl: api.toString().replace(/\/$/u, ""), environment, ...knowledgeGates(environment, env) };
-  } catch {
-    return null;
-  }
+  const environment = production ? "production" : "preview";
+  return { KNOWLEDGE_SERVICE: env.KNOWLEDGE_SERVICE, environment, ...knowledgeGates(environment, env) };
 }
 
 export function notFound(): Response {
@@ -77,13 +66,11 @@ export function unavailable(): Response {
 }
 
 async function fetchPublicQuestionPage(runtime: Runtime, page: number, category?: string): Promise<PublicQuestionPage> {
-  const url = new URL(`${runtime.apiBaseUrl}/questions`);
+  const url = new URL(knowledgeReadRequest("/questions").url);
   url.searchParams.set("limit", String(PUBLIC_PAGE_SIZE));
   url.searchParams.set("page", String(page));
   if (category) url.searchParams.set("category", category);
-  const response = await fetch(url, {
-    headers: { Accept: "application/json" }, redirect: "manual", signal: AbortSignal.timeout(8000),
-  });
+  const response = await knowledgeServiceFetch(runtime, new Request(url, { headers: { Accept: "application/json" } }));
   if (!response.ok || !response.headers.get("content-type")?.toLowerCase().includes("application/json")) {
     throw new Error("KNOWLEDGE_LIST_API_UNAVAILABLE");
   }
@@ -162,9 +149,7 @@ export async function fetchPublishedQuestion(runtime: Runtime, id: string): Prom
   let upstreamStatus: number | null = null;
   let upstreamContentType: string | null = null;
   try {
-    const response = await fetch(`${runtime.apiBaseUrl}/questions/${encodeURIComponent(id)}`, {
-      headers: { Accept: "application/json" }, redirect: "manual", signal: AbortSignal.timeout(8000),
-    });
+    const response = await knowledgeServiceFetch(runtime, knowledgeReadRequest(`/questions/${encodeURIComponent(id)}`));
     upstreamStatus = response.status;
     upstreamContentType = response.headers.get("content-type");
     if (response.status === 404) return null;

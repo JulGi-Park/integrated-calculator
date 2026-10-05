@@ -103,11 +103,11 @@ test("curated HTML escaping, OG/Twitter equality, canonical/H1/answer/calculator
 
 test("actual Function initial HTML uses bound identity; no public identity endpoint and fallback on DB failure",async ()=>{
   const saved=globalThis.fetch;
-  globalThis.fetch=async url=>{assert.equal(String(url),`https://knowledge-preview.gyesanbox.kr/api/knowledge/v1/questions/${id}`);
+  globalThis.fetch=async url=>{assert.equal(String(url),`https://knowledge.internal/api/knowledge/v1/questions/${id}`);
     return Response.json({ok:true,data:{question}});};
   try {
     const response=await onRequestGet({request:new Request(`https://know-02-preview.integrated-calculator.pages.dev/knowledge/${id}/`),
-      params:{questionId:id},env:{NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW:"true",NEXT_PUBLIC_KNOWLEDGE_API_BASE:"https://knowledge-preview.gyesanbox.kr/api/knowledge/v1",
+      params:{questionId:id},env:{NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW:"true",KNOWLEDGE_SERVICE:{fetch:request=>globalThis.fetch(request.url)},
         KNOWLEDGE_SEO_IDENTITY_DB:database([])}});
     assert.equal(response.status,200);assert.equal(response.headers.get("cache-control"),"no-store");
     assert.equal(new JSDOM(await response.text()).window.document.title,knowledgeSeo(question).title);

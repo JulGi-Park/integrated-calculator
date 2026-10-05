@@ -318,7 +318,7 @@ export default function Home() {
       </section>
 
       {process.env.NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW === "true" ? (
-        <KnowledgeLatestQuestions apiBase={process.env.NEXT_PUBLIC_KNOWLEDGE_API_BASE ?? ""} />
+        <KnowledgeLatestQuestions enabled />
       ) : null}
 
       <section className="home-calculators" aria-labelledby="home-principles-title">

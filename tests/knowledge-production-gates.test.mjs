@@ -18,7 +18,7 @@ const sha = text => createHash("sha256").update(text).digest("hex");
 const fingerprint = { title:sha(q.title),question_body:sha(q.body),answer_body:sha(q.answer.body),category:sha(q.category),
   content:sha(JSON.stringify({title:q.title,body:q.body,answer:q.answer.body,category:q.category})) };
 const env = (publicOn, indexOn) => ({ KNOWLEDGE_ENV:"production", KNOWLEDGE_PUBLIC_ENABLED:String(publicOn),
-  KNOWLEDGE_INDEX_ENABLED:String(indexOn), KNOWLEDGE_API_BASE:"https://knowledge.gyesanbox.kr/api/knowledge/v1" });
+  KNOWLEDGE_INDEX_ENABLED:String(indexOn), KNOWLEDGE_SERVICE:{fetch:request=>globalThis.fetch(request.url)} });
 const ctx = (path, values, host="gyesanbox.kr") => ({request:new Request(`https://${host}${path}`),env:values,params:{questionId:id}});
 const assets = () => Promise.resolve(new Response('<html><head><meta name="robots" content="noindex, nofollow"></head><body>계산박스 지식센터</body></html>',
   {headers:{"content-type":"text/html","etag":"old","content-length":"1","x-robots-tag":"noindex"}}));
@@ -47,7 +47,7 @@ test("Production/Preview matrix applies to actual detail/list HTML and sitemap, 
       if(expected){assert.match(await xml.text(),new RegExp(id));assert.equal(xml.headers.get('x-robots-tag'),null);}
     }
     for(const values of [{},env(true,true)]) {
-      const preview={...values,NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW:'true',NEXT_PUBLIC_KNOWLEDGE_API_BASE:'https://knowledge-preview.gyesanbox.kr/api/knowledge/v1'};
+      const preview={...values,NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW:'true',KNOWLEDGE_SERVICE:{fetch:request=>globalThis.fetch(request.url)}};
       // Even production-looking variables on a Pages Preview hostname cannot allow indexing.
       const response=await detail(ctx(`/knowledge/${id}/`,preview,'gate-preview.integrated-calculator.pages.dev'));
       assert.equal(response.status,200);assert.match(await response.text(),/noindex, nofollow, noarchive/);

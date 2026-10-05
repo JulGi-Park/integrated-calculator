@@ -5,6 +5,7 @@ import { KnowledgeQuestionEditor } from "./KnowledgeQuestionEditor";
 import { buildVisitorQuestionCreatePayload, visitorPasswordPolicyError } from "../../lib/knowledge/visitor-contract";
 import { KNOWLEDGE_CATEGORIES } from "../../lib/knowledge/categories";
 import { knowledgeDetailPath } from "../../lib/knowledge/seo";
+import { KNOWLEDGE_PUBLIC_API } from "../../lib/knowledge/public-api";
 import styles from "./KnowledgeCenter.module.css";
 
 type Service = { id: string; slug: string; name: string };
@@ -31,7 +32,8 @@ const pageWindow = (current: number, total: number): Array<number | "ellipsis-st
   return pages;
 };
 
-export function KnowledgeCenter({ apiBase }: { apiBase: string }) {
+export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
+  const apiBase = enabled ? KNOWLEDGE_PUBLIC_API : "";
   const [services, setServices] = useState<Service[]>([]);
   const [items, setItems] = useState<Question[]>([]);
   const [selected, setSelected] = useState<Question | null>(null);

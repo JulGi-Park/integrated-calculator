@@ -2,8 +2,10 @@
 import { useEffect, useState } from "react";
 import { knowledgeDetailPath } from "../../lib/knowledge/seo";
 import styles from "./KnowledgeLatestQuestions.module.css";
+import { KNOWLEDGE_PUBLIC_API } from "../../lib/knowledge/public-api";
 type Item = { id: string; title: string; isAnonymous: boolean; nickname: string | null; createdAt: string; answer: unknown };
-export function KnowledgeLatestQuestions({ apiBase }: { apiBase: string }) {
+export function KnowledgeLatestQuestions({ enabled }: { enabled: boolean }) {
+  const apiBase = enabled ? KNOWLEDGE_PUBLIC_API : "";
   const [items, setItems] = useState<Item[]>([]);
   useEffect(() => { if (!apiBase) return; void fetch(`${apiBase}/questions?limit=5&page=1`, { cache: "no-store" }).then((r) => r.json()).then((payload: { data?: { items?: Item[] } }) => setItems(payload.data?.items ?? [])).catch(() => setItems([])); }, [apiBase]);
   if (!apiBase || !items.length) return null;

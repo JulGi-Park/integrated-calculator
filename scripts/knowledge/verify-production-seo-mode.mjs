@@ -25,10 +25,10 @@ for(let offset=0;offset<identities.length;offset+=4) {
 const db={prepare(sql){assert.match(sql,/^SELECT /);return {bind(...keys){return {all:async()=>({success:true,
   results:rows.filter(row=>keys.includes(row.source_key))})};}};}};
 const env={KNOWLEDGE_ENV:'production',KNOWLEDGE_PUBLIC_ENABLED:'true',KNOWLEDGE_INDEX_ENABLED:'true',
-  KNOWLEDGE_API_BASE:'https://knowledge.gyesanbox.kr/api/knowledge/v1',KNOWLEDGE_SEO_IDENTITY_DB:db};
+  KNOWLEDGE_SERVICE:{fetch:request=>globalThis.fetch(request.url)},KNOWLEDGE_SEO_IDENTITY_DB:db};
 const counts={localOnly:true,resolve:200,fingerprint:200,rawHtml:0,curated:0,review:0,index:0,relatedEdges:0};
 globalThis.fetch=async url=>{
-  const u=new URL(url);assert.equal(u.origin,'https://knowledge.gyesanbox.kr');
+  const u=new URL(url);assert.equal(u.origin,'https://knowledge.internal');
   const question=questions.get(u.pathname.split('/').at(-1));
   return question?Response.json({ok:true,data:{question}}):Response.json({ok:false},{status:404});
 };

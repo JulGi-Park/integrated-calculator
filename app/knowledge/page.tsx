@@ -9,5 +9,5 @@ export function generateMetadata(): Metadata {
 
 export default function KnowledgePage() {
   const enabled = knowledgeBuildGates(process.env).publicEnabled;
-  return <KnowledgeCenter apiBase={enabled ? (process.env.NEXT_PUBLIC_KNOWLEDGE_API_BASE ?? "") : ""} />;
+  return <KnowledgeCenter enabled={enabled} />;
 }

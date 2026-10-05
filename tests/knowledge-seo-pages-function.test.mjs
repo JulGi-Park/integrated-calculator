@@ -6,7 +6,7 @@ import { onRequestGet } from "../functions/knowledge/[questionId].ts";
 const id = "5e0221de-67a8-47ec-9211-7d28b8614dba";
 const relatedId = "e3710eb4-499f-4f64-be4f-ce02c2a100a4";
 const env = { NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW: "true",
-  NEXT_PUBLIC_KNOWLEDGE_API_BASE: "https://knowledge-preview.gyesanbox.kr/api/knowledge/v1" };
+  KNOWLEDGE_SERVICE: { fetch: request => globalThis.fetch(request.url, { redirect: request.redirect }) } };
 const question = { id, isAnonymous: true, nickname: null, title: `제목 </title><script>alert("x")</script> & '`,
   body: `질문 <img src=x onerror="alert(1)"> & '`, category: `근로·고용 <svg onload="x">`,
   answer: { id: "answer-id", body: `답변 </section> & " ' <script>x</script>` },
@@ -35,7 +35,7 @@ test("published detail returns metadata and question/answer in escaped initial H
   const saved = globalThis.fetch;
   globalThis.fetch = async (url, options) => {
     assert.equal(options.redirect, "manual");
-    if (String(url) === `${env.NEXT_PUBLIC_KNOWLEDGE_API_BASE}/questions/${id}`) {
+    if (String(url) === `https://knowledge.internal/api/knowledge/v1/questions/${id}`) {
       return json(200, { ok: true, data: { question } });
     }
     const listUrl = new URL(String(url));
