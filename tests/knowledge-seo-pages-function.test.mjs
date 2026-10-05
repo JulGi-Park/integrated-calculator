@@ -9,6 +9,7 @@ const env = { NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW: "true",
   KNOWLEDGE_SERVICE: { fetch: request => globalThis.fetch(request.url, { redirect: request.redirect }) } };
 const question = { id, isAnonymous: true, nickname: null, title: `제목 </title><script>alert("x")</script> & '`,
   body: `질문 <img src=x onerror="alert(1)"> & '`, category: `근로·고용 <svg onload="x">`,
+  createdAt: "2026-10-04T03:20:00.000Z",
   answer: { id: "answer-id", body: `답변 </section> & " ' <script>x</script>` },
   relatedServices: [{ id: "service-id", slug: "labor-pay", name: `주휴수당 <script>x</script>` }] };
 const context = (questionId = id, hostname = "know-02-preview.integrated-calculator.pages.dev", runtimeEnv = env) => ({
@@ -64,10 +65,21 @@ test("published detail returns metadata and question/answer in escaped initial H
     assert.match(source, /name="twitter:title"/);
     assert.match(source, /name="twitter:description"/);
     assert.match(source, /name="twitter:image"/);
-    assert.match(source, /href="\/calculators\/labor-pay\/">주휴수당 &lt;script&gt;x&lt;\/script&gt; 계산하기/);
+    assert.match(source, /<link rel="stylesheet" href="\/knowledge-detail\.css">/);
+    assert.match(source, /<header class="site-header">[\s\S]*?계산박스/);
+    assert.match(source, /<nav class="knowledge-breadcrumb" aria-label="현재 위치">[\s\S]*?근로·고용 &lt;svg/);
+    assert.match(source, /class="knowledge-category">근로·고용 &lt;svg/);
+    assert.match(source, /<span class="knowledge-meta__label">작성자<\/span><span>익명<\/span>/);
+    assert.match(source, /<time datetime="2026-10-04T03:20:00\.000Z">2026년 10월 4일<\/time>/);
+    assert.match(source, /class="knowledge-question-card"[\s\S]*?질문 내용/);
+    assert.match(source, /class="knowledge-answer"[\s\S]*?계산박스 공식답변/);
+    assert.match(source, /href="\/calculators\/labor-pay\/"[\s\S]*?주휴수당 &lt;script&gt;x&lt;\/script&gt;[\s\S]*?시급과 소정근로시간[\s\S]*?계산기 열기/);
     // Unmapped questions use deterministic metadata and never receive global filler links.
     assert.doesNotMatch(source, /aria-labelledby="related-questions"/u);
-    assert.match(source, /href="\/knowledge\/">계산박스 지식센터 목록/);
+    assert.match(source, /class="knowledge-back-link" href="\/knowledge\/"[\s\S]*?지식센터로 돌아가기/);
+    assert.match(source, /href="\/knowledge\/">질문 둘러보기/);
+    assert.match(source, /class="site-footer"[\s\S]*?개인정보처리방침/);
+    assert.equal((source.match(/<h1\b/g) ?? []).length, 1);
     const dom = new JSDOM(source);
     assert.equal(dom.window.document.querySelectorAll("script").length, 0);
     assert.equal(dom.window.document.querySelector("h1").textContent, question.title);
