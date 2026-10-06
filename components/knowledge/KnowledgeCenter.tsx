@@ -12,6 +12,7 @@ type Service = { id: string; slug: string; name: string };
 type Answer = { id: string; body: string; created_at: string; updated_at: string } | null;
 type Question = { id: string; title: string; body: string; category: string | null; isAnonymous: boolean; nickname: string | null; status: string; createdAt: string; updatedAt: string; answer: Answer; relatedServices: Service[] };
 type Envelope<T> = { ok: boolean; data?: T; error?: { message?: string } };
+type VisitorField = "title" | "body" | "nickname" | "password" | "category";
 const TURNSTILE_SITEKEY = "0x4AAAAAAE59wsbNGbwWKWMC";
 const isMobileViewport = () => typeof window.matchMedia === "function"
   ? window.matchMedia("(max-width: 760px)").matches
@@ -49,12 +50,20 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [submitError, setSubmitError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<VisitorField, string>>>({});
   // The edit session is bound to both its record and the responsive detail
   // surface selected at click time. The create form below remains independent.
   const [editSession, setEditSession] = useState<EditSession | null>(null);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileVisible, setTurnstileVisible] = useState(false);
+  const [turnstilePrompt, setTurnstilePrompt] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const widgetRef = useRef<HTMLDivElement>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const bodyInputRef = useRef<HTMLTextAreaElement>(null);
+  const nicknameInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+  const categoryInputRef = useRef<HTMLSelectElement>(null);
   const widgetId = useRef<unknown>(null);
   const [form, setForm] = useState({ title: "", category: "", website: "", anonymous: true, nickname: "", password: "", body: "", serviceIds: [] as string[] });
   const currentPageRef = useRef(1);
@@ -62,10 +71,11 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
   const categoryRef = useRef("");
   const listTopRef = useRef<HTMLDivElement>(null);
 
-  const call = useCallback(async <T,>(path: string, init?: RequestInit) => {
+  const call = useCallback(async <T,>(path: string, init?: RequestInit, expectedStatus?: number) => {
     const response = await fetch(`${apiBase}${path}`, { ...init, cache: "no-store", credentials: "omit", headers: { Accept: "application/json", "Content-Type": "application/json", ...(init?.headers || {}) } });
     const payload = await response.json() as Envelope<T>;
     if (!response.ok || !payload.ok) throw new Error(payload.error?.message || "지식센터 요청에 실패했습니다.");
+    if (expectedStatus !== undefined && response.status !== expectedStatus) throw new Error("질문 등록 응답을 확인하지 못했습니다. 입력 내용은 유지됩니다.");
     return payload.data as T;
   }, [apiBase]);
 
@@ -90,9 +100,9 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
 
   // eslint-disable-next-line react-hooks/set-state-in-effect -- initial data synchronization belongs to the client preview.
   useEffect(() => { if (!apiBase) return; void Promise.all([loadServices(), loadList()]).catch(() => undefined); }, [apiBase, loadList, loadServices]);
-  useEffect(() => { if (typeof window === "undefined" || !apiBase || !composerMounted) return; const w = window as Window & { turnstile?: { render: (el: HTMLElement, opts: Record<string, unknown>) => unknown; reset: (id?: unknown) => void } }; const mount = () => { if (!widgetRef.current || !w.turnstile || widgetId.current !== null) return; widgetId.current = w.turnstile.render(widgetRef.current, { sitekey: TURNSTILE_SITEKEY, language: "ko", callback: (token: string) => setTurnstileToken(token), "expired-callback": () => setTurnstileToken(""), "error-callback": () => setTurnstileToken("") }); }; if (w.turnstile) mount(); else { const script = document.querySelector<HTMLScriptElement>('script[src*="challenges.cloudflare.com/turnstile"]') || document.createElement("script"); if (!script.src) { script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"; script.async = true; script.defer = true; document.head.appendChild(script); } script.addEventListener("load", mount, { once: true }); return () => script.removeEventListener("load", mount); } }, [apiBase, composerMounted]);
+  useEffect(() => { if (typeof window === "undefined" || !apiBase || !composerMounted || !turnstileVisible) return; const w = window as Window & { turnstile?: { render: (el: HTMLElement, opts: Record<string, unknown>) => unknown; reset: (id?: unknown) => void } }; const mount = () => { if (!widgetRef.current || !w.turnstile || widgetId.current !== null) return; widgetId.current = w.turnstile.render(widgetRef.current, { sitekey: TURNSTILE_SITEKEY, language: "ko", callback: (token: string) => { setTurnstileToken(token); setTurnstilePrompt(""); }, "expired-callback": () => setTurnstileToken(""), "error-callback": () => setTurnstileToken("") }); }; if (w.turnstile) mount(); else { const script = document.querySelector<HTMLScriptElement>('script[src*="challenges.cloudflare.com/turnstile"]') || document.createElement("script"); if (!script.src) { script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"; script.async = true; script.defer = true; document.head.appendChild(script); } script.addEventListener("load", mount, { once: true }); return () => script.removeEventListener("load", mount); } }, [apiBase, composerMounted, turnstileVisible]);
 
-  const resetToken = () => { const w = window as Window & { turnstile?: { reset: (id?: unknown) => void } }; if (w.turnstile) w.turnstile.reset(widgetId.current || undefined); setTurnstileToken(""); };
+  const resetToken = () => { const w = window as Window & { turnstile?: { reset: (id?: unknown) => void } }; if (w.turnstile) w.turnstile.reset(widgetId.current || undefined); setTurnstileToken(""); setTurnstilePrompt(""); };
   const toggleComposer = () => {
     if (composerOpen) resetToken();
     else setComposerMounted(true);
@@ -120,7 +130,65 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
     setNotice("");
     setError("");
   };
-  const submit = async (event: React.FormEvent) => { event.preventDefault(); if (submitting) return; setSubmitting(true); setNotice(""); setError(""); setSubmitError(""); try { const passwordError = visitorPasswordPolicyError(form.password); if (passwordError) throw new Error(passwordError); if (!turnstileToken) throw new Error("사람인지 확인을 완료해 주세요."); const result = await call<{ id: string }>("/questions", { method: "POST", body: JSON.stringify(buildVisitorQuestionCreatePayload(form, turnstileToken)) }); await loadList(1); await openQuestion(result.id, true); setForm({ title: "", category: "", website: "", anonymous: true, nickname: "", password: "", body: "", serviceIds: [] }); setComposerOpen(false); setNotice("질문이 등록되었습니다."); } catch (cause) { setSubmitError(cause instanceof Error ? cause.message : "저장하지 못했습니다."); } finally { resetToken(); setSubmitting(false); } };
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (submitting) return;
+    setNotice("");
+    setError("");
+    setSubmitError("");
+
+    const passwordError = visitorPasswordPolicyError(form.password);
+    const invalid: { field: VisitorField; message: string } | null =
+      !form.title.trim() ? { field: "title", message: "질문 제목을 입력해 주세요." }
+        : !form.body.trim() ? { field: "body", message: "질문 내용을 입력해 주세요." }
+          : !form.anonymous && (form.nickname.trim().length < 2 || form.nickname.trim().length > 40) ? { field: "nickname", message: "닉네임을 2자 이상 40자 이하로 입력해 주세요." }
+            : passwordError ? { field: "password", message: passwordError }
+              : !KNOWLEDGE_CATEGORIES.includes(form.category as typeof KNOWLEDGE_CATEGORIES[number]) ? { field: "category", message: "카테고리를 선택해 주세요." }
+                : null;
+
+    if (invalid) {
+      setFieldErrors({ [invalid.field]: invalid.message });
+      const fieldRefs: Record<VisitorField, React.RefObject<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null>> = {
+        title: titleInputRef,
+        body: bodyInputRef,
+        nickname: nicknameInputRef,
+        password: passwordInputRef,
+        category: categoryInputRef,
+      };
+      const input = fieldRefs[invalid.field].current;
+      input?.focus({ preventScroll: true });
+      input?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
+    setFieldErrors({});
+    if (!turnstileToken) {
+      setTurnstileVisible(true);
+      setTurnstilePrompt("사람인지 확인을 완료한 뒤 다시 등록해 주세요.");
+      requestAnimationFrame(() => widgetRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }));
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const result = await call<{ id: string }>("/questions", { method: "POST", body: JSON.stringify(buildVisitorQuestionCreatePayload(form, turnstileToken)) }, 201);
+      await loadList(1);
+      await openQuestion(result.id, true);
+      setForm({ title: "", category: "", website: "", anonymous: true, nickname: "", password: "", body: "", serviceIds: [] });
+      setComposerOpen(false);
+      setNotice("질문이 등록되었습니다.");
+    } catch (cause) {
+      setSubmitError(cause instanceof Error ? cause.message : "저장하지 못했습니다.");
+    } finally {
+      resetToken();
+      setSubmitting(false);
+    }
+  };
+
+  const updateCreateField = <K extends keyof typeof form>(field: K, value: (typeof form)[K]) => {
+    if (turnstileToken) resetToken();
+    setForm((current) => ({ ...current, [field]: value }));
+    if (field in fieldErrors) setFieldErrors((current) => { const next = { ...current }; delete next[field as VisitorField]; return next; });
+  };
 
   const submitSearch = (event: React.FormEvent) => {
     event.preventDefault();
@@ -171,8 +239,18 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
     <section className={styles.composer} aria-labelledby="ask-title" data-testid="question-registration">
       <div className={styles.composerHeading}><h2 id="ask-title">질문 등록</h2><button className={styles.composerToggle} type="button" aria-expanded={composerOpen} aria-controls="visitor-question-form" onClick={toggleComposer}>{composerOpen ? "질문 작성 접기" : "질문 작성하기"}</button></div>
       {composerMounted ? <>
-        {submitError ? <div className={styles.submitError} role="alert"><p>{submitError}</p><p>입력 내용은 유지됩니다. Turnstile 확인 후 다시 등록할 수 있습니다.</p></div> : null}
-        <form id="visitor-question-form" data-testid="question-create-form" hidden={!composerOpen} onSubmit={submit}><label className={styles.honeypot} aria-hidden="true">웹사이트<input name="website" type="text" tabIndex={-1} autoComplete="off" maxLength={512} value={form.website} onChange={(event) => setForm({ ...form, website: event.target.value })} /></label><label>카테고리<select value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })} required><option value="">카테고리 선택</option>{KNOWLEDGE_CATEGORIES.map((value) => <option key={value} value={value}>{value}</option>)}</select></label><label>제목<input value={form.title} maxLength={120} onChange={(event) => setForm({ ...form, title: event.target.value })} required /></label><label className={styles.check}><input type="checkbox" checked={form.anonymous} onChange={(event) => setForm({ ...form, anonymous: event.target.checked })} /> 익명으로 등록</label>{!form.anonymous ? <label>닉네임<input value={form.nickname} onChange={(event) => setForm({ ...form, nickname: event.target.value })} required /></label> : null}<label>비밀번호<input type="password" autoComplete="new-password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} minLength={6} maxLength={128} required /></label><small>6자 이상으로 입력해 주세요. 연속되거나 같은 문자 반복은 사용할 수 없습니다.</small><label>질문 내용<textarea value={form.body} maxLength={4000} onChange={(event) => setForm({ ...form, body: event.target.value })} required /></label><fieldset><legend>관련 계산기</legend><div className={styles.services}>{services.map((service) => <label className={styles.check} key={service.id}><input type="checkbox" checked={form.serviceIds.includes(service.id)} onChange={() => toggleService(service.id)} />{service.name}</label>)}</div></fieldset><div ref={widgetRef} className={styles.turnstile} /><button className={styles.primary} type="submit" disabled={submitting}>{submitting ? "등록 중..." : "질문 등록"}</button></form>
+        {submitError ? <div className={styles.submitError} role="alert"><p>{submitError}</p><p>입력 내용은 유지됩니다. 오류를 확인하고 다시 시도해 주세요.</p></div> : null}
+        <form id="visitor-question-form" data-testid="question-create-form" hidden={!composerOpen} noValidate onSubmit={submit}>
+          <label className={styles.honeypot} aria-hidden="true">웹사이트<input name="website" type="text" tabIndex={-1} autoComplete="off" maxLength={512} value={form.website} onChange={(event) => updateCreateField("website", event.target.value)} /></label>
+          <div className={styles.formField}><label htmlFor="visitor-question-category">카테고리</label><select id="visitor-question-category" ref={categoryInputRef} aria-invalid={Boolean(fieldErrors.category)} aria-describedby={fieldErrors.category ? "visitor-question-category-error" : undefined} value={form.category} onChange={(event) => updateCreateField("category", event.target.value)} required><option value="">카테고리 선택</option>{KNOWLEDGE_CATEGORIES.map((value) => <option key={value} value={value}>{value}</option>)}</select>{fieldErrors.category ? <small id="visitor-question-category-error" className={styles.fieldError} role="alert">{fieldErrors.category}</small> : null}</div>
+          <div className={styles.formField}><label htmlFor="visitor-question-title">제목</label><input id="visitor-question-title" ref={titleInputRef} aria-invalid={Boolean(fieldErrors.title)} aria-describedby={fieldErrors.title ? "visitor-question-title-error" : undefined} value={form.title} maxLength={120} onChange={(event) => updateCreateField("title", event.target.value)} required />{fieldErrors.title ? <small id="visitor-question-title-error" className={styles.fieldError} role="alert">{fieldErrors.title}</small> : null}</div>
+          <label className={styles.check}><input type="checkbox" checked={form.anonymous} onChange={(event) => updateCreateField("anonymous", event.target.checked)} /> 익명으로 등록</label>
+          {!form.anonymous ? <div className={styles.formField}><label htmlFor="visitor-question-nickname">닉네임</label><input id="visitor-question-nickname" ref={nicknameInputRef} aria-invalid={Boolean(fieldErrors.nickname)} aria-describedby={fieldErrors.nickname ? "visitor-question-nickname-error" : undefined} value={form.nickname} onChange={(event) => updateCreateField("nickname", event.target.value)} required />{fieldErrors.nickname ? <small id="visitor-question-nickname-error" className={styles.fieldError} role="alert">{fieldErrors.nickname}</small> : null}</div> : null}
+          <div className={styles.formField}><label htmlFor="visitor-question-password">비밀번호</label><input id="visitor-question-password" ref={passwordInputRef} type="password" autoComplete="new-password" aria-invalid={Boolean(fieldErrors.password)} aria-describedby={fieldErrors.password ? "visitor-question-password-error" : "visitor-password-hint"} value={form.password} onChange={(event) => updateCreateField("password", event.target.value)} minLength={6} maxLength={128} required />{fieldErrors.password ? <small id="visitor-question-password-error" className={styles.fieldError} role="alert">{fieldErrors.password}</small> : null}<small id="visitor-password-hint">6자 이상으로 입력해 주세요. 연속되거나 같은 문자 반복은 사용할 수 없습니다.</small></div>
+          <div className={styles.formField}><label htmlFor="visitor-question-body">질문 내용</label><textarea id="visitor-question-body" ref={bodyInputRef} aria-invalid={Boolean(fieldErrors.body)} aria-describedby={fieldErrors.body ? "visitor-question-body-error" : undefined} value={form.body} maxLength={4000} onChange={(event) => updateCreateField("body", event.target.value)} required />{fieldErrors.body ? <small id="visitor-question-body-error" className={styles.fieldError} role="alert">{fieldErrors.body}</small> : null}</div>
+          <fieldset><legend>관련 계산기</legend><div className={styles.services}>{services.map((service) => <label className={styles.check} key={service.id}><input type="checkbox" checked={form.serviceIds.includes(service.id)} onChange={() => toggleService(service.id)} />{service.name}</label>)}</div></fieldset>
+          {turnstileVisible ? <><div ref={widgetRef} className={styles.turnstile} /><small role="status">{turnstilePrompt}</small></> : null}<button className={styles.primary} type="submit" disabled={submitting}>{submitting ? "등록 중..." : "질문 등록"}</button>
+        </form>
       </> : null}
     </section>
     <section className={styles.layout}>

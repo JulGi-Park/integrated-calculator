@@ -27,6 +27,7 @@ const { KnowledgeLatestQuestions } = await import("../components/knowledge/Knowl
 const apiBase = "/api/knowledge/v1";
 let turnstileReset;
 let turnstileCallback;
+let scrollIntoViewCalls;
 
 before(() => {
   globalThis.requestAnimationFrame = (callback) => setTimeout(callback, 0);
@@ -37,6 +38,8 @@ before(() => {
 beforeEach(() => {
   turnstileReset = [];
   turnstileCallback = null;
+  scrollIntoViewCalls = [];
+  dom.window.HTMLElement.prototype.scrollIntoView = function () { scrollIntoViewCalls.push(this); };
   window.turnstile = {
     render: (_element, options) => {
       turnstileCallback = options.callback;
@@ -78,8 +81,13 @@ async function fillVisitorForm(user, { anonymous = true } = {}) {
 
 async function openVisitorComposer(user) {
   await user.click(screen.getByRole("button", { name: "질문 작성하기" }));
-  await waitFor(() => assert.ok(turnstileCallback));
   assert.equal(screen.getByTestId("question-create-form").hidden, false);
+  assert.equal(turnstileCallback, null);
+}
+
+async function requestTurnstile(user) {
+  await user.click(screen.getByRole("button", { name: "질문 등록" }));
+  await waitFor(() => assert.ok(turnstileCallback));
 }
 
 test("question registration entry sits between discovery controls and the list, and form is lazy until opened", async () => {
@@ -108,6 +116,7 @@ test("question registration entry sits between discovery controls and the list, 
 test("visitor form submits through fetch, opens the wrapped detail response, and stays on /knowledge/", async () => {
   const user = userEvent.setup();
   const postBodies = [];
+  let completePost;
   const question = {
     id: "5e0221de-67a8-47ec-9211-7d28b8614dba",
     title: "등록 후에도 화면 유지 질문",
@@ -131,7 +140,7 @@ test("visitor form submits through fetch, opens the wrapped detail response, and
     }
     if (url.endsWith("/questions") && init.method === "POST") {
       postBodies.push(JSON.parse(init.body));
-      return jsonResponse(201, { ok: true, data: { id: question.id, status: "published" }, request_id: "create-1" });
+      return new Promise((resolve) => { completePost = () => resolve(jsonResponse(201, { ok: true, data: { id: question.id, status: "published" }, request_id: "create-1" })); });
     }
     if (url.endsWith(`/questions/${question.id}`)) {
       return jsonResponse(200, { ok: true, data: { question }, request_id: "detail-1" });
@@ -143,9 +152,18 @@ test("visitor form submits through fetch, opens the wrapped detail response, and
   await openVisitorComposer(user);
   await fillVisitorForm(user);
   assert.equal(screen.getByLabelText("비밀번호").getAttribute("autocomplete"), "new-password");
+  await requestTurnstile(user);
+  assert.equal(postBodies.length, 0);
+  assert.match(screen.getByRole("status").textContent, /사람인지 확인을 완료한 뒤 다시 등록해 주세요/);
   await act(async () => turnstileCallback("test-only-token"));
   const pathnameBeforeSubmit = window.location.pathname;
   await user.click(screen.getByRole("button", { name: "질문 등록" }));
+
+  await waitFor(() => assert.equal(typeof completePost, "function"));
+  assert.equal(screen.queryByRole("status", { name: "질문이 등록되었습니다." }), null);
+  assert.equal(screen.queryByText("질문이 등록되었습니다."), null);
+  assert.equal(screen.getByRole("button", { name: "등록 중..." }).disabled, true);
+  await act(async () => completePost());
 
   await screen.findByTestId("desktop-question-detail");
   const permanentLink = await screen.findByRole("link", { name: "질문 상세" });
@@ -194,6 +212,7 @@ test("named visitor submits the same create contract with nickname and selected 
   await openVisitorComposer(user);
   await fillVisitorForm(user, { anonymous: false });
   await user.click(screen.getByRole("checkbox", { name: /주휴수당 계산기/ }));
+  await requestTurnstile(user);
   await act(async () => turnstileCallback("test-only-token-2"));
   await user.click(screen.getByRole("button", { name: "질문 등록" }));
 
@@ -221,6 +240,7 @@ test("create API error keeps /knowledge/ and preserves entered values for correc
   render(React.createElement(KnowledgeCenter, { enabled: true }));
   await openVisitorComposer(user);
   await fillVisitorForm(user);
+  await requestTurnstile(user);
   await act(async () => turnstileCallback("test-only-token"));
   const pathnameBeforeSubmit = window.location.pathname;
   await user.click(screen.getByRole("button", { name: "질문 등록" }));
@@ -233,7 +253,7 @@ test("create API error keeps /knowledge/ and preserves entered values for correc
   assert.deepEqual(turnstileReset, ["widget-1"]);
 });
 
-test("new visitor password hint and weak-password validation run before Turnstile or POST", async () => {
+test("111111 is rejected inline before Turnstile token handling or visitor POST", async () => {
   const user = userEvent.setup();
   const requests = [];
   globalThis.fetch = async (input, init = {}) => {
@@ -248,14 +268,25 @@ test("new visitor password hint and weak-password validation run before Turnstil
   await openVisitorComposer(user);
   await user.selectOptions(screen.getAllByRole("combobox")[1], "근로·고용");
   await user.type(screen.getByLabelText("제목"), "약한 비밀번호 차단 질문");
-  await user.type(screen.getByLabelText("비밀번호"), "aaaaaa");
+  await user.type(screen.getByLabelText("비밀번호"), "111111");
   await user.type(screen.getByLabelText("질문 내용"), "클라이언트에서 약한 비밀번호가 차단되는지 확인합니다.");
   assert.equal(screen.getByText("6자 이상으로 입력해 주세요. 연속되거나 같은 문자 반복은 사용할 수 없습니다.").textContent.length > 0, true);
   await user.click(screen.getByRole("button", { name: "질문 등록" }));
 
-  assert.match((await screen.findByRole("alert")).textContent, /너무 단순한 비밀번호입니다/);
+  const password = screen.getByLabelText("비밀번호");
+  const passwordError = await screen.findByText("너무 단순한 비밀번호입니다. 다른 비밀번호를 입력해 주세요.");
+  assert.equal(password.nextElementSibling, passwordError);
+  assert.equal(passwordError.id, "visitor-question-password-error");
+  assert.equal(password.getAttribute("aria-invalid"), "true");
+  assert.equal(document.activeElement, password);
+  assert.ok(scrollIntoViewCalls.includes(password));
+  assert.equal(screen.getByRole("alert"), passwordError);
+  assert.equal(turnstileCallback, null);
+  assert.equal(screen.queryByRole("status"), null);
+  assert.deepEqual(turnstileReset, []);
   assert.equal(requests.some(({ method, url }) => method === "POST" && url.endsWith("/questions")), false);
-  assert.equal(screen.getByLabelText("비밀번호").value, "aaaaaa");
+  assert.equal(requests.length, 2);
+  assert.equal(password.value, "111111");
 });
 
 function paginatedQuestions(page) {
