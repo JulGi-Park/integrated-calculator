@@ -1,7 +1,13 @@
 import { isKnowledgeVisitorRequest } from "../lib/knowledge/public-api";
 
-export type KnowledgeService = { fetch(request: Request): Promise<Response> };
-export type KnowledgeTransportEnv = { KNOWLEDGE_SERVICE?: KnowledgeService };
+export type KnowledgeService = {
+  fetch(request: Request): Promise<Response>;
+  probe?(): Promise<string>;
+};
+export type KnowledgeTransportEnv = {
+  KNOWLEDGE_SERVICE?: KnowledgeService;
+  KNOWLEDGE_BINDING_PROBE_TOKEN?: string;
+};
 
 /** Binding only: no Internet fallback, including when the binding is missing. */
 export async function knowledgeServiceFetch(env: KnowledgeTransportEnv, request: Request): Promise<Response> {

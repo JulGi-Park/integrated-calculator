@@ -58,6 +58,11 @@ const worker = {
 
 /** Public-only binding capability; the import entrypoint stays separate. */
 export class KnowledgePublicEntrypoint extends WorkerEntrypoint<Env> {
+  /** Internal, read-only RPC used only to verify a Pages Service Binding. */
+  async probe(): Promise<string> {
+    return "knowledge-binding-probe-v1";
+  }
+
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
     if (!isKnowledgeVisitorRequest(url.pathname, request.method)) {

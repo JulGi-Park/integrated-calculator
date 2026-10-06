@@ -30,6 +30,13 @@ describe("public-only named binding entrypoint", () => {
       expect(outbound).not.toHaveBeenCalled();
     } finally { vi.unstubAllGlobals(); }
   });
+  it("exposes only a fixed read-only RPC probe on the named entrypoint", async () => {
+    const bound = service();
+    const before = await env.KNOWLEDGE_DB.prepare("SELECT COUNT(*) AS n FROM knowledge_questions").first();
+    expect(await bound.probe()).toBe("knowledge-binding-probe-v1");
+    expect(await env.KNOWLEDGE_DB.prepare("SELECT COUNT(*) AS n FROM knowledge_questions").first()).toEqual(before);
+    expect("call" in bound).toBe(false);
+  });
   it("denies admin/import/internal/unknown methods even with spoofed Access headers", async () => {
     for (const path of ["/admin/questions", "/admin/import", "/import", "/internal", `/questions/${id}/publish`, `/questions/${id}/answer`]) {
       const response = await service().fetch(request(path, "POST", { "CF-Access-Jwt-Assertion": "spoofed" }));
