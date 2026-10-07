@@ -13,8 +13,7 @@ const worker = {
     const started = Date.now();
     const url = new URL(request.url);
     const origin = request.headers.get("Origin");
-    const admin = url.pathname === "/admin/knowledge" || url.pathname === "/admin/knowledge/"
-      || url.pathname.startsWith("/api/knowledge/v1/admin/");
+    const admin = url.pathname.startsWith("/api/knowledge/v1/admin/");
     let response: Response | undefined;
     let turnstile: TurnstileCategory = "not_required";
     let rateLimit: "pass" | "limited" | "not_applied" = "not_applied";

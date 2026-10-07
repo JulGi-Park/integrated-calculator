@@ -26,7 +26,6 @@ describe("Production visitor submit deployment contract", () => {
     expect(production.workers_dev).toBe(false);
     expect(production.preview_urls).toBe(false);
     expect(production.routes).toEqual([
-      { pattern: "gyesanbox.kr/admin/knowledge*", zone_name: "gyesanbox.kr" },
       { pattern: "gyesanbox.kr/api/knowledge/v1/admin/*", zone_name: "gyesanbox.kr" },
     ]);
     expect(production.d1_databases[0].database_id).toBe("f6d4d81b-1ddc-4a4b-8b41-ef377ac09015");
@@ -34,6 +33,11 @@ describe("Production visitor submit deployment contract", () => {
     expect(production.ratelimits[0].namespace_id).not.toBe(preview.ratelimits[0].namespace_id);
     expect(production.d1_databases[0].database_id).not.toBe(preview.d1_databases[0].database_id);
     expect(production.vars).not.toHaveProperty("KNOWLEDGE_IMPORT_ENABLED");
+  });
+
+  it("leaves the admin HTML route to Pages while the Worker keeps only protected admin APIs", async () => {
+    const response = await route(new Request("https://gyesanbox.kr/admin/knowledge"), productionEnv, ctx, "admin-ui-separation").catch((error: unknown) => error);
+    expect(response).toMatchObject({ status: 404, code: "NOT_FOUND" });
   });
 
   it("reproduces the missing Production limiter after successful siteverify, before any D1 access", async () => {

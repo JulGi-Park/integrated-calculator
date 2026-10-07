@@ -6,7 +6,6 @@
   "workers_dev": false,
   "preview_urls": false,
   "routes": [
-    { "pattern": "gyesanbox.kr/admin/knowledge*", "zone_name": "gyesanbox.kr" },
     { "pattern": "gyesanbox.kr/api/knowledge/v1/admin/*", "zone_name": "gyesanbox.kr" }
   ],
   "observability": { "enabled": true, "head_sampling_rate": 1 },

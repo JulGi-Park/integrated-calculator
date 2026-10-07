@@ -2,7 +2,6 @@ import { ApiError, success } from "./domain/errors";
 import { requireAdmin } from "./security/admin";
 import { readJson } from "./security/validation";
 import { importBatch, importResult, importStatus } from "./domain/knowledge-import";
-import { adminUi } from "./admin-ui";
 import {
   createAdminKnowledgeAnswer, createAdminKnowledgeQuestion, createKnowledgeQuestion,
   deleteAdminKnowledgeQuestion, getKnowledgeQuestion, getPublicKnowledgeQuestion,
@@ -18,11 +17,6 @@ const missing = (): never => { throw new ApiError(404, "NOT_FOUND", "요청 경�
 export async function route(request: Request, env: Env, ctx: ExecutionContext, requestId: string): Promise<Result> {
   const { pathname } = new URL(request.url);
   const method = request.method;
-  if (pathname === "/admin/knowledge" || pathname === "/admin/knowledge/") {
-    if (method !== "GET") return missing();
-    await requireAdmin(env, ctx);
-    return plain(adminUi());
-  }
   if (pathname.startsWith("/api/knowledge/v1/admin/")) {
     const actor = await requireAdmin(env, ctx);
     if (pathname === "/api/knowledge/v1/admin/import/status" && method === "GET") {
