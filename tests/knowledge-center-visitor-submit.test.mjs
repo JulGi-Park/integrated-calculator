@@ -27,6 +27,7 @@ const { KnowledgeLatestQuestions } = await import("../components/knowledge/Knowl
 const apiBase = "/api/knowledge/v1";
 let turnstileReset;
 let turnstileCallback;
+let turnstileRenderCount;
 let scrollIntoViewCalls;
 let navigationCalls;
 
@@ -39,6 +40,7 @@ before(() => {
 beforeEach(() => {
   turnstileReset = [];
   turnstileCallback = null;
+  turnstileRenderCount = 0;
   scrollIntoViewCalls = [];
   navigationCalls = [];
   const location = {
@@ -59,6 +61,7 @@ beforeEach(() => {
   dom.window.HTMLElement.prototype.scrollIntoView = function () { scrollIntoViewCalls.push(this); };
   window.turnstile = {
     render: (_element, options) => {
+      turnstileRenderCount += 1;
       turnstileCallback = options.callback;
       return "widget-1";
     },
@@ -178,6 +181,12 @@ test("visitor form only full-navigates to /knowledge/ after the POST returns HTT
   await act(async () => completePost());
   await waitFor(() => assert.deepEqual(navigationCalls, ["/knowledge/"]));
   assert.equal(screen.queryByText("질문이 등록되었습니다."), null);
+  assert.equal(screen.getByTestId("question-create-form").hidden, true);
+  assert.equal(document.getElementById("visitor-question-category").value, "");
+  assert.equal(screen.getByLabelText("제목").value, "");
+  assert.equal(screen.getByLabelText("비밀번호").value, "");
+  assert.equal(screen.getByLabelText("질문 내용").value, "");
+  assert.equal(document.querySelector('#visitor-question-form input[type="checkbox"]').checked, true);
   assert.equal(window.location.pathname, pathnameBeforeSubmit);
   assert.deepEqual(postBodies[0], {
     title: "등록 후에도 화면 유지 질문",
@@ -269,9 +278,58 @@ test("required-field errors never request Turnstile, POST, or navigation", async
   await openVisitorComposer(user);
   await user.click(screen.getByRole("button", { name: "질문 등록" }));
 
-  assert.match((await screen.findByRole("alert")).textContent, /질문 제목을 입력해 주세요/);
+  assert.match((await screen.findByRole("alert")).textContent, /카테고리를 선택해 주세요/);
   assert.equal(turnstileCallback, null);
   assert.equal(requests.some(({ method }) => method === "POST"), false);
+  assert.deepEqual(navigationCalls, []);
+});
+
+test("required fields validate one at a time in visible form order before Turnstile", async () => {
+  const user = userEvent.setup();
+  const postBodies = [];
+  globalThis.fetch = async (input, init = {}) => {
+    const url = String(input);
+    if (url.endsWith("/services")) return jsonResponse(200, { ok: true, data: { items: [] } });
+    if (url.endsWith("/questions?limit=10&page=1")) return jsonResponse(200, emptyList());
+    if (url.endsWith("/questions") && init.method === "POST") {
+      postBodies.push(JSON.parse(init.body));
+      return jsonResponse(201, { ok: true, data: { id: "ordered-validation-question" } });
+    }
+    throw new Error(`Unexpected request: ${url}`);
+  };
+
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
+  await openVisitorComposer(user);
+  const submit = () => user.click(screen.getByRole("button", { name: "질문 등록" }));
+  const assertInvalid = async (label, message) => {
+    await submit();
+    const input = label === "카테고리" ? document.getElementById("visitor-question-category") : screen.getByLabelText(label);
+    const error = await screen.findByRole("alert");
+    assert.match(error.textContent, message);
+    assert.equal(document.querySelectorAll('[role="alert"]').length, 1);
+    assert.equal(document.activeElement, input);
+    assert.ok(scrollIntoViewCalls.includes(input));
+    assert.equal(turnstileRenderCount, 0);
+    assert.equal(postBodies.length, 0);
+    assert.deepEqual(navigationCalls, []);
+  };
+
+  await assertInvalid("카테고리", /카테고리를 선택해 주세요/);
+  await user.selectOptions(document.getElementById("visitor-question-category"), "근로·고용");
+  await assertInvalid("제목", /질문 제목을 입력해 주세요/);
+  await user.type(screen.getByLabelText("제목"), "순차 오류 확인 질문");
+  await user.click(screen.getByRole("checkbox", { name: "익명으로 등록" }));
+  await assertInvalid("닉네임", /닉네임을 2자 이상 40자 이하/);
+  await user.type(screen.getByLabelText("닉네임"), "방문자");
+  await assertInvalid("비밀번호", /질문 비밀번호는 6자 이상이어야 합니다/);
+  await user.type(screen.getByLabelText("비밀번호"), "question-pass-1");
+  await assertInvalid("질문 내용", /질문 내용을 입력해 주세요/);
+
+  await user.type(screen.getByLabelText("질문 내용"), "마지막 필수 입력값까지 작성했습니다.");
+  await submit();
+  await waitFor(() => assert.equal(turnstileRenderCount, 1));
+  assert.ok(turnstileCallback);
+  assert.equal(postBodies.length, 0);
   assert.deepEqual(navigationCalls, []);
 });
 

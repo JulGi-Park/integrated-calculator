@@ -139,11 +139,11 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
 
     const passwordError = visitorPasswordPolicyError(form.password);
     const invalid: { field: VisitorField; message: string } | null =
-      !form.title.trim() ? { field: "title", message: "질문 제목을 입력해 주세요." }
-        : !form.body.trim() ? { field: "body", message: "질문 내용을 입력해 주세요." }
+      !KNOWLEDGE_CATEGORIES.includes(form.category as typeof KNOWLEDGE_CATEGORIES[number]) ? { field: "category", message: "카테고리를 선택해 주세요." }
+        : !form.title.trim() ? { field: "title", message: "질문 제목을 입력해 주세요." }
           : !form.anonymous && (form.nickname.trim().length < 2 || form.nickname.trim().length > 40) ? { field: "nickname", message: "닉네임을 2자 이상 40자 이하로 입력해 주세요." }
             : passwordError ? { field: "password", message: passwordError }
-              : !KNOWLEDGE_CATEGORIES.includes(form.category as typeof KNOWLEDGE_CATEGORIES[number]) ? { field: "category", message: "카테고리를 선택해 주세요." }
+              : !form.body.trim() ? { field: "body", message: "질문 내용을 입력해 주세요." }
                 : null;
 
     if (invalid) {
@@ -171,6 +171,13 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
     setSubmitting(true);
     try {
       await call<{ id: string }>("/questions", { method: "POST", body: JSON.stringify(buildVisitorQuestionCreatePayload(form, turnstileToken)) }, 201);
+      setForm({ title: "", category: "", website: "", anonymous: true, nickname: "", password: "", body: "", serviceIds: [] });
+      setFieldErrors({});
+      setSubmitError("");
+      setComposerOpen(false);
+      setTurnstileVisible(false);
+      setTurnstileToken("");
+      setTurnstilePrompt("");
       window.location.replace("/knowledge/");
     } catch (cause) {
       setSubmitError(cause instanceof Error ? cause.message : "저장하지 못했습니다.");
