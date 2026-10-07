@@ -10,6 +10,36 @@ export const VISITOR_QUESTION_CREATE_FIELDS = [
   "website",
 ] as const;
 
+export const VISITOR_QUESTION_BODY_MAX_LENGTH = 3000;
+export const VISITOR_QUESTION_BODY_TOO_LONG_MESSAGE = "질문 내용은 3,000자 이하로 입력해 주세요.";
+
+/**
+ * Count and normalize the visitor question body exactly as the Worker stores it.
+ * JavaScript code points are used (Array.from), matching the Worker contract.
+ */
+export function normalizeVisitorQuestionBody(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  // Textareas represent line endings as LF. Normalize direct API CRLF/CR input too.
+  const normalized = value.normalize("NFC").replace(/\r\n?/gu, "\n").trim();
+  if (!normalized || Array.from(normalized).length > VISITOR_QUESTION_BODY_MAX_LENGTH) return null;
+  // Preserve paragraph line breaks, while rejecting other control characters and markup.
+  if (/[\u0000-\u0009\u000B-\u001F\u007F-\u009F<>]/u.test(normalized)) return null;
+  return normalized;
+}
+
+export function visitorQuestionBodyLength(value: string): number {
+  const normalized = value.normalize("NFC").replace(/\r\n?/gu, "\n").trim();
+  return Array.from(normalized).length;
+}
+
+export function visitorQuestionBodyError(value: unknown): string | null {
+  if (typeof value !== "string" || !value.trim()) return "질문 내용을 입력해 주세요.";
+  const normalized = value.normalize("NFC").replace(/\r\n?/gu, "\n").trim();
+  if (Array.from(normalized).length > VISITOR_QUESTION_BODY_MAX_LENGTH) return VISITOR_QUESTION_BODY_TOO_LONG_MESSAGE;
+  if (!normalizeVisitorQuestionBody(value)) return "질문 내용 형식이 올바르지 않습니다.";
+  return null;
+}
+
 const COMMON_VISITOR_PASSWORDS = new Set([
   "123456",
   "12345678",

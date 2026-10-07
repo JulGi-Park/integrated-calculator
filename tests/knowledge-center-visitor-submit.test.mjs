@@ -18,7 +18,7 @@ Object.defineProperties(globalThis, {
   IS_REACT_ACT_ENVIRONMENT: { value: true, configurable: true, writable: true },
 });
 
-const { act, cleanup, render, screen, waitFor, within } = await import("@testing-library/react");
+const { act, cleanup, fireEvent, render, screen, waitFor, within } = await import("@testing-library/react");
 const userEvent = (await import("@testing-library/user-event")).default;
 const React = await import("react");
 const { KnowledgeCenter } = await import("../components/knowledge/KnowledgeCenter.tsx");
@@ -359,6 +359,95 @@ test("required fields validate one at a time in visible form order before Turnst
   assert.ok(turnstileCallback);
   assert.equal(postBodies.length, 0);
   assert.deepEqual(navigationCalls, []);
+});
+
+test("visitor question body counter and 3,000-character boundary match submission validation", async () => {
+  const user = userEvent.setup();
+  const postBodies = [];
+  globalThis.fetch = async (input, init = {}) => {
+    const url = String(input);
+    if (url.endsWith("/services")) return jsonResponse(200, { ok: true, data: { items: [] } });
+    if (url.endsWith("/questions?limit=10&page=1")) return jsonResponse(200, emptyList());
+    if (url.endsWith("/questions") && init.method === "POST") {
+      postBodies.push(JSON.parse(init.body));
+      return jsonResponse(201, { ok: true, data: { id: "body-boundary-question" } });
+    }
+    throw new Error(`Unexpected request: ${url}`);
+  };
+
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
+  await openVisitorComposer(user);
+  await user.selectOptions(screen.getAllByRole("combobox")[1], "근로·고용");
+  await user.type(screen.getByLabelText("제목"), "본문 길이 경계 검증 질문");
+  await user.type(screen.getByLabelText("비밀번호"), "question-pass-1");
+  const body = screen.getByLabelText("질문 내용");
+  const counter = () => screen.getByText(/\d+\/3000/u);
+  const setBody = (value) => fireEvent.change(body, { target: { value } });
+
+  setBody("가".repeat(2999));
+  assert.equal(counter().textContent, "2999/3000");
+  setBody("가".repeat(3000));
+  assert.equal(counter().textContent, "3000/3000");
+  setBody("가".repeat(3001));
+  assert.equal(counter().textContent, "3001/3000");
+  await user.click(screen.getByRole("button", { name: "질문 등록" }));
+  const error = await screen.findByText("질문 내용은 3,000자 이하로 입력해 주세요.");
+  assert.equal(error.getAttribute("role"), "alert");
+  assert.equal(body.getAttribute("aria-invalid"), "true");
+  assert.equal(document.activeElement, body);
+  assert.ok(scrollIntoViewCalls.includes(body));
+  assert.equal(turnstileRenderCount, 0);
+  assert.equal(postBodies.length, 0);
+  assert.deepEqual(navigationCalls, []);
+  assert.equal(body.value, "가".repeat(3001));
+
+  const newlineBody = `${"가나\n".repeat(999)}가\n가`;
+  setBody(newlineBody);
+  assert.equal(counter().textContent, "3000/3000");
+  assert.equal(turnstileRenderCount, 0);
+  await user.click(screen.getByRole("button", { name: "질문 등록" }));
+  await waitFor(() => assert.ok(turnstileCallback));
+  await act(async () => turnstileCallback("boundary-valid-token"));
+  await waitFor(() => assert.equal(postBodies.length, 1));
+  assert.equal(postBodies[0].body, newlineBody);
+  assert.deepEqual(navigationCalls, ["/knowledge/"]);
+});
+
+test("the unchanged Production-failure question body passes visitor validation and reaches POST 201", async () => {
+  const originalBody = "사기업 근로자인 배우자가 같은 자녀에 대해 먼저 3개월간 육아휴직을 사용하고 복직한 뒤, 공무원인 배우자가 출산전후휴가 종료 후 육아휴직을 시작하려고 합니다.\n\n이 경우 공무원 배우자가 두 번째 육아휴직자 특례를 적용받아 첫 6개월 동안 높아진 육아휴직수당 상한을 적용받을 수 있는지 궁금합니다.\n\n먼저 육아휴직한 배우자가 3개월만 사용하고 복직하더라도 공무원 배우자는 6개월까지 특례를 적용받을 수 있는지, 반대로 공무원 배우자가 먼저 육아휴직을 시작하면 지급액이 어떻게 달라지는지도 알고 싶습니다.";
+  assert.equal(Array.from(originalBody).length, 280);
+  const user = userEvent.setup();
+  const postBodies = [];
+  globalThis.fetch = async (input, init = {}) => {
+    const url = String(input);
+    if (url.endsWith("/services")) return jsonResponse(200, { ok: true, data: { items: [] } });
+    if (url.endsWith("/questions?limit=10&page=1")) return jsonResponse(200, emptyList());
+    if (url.endsWith("/questions") && init.method === "POST") {
+      postBodies.push(JSON.parse(init.body));
+      return jsonResponse(201, { ok: true, data: { id: "production-failure-body" } });
+    }
+    throw new Error(`Unexpected request: ${url}`);
+  };
+
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
+  await openVisitorComposer(user);
+  await user.selectOptions(screen.getAllByRole("combobox")[1], "근로·고용");
+  await user.type(screen.getByLabelText("제목"), "육아휴직 두 번째 사용자 특례 질문");
+  await user.type(screen.getByLabelText("비밀번호"), "question-pass-1");
+  const body = screen.getByLabelText("질문 내용");
+  fireEvent.change(body, { target: { value: originalBody } });
+  assert.equal(body.value, originalBody);
+  assert.equal(screen.getByText(/\/3000/u).textContent, `${Array.from(originalBody.trim()).length}/3000`);
+  assert.equal(turnstileRenderCount, 0);
+
+  await user.click(screen.getByRole("button", { name: "질문 등록" }));
+  await waitFor(() => assert.ok(turnstileCallback));
+  assert.equal(turnstileRenderCount, 1);
+  assert.equal(postBodies.length, 0);
+  await act(async () => turnstileCallback("test-turnstile-token"));
+  await waitFor(() => assert.equal(postBodies.length, 1));
+  assert.equal(postBodies[0].body, originalBody);
+  assert.deepEqual(navigationCalls, ["/knowledge/"]);
 });
 
 test("non-201 visitor POST responses never navigate", async () => {

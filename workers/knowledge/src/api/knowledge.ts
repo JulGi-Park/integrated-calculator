@@ -6,7 +6,7 @@ import { text, passwordInput, hashPassword, verifyPassword, assertServices, audi
 import { assertIdempotencyKey, assertUuid, parseLimit, readJson } from "../security/validation";
 import { verifyTurnstile, type TurnstileCategory } from "../security/turnstile";
 import { assertIdempotencyMatch, findIdempotency, requestHash } from "../security/idempotency";
-import { VISITOR_QUESTION_CREATE_FIELDS, visitorPasswordPolicyError } from "../../../../lib/knowledge/visitor-contract";
+import { VISITOR_QUESTION_CREATE_FIELDS, VISITOR_QUESTION_BODY_MAX_LENGTH, VISITOR_QUESTION_BODY_TOO_LONG_MESSAGE, normalizeVisitorQuestionBody, visitorPasswordPolicyError, visitorQuestionBodyError, visitorQuestionBodyLength } from "../../../../lib/knowledge/visitor-contract";
 import { assertKnowledgeSpamInput, assertKnowledgeAdmission, knowledgeAdmission, knowledgeAdmissionPredicate, expiredKnowledgeGuards } from "../security/knowledge-spam";
 
 type Result = { response: Response; meta: { turnstile: TurnstileCategory; rateLimit: "pass" | "limited" | "not_applied" } };
@@ -17,7 +17,27 @@ const serviceRows = async (db: D1Database, id: string) => (await db.prepare("SEL
 const answerRow = async (db: D1Database, id: string) => await db.prepare("SELECT id,body,created_at,updated_at FROM knowledge_answers WHERE question_id=?1").bind(id).first();
 const questionPayload = async (db: D1Database, row: Record<string, unknown>) => ({ id: row.id, isAnonymous: Boolean(row.is_anonymous), nickname: row.is_anonymous ? null : row.nickname, title: row.title, body: row.body, category: row.category ?? null, origin: row.origin, status: row.status, createdAt: row.created_at, updatedAt: row.updated_at, passwordConfigured: typeof row.password_hash === "string" && row.password_hash.length > 0, answer: await answerRow(db, String(row.id)), relatedServices: await serviceRows(db, String(row.id)) });
 const publicQuestionPayload = async (db: D1Database, row: Record<string, unknown>) => { const payload = await questionPayload(db, row); const publicPayload: Partial<typeof payload> = { ...payload }; delete publicPayload.origin; delete publicPayload.status; delete publicPayload.updatedAt; delete publicPayload.passwordConfigured; return publicPayload; };
-const parseQuestion = (raw: Record<string, unknown>, adminSeed = false) => { const allowed: readonly string[] = adminSeed ? VISITOR_QUESTION_CREATE_FIELDS.filter(key => key !== "website") : VISITOR_QUESTION_CREATE_FIELDS; if (Object.keys(raw).some(k => !allowed.includes(k))) throw new ApiError(400, "INVALID_INPUT", "허용되지 않은 필드가 있습니다."); if (!adminSeed) assertKnowledgeSpamInput(raw); const anonymous = adminSeed ? true : raw.isAnonymous === true; if (!adminSeed && typeof raw.isAnonymous !== "boolean") throw new ApiError(400, "INVALID_INPUT", "익명 여부를 확인해 주세요."); const nickname = anonymous ? null : text(raw.nickname, "닉네임", 2, 40); const password = passwordInput(raw.password); const body = text(raw.body, "질문 내용", 1, 4000); const title = raw.title === undefined && adminSeed ? body.slice(0, 80) : text(raw.title, "질문 제목", 1, 120); const serviceIds = raw.serviceIds === undefined ? [] : raw.serviceIds; if (!Array.isArray(serviceIds) || serviceIds.length > 21 || serviceIds.some(id => typeof id !== "string")) throw new ApiError(400, "INVALID_INPUT", "관련 계산기 형식이 올바르지 않습니다."); const unique = [...new Set(serviceIds as string[])]; unique.forEach(assertUuid); return { anonymous, nickname, password, title, body, category: raw.category === undefined ? null : knowledgeCategory(raw.category), serviceIds: unique, token: typeof raw.turnstile_token === "string" ? raw.turnstile_token : "" }; };
+const parseQuestion = (raw: Record<string, unknown>, adminSeed = false) => {
+  const allowed: readonly string[] = adminSeed ? VISITOR_QUESTION_CREATE_FIELDS.filter(key => key !== "website") : VISITOR_QUESTION_CREATE_FIELDS;
+  if (Object.keys(raw).some(key => !allowed.includes(key))) throw new ApiError(400, "INVALID_INPUT", "허용되지 않은 필드가 있습니다.");
+  const anonymous = adminSeed ? true : raw.isAnonymous === true;
+  if (!adminSeed && typeof raw.isAnonymous !== "boolean") throw new ApiError(400, "INVALID_INPUT", "익명 여부를 확인해 주세요.");
+  const nickname = anonymous ? null : text(raw.nickname, "닉네임", 2, 40);
+  const password = passwordInput(raw.password);
+  if (typeof raw.body === "string" && visitorQuestionBodyLength(raw.body) > VISITOR_QUESTION_BODY_MAX_LENGTH) {
+    throw new ApiError(400, "INVALID_INPUT", VISITOR_QUESTION_BODY_TOO_LONG_MESSAGE);
+  }
+  if (!adminSeed) assertKnowledgeSpamInput(raw);
+  const bodyError = adminSeed ? null : visitorQuestionBodyError(raw.body);
+  if (bodyError) throw new ApiError(400, "INVALID_INPUT", bodyError);
+  const body = adminSeed ? text(raw.body, "질문 내용", 1, 4000) : normalizeVisitorQuestionBody(raw.body)!;
+  const title = raw.title === undefined && adminSeed ? body.slice(0, 80) : text(raw.title, "질문 제목", 1, 120);
+  const serviceIds = raw.serviceIds === undefined ? [] : raw.serviceIds;
+  if (!Array.isArray(serviceIds) || serviceIds.length > 21 || serviceIds.some(id => typeof id !== "string")) throw new ApiError(400, "INVALID_INPUT", "관련 계산기 형식이 올바르지 않습니다.");
+  const unique = [...new Set(serviceIds as string[])];
+  unique.forEach(assertUuid);
+  return { anonymous, nickname, password, title, body, category: raw.category === undefined ? null : knowledgeCategory(raw.category), serviceIds: unique, token: typeof raw.turnstile_token === "string" ? raw.turnstile_token : "" };
+};
 const adminMutation = async (db: D1Database, actor: AdminActor, request: Request, target: string, body: unknown) => { const key = assertIdempotencyKey(request.headers.get("Idempotency-Key")); const hash = await requestHash("admin_mutation", target, body); const existing = await findIdempotency(db, "admin_mutation", actor.hash, key); if (existing) { assertIdempotencyMatch(existing, hash); return { key, hash, replay: true }; } return { key, hash, replay: false }; };
 const saveIdempotency = (db: D1Database, actor: AdminActor, key: string, hash: string, id: string, at: string) => db.prepare("INSERT INTO knowledge_idempotency_records (operation,owner_token_hash,idempotency_key,request_hash,resource_id,created_at,expires_at) VALUES ('admin_mutation',?1,?2,?3,?4,?5,?6)").bind(actor.hash, key, hash, id, at, new Date(Date.now() + 86400000).toISOString());
 

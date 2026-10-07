@@ -4,13 +4,14 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { applyD1Migrations, env } from "cloudflare:test";
 import { route } from "../../src/router";
 import { hashPassword, passwordInput, verifyPassword } from "../../src/domain/knowledge";
-import { buildVisitorQuestionCreatePayload, visitorPasswordPolicyError } from "../../../../lib/knowledge/visitor-contract";
+import { buildVisitorQuestionCreatePayload, visitorPasswordPolicyError, visitorQuestionBodyError, visitorQuestionBodyLength, normalizeVisitorQuestionBody, VISITOR_QUESTION_BODY_MAX_LENGTH } from "../../../../lib/knowledge/visitor-contract";
 
 
 const LABOR = "2759964a-549f-45b7-aa5b-ea719cfe0ffd";
 const migrations = [baseMigration, catalogMigration].map((source, index) => ({ name: `${String(index + 1).padStart(4, "0")}.sql`, queries: source.replace(/^--.*$/gm, "").split(";").map(x => x.trim()).filter(Boolean) }));
 const testEnv = { ...env, KNOWLEDGE_ADMIN_ENABLED: "true", AUTHOR_TOKEN_PEPPER: "knowledge-test-pepper", KNOWLEDGE_WRITE_LIMITER: { limit: async () => ({ success: true }) } } as unknown as Env;
 const ctx = { access: { getIdentity: async () => ({ user_uuid: "knowledge-admin" }) } } as unknown as ExecutionContext;
+const successfulTurnstileFetch = async () => new Response(JSON.stringify({ success: true, hostname: "test.integrated-calculator.pages.dev" }), { status: 200, headers: { "Content-Type": "application/json" } });
 let serial = 0;
 const key = () => `00000000-0000-4000-8000-${(++serial).toString().padStart(12, "0")}`;
 const req = (method: string, path: string, body?: unknown) => new Request(`https://knowledge-preview.gyesanbox.kr${path}`, { method, headers: body === undefined ? undefined : { "Content-Type": "application/json", "Idempotency-Key": key() }, body: body === undefined ? undefined : JSON.stringify(body) });
@@ -19,7 +20,7 @@ type KnowledgeItem = { id: string; origin: string; isAnonymous: boolean; nicknam
 const json = async (r: Awaited<ReturnType<typeof admin>>) => r.response.json() as Promise<{ data: Record<string, unknown> }>;
 
 describe("knowledge center schema and admin API", () => {
-  beforeAll(async () => { vi.stubGlobal("fetch", async () => new Response(JSON.stringify({ success: true, hostname: "test.integrated-calculator.pages.dev" }), { status: 200, headers: { "Content-Type": "application/json" } })); await applyD1Migrations(env.KNOWLEDGE_DB, migrations); });
+  beforeAll(async () => { vi.stubGlobal("fetch", successfulTurnstileFetch); await applyD1Migrations(env.KNOWLEDGE_DB, migrations); });
   afterAll(() => vi.unstubAllGlobals());
   it("compares exact password characters without whitespace or Unicode normalization", async () => {
     const password = " café-current-password ";
@@ -298,6 +299,59 @@ describe("knowledge center schema and admin API", () => {
       expect(question).toMatchObject({ id: data.id, status: "published" });
       expect(related, testCase.label).toEqual([...testCase.serviceIds].sort());
     }
+  });
+  it("enforces the shared 3,000-character visitor body contract before Turnstile and accepts newlines", async () => {
+    expect(VISITOR_QUESTION_BODY_MAX_LENGTH).toBe(3000);
+    expect(visitorQuestionBodyLength("가".repeat(2999))).toBe(2999);
+    expect(visitorQuestionBodyError("가".repeat(2999))).toBeNull();
+    expect(visitorQuestionBodyError("가".repeat(3000))).toBeNull();
+    expect(visitorQuestionBodyError("가".repeat(3001))).toBe("질문 내용은 3,000자 이하로 입력해 주세요.");
+    expect(normalizeVisitorQuestionBody("한국어 질문\n둘째 줄")).toBe("한국어 질문\n둘째 줄");
+
+    const oversized = buildVisitorQuestionCreatePayload({
+      title: `oversized body ${crypto.randomUUID()}`, anonymous: true, nickname: "", password: "visitor-passphrase",
+      body: "가".repeat(3001), serviceIds: [], category: "금융",
+    }, "oversized-test-token");
+    const before = await env.KNOWLEDGE_DB.prepare("SELECT COUNT(*) count FROM knowledge_questions").first<{ count: number }>();
+    const turnstileFetch = vi.fn(successfulTurnstileFetch);
+    vi.stubGlobal("fetch", turnstileFetch);
+    await expect(route(new Request("https://knowledge-preview.gyesanbox.pages.dev/api/knowledge/v1/questions", {
+      method: "POST", headers: { "Content-Type": "application/json", "CF-Connecting-IP": "192.0.2.66" }, body: JSON.stringify(oversized),
+    }), testEnv, ctx, crypto.randomUUID())).rejects.toMatchObject({ status: 400, code: "INVALID_INPUT", safeMessage: "질문 내용은 3,000자 이하로 입력해 주세요." });
+    expect(turnstileFetch).not.toHaveBeenCalled();
+    expect(await env.KNOWLEDGE_DB.prepare("SELECT COUNT(*) count FROM knowledge_questions").first()).toEqual(before);
+    vi.stubGlobal("fetch", successfulTurnstileFetch);
+
+    const lineBreaksAfter = new Set([598, 1197, 1796, 2395]);
+    const body = Array.from({ length: VISITOR_QUESTION_BODY_MAX_LENGTH - lineBreaksAfter.size }, (_, index) => String.fromCodePoint(0xAC00 + index))
+      .map((character, index) => character + (lineBreaksAfter.has(index) ? "\n" : ""))
+      .join("");
+    expect(visitorQuestionBodyLength(body)).toBe(3000);
+    expect(visitorQuestionBodyError(body)).toBeNull();
+    const accepted = buildVisitorQuestionCreatePayload({
+      title: `newline body ${crypto.randomUUID()}`, anonymous: true, nickname: "", password: "visitor-passphrase",
+      body, serviceIds: [], category: "금융",
+    }, "boundary-test-token");
+    expect(visitorQuestionBodyError(accepted.body)).toBeNull();
+    const created = await route(new Request("https://knowledge-preview.gyesanbox.pages.dev/api/knowledge/v1/questions", {
+      method: "POST", headers: { "Content-Type": "application/json", "CF-Connecting-IP": "192.0.2.67" }, body: JSON.stringify(accepted),
+    }), testEnv, ctx, crypto.randomUUID());
+    expect(created.response.status).toBe(201);
+    const createdJson = await created.response.json() as { data: { id: string } };
+    const stored = await env.KNOWLEDGE_DB.prepare("SELECT body FROM knowledge_questions WHERE id=?1").bind(createdJson.data.id).first<{ body: string }>();
+    expect(stored?.body).toBe(body);
+    expect((await env.KNOWLEDGE_DB.prepare("SELECT COUNT(*) count FROM knowledge_question_services WHERE question_id=?1").bind(createdJson.data.id).first<{ count: number }>())?.count).toBe(0);
+
+    const productionFailureBody = "사기업 근로자인 배우자가 같은 자녀에 대해 먼저 3개월간 육아휴직을 사용하고 복직한 뒤, 공무원인 배우자가 출산전후휴가 종료 후 육아휴직을 시작하려고 합니다.\n\n이 경우 공무원 배우자가 두 번째 육아휴직자 특례를 적용받아 첫 6개월 동안 높아진 육아휴직수당 상한을 적용받을 수 있는지 궁금합니다.\n\n먼저 육아휴직한 배우자가 3개월만 사용하고 복직하더라도 공무원 배우자는 6개월까지 특례를 적용받을 수 있는지, 반대로 공무원 배우자가 먼저 육아휴직을 시작하면 지급액이 어떻게 달라지는지도 알고 싶습니다.";
+    expect(Array.from(productionFailureBody).length).toBe(280);
+    const originalPayload = buildVisitorQuestionCreatePayload({
+      title: `Production failure regression ${crypto.randomUUID()}`, anonymous: true, nickname: "", password: "visitor-passphrase",
+      body: productionFailureBody, serviceIds: [], category: "근로·고용",
+    }, "original-body-test-token");
+    const originalResponse = await route(new Request("https://knowledge-preview.gyesanbox.pages.dev/api/knowledge/v1/questions", {
+      method: "POST", headers: { "Content-Type": "application/json", "CF-Connecting-IP": "192.0.2.68" }, body: JSON.stringify(originalPayload),
+    }), testEnv, ctx, crypto.randomUUID());
+    expect(originalResponse.response.status).toBe(201);
   });
   it("enforces status and service relations", async () => {
     const created = await admin("POST", "/api/knowledge/v1/admin/questions", { category: "근로·고용", body: "숨김 질문", password: "temporary-pass", serviceIds: [LABOR] });

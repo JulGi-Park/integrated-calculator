@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { KnowledgeQuestionEditor } from "./KnowledgeQuestionEditor";
-import { buildVisitorQuestionCreatePayload, visitorPasswordPolicyError } from "../../lib/knowledge/visitor-contract";
+import { buildVisitorQuestionCreatePayload, visitorPasswordPolicyError, visitorQuestionBodyError, visitorQuestionBodyLength, VISITOR_QUESTION_BODY_MAX_LENGTH } from "../../lib/knowledge/visitor-contract";
 import { KNOWLEDGE_CATEGORIES } from "../../lib/knowledge/categories";
 import { knowledgeDetailPath } from "../../lib/knowledge/seo";
 import { KNOWLEDGE_PUBLIC_API } from "../../lib/knowledge/public-api";
@@ -141,12 +141,13 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
     setSubmitError("");
 
     const passwordError = visitorPasswordPolicyError(form.password);
+    const bodyError = visitorQuestionBodyError(form.body);
     const invalid: { field: VisitorField; message: string } | null =
       !KNOWLEDGE_CATEGORIES.includes(form.category as typeof KNOWLEDGE_CATEGORIES[number]) ? { field: "category", message: "카테고리를 선택해 주세요." }
         : !form.title.trim() ? { field: "title", message: "질문 제목을 입력해 주세요." }
           : !form.anonymous && (form.nickname.trim().length < 2 || form.nickname.trim().length > 40) ? { field: "nickname", message: "닉네임을 2자 이상 40자 이하로 입력해 주세요." }
             : passwordError ? { field: "password", message: passwordError }
-              : !form.body.trim() ? { field: "body", message: "질문 내용을 입력해 주세요." }
+              : bodyError ? { field: "body", message: bodyError }
                 : null;
 
     if (invalid) {
@@ -254,7 +255,7 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
           <label className={styles.check}><input type="checkbox" checked={form.anonymous} onChange={(event) => updateCreateField("anonymous", event.target.checked)} /> 익명으로 등록</label>
           {!form.anonymous ? <div className={styles.formField}><label htmlFor="visitor-question-nickname">닉네임</label><input id="visitor-question-nickname" ref={nicknameInputRef} aria-invalid={Boolean(fieldErrors.nickname)} aria-describedby={fieldErrors.nickname ? "visitor-question-nickname-error" : undefined} value={form.nickname} onChange={(event) => updateCreateField("nickname", event.target.value)} required />{fieldErrors.nickname ? <small id="visitor-question-nickname-error" className={styles.fieldError} role="alert">{fieldErrors.nickname}</small> : null}</div> : null}
           <div className={styles.formField}><label htmlFor="visitor-question-password">비밀번호</label><input id="visitor-question-password" ref={passwordInputRef} type="password" autoComplete="new-password" aria-invalid={Boolean(fieldErrors.password)} aria-describedby={fieldErrors.password ? "visitor-question-password-error" : "visitor-password-hint"} value={form.password} onChange={(event) => updateCreateField("password", event.target.value)} minLength={6} maxLength={128} required />{fieldErrors.password ? <small id="visitor-question-password-error" className={styles.fieldError} role="alert">{fieldErrors.password}</small> : null}<small id="visitor-password-hint">6자 이상으로 입력해 주세요. 연속되거나 같은 문자 반복은 사용할 수 없습니다.</small></div>
-          <div className={styles.formField}><label htmlFor="visitor-question-body">질문 내용</label><textarea id="visitor-question-body" ref={bodyInputRef} aria-invalid={Boolean(fieldErrors.body)} aria-describedby={fieldErrors.body ? "visitor-question-body-error" : undefined} value={form.body} maxLength={4000} onChange={(event) => updateCreateField("body", event.target.value)} required />{fieldErrors.body ? <small id="visitor-question-body-error" className={styles.fieldError} role="alert">{fieldErrors.body}</small> : null}</div>
+          <div className={styles.formField}><label htmlFor="visitor-question-body">질문 내용</label><textarea id="visitor-question-body" ref={bodyInputRef} aria-invalid={Boolean(fieldErrors.body)} aria-describedby={fieldErrors.body ? "visitor-question-body-error visitor-question-body-count" : "visitor-question-body-count"} value={form.body} onChange={(event) => updateCreateField("body", event.target.value)} required />{fieldErrors.body ? <small id="visitor-question-body-error" className={styles.fieldError} role="alert">{fieldErrors.body}</small> : null}<small id="visitor-question-body-count" className={styles.bodyCount}>{visitorQuestionBodyLength(form.body)}/{VISITOR_QUESTION_BODY_MAX_LENGTH}</small></div>
           <fieldset><legend>관련 계산기</legend><div className={styles.services}>{services.map((service) => <label className={styles.check} key={service.id}><input type="checkbox" checked={form.serviceIds.includes(service.id)} onChange={() => toggleService(service.id)} />{service.name}</label>)}</div></fieldset>
           {turnstileVisible ? <><div ref={widgetRef} className={styles.turnstile} /><small role="status">{turnstilePrompt}</small></> : null}<button className={styles.primary} type="submit" disabled={submitting}>{submitting ? "등록 중..." : "질문 등록"}</button>
         </form>
