@@ -170,12 +170,8 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
     }
     setSubmitting(true);
     try {
-      const result = await call<{ id: string }>("/questions", { method: "POST", body: JSON.stringify(buildVisitorQuestionCreatePayload(form, turnstileToken)) }, 201);
-      await loadList(1);
-      await openQuestion(result.id, true);
-      setForm({ title: "", category: "", website: "", anonymous: true, nickname: "", password: "", body: "", serviceIds: [] });
-      setComposerOpen(false);
-      setNotice("질문이 등록되었습니다.");
+      await call<{ id: string }>("/questions", { method: "POST", body: JSON.stringify(buildVisitorQuestionCreatePayload(form, turnstileToken)) }, 201);
+      window.location.replace("/knowledge/");
     } catch (cause) {
       setSubmitError(cause instanceof Error ? cause.message : "저장하지 못했습니다.");
     } finally {

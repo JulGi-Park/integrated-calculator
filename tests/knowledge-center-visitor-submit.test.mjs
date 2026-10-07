@@ -28,6 +28,7 @@ const apiBase = "/api/knowledge/v1";
 let turnstileReset;
 let turnstileCallback;
 let scrollIntoViewCalls;
+let navigationCalls;
 
 before(() => {
   globalThis.requestAnimationFrame = (callback) => setTimeout(callback, 0);
@@ -39,6 +40,22 @@ beforeEach(() => {
   turnstileReset = [];
   turnstileCallback = null;
   scrollIntoViewCalls = [];
+  navigationCalls = [];
+  const location = {
+    get origin() { return dom.window.location.origin; },
+    get pathname() { return dom.window.location.pathname; },
+    replace: (url) => navigationCalls.push(url),
+  };
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    value: new Proxy(dom.window, {
+      get(target, property) {
+        if (property === "location") return location;
+        return Reflect.get(target, property, target);
+      },
+      set(target, property, value) { return Reflect.set(target, property, value, target); },
+    }),
+  });
   dom.window.HTMLElement.prototype.scrollIntoView = function () { scrollIntoViewCalls.push(this); };
   window.turnstile = {
     render: (_element, options) => {
@@ -51,6 +68,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  Object.defineProperty(globalThis, "window", { configurable: true, value: dom.window });
   delete window.turnstile;
   delete globalThis.fetch;
   delete window.matchMedia;
@@ -113,7 +131,7 @@ test("question registration entry sits between discovery controls and the list, 
   assert.ok(registration.contains(screen.getByLabelText("제목")));
 });
 
-test("visitor form submits through fetch, opens the wrapped detail response, and stays on /knowledge/", async () => {
+test("visitor form only full-navigates to /knowledge/ after the POST returns HTTP 201", async () => {
   const user = userEvent.setup();
   const postBodies = [];
   let completePost;
@@ -132,18 +150,10 @@ test("visitor form submits through fetch, opens the wrapped detail response, and
   globalThis.fetch = async (input, init = {}) => {
     const url = String(input);
     if (url.endsWith("/services")) return jsonResponse(200, { ok: true, data: { items: [] } });
-    if (url.endsWith("/questions?limit=10&page=1")) {
-      const created = postBodies.length > 0;
-      return jsonResponse(200, created
-        ? { ok: true, data: { items: [question], total_pages: 1 }, request_id: "list-2" }
-        : emptyList());
-    }
+    if (url.endsWith("/questions?limit=10&page=1")) return jsonResponse(200, emptyList());
     if (url.endsWith("/questions") && init.method === "POST") {
       postBodies.push(JSON.parse(init.body));
       return new Promise((resolve) => { completePost = () => resolve(jsonResponse(201, { ok: true, data: { id: question.id, status: "published" }, request_id: "create-1" })); });
-    }
-    if (url.endsWith(`/questions/${question.id}`)) {
-      return jsonResponse(200, { ok: true, data: { question }, request_id: "detail-1" });
     }
     throw new Error(`Unexpected request: ${url}`);
   };
@@ -154,24 +164,21 @@ test("visitor form submits through fetch, opens the wrapped detail response, and
   assert.equal(screen.getByLabelText("비밀번호").getAttribute("autocomplete"), "new-password");
   await requestTurnstile(user);
   assert.equal(postBodies.length, 0);
+  assert.deepEqual(navigationCalls, []);
   assert.match(screen.getByRole("status").textContent, /사람인지 확인을 완료한 뒤 다시 등록해 주세요/);
   await act(async () => turnstileCallback("test-only-token"));
   const pathnameBeforeSubmit = window.location.pathname;
   await user.click(screen.getByRole("button", { name: "질문 등록" }));
 
   await waitFor(() => assert.equal(typeof completePost, "function"));
+  assert.deepEqual(navigationCalls, []);
   assert.equal(screen.queryByRole("status", { name: "질문이 등록되었습니다." }), null);
   assert.equal(screen.queryByText("질문이 등록되었습니다."), null);
   assert.equal(screen.getByRole("button", { name: "등록 중..." }).disabled, true);
   await act(async () => completePost());
-
-  await screen.findByTestId("desktop-question-detail");
-  const permanentLink = await screen.findByRole("link", { name: "질문 상세" });
-  assert.equal(permanentLink.getAttribute("href"), `/knowledge/${question.id}/`);
-  await waitFor(() => assert.equal(screen.getByRole("status").textContent, "질문이 등록되었습니다."));
+  await waitFor(() => assert.deepEqual(navigationCalls, ["/knowledge/"]));
+  assert.equal(screen.queryByText("질문이 등록되었습니다."), null);
   assert.equal(window.location.pathname, pathnameBeforeSubmit);
-  assert.equal(screen.getByLabelText("제목").value, "");
-  assert.equal(screen.getByLabelText("질문 내용").value, "");
   assert.deepEqual(postBodies[0], {
     title: "등록 후에도 화면 유지 질문",
     isAnonymous: true,
@@ -186,7 +193,7 @@ test("visitor form submits through fetch, opens the wrapped detail response, and
   assert.deepEqual(turnstileReset, ["widget-1"]);
 });
 
-test("named visitor submits the same create contract with nickname and selected service", async () => {
+test("named visitor submits the same create contract and navigates only after 201", async () => {
   const user = userEvent.setup();
   const service = { id: "service-1", slug: "labor-pay", name: "주휴수당 계산기" };
   let posted;
@@ -197,13 +204,6 @@ test("named visitor submits the same create contract with nickname and selected 
     if (url.endsWith("/questions") && init.method === "POST") {
       posted = JSON.parse(init.body);
       return jsonResponse(201, { ok: true, data: { id: "18d0e041-1c43-48f8-91a8-2bf2725bb15b", status: "published" } });
-    }
-    if (url.endsWith("/questions/18d0e041-1c43-48f8-91a8-2bf2725bb15b")) {
-      return jsonResponse(200, { ok: true, data: { question: {
-        id: "18d0e041-1c43-48f8-91a8-2bf2725bb15b", title: posted.title, body: posted.body, isAnonymous: false,
-        nickname: posted.nickname, status: "published", createdAt: "2026-10-01T01:00:00.000Z",
-        updatedAt: "2026-10-01T01:00:00.000Z", answer: null, relatedServices: [service],
-      } } });
     }
     throw new Error(`Unexpected request: ${url}`);
   };
@@ -216,13 +216,13 @@ test("named visitor submits the same create contract with nickname and selected 
   await act(async () => turnstileCallback("test-only-token-2"));
   await user.click(screen.getByRole("button", { name: "질문 등록" }));
 
-  await screen.findByTestId("desktop-question-detail");
   assert.equal(posted.isAnonymous, false);
   assert.equal(posted.nickname, "방문자 닉네임");
   assert.deepEqual(posted.serviceIds, [service.id]);
   assert.equal(posted.turnstile_token, "test-only-token-2");
   assert.equal(posted.category, "근로·고용");
   assert.equal(posted.website, "");
+  assert.deepEqual(navigationCalls, ["/knowledge/"]);
 });
 
 test("create API error keeps /knowledge/ and preserves entered values for correction", async () => {
@@ -251,6 +251,79 @@ test("create API error keeps /knowledge/ and preserves entered values for correc
   assert.equal(screen.getByLabelText("질문 내용").value, "질문 등록 이후 상세 화면을 확인합니다.");
   assert.equal(screen.getByLabelText("비밀번호").value, "question-pass-1");
   assert.deepEqual(turnstileReset, ["widget-1"]);
+  assert.deepEqual(navigationCalls, []);
+});
+
+test("required-field errors never request Turnstile, POST, or navigation", async () => {
+  const user = userEvent.setup();
+  const requests = [];
+  globalThis.fetch = async (input, init = {}) => {
+    const url = String(input);
+    requests.push({ url, method: init.method || "GET" });
+    if (url.endsWith("/services")) return jsonResponse(200, { ok: true, data: { items: [] } });
+    if (url.endsWith("/questions?limit=10&page=1")) return jsonResponse(200, emptyList());
+    throw new Error(`Unexpected request: ${url}`);
+  };
+
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
+  await openVisitorComposer(user);
+  await user.click(screen.getByRole("button", { name: "질문 등록" }));
+
+  assert.match((await screen.findByRole("alert")).textContent, /질문 제목을 입력해 주세요/);
+  assert.equal(turnstileCallback, null);
+  assert.equal(requests.some(({ method }) => method === "POST"), false);
+  assert.deepEqual(navigationCalls, []);
+});
+
+test("non-201 visitor POST responses never navigate", async () => {
+  const statuses = [400, 401, 403, 409, 429, 500];
+  const user = userEvent.setup();
+
+  for (const status of statuses) {
+    cleanup();
+    navigationCalls = [];
+    turnstileCallback = null;
+    turnstileReset = [];
+    globalThis.fetch = async (input, init = {}) => {
+      const url = String(input);
+      if (url.endsWith("/services")) return jsonResponse(200, { ok: true, data: { items: [] } });
+      if (url.endsWith("/questions?limit=10&page=1")) return jsonResponse(200, emptyList());
+      if (url.endsWith("/questions") && init.method === "POST") return jsonResponse(status, { ok: false, error: { message: "등록 오류" } });
+      throw new Error(`Unexpected request: ${url}`);
+    };
+
+    render(React.createElement(KnowledgeCenter, { enabled: true }));
+    await openVisitorComposer(user);
+    await fillVisitorForm(user);
+    await requestTurnstile(user);
+    await act(async () => turnstileCallback(`token-${status}`));
+    await user.click(screen.getByRole("button", { name: "질문 등록" }));
+    await screen.findByRole("alert");
+    assert.deepEqual(navigationCalls, [], `HTTP ${status} must not navigate`);
+    assert.equal(screen.getByLabelText("제목").value, "등록 후에도 화면 유지 질문");
+  }
+});
+
+test("visitor POST network failure never navigates and preserves the form", async () => {
+  const user = userEvent.setup();
+  globalThis.fetch = async (input, init = {}) => {
+    const url = String(input);
+    if (url.endsWith("/services")) return jsonResponse(200, { ok: true, data: { items: [] } });
+    if (url.endsWith("/questions?limit=10&page=1")) return jsonResponse(200, emptyList());
+    if (url.endsWith("/questions") && init.method === "POST") throw new Error("network unavailable");
+    throw new Error(`Unexpected request: ${url}`);
+  };
+
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
+  await openVisitorComposer(user);
+  await fillVisitorForm(user);
+  await requestTurnstile(user);
+  await act(async () => turnstileCallback("network-failure-token"));
+  await user.click(screen.getByRole("button", { name: "질문 등록" }));
+
+  assert.match((await screen.findByRole("alert")).textContent, /network unavailable/);
+  assert.deepEqual(navigationCalls, []);
+  assert.equal(screen.getByLabelText("제목").value, "등록 후에도 화면 유지 질문");
 });
 
 test("111111 is rejected inline before Turnstile token handling or visitor POST", async () => {
@@ -284,6 +357,7 @@ test("111111 is rejected inline before Turnstile token handling or visitor POST"
   assert.equal(turnstileCallback, null);
   assert.equal(screen.queryByRole("status"), null);
   assert.deepEqual(turnstileReset, []);
+  assert.deepEqual(navigationCalls, []);
   assert.equal(requests.some(({ method, url }) => method === "POST" && url.endsWith("/questions")), false);
   assert.equal(requests.length, 2);
   assert.equal(password.value, "111111");
