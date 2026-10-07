@@ -22,14 +22,18 @@ describe("Production visitor submit deployment contract", () => {
     const production = JSON.parse(productionConfigSource);
     const preview = JSON.parse(previewConfigSource);
     expect(production.name).toBe("gyesanbox-knowledge");
-    expect(production.vars).toEqual({ ENVIRONMENT: "production", KNOWLEDGE_ADMIN_ENABLED: "false", KNOWLEDGE_API_HOST: "knowledge-api-disabled.invalid", KNOWLEDGE_PUBLIC_ORIGIN: "https://gyesanbox.kr" });
+    expect(production.vars).toEqual({ ENVIRONMENT: "production", KNOWLEDGE_ADMIN_ENABLED: "true", KNOWLEDGE_API_HOST: "gyesanbox.kr", KNOWLEDGE_PUBLIC_ORIGIN: "https://gyesanbox.kr" });
     expect(production.workers_dev).toBe(false);
     expect(production.preview_urls).toBe(false);
-    expect(production.routes).toBeUndefined();
+    expect(production.routes).toEqual([
+      { pattern: "gyesanbox.kr/admin/knowledge*", zone_name: "gyesanbox.kr" },
+      { pattern: "gyesanbox.kr/api/knowledge/v1/admin/*", zone_name: "gyesanbox.kr" },
+    ]);
     expect(production.d1_databases[0].database_id).toBe("f6d4d81b-1ddc-4a4b-8b41-ef377ac09015");
     expect(production.ratelimits).toEqual([{ name: "KNOWLEDGE_WRITE_LIMITER", namespace_id: "30012", simple: { limit: 3, period: 60 } }]);
     expect(production.ratelimits[0].namespace_id).not.toBe(preview.ratelimits[0].namespace_id);
     expect(production.d1_databases[0].database_id).not.toBe(preview.d1_databases[0].database_id);
+    expect(production.vars).not.toHaveProperty("KNOWLEDGE_IMPORT_ENABLED");
   });
 
   it("reproduces the missing Production limiter after successful siteverify, before any D1 access", async () => {
