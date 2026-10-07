@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "gyesanbox-knowledge",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-03",
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": true, "head_sampling_rate": 1 },
+  "vars": {
+    "ENVIRONMENT": "production",
+    "KNOWLEDGE_ADMIN_ENABLED": "false",
+    "KNOWLEDGE_API_HOST": "knowledge-api-disabled.invalid",
+    "KNOWLEDGE_PUBLIC_ORIGIN": "https://gyesanbox.kr"
+  },
+  "d1_databases": [
+    {
+      "binding": "KNOWLEDGE_DB",
+      "database_name": "gyesanbox-knowledge",
+      "database_id": "f6d4d81b-1ddc-4a4b-8b41-ef377ac09015",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "ratelimits": [
+    { "name": "KNOWLEDGE_WRITE_LIMITER", "namespace_id": "30012", "simple": { "limit": 3, "period": 60 } }
+  ]
+}
