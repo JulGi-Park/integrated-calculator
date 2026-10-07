@@ -171,7 +171,6 @@ test("visitor form only full-navigates to /knowledge/ after the POST returns HTT
   assert.match(screen.getByRole("status").textContent, /사람인지 확인을 완료한 뒤 다시 등록해 주세요/);
   await act(async () => turnstileCallback("test-only-token"));
   const pathnameBeforeSubmit = window.location.pathname;
-  await user.click(screen.getByRole("button", { name: "질문 등록" }));
 
   await waitFor(() => assert.equal(typeof completePost, "function"));
   assert.deepEqual(navigationCalls, []);
@@ -223,7 +222,7 @@ test("named visitor submits the same create contract and navigates only after 20
   await user.click(screen.getByRole("checkbox", { name: /주휴수당 계산기/ }));
   await requestTurnstile(user);
   await act(async () => turnstileCallback("test-only-token-2"));
-  await user.click(screen.getByRole("button", { name: "질문 등록" }));
+  await waitFor(() => assert.ok(posted));
 
   assert.equal(posted.isAnonymous, false);
   assert.equal(posted.nickname, "방문자 닉네임");
@@ -231,6 +230,36 @@ test("named visitor submits the same create contract and navigates only after 20
   assert.equal(posted.turnstile_token, "test-only-token-2");
   assert.equal(posted.category, "근로·고용");
   assert.equal(posted.website, "");
+  assert.deepEqual(navigationCalls, ["/knowledge/"]);
+});
+
+test("visitor payload preserves multiple selected calculators", async () => {
+  const user = userEvent.setup();
+  const services = [
+    { id: "service-1", slug: "labor-pay", name: "주휴수당 계산기" },
+    { id: "service-2", slug: "loan", name: "대출 이자 계산기" },
+  ];
+  let posted;
+  globalThis.fetch = async (input, init = {}) => {
+    const url = String(input);
+    if (url.endsWith("/services")) return jsonResponse(200, { ok: true, data: { items: services } });
+    if (url.endsWith("/questions?limit=10&page=1")) return jsonResponse(200, emptyList());
+    if (url.endsWith("/questions") && init.method === "POST") {
+      posted = JSON.parse(init.body);
+      return jsonResponse(201, { ok: true, data: { id: "multiple-services-question" } });
+    }
+    throw new Error(`Unexpected request: ${url}`);
+  };
+
+  render(React.createElement(KnowledgeCenter, { enabled: true }));
+  await openVisitorComposer(user);
+  await fillVisitorForm(user);
+  for (const service of services) await user.click(screen.getByRole("checkbox", { name: new RegExp(service.name) }));
+  await requestTurnstile(user);
+  await act(async () => turnstileCallback("multiple-services-token"));
+  await waitFor(() => assert.ok(posted));
+
+  assert.deepEqual(posted.serviceIds, services.map((service) => service.id));
   assert.deepEqual(navigationCalls, ["/knowledge/"]);
 });
 
@@ -252,7 +281,6 @@ test("create API error keeps /knowledge/ and preserves entered values for correc
   await requestTurnstile(user);
   await act(async () => turnstileCallback("test-only-token"));
   const pathnameBeforeSubmit = window.location.pathname;
-  await user.click(screen.getByRole("button", { name: "질문 등록" }));
 
   assert.equal((await screen.findByRole("alert")).textContent.includes("질문 내용을 확인해 주세요."), true);
   assert.equal(window.location.pathname, pathnameBeforeSubmit);
@@ -355,7 +383,6 @@ test("non-201 visitor POST responses never navigate", async () => {
     await fillVisitorForm(user);
     await requestTurnstile(user);
     await act(async () => turnstileCallback(`token-${status}`));
-    await user.click(screen.getByRole("button", { name: "질문 등록" }));
     await screen.findByRole("alert");
     assert.deepEqual(navigationCalls, [], `HTTP ${status} must not navigate`);
     assert.equal(screen.getByLabelText("제목").value, "등록 후에도 화면 유지 질문");
@@ -377,7 +404,6 @@ test("visitor POST network failure never navigates and preserves the form", asyn
   await fillVisitorForm(user);
   await requestTurnstile(user);
   await act(async () => turnstileCallback("network-failure-token"));
-  await user.click(screen.getByRole("button", { name: "질문 등록" }));
 
   assert.match((await screen.findByRole("alert")).textContent, /network unavailable/);
   assert.deepEqual(navigationCalls, []);

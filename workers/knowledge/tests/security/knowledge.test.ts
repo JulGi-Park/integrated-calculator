@@ -267,6 +267,38 @@ describe("knowledge center schema and admin API", () => {
     }
     await expect(admin("POST", "/api/knowledge/v1/questions", { ...anonymousPayload, unexpected: true })).rejects.toMatchObject({ code: "INVALID_INPUT" });
   });
+  it("creates visitor questions with zero, one, or several related calculators", async () => {
+    const cases = [
+      { label: "zero", serviceIds: [] as string[] },
+      { label: "one", serviceIds: [LABOR] },
+      { label: "several", serviceIds: [LABOR, "9643a88c-7bc5-413f-a459-f334ea5917c2"] },
+    ];
+
+    for (const [index, testCase] of cases.entries()) {
+      const payload = buildVisitorQuestionCreatePayload({
+        title: `optional calculator ${testCase.label} ${crypto.randomUUID()}`,
+        anonymous: true,
+        nickname: "",
+        password: "visitor-passphrase",
+        body: `related calculator count ${testCase.label} ${crypto.randomUUID()}`,
+        serviceIds: testCase.serviceIds,
+        category: "금융",
+      }, `test-token-${testCase.label}`);
+      const response = await route(new Request("https://knowledge-preview.gyesanbox.kr/api/knowledge/v1/questions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "CF-Connecting-IP": `192.0.2.${30 + index}` },
+        body: JSON.stringify(payload),
+      }), testEnv, ctx, crypto.randomUUID());
+
+      expect(response.response.status, testCase.label).toBe(201);
+      const { data } = await response.response.json() as { data: { id: string } };
+      const question = await env.KNOWLEDGE_DB.prepare("SELECT id,status FROM knowledge_questions WHERE id=?1").bind(data.id).first<{ id: string; status: string }>();
+      const related = (await env.KNOWLEDGE_DB.prepare("SELECT service_id FROM knowledge_question_services WHERE question_id=?1 ORDER BY service_id").bind(data.id).all<{ service_id: string }>()).results.map(row => row.service_id).sort();
+
+      expect(question).toMatchObject({ id: data.id, status: "published" });
+      expect(related, testCase.label).toEqual([...testCase.serviceIds].sort());
+    }
+  });
   it("enforces status and service relations", async () => {
     const created = await admin("POST", "/api/knowledge/v1/admin/questions", { category: "근로·고용", body: "숨김 질문", password: "temporary-pass", serviceIds: [LABOR] });
     const id = (await json(created)).data.id as string;

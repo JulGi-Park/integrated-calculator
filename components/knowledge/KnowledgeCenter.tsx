@@ -54,17 +54,20 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
   // The edit session is bound to both its record and the responsive detail
   // surface selected at click time. The create form below remains independent.
   const [editSession, setEditSession] = useState<EditSession | null>(null);
-  const [turnstileToken, setTurnstileToken] = useState("");
+  const [, setTurnstileToken] = useState("");
   const [turnstileVisible, setTurnstileVisible] = useState(false);
   const [turnstilePrompt, setTurnstilePrompt] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const widgetRef = useRef<HTMLDivElement>(null);
+  const createFormRef = useRef<HTMLFormElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const bodyInputRef = useRef<HTMLTextAreaElement>(null);
   const nicknameInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const categoryInputRef = useRef<HTMLSelectElement>(null);
   const widgetId = useRef<unknown>(null);
+  const turnstileTokenRef = useRef("");
+  const pendingTurnstileSubmitRef = useRef(false);
   const [form, setForm] = useState({ title: "", category: "", website: "", anonymous: true, nickname: "", password: "", body: "", serviceIds: [] as string[] });
   const currentPageRef = useRef(1);
   const queryRef = useRef("");
@@ -100,9 +103,9 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
 
   // eslint-disable-next-line react-hooks/set-state-in-effect -- initial data synchronization belongs to the client preview.
   useEffect(() => { if (!apiBase) return; void Promise.all([loadServices(), loadList()]).catch(() => undefined); }, [apiBase, loadList, loadServices]);
-  useEffect(() => { if (typeof window === "undefined" || !apiBase || !composerMounted || !turnstileVisible) return; const w = window as Window & { turnstile?: { render: (el: HTMLElement, opts: Record<string, unknown>) => unknown; reset: (id?: unknown) => void } }; const mount = () => { if (!widgetRef.current || !w.turnstile || widgetId.current !== null) return; widgetId.current = w.turnstile.render(widgetRef.current, { sitekey: TURNSTILE_SITEKEY, language: "ko", callback: (token: string) => { setTurnstileToken(token); setTurnstilePrompt(""); }, "expired-callback": () => setTurnstileToken(""), "error-callback": () => setTurnstileToken("") }); }; if (w.turnstile) mount(); else { const script = document.querySelector<HTMLScriptElement>('script[src*="challenges.cloudflare.com/turnstile"]') || document.createElement("script"); if (!script.src) { script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"; script.async = true; script.defer = true; document.head.appendChild(script); } script.addEventListener("load", mount, { once: true }); return () => script.removeEventListener("load", mount); } }, [apiBase, composerMounted, turnstileVisible]);
+  useEffect(() => { if (typeof window === "undefined" || !apiBase || !composerMounted || !turnstileVisible) return; const w = window as Window & { turnstile?: { render: (el: HTMLElement, opts: Record<string, unknown>) => unknown; reset: (id?: unknown) => void } }; const mount = () => { if (!widgetRef.current || !w.turnstile || widgetId.current !== null) return; widgetId.current = w.turnstile.render(widgetRef.current, { sitekey: TURNSTILE_SITEKEY, language: "ko", callback: (token: string) => { turnstileTokenRef.current = token; setTurnstileToken(token); setTurnstilePrompt(""); if (pendingTurnstileSubmitRef.current) { pendingTurnstileSubmitRef.current = false; createFormRef.current?.requestSubmit(); } }, "expired-callback": () => { turnstileTokenRef.current = ""; setTurnstileToken(""); }, "error-callback": () => { turnstileTokenRef.current = ""; setTurnstileToken(""); } }); }; if (w.turnstile) mount(); else { const script = document.querySelector<HTMLScriptElement>('script[src*="challenges.cloudflare.com/turnstile"]') || document.createElement("script"); if (!script.src) { script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"; script.async = true; script.defer = true; document.head.appendChild(script); } script.addEventListener("load", mount, { once: true }); return () => script.removeEventListener("load", mount); } }, [apiBase, composerMounted, turnstileVisible]);
 
-  const resetToken = () => { const w = window as Window & { turnstile?: { reset: (id?: unknown) => void } }; if (w.turnstile) w.turnstile.reset(widgetId.current || undefined); setTurnstileToken(""); setTurnstilePrompt(""); };
+  const resetToken = () => { const w = window as Window & { turnstile?: { reset: (id?: unknown) => void } }; if (w.turnstile) w.turnstile.reset(widgetId.current || undefined); turnstileTokenRef.current = ""; pendingTurnstileSubmitRef.current = false; setTurnstileToken(""); setTurnstilePrompt(""); };
   const toggleComposer = () => {
     if (composerOpen) resetToken();
     else setComposerMounted(true);
@@ -162,7 +165,8 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
     }
 
     setFieldErrors({});
-    if (!turnstileToken) {
+    if (!turnstileTokenRef.current) {
+      pendingTurnstileSubmitRef.current = true;
       setTurnstileVisible(true);
       setTurnstilePrompt("사람인지 확인을 완료한 뒤 다시 등록해 주세요.");
       requestAnimationFrame(() => widgetRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }));
@@ -170,7 +174,7 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
     }
     setSubmitting(true);
     try {
-      await call<{ id: string }>("/questions", { method: "POST", body: JSON.stringify(buildVisitorQuestionCreatePayload(form, turnstileToken)) }, 201);
+      await call<{ id: string }>("/questions", { method: "POST", body: JSON.stringify(buildVisitorQuestionCreatePayload(form, turnstileTokenRef.current)) }, 201);
       setForm({ title: "", category: "", website: "", anonymous: true, nickname: "", password: "", body: "", serviceIds: [] });
       setFieldErrors({});
       setSubmitError("");
@@ -188,7 +192,7 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
   };
 
   const updateCreateField = <K extends keyof typeof form>(field: K, value: (typeof form)[K]) => {
-    if (turnstileToken) resetToken();
+    if (turnstileTokenRef.current) resetToken();
     setForm((current) => ({ ...current, [field]: value }));
     if (field in fieldErrors) setFieldErrors((current) => { const next = { ...current }; delete next[field as VisitorField]; return next; });
   };
@@ -243,7 +247,7 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
       <div className={styles.composerHeading}><h2 id="ask-title">질문 등록</h2><button className={styles.composerToggle} type="button" aria-expanded={composerOpen} aria-controls="visitor-question-form" onClick={toggleComposer}>{composerOpen ? "질문 작성 접기" : "질문 작성하기"}</button></div>
       {composerMounted ? <>
         {submitError ? <div className={styles.submitError} role="alert"><p>{submitError}</p><p>입력 내용은 유지됩니다. 오류를 확인하고 다시 시도해 주세요.</p></div> : null}
-        <form id="visitor-question-form" data-testid="question-create-form" hidden={!composerOpen} noValidate onSubmit={submit}>
+        <form id="visitor-question-form" ref={createFormRef} data-testid="question-create-form" hidden={!composerOpen} noValidate onSubmit={submit}>
           <label className={styles.honeypot} aria-hidden="true">웹사이트<input name="website" type="text" tabIndex={-1} autoComplete="off" maxLength={512} value={form.website} onChange={(event) => updateCreateField("website", event.target.value)} /></label>
           <div className={styles.formField}><label htmlFor="visitor-question-category">카테고리</label><select id="visitor-question-category" ref={categoryInputRef} aria-invalid={Boolean(fieldErrors.category)} aria-describedby={fieldErrors.category ? "visitor-question-category-error" : undefined} value={form.category} onChange={(event) => updateCreateField("category", event.target.value)} required><option value="">카테고리 선택</option>{KNOWLEDGE_CATEGORIES.map((value) => <option key={value} value={value}>{value}</option>)}</select>{fieldErrors.category ? <small id="visitor-question-category-error" className={styles.fieldError} role="alert">{fieldErrors.category}</small> : null}</div>
           <div className={styles.formField}><label htmlFor="visitor-question-title">제목</label><input id="visitor-question-title" ref={titleInputRef} aria-invalid={Boolean(fieldErrors.title)} aria-describedby={fieldErrors.title ? "visitor-question-title-error" : undefined} value={form.title} maxLength={120} onChange={(event) => updateCreateField("title", event.target.value)} required />{fieldErrors.title ? <small id="visitor-question-title-error" className={styles.fieldError} role="alert">{fieldErrors.title}</small> : null}</div>
