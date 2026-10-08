@@ -11,6 +11,8 @@ export const knowledgeCategory = (value: unknown): KnowledgeCategory => {
 // Shared by visitor/admin APIs and the import service; no parallel validators.
 // eslint-disable-next-line no-control-regex -- preserve existing knowledge content contract.
 export const text = (value: unknown, label: string, min: number, max: number): string => { if (typeof value !== "string") throw new ApiError(400, "INVALID_INPUT", `${label} 형식이 올바르지 않습니다.`); const v = value.normalize("NFC").trim(); if (Array.from(v).length < min || Array.from(v).length > max || /[\u0000-\u001F\u007F-\u009F<>]/u.test(v)) throw new ApiError(400, "INVALID_INPUT", `${label} 형식이 올바르지 않습니다.`); return v; };
+// Answer bodies are the only admin display-text field that supports paragraphs; keep every other control character rejected.
+export const answerText = (value: unknown): string => { const label = "공식답변"; if (typeof value !== "string") throw new ApiError(400, "INVALID_INPUT", `${label} 형식이 올바르지 않습니다.`); const v = value.replace(/\r\n?/gu, "\n").normalize("NFC").trim(); if (Array.from(v).length < 1 || Array.from(v).length > 4000 || /[\u0000-\u0009\u000B-\u001F\u007F-\u009F<>]/u.test(v)) throw new ApiError(400, "INVALID_INPUT", `${label} 형식이 올바르지 않습니다.`); return v; };
 export const passwordInput = (value: unknown): string => {
   // Passwords are credentials, not display text. Never trim or normalize before hashing/comparison.
   // eslint-disable-next-line no-control-regex -- keep the existing control-character/input restrictions.

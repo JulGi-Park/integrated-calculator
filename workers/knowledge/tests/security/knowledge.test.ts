@@ -242,6 +242,19 @@ describe("knowledge center schema and admin API", () => {
     await expect(admin("PATCH", `/api/knowledge/v1/questions/${id}`, { password: "temporary-pass", body: "답변 후 수정", turnstile_token: "test-token" })).rejects.toMatchObject({ code: "INVALID_STATE" });
     await expect(admin("POST", "/api/knowledge/v1/questions", { isAnonymous: true, password: "temporary-pass", title: "사용자 질문", body: "사용자 질문", turnstile_token: "" })).rejects.toMatchObject({ code: "TURNSTILE_REQUIRED" });
   });
+  it("accepts and persists multiline Korean official answers while rejecting unsafe answer text", async () => {
+    const created = await admin("POST", "/api/knowledge/v1/admin/questions", { category: "근로·고용", body: "관리자 답변 테스트 질문", password: "temporary-pass", serviceIds: [LABOR] });
+    const id = (await json(created)).data.id as string;
+    const answer = "사기업 근로자인 배우자가 먼저 육아휴직을 사용한 뒤,\r\n공무원 배우자가 두 번째로 육아휴직을 시작합니다.\r\n\r\n먼저 휴직한 배우자가 복직하더라도 적용 여부를 확인합니다.";
+    const saved = await admin("POST", `/api/knowledge/v1/admin/questions/${id}/answer`, { body: answer });
+    expect(saved.response.status).toBe(200);
+    const normalized = answer.replace(/\r\n?/gu, "\n").normalize("NFC").trim();
+    expect(await env.KNOWLEDGE_DB.prepare("SELECT body FROM knowledge_answers WHERE question_id=?1").bind(id).first()).toMatchObject({ body: normalized });
+    const detail = (await json(await admin("GET", `/api/knowledge/v1/admin/questions/${id}`))).data.question as KnowledgeItem;
+    expect(detail.answer?.body).toBe(normalized);
+    await expect(admin("PATCH", `/api/knowledge/v1/admin/questions/${id}/answer`, { body: "안전하지 않은 <태그>" })).rejects.toMatchObject({ status: 400, code: "INVALID_INPUT", message: "공식답변 형식이 올바르지 않습니다." });
+    await expect(admin("PATCH", `/api/knowledge/v1/admin/questions/${id}/answer`, { body: "   " })).rejects.toMatchObject({ status: 400, code: "INVALID_INPUT", message: "공식답변 형식이 올바르지 않습니다." });
+  });
   it("accepts the visitor form payload contract and rejects stale or privileged fields", async () => {
     const anonymousPayload = buildVisitorQuestionCreatePayload({ title: "방문자 익명 질문", anonymous: true, nickname: "", password: "visitor-pass", body: "질문 내용", serviceIds: [] }, "test-token");
 
