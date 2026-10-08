@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { access, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { privateStaticRoutes } from "./prune-disabled-static-routes.mjs";
+import { knowledgeBuildGates } from "../lib/knowledge/gates.mjs";
 
 const projectRoot = process.cwd();
 const outputRoot = path.join(projectRoot, "out");
@@ -116,6 +117,18 @@ const titles = new Map();
 const descriptions = new Map();
 const canonicals = new Map();
 const routeSet = new Set(sitemapUrls.map((value) => new URL(value).pathname));
+// Public Knowledge links are valid before indexing and use their own gated sitemap.
+const linkableRoutes = new Set(routeSet);
+const knowledgeGates = knowledgeBuildGates(process.env);
+if (knowledgeGates.publicEnabled) {
+  const knowledgeHtml = await readFile(outputPathFor("/knowledge/"), "utf8");
+  const canonicalTag = findTagByAttribute(knowledgeHtml, "link", "rel", "canonical");
+  const robotsTag = findTagByAttribute(knowledgeHtml, "meta", "name", "robots");
+  assert.equal(canonicalTag && getAttribute(canonicalTag, "href"), `${siteOrigin}/knowledge/`, "Knowledge canonical must match its public URL.");
+  assert.ok(robotsTag, "Knowledge must declare its indexing policy.");
+  assert.equal(getAttribute(robotsTag, "content").includes("noindex"), !knowledgeGates.indexEnabled, "Knowledge robots must match its index gate.");
+  linkableRoutes.add("/knowledge/");
+}
 const appPageRoutes = await discoverAppPageRoutes();
 const privatePaths = new Set(privateStaticRoutes.map((route) => route.pathname));
 assert.deepEqual(
@@ -181,7 +194,7 @@ for (const absoluteUrl of sitemapUrls) {
     assert.equal(target.search, "", `${url.pathname}: internal links must not create query variants (${href}).`);
     assert.equal(target.hash, "", `${url.pathname}: static route links must not depend on fragments (${href}).`);
     assert.ok(target.pathname === "/" || target.pathname.endsWith("/"), `${url.pathname}: internal link must use the canonical trailing slash (${href}).`);
-    assert.equal(routeSet.has(target.pathname), true, `${url.pathname}: broken or non-indexable internal link (${href}).`);
+    assert.equal(linkableRoutes.has(target.pathname), true, `${url.pathname}: broken or non-public internal link (${href}).`);
   }
 }
 

@@ -6,6 +6,7 @@ import { GoogleTag } from "@/components/analytics/GoogleTag";
 import { BackToTop } from "@/components/common/BackToTop";
 import { SiteFooter } from "@/components/common/SiteFooter";
 import { SiteHeader } from "@/components/common/SiteHeader";
+import { knowledgeBuildGates } from "@/lib/knowledge/gates";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -46,7 +47,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       <body>
         <GoogleAnalyticsPageView />
         <div className="site-shell">
-          <SiteHeader />
+          <SiteHeader knowledgeEnabled={knowledgeBuildGates(process.env).publicEnabled} />
           <main className="site-main">{children}</main>
           <SiteFooter />
           <BackToTop />
