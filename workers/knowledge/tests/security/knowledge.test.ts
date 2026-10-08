@@ -255,6 +255,35 @@ describe("knowledge center schema and admin API", () => {
     await expect(admin("PATCH", `/api/knowledge/v1/admin/questions/${id}/answer`, { body: "안전하지 않은 <태그>" })).rejects.toMatchObject({ status: 400, code: "INVALID_INPUT", message: "공식답변 형식이 올바르지 않습니다." });
     await expect(admin("PATCH", `/api/knowledge/v1/admin/questions/${id}/answer`, { body: "   " })).rejects.toMatchObject({ status: 400, code: "INVALID_INPUT", message: "공식답변 형식이 올바르지 않습니다." });
   });
+  it("uses the visitor 3,000-code-point body contract for admin create and update", async () => {
+    const actualBody = "육아휴직급여는 고용보험에서 지급되는 것으로 알고 있습니다. 그렇다면 근로자가 육아휴직을 사용하는 동안 회사가 육아휴직급여나 기존 급여를 별도로 지급해야 하는지 궁금합니다.\n\n또한 육아휴직 기간 중 해고 제한, 복직 보장 외에 회사가 부담해야 하는 비용이나 의무가 있는지, 소규모 사업장의 경우 대체인력이나 업무분담과 관련한 지원을 받을 수 있는지도 알고 싶습니다.";
+    const created = await admin("POST", "/api/knowledge/v1/admin/questions", { title: "육아휴직 중 회사 의무", category: "근로·고용", body: actualBody, password: "temporary-pass", serviceIds: [LABOR] });
+    expect(created.response.status).toBe(201);
+    const id = ((await json(created)).data.id as string);
+    expect((await env.KNOWLEDGE_DB.prepare("SELECT body FROM knowledge_questions WHERE id=?1").bind(id).first<{body:string}>())?.body).toBe(actualBody);
+    expect(await env.KNOWLEDGE_DB.prepare("SELECT COUNT(*) count FROM knowledge_question_services WHERE question_id=?1").bind(id).first("count")).toBe(1);
+
+    for (const separator of ["\r\n", "\r"]) {
+      const updatedBody = actualBody.replace(/\n/gu, separator);
+      const updated = await admin("PATCH", `/api/knowledge/v1/admin/questions/${id}`, { body: updatedBody });
+      expect(updated.response.status).toBe(200);
+      expect((await env.KNOWLEDGE_DB.prepare("SELECT body FROM knowledge_questions WHERE id=?1").bind(id).first<{body:string}>())?.body).toBe(actualBody);
+    }
+
+    for (const length of [2999, 3000]) {
+      const boundary = await admin("POST", "/api/knowledge/v1/admin/questions", { title: `경계 ${length}`, category: "근로·고용", body: "가".repeat(length), password: "temporary-pass", serviceIds: [] });
+      expect(boundary.response.status).toBe(201);
+      const boundaryId = ((await json(boundary)).data.id as string);
+      expect(await env.KNOWLEDGE_DB.prepare("SELECT length(body) bodyLength FROM knowledge_questions WHERE id=?1").bind(boundaryId).first("bodyLength")).toBe(length);
+    }
+
+    for (const path of ["/api/knowledge/v1/admin/questions", `/api/knowledge/v1/admin/questions/${id}`]) {
+      await expect(admin(path.endsWith(id) ? "PATCH" : "POST", path, { title: "초과 본문", category: "근로·고용", body: "가".repeat(3001), password: "temporary-pass", serviceIds: [] })).rejects.toMatchObject({ status: 400, code: "INVALID_INPUT", message: "질문 내용은 3,000자 이하로 입력해 주세요." });
+    }
+    for (const unsafe of ["탭\t포함", "널\u0000문자", "태그 <b>금지</b>"]) {
+      await expect(admin("POST", "/api/knowledge/v1/admin/questions", { title: "위험 문자", category: "근로·고용", body: unsafe, password: "temporary-pass", serviceIds: [] })).rejects.toMatchObject({ status: 400, code: "INVALID_INPUT", message: "질문 내용 형식이 올바르지 않습니다." });
+    }
+  });
   it("accepts the visitor form payload contract and rejects stale or privileged fields", async () => {
     const anonymousPayload = buildVisitorQuestionCreatePayload({ title: "방문자 익명 질문", anonymous: true, nickname: "", password: "visitor-pass", body: "질문 내용", serviceIds: [] }, "test-token");
 

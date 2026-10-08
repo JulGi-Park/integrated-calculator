@@ -12,6 +12,7 @@ export const VISITOR_QUESTION_CREATE_FIELDS = [
 
 export const VISITOR_QUESTION_BODY_MAX_LENGTH = 3000;
 export const VISITOR_QUESTION_BODY_TOO_LONG_MESSAGE = "질문 내용은 3,000자 이하로 입력해 주세요.";
+export const VISITOR_QUESTION_BODY_INVALID_CHARACTERS = /[\u0000-\u0009\u000B-\u001F\u007F-\u009F<>]/u;
 
 /**
  * Count and normalize the visitor question body exactly as the Worker stores it.
@@ -23,7 +24,7 @@ export function normalizeVisitorQuestionBody(value: unknown): string | null {
   const normalized = value.normalize("NFC").replace(/\r\n?/gu, "\n").trim();
   if (!normalized || Array.from(normalized).length > VISITOR_QUESTION_BODY_MAX_LENGTH) return null;
   // Preserve paragraph line breaks, while rejecting other control characters and markup.
-  if (/[\u0000-\u0009\u000B-\u001F\u007F-\u009F<>]/u.test(normalized)) return null;
+  if (VISITOR_QUESTION_BODY_INVALID_CHARACTERS.test(normalized)) return null;
   return normalized;
 }
 

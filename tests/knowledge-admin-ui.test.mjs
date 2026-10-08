@@ -189,6 +189,96 @@ test("related calculators stay optional and preserve the existing serviceIds sav
   dom.window.close();
 });
 
+test("admin question create and update normalize multiline bodies and enforce the shared 3,000-character contract", async () => {
+  const html = await (await knowledgeAdminUi()).text();
+  const errors = [];
+  const requests = [];
+  const questions = new Map();
+  let serial = 0;
+  const response = (data, status = 200) => ({ ok: status >= 200 && status < 300, status, json: async () => ({ data }) });
+  const virtualConsole = new VirtualConsole();
+  virtualConsole.on("jsdomError", (error) => errors.push(error.message));
+  const dom = new JSDOM(html, {
+    url: "https://gyesanbox.kr/admin/knowledge",
+    runScripts: "dangerously",
+    virtualConsole,
+    beforeParse(window) {
+      Object.defineProperty(window.crypto, "randomUUID", { value: () => "00000000-0000-4000-8000-000000000000" });
+      window.matchMedia = () => ({ matches: true, addEventListener() {}, removeEventListener() {} });
+      window.HTMLElement.prototype.scrollIntoView = function () {};
+      window.fetch = async (input, options = {}) => {
+        const url = String(input), method = options.method || "GET";
+        if (url === "/api/knowledge/v1/services") return response({ items: [] });
+        if (url.startsWith("/api/knowledge/v1/admin/questions?")) return response({ items: [...questions.values()], page: 1, page_size: 20, total: questions.size, total_pages: 1 });
+        if (method === "POST" && url === "/api/knowledge/v1/admin/questions") {
+          const body = JSON.parse(options.body), id = `created-${++serial}`;
+          requests.push({ method, body });
+          questions.set(id, { id, title: body.title, category: body.category, body: body.body, passwordConfigured: true, relatedServices: [], answer: null, status: "published", isAnonymous: true, nickname: null });
+          return response({ id });
+        }
+        const match = /^\/api\/knowledge\/v1\/admin\/questions\/(created-\d+)$/u.exec(url);
+        if (match && method === "GET") return response({ question: structuredClone(questions.get(match[1])) });
+        if (match && method === "PATCH") {
+          const body = JSON.parse(options.body);
+          requests.push({ method, body });
+          questions.set(match[1], { ...questions.get(match[1]), ...body });
+          return response({ id: match[1], status: "published" });
+        }
+        throw new Error(`Unexpected request: ${method} ${url}`);
+      };
+    },
+  });
+  const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
+  const document = dom.window.document;
+  await flush();
+
+  const fillRequired = (body) => {
+    document.querySelector("#knowledge-title").value = "육아휴직 중 회사 의무";
+    document.querySelector("#knowledge-category").value = "근로·고용";
+    document.querySelector("#knowledge-body").value = body;
+    document.querySelector("#knowledge-password").value = "temporary-pass";
+  };
+  const submit = async () => {
+    document.querySelector("#knowledge-form").dispatchEvent(new dom.window.Event("submit", { bubbles: true, cancelable: true }));
+    await flush();
+  };
+
+  document.querySelector("#knowledge-new").click();
+  fillRequired("가".repeat(3001));
+  await submit();
+  assert.equal(requests.length, 0, "3,001 characters are rejected before the API call");
+  assert.equal(document.querySelector("#knowledge-body-error").textContent, "질문 내용은 3,000자 이하로 입력해 주세요.");
+  assert.match(document.querySelector("#knowledge-form-status").textContent, /요청을 보내지 않았습니다/u);
+
+  const actualBody = "육아휴직급여는 고용보험에서 지급되는 것으로 알고 있습니다. 그렇다면 근로자가 육아휴직을 사용하는 동안 회사가 육아휴직급여나 기존 급여를 별도로 지급해야 하는지 궁금합니다.\n\n또한 육아휴직 기간 중 해고 제한, 복직 보장 외에 회사가 부담해야 하는 비용이나 의무가 있는지, 소규모 사업장의 경우 대체인력이나 업무분담과 관련한 지원을 받을 수 있는지도 알고 싶습니다.";
+  fillRequired(actualBody);
+  await submit();
+  assert.equal(requests.at(-1).body.body, actualBody, "the reported two-paragraph body passes client validation unchanged");
+
+  document.querySelector("#knowledge-new").click();
+  document.querySelector("#knowledge-body").value = "가".repeat(2999);
+  document.querySelector("#knowledge-body").dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+  await submit();
+  assert.equal(requests.at(-1).body.body.length, 2999);
+
+  document.querySelector("#knowledge-new").click();
+  fillRequired("가".repeat(3000));
+  await submit();
+  assert.equal(requests.at(-1).body.body.length, 3000);
+
+  document.querySelector('[data-open-kid="created-1"]').click();
+  await flush();
+  await flush();
+  assert.equal(document.querySelector("#knowledge-id").value, "created-1");
+  const editedBody = `${actualBody}\n수정 내용을 덧붙였습니다.`;
+  document.querySelector("#knowledge-body").value = editedBody.replace(/\n/gu, "\r\n");
+  await submit();
+  assert.equal(requests.at(-1).method, "PATCH");
+  assert.equal(requests.at(-1).body.body, editedBody);
+  assert.deepEqual(errors, []);
+  dom.window.close();
+});
+
 const mountAnswerEditor = async ({ initialAnswer = null, onSave } = {}) => {
   const html = await (await knowledgeAdminUi()).text();
   const requests = [];
