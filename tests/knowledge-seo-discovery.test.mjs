@@ -47,6 +47,40 @@ test("knowledge sitemap traverses all 20 published pages without lastmod or quer
   } finally { globalThis.fetch = original; }
 });
 
+test("Production index gate exposes a unique canonical URL for each of 200 published questions", async () => {
+  const original = globalThis.fetch;
+  globalThis.fetch = async (input) => {
+    const url = new URL(String(input));
+    const number = Number(url.searchParams.get("page"));
+    return json(page(Array.from({ length: 10 }, (_, offset) => ({
+      id: id((number - 1) * 10 + offset + 1),
+      title: `질문 ${(number - 1) * 10 + offset + 1}`,
+      category: "근로·고용",
+      status: "published",
+    })), number, 200));
+  };
+  try {
+    const productionEnv = {
+      KNOWLEDGE_ENV: "production",
+      KNOWLEDGE_PUBLIC_ENABLED: "true",
+      KNOWLEDGE_INDEX_ENABLED: "true",
+      KNOWLEDGE_SERVICE: { fetch: (request) => globalThis.fetch(request.url) },
+    };
+    const response = await sitemapRoute(context("https://gyesanbox.kr/sitemap-knowledge.xml", productionEnv));
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("x-robots-tag"), null);
+    const dom = new JSDOM(await response.text(), { contentType: "text/xml" });
+    assert.equal(dom.window.document.querySelector("parsererror"), null);
+    const locs = [...dom.window.document.querySelectorAll("loc")].map((node) => node.textContent);
+    assert.equal(locs.length, 200);
+    assert.equal(new Set(locs).size, 200);
+    assert.equal(locs[0], `https://gyesanbox.kr/knowledge/${id(1)}/`);
+    assert.equal(locs.at(-1), `https://gyesanbox.kr/knowledge/${id(200)}/`);
+    assert.ok(locs.every((loc) => /^https:\/\/gyesanbox\.kr\/knowledge\/[0-9a-f-]+\/$/u.test(loc)));
+    dom.window.close();
+  } finally { globalThis.fetch = original; }
+});
+
 test("sitemap gate fails closed and rejects nonpublished or incomplete API pages", async () => {
   const original = globalThis.fetch;
   let calls = 0;

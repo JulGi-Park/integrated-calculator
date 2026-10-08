@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import robotsModule from "../app/robots.ts";
 import sitemapModule from "../app/sitemap.ts";
+import { knowledgeRobotsSitemaps } from "../lib/knowledge/robots.mjs";
 
 const robots = robotsModule.default;
 const sitemap = sitemapModule.default;
@@ -75,4 +76,35 @@ test("robots는 주요 페이지 색인을 막지 않고 운영 sitemap을 가�
     userAgent: "*",
     disallow: "/",
   });
+});
+
+test("Knowledge sitemap은 Production index gate가 켜졌을 때만 robots에서 발견된다", () => {
+  const production = {
+    KNOWLEDGE_ENV: "production",
+    KNOWLEDGE_PUBLIC_ENABLED: "true",
+    KNOWLEDGE_INDEX_ENABLED: "true",
+  };
+  const sitemaps = knowledgeRobotsSitemaps(production);
+
+  assert.deepEqual(sitemaps, [
+    "https://gyesanbox.kr/sitemap.xml",
+    "https://gyesanbox.kr/sitemap-knowledge.xml",
+  ]);
+  assert.equal(new Set(sitemaps).size, sitemaps.length);
+
+  for (const disabled of [
+    { ...production, KNOWLEDGE_INDEX_ENABLED: "false" },
+    { ...production, KNOWLEDGE_PUBLIC_ENABLED: "false" },
+    { ...production, NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW: "true" },
+    {},
+  ]) {
+    assert.equal(knowledgeRobotsSitemaps(disabled), "https://gyesanbox.kr/sitemap.xml");
+  }
+});
+
+test("robots가 Knowledge sitemap을 안내해도 일반 sitemap urlset에는 sitemap 주소를 넣지 않는다", () => {
+  const urls = sitemap().map((entry) => entry.url);
+  assert.equal(urls.length, 30);
+  assert.equal(urls.some((url) => /sitemap(?:-knowledge)?\.xml/u.test(url)), false);
+  assert.equal(new Set(urls).size, urls.length);
 });

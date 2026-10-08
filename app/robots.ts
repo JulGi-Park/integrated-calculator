@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { knowledgeRobotsSitemaps } from "@/lib/knowledge/robots.mjs";
 
 export const dynamic = "force-static";
 
@@ -8,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://gyesanbox.kr/sitemap.xml",
+    sitemap: knowledgeRobotsSitemaps(process.env),
   };
 }
