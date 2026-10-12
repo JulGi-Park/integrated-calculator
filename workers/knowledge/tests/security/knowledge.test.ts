@@ -4,6 +4,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { applyD1Migrations, env } from "cloudflare:test";
 import { route } from "../../src/router";
 import { hashPassword, passwordInput, verifyPassword } from "../../src/domain/knowledge";
+import { formatKoreanDateTime } from "../../src/domain/knowledge-notification";
 import { buildVisitorQuestionCreatePayload, visitorPasswordPolicyError, visitorQuestionBodyError, visitorQuestionBodyLength, normalizeVisitorQuestionBody, VISITOR_QUESTION_BODY_MAX_LENGTH } from "../../../../lib/knowledge/visitor-contract";
 
 
@@ -550,5 +551,145 @@ describe("knowledge center schema and admin API", () => {
     expect((await search({ q: "   " })).total).toBe((await search({})).total);
     expect((await search({ q: "' OR 1=1 --" })).total).toBe(0);
     await expect(admin("GET", `/api/knowledge/v1/questions?q=${"x".repeat(51)}`)).rejects.toMatchObject({ status: 400, code: "INVALID_INPUT" });
+  });
+  it("sends one safe admin notification only after a successful visitor question insert", async () => {
+    const send = vi.fn<(message: unknown) => Promise<{ messageId: string }>>(async () => ({ messageId: "mock-message-id" }));
+    const email = { send } as unknown as SendEmail;
+    const tasks: Promise<unknown>[] = [];
+    const notificationContext = { ...ctx, waitUntil: (promise: Promise<unknown>) => { tasks.push(promise); } } as unknown as ExecutionContext;
+    const marker = crypto.randomUUID();
+    const payload = {
+      title: `알림 계약 확인 ${marker}`,
+      body: `이 질문 본문은 알림에 포함하지 않습니다. ${marker}`,
+      category: "근로·고용",
+      isAnonymous: true,
+      password: "do-not-log-this-password",
+      serviceIds: [],
+      turnstile_token: "test-token",
+    };
+    const created = await route(req("POST", "/api/knowledge/v1/questions", payload), { ...testEnv, EMAIL: email }, notificationContext, crypto.randomUUID());
+    expect(created.response.status).toBe(201);
+    const { data } = await created.response.json() as { data: { id: string } };
+    expect(tasks).toHaveLength(1);
+    await Promise.all(tasks);
+    expect(send).toHaveBeenCalledTimes(1);
+    const message = send.mock.calls[0]?.[0] as unknown as { to: string; from: { email: string; name: string }; subject: string; text: string; html?: string };
+    expect(message).toMatchObject({
+      to: "julgidev@gmail.com",
+      from: { email: "knowledge-notice@gyesanbox.kr", name: "계산박스" },
+      subject: "[계산박스] 지식센터 새 질문 등록",
+    });
+    expect(message.text).toContain("카테고리: 근로·고용");
+    expect(message.text).toContain(`질문 제목: ${payload.title}`);
+    expect(message.text).toMatch(/등록 일시: \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \(KST\)/u);
+    expect(message.text).toContain(`질문 ID: ${data.id}`);
+    expect(message.text).toContain("https://gyesanbox.kr/admin/knowledge");
+    expect(message.text).not.toContain(payload.body);
+    expect(message.text).not.toContain(payload.password);
+    expect(message.html).toBeUndefined();
+    expect(formatKoreanDateTime("2026-10-11T15:00:00.000Z")).toBe("2026-10-12 00:00:00");
+
+    await expect(route(req("POST", "/api/knowledge/v1/questions", payload), { ...testEnv, EMAIL: email }, notificationContext, crypto.randomUUID())).rejects.toMatchObject({ status: 409 });
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(tasks).toHaveLength(1);
+  });
+
+  it("does not send a notification when the question D1 batch fails", async () => {
+    const send = vi.fn(async () => ({ messageId: "mock-message-id" }));
+    const original = env.KNOWLEDGE_DB;
+    const failingDb = new Proxy(original, {
+      get(target, property) {
+        if (property === "batch") return async () => { throw new Error("simulated D1 failure"); };
+        const value = Reflect.get(target, property, target);
+        return typeof value === "function" ? value.bind(target) : value;
+      },
+    });
+    const tasks: Promise<unknown>[] = [];
+    const notificationContext = { ...ctx, waitUntil: (promise: Promise<unknown>) => { tasks.push(promise); } } as unknown as ExecutionContext;
+    const marker = crypto.randomUUID();
+    const request = req("POST", "/api/knowledge/v1/questions", {
+      title: `D1 저장 실패 ${marker}`,
+      body: `D1 저장에 실패하면 알림을 보내지 않습니다. ${marker}`,
+      category: "근로·고용",
+      isAnonymous: true,
+      password: "temporary-pass",
+      serviceIds: [],
+      turnstile_token: "test-token",
+    });
+    await expect(route(request, { ...testEnv, KNOWLEDGE_DB: failingDb, EMAIL: { send } as unknown as SendEmail }, notificationContext, crypto.randomUUID())).rejects.toThrow();
+    expect(send).not.toHaveBeenCalled();
+    expect(tasks).toHaveLength(0);
+  });
+
+  it("keeps question registration successful when email sending fails", async () => {
+    const send = vi.fn(async () => { throw Object.assign(new Error("private provider detail"), { code: "E_SEND_FAILED" }); });
+    const log = vi.spyOn(console, "log").mockImplementation(() => {});
+    const tasks: Promise<unknown>[] = [];
+    const notificationContext = { ...ctx, waitUntil: (promise: Promise<unknown>) => { tasks.push(promise); } } as unknown as ExecutionContext;
+    const marker = crypto.randomUUID();
+    const request = req("POST", "/api/knowledge/v1/questions", {
+      title: `메일 발송 실패 분리 ${marker}`,
+      body: `메일이 실패해도 질문 등록은 유지합니다. ${marker}`,
+      category: "근로·고용",
+      isAnonymous: true,
+      password: "temporary-pass",
+      serviceIds: [],
+      turnstile_token: "test-token",
+    });
+    const created = await route(request, { ...testEnv, EMAIL: { send } as unknown as SendEmail }, notificationContext, crypto.randomUUID());
+    expect(created.response.status).toBe(201);
+    await Promise.all(tasks);
+    expect(send).toHaveBeenCalledTimes(1);
+    const logs = log.mock.calls.flat().join(" ");
+    expect(logs).toContain('"error_type":"E_SEND_FAILED"');
+    expect(logs).not.toContain("private provider detail");
+    expect(logs).not.toContain("temporary-pass");
+    log.mockRestore();
+  });
+
+  it("does not notify for admin create, visitor edits, or admin answer writes", async () => {
+    const send = vi.fn(async () => ({ messageId: "mock-message-id" }));
+    const email = { send } as unknown as SendEmail;
+    const tasks: Promise<unknown>[] = [];
+    const notificationContext = { ...ctx, waitUntil: (promise: Promise<unknown>) => { tasks.push(promise); } } as unknown as ExecutionContext;
+    const withEmail = { ...testEnv, EMAIL: email } as Env;
+
+    const adminCreated = await route(req("POST", "/api/knowledge/v1/admin/questions", {
+      title: "관리자 질문",
+      body: "관리자 생성은 visitor 알림 대상이 아닙니다.",
+      category: "근로·고용",
+      password: "temporary-pass",
+      serviceIds: [],
+    }), withEmail, notificationContext, crypto.randomUUID());
+    expect(adminCreated.response.status).toBe(201);
+    const { data: adminData } = await adminCreated.response.json() as { data: { id: string } };
+    expect((await route(req("PATCH", `/api/knowledge/v1/admin/questions/${adminData.id}`, { body: "관리자 기존 질문 수정" }), withEmail, notificationContext, crypto.randomUUID())).response.status).toBe(200);
+    expect((await route(req("POST", `/api/knowledge/v1/admin/questions/${adminData.id}/answer`, { body: "공식 답변" }), withEmail, notificationContext, crypto.randomUUID())).response.status).toBe(200);
+    expect((await route(req("PATCH", `/api/knowledge/v1/admin/questions/${adminData.id}/answer`, { body: "공식 답변 수정" }), withEmail, notificationContext, crypto.randomUUID())).response.status).toBe(200);
+    expect((await route(req("POST", `/api/knowledge/v1/admin/questions/${adminData.id}/hide`, {}), withEmail, notificationContext, crypto.randomUUID())).response.status).toBe(200);
+    expect((await route(req("POST", `/api/knowledge/v1/admin/questions/${adminData.id}/publish`, {}), withEmail, notificationContext, crypto.randomUUID())).response.status).toBe(200);
+    expect(send).not.toHaveBeenCalled();
+
+    const marker = crypto.randomUUID();
+    const visitorCreated = await route(req("POST", "/api/knowledge/v1/questions", {
+      title: `방문자 기존 질문 수정 ${marker}`,
+      body: `새 질문 등록만 알림 대상입니다. ${marker}`,
+      category: "근로·고용",
+      isAnonymous: true,
+      password: "temporary-pass",
+      serviceIds: [],
+      turnstile_token: "test-token",
+    }), withEmail, notificationContext, crypto.randomUUID());
+    expect(visitorCreated.response.status).toBe(201);
+    await Promise.all(tasks);
+    expect(send).toHaveBeenCalledTimes(1);
+    const { data: visitorData } = await visitorCreated.response.json() as { data: { id: string } };
+    expect((await route(req("PATCH", `/api/knowledge/v1/questions/${visitorData.id}`, {
+      password: "temporary-pass",
+      body: "기존 질문 수정은 알림 대상이 아닙니다.",
+      turnstile_token: "test-token",
+    }), withEmail, notificationContext, crypto.randomUUID())).response.status).toBe(200);
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(tasks).toHaveLength(1);
   });
 });

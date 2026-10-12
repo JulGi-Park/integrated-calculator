@@ -52,7 +52,7 @@ export async function route(request: Request, env: Env, ctx: ExecutionContext, r
   }
   const base = "/api/knowledge/v1/questions";
   if (pathname === base && method === "GET") return listPublicKnowledgeQuestions(request, env, requestId);
-  if (pathname === base && method === "POST") return createKnowledgeQuestion(request, env, requestId);
+  if (pathname === base && method === "POST") return createKnowledgeQuestion(request, env, requestId, ctx);
   if (pathname === "/api/knowledge/v1/services" && method === "GET") return listPublicKnowledgeServices(env, requestId);
   const detail = pathname.match(/^\/api\/knowledge\/v1\/questions\/([0-9a-f-]+)$/iu);
   const passwordCheck = pathname.match(/^\/api\/knowledge\/v1\/questions\/([0-9a-f-]+)\/verify-password$/iu);

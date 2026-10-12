@@ -8,6 +8,7 @@ import { verifyTurnstile, type TurnstileCategory } from "../security/turnstile";
 import { assertIdempotencyMatch, findIdempotency, requestHash } from "../security/idempotency";
 import { VISITOR_QUESTION_CREATE_FIELDS, normalizeVisitorQuestionBody, visitorPasswordPolicyError, visitorQuestionBodyError } from "../../../../lib/knowledge/visitor-contract";
 import { assertKnowledgeSpamInput, assertKnowledgeAdmission, knowledgeAdmission, knowledgeAdmissionPredicate, expiredKnowledgeGuards } from "../security/knowledge-spam";
+import { sendKnowledgeQuestionNotification } from "../domain/knowledge-notification";
 
 type Result = { response: Response; meta: { turnstile: TurnstileCategory; rateLimit: "pass" | "limited" | "not_applied" } };
 const meta = (turnstile: TurnstileCategory = "not_required", rateLimit: "pass" | "limited" | "not_applied" = "not_applied") => ({ turnstile, rateLimit });
@@ -46,7 +47,7 @@ export const listPublicKnowledgeServices = async (env: Env, requestId: string): 
 export const listPublicKnowledgeQuestions = async (request: Request, env: Env, requestId: string): Promise<Result> => { const u = new URL(request.url), service = u.searchParams.get("service"), rawQuery = u.searchParams.get("q"), query = rawQuery?.trim() || "", category = u.searchParams.get("category")?.trim() || "", limit = parseLimit(u.searchParams.get("limit"), 10, 10), page = Math.max(1, Number(u.searchParams.get("page") || "1")); if (query.length > 50) throw new ApiError(400, "INVALID_INPUT", "검색어는 50자 이내로 입력해 주세요."); if (service) assertUuid(service); if (category) knowledgeCategory(category); const values: unknown[] = []; let where = " WHERE q.status='published'"; if (service) { where += " AND EXISTS (SELECT 1 FROM knowledge_question_services s WHERE s.question_id=q.id AND s.service_id=?)"; values.push(service); } if (category) { where += " AND q.category=?"; values.push(category); } if (query) { const escaped = query.replace(/[\\%_]/gu, character => `\\${character}`); where += " AND (q.title LIKE ? ESCAPE char(92) OR q.body LIKE ? ESCAPE char(92))"; values.push(`%${escaped}%`, `%${escaped}%`); } const total = Number((await env.KNOWLEDGE_DB.prepare(`SELECT COUNT(*) total FROM knowledge_questions q${where}`).bind(...values).first<{ total: number }>())?.total || 0), totalPages = Math.max(1, Math.ceil(total / limit)), safePage = Math.min(page, totalPages); const rows = (await env.KNOWLEDGE_DB.prepare(`SELECT q.* FROM knowledge_questions q${where} ORDER BY q.created_at DESC,q.id DESC LIMIT ? OFFSET ?`).bind(...values, limit, (safePage - 1) * limit).all()).results; return result(requestId, { items: await Promise.all(rows.map(row => publicQuestionPayload(env.KNOWLEDGE_DB, row as Record<string, unknown>))), page: safePage, page_size: limit, total, total_pages: totalPages }); };
 export const getKnowledgeQuestion = async (env: Env, requestId: string, id: string): Promise<Result> => { assertUuid(id); const row = await env.KNOWLEDGE_DB.prepare("SELECT * FROM knowledge_questions WHERE id=?1").bind(id).first<Record<string, unknown>>(); if (!row) throw new ApiError(404, "NOT_FOUND", "지식센터 질문을 찾을 수 없습니다."); return result(requestId, { question: await questionPayload(env.KNOWLEDGE_DB, row) }); };
 export const getPublicKnowledgeQuestion = async (env: Env, requestId: string, id: string): Promise<Result> => { assertUuid(id); const row = await env.KNOWLEDGE_DB.prepare("SELECT * FROM knowledge_questions WHERE id=?1 AND status='published'").bind(id).first<Record<string, unknown>>(); if (!row) throw new ApiError(404, "NOT_FOUND", "지식센터 질문을 찾을 수 없습니다."); return result(requestId, { question: await publicQuestionPayload(env.KNOWLEDGE_DB, row) }); };
-export const createKnowledgeQuestion = async (request: Request, env: Env, requestId: string): Promise<Result> => {
+export const createKnowledgeQuestion = async (request: Request, env: Env, requestId: string, ctx: ExecutionContext): Promise<Result> => {
   const input = parseQuestion(await readJson(request));
   const passwordPolicyError = visitorPasswordPolicyError(input.password);
   if (passwordPolicyError) throw new ApiError(400, "INVALID_INPUT", passwordPolicyError);
@@ -71,6 +72,30 @@ export const createKnowledgeQuestion = async (request: Request, env: Env, reques
   if (!writes[1].meta.changes) {
     await assertKnowledgeAdmission(db, admission);
     throw new ApiError(429, "RATE_LIMITED", "잠시 후 다시 시도해 주세요.", 600);
+  }
+  const notification = () => sendKnowledgeQuestionNotification(env.EMAIL, {
+    id,
+    category: input.category ?? "미분류",
+    title: input.title,
+    createdAt: at,
+  });
+  if (env.EMAIL) {
+    const pendingNotification = Promise.resolve().then(notification);
+    try {
+      ctx.waitUntil(pendingNotification);
+    } catch (error) {
+      const typedError = error as { name?: unknown };
+      console.log(JSON.stringify({
+        event: "knowledge_question_email_notification",
+        question_id: id,
+        result: "failed",
+        error_type: typeof typedError?.name === "string" ? typedError.name : "SCHEDULING_ERROR",
+        occurred_at: new Date().toISOString(),
+      }));
+      void pendingNotification;
+    }
+  } else {
+    void notification();
   }
   return result(requestId, { id, status: "published" }, 201, turnstile, "pass");
 };

@@ -8,4 +8,5 @@ interface Env {
   KNOWLEDGE_API_HOST: string;
   TURNSTILE_SECRET: string;
   AUTHOR_TOKEN_PEPPER: string;
+  EMAIL?: SendEmail;
 }

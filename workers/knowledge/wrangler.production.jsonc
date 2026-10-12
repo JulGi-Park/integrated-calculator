@@ -9,6 +9,13 @@
     { "pattern": "gyesanbox.kr/api/knowledge/v1/admin/*", "zone_name": "gyesanbox.kr" }
   ],
   "observability": { "enabled": true, "head_sampling_rate": 1 },
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "destination_address": "julgidev@gmail.com",
+      "allowed_sender_addresses": ["knowledge-notice@gyesanbox.kr"]
+    }
+  ],
   "vars": {
     "ENVIRONMENT": "production",
     "KNOWLEDGE_ADMIN_ENABLED": "true",
