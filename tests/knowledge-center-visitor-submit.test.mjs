@@ -836,6 +836,27 @@ test("home latest questions show five public items with category, KST date, answ
   assert.equal(screen.getByRole("link", { name: /전체 질문 보기/u }).getAttribute("href"), "/knowledge/");
 });
 
+test("home latest questions keep their heading and announce loading until the delayed request completes", async () => {
+  let resolveRequest;
+  globalThis.fetch = () => new Promise((resolve) => { resolveRequest = resolve; });
+  render(React.createElement(KnowledgeLatestQuestions, { enabled: true }));
+
+  const heading = screen.getByRole("heading", { name: "지식센터 최신 질문" });
+  assert.ok(heading);
+  assert.equal(screen.getByRole("link", { name: /전체 질문 보기/u }).getAttribute("href"), "/knowledge/");
+  assert.equal(screen.getByRole("status").textContent, "최신 질문을 가져오는 중...");
+  assert.equal(heading.closest("section").getAttribute("aria-busy"), "true");
+  assert.equal(screen.queryByText("등록된 질문이 없습니다."), null);
+
+  resolveRequest(jsonResponse(200, { ok: true, data: { items: [
+    { id: "5e0221de-67a8-47ec-9211-7d28b8614dba", title: "지연 요청 질문", category: "근로·고용", createdAt: "2026-10-12T00:00:00Z", answer: null, status: "published" },
+  ] } }));
+  const item = await screen.findByRole("link", { name: /지연 요청 질문/u });
+  assert.equal(item.getAttribute("href"), "/knowledge/5e0221de-67a8-47ec-9211-7d28b8614dba/");
+  assert.equal(heading.closest("section").getAttribute("aria-busy"), "false");
+  assert.equal(screen.queryByText("최신 질문을 가져오는 중..."), null);
+});
+
 test("home latest questions omit hidden, malformed IDs, and render titles as text", async () => {
   globalThis.fetch = async () => jsonResponse(200, { ok: true, data: { items: [
     { id: "5e0221de-67a8-47ec-9211-7d28b8614dba", title: "숨김 질문", category: "기타", createdAt: "2026-10-12T00:00:00Z", answer: null, status: "hidden" },
@@ -851,15 +872,28 @@ test("home latest questions omit hidden, malformed IDs, and render titles as tex
   assert.equal(screen.getAllByRole("link").filter(link => /\/knowledge\/[0-9a-f-]+\/$/u.test(new URL(link.href).pathname)).length, 1);
 });
 
-test("home latest questions hide safely on empty or failed public API responses", async () => {
-  globalThis.fetch = async () => jsonResponse(500, { ok: false });
-  const first = render(React.createElement(KnowledgeLatestQuestions, { enabled: true }));
-  await waitFor(() => assert.equal(screen.queryByRole("heading", { name: "지식센터 최신 질문" }), null));
-  first.unmount();
-
+test("home latest questions distinguish empty and failed responses without hiding the section", async () => {
   globalThis.fetch = async () => jsonResponse(200, { ok: true, data: { items: [] } });
+  const empty = render(React.createElement(KnowledgeLatestQuestions, { enabled: true }));
+  await screen.findByText("등록된 질문이 없습니다.");
+  const emptyHeading = screen.getByRole("heading", { name: "지식센터 최신 질문" });
+  assert.equal(screen.getByRole("link", { name: /전체 질문 보기/u }).getAttribute("href"), "/knowledge/");
+  assert.equal(emptyHeading.closest("section").getAttribute("aria-busy"), "false");
+  empty.unmount();
+
+  globalThis.fetch = async () => jsonResponse(500, { ok: false });
   render(React.createElement(KnowledgeLatestQuestions, { enabled: true }));
-  await waitFor(() => assert.equal(screen.queryByRole("heading", { name: "지식센터 최신 질문" }), null));
+  await screen.findByText("최신 질문을 불러오지 못했습니다.");
+  const errorHeading = screen.getByRole("heading", { name: "지식센터 최신 질문" });
+  assert.equal(screen.getByRole("link", { name: /전체 질문 보기/u }).getAttribute("href"), "/knowledge/");
+  assert.equal(errorHeading.closest("section").getAttribute("aria-busy"), "false");
+  assert.equal(screen.queryByRole("list"), null);
+});
+
+test("home latest questions remain hidden when the public gate is off", () => {
+  globalThis.fetch = async () => { throw new Error("fetch should not run when disabled"); };
+  render(React.createElement(KnowledgeLatestQuestions, { enabled: false }));
+  assert.equal(screen.queryByRole("heading", { name: "지식센터 최신 질문" }), null);
 });
 
 test("clicking the selected question again collapses it, while selecting another replaces the detail", async () => {

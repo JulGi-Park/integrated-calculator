@@ -37,6 +37,26 @@
   list-style: none;
 }
 
+.stateMessage {
+  margin: 0;
+  padding: 9px 0;
+  color: var(--muted);
+}
+
+.loadingMessage {
+  min-height: 310px;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
 .list li {
   min-width: 0;
   border-bottom: 1px solid var(--line);
@@ -103,6 +123,10 @@
   .section {
     margin-top: 4px;
     margin-bottom: 28px;
+  }
+
+  .loadingMessage {
+    min-height: 440px;
   }
 
   .heading {

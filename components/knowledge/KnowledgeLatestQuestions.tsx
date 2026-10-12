@@ -13,6 +13,8 @@ type Item = {
 };
 
 type PublicPayload = { ok?: boolean; data?: { items?: unknown } };
+type LoadState = "loading" | "success" | "empty" | "error";
+type LoadResult = { apiBase: string; status: LoadState; items: Item[] };
 
 function isItem(value: unknown): value is Item {
   if (typeof value !== "object" || value === null) return false;
@@ -40,9 +42,10 @@ function formatKoreanDate(value: string): string {
 
 export function KnowledgeLatestQuestions({ enabled }: { enabled: boolean }) {
   const apiBase = enabled ? KNOWLEDGE_PUBLIC_API : "";
-  const [items, setItems] = useState<Item[]>([]);
+  const [loadResult, setLoadResult] = useState<LoadResult>({ apiBase: "", status: "loading", items: [] });
   useEffect(() => {
     if (!apiBase) return;
+    let active = true;
     void fetch(`${apiBase}/questions?limit=5&page=1`, { cache: "no-store" })
       .then(async (response) => {
         if (!response.ok) throw new Error("KNOWLEDGE_LATEST_REQUEST_FAILED");
@@ -50,35 +53,63 @@ export function KnowledgeLatestQuestions({ enabled }: { enabled: boolean }) {
         if (payload.ok !== true || !Array.isArray(payload.data?.items)) {
           throw new Error("KNOWLEDGE_LATEST_RESPONSE_INVALID");
         }
-        setItems(payload.data.items.filter(isItem).slice(0, 5));
+        if (!active) return;
+        const nextItems = payload.data.items.filter(isItem).slice(0, 5);
+        setLoadResult({ apiBase, status: nextItems.length ? "success" : "empty", items: nextItems });
       })
-      .catch(() => setItems([]));
+      .catch(() => {
+        if (!active) return;
+        setLoadResult({ apiBase, status: "error", items: [] });
+      });
+    return () => { active = false; };
   }, [apiBase]);
-  if (!apiBase || !items.length) return null;
+  if (!apiBase) return null;
+
+  const currentResult: LoadResult = loadResult.apiBase === apiBase
+    ? loadResult
+    : { apiBase, status: "loading", items: [] };
+  const { status: loadState, items } = currentResult;
+
+  const statusMessage = {
+    loading: "최신 질문을 가져오는 중...",
+    success: `최신 질문 ${items.length}건을 불러왔습니다.`,
+    empty: "등록된 질문이 없습니다.",
+    error: "최신 질문을 불러오지 못했습니다.",
+  }[loadState];
+
   return (
-    <section className={styles.section} aria-labelledby="knowledge-latest-title">
+    <section className={styles.section} aria-labelledby="knowledge-latest-title" aria-busy={loadState === "loading"}>
       <div className={styles.heading}>
         <h2 id="knowledge-latest-title">지식센터 최신 질문</h2>
         <a href="/knowledge/">전체 질문 보기 <span aria-hidden="true">→</span></a>
       </div>
-      <ul className={styles.list}>
-        {items.map((item) => (
-          <li key={item.id}>
-            <a className={styles.item} href={knowledgeDetailPath(item.id)}>
-              <span className={styles.itemMain}>
-                <strong className={styles.title}>{item.title}</strong>
-                <span className={styles.meta}>
-                  <span>{item.category || "일반"}</span>
-                  <span>{item.answer ? "답변 완료" : "답변 대기"}</span>
+      <p
+        className={`${styles.stateMessage} ${loadState === "loading" ? styles.loadingMessage : ""} ${loadState === "success" ? styles.visuallyHidden : ""}`}
+        role="status"
+        aria-live="polite"
+      >
+        {statusMessage}
+      </p>
+      {loadState === "success" ? (
+        <ul className={styles.list}>
+          {items.map((item) => (
+            <li key={item.id}>
+              <a className={styles.item} href={knowledgeDetailPath(item.id)}>
+                <span className={styles.itemMain}>
+                  <strong className={styles.title}>{item.title}</strong>
+                  <span className={styles.meta}>
+                    <span>{item.category || "일반"}</span>
+                    <span>{item.answer ? "답변 완료" : "답변 대기"}</span>
+                  </span>
                 </span>
-              </span>
-              <time className={styles.date} dateTime={item.createdAt}>
-                {formatKoreanDate(item.createdAt)}
-              </time>
-            </a>
-          </li>
-        ))}
-      </ul>
+                <time className={styles.date} dateTime={item.createdAt}>
+                  {formatKoreanDate(item.createdAt)}
+                </time>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </section>
   );
 }
