@@ -808,14 +808,58 @@ test("selected question detail is inserted directly below its list item and move
   assert.equal(screen.getAllByTestId("inline-question-detail").length, 1);
 });
 
-test("home latest question title is a permanent detail anchor", async () => {
-  globalThis.fetch = async () => jsonResponse(200, { ok: true, data: { items: [{
-    id: "5e0221de-67a8-47ec-9211-7d28b8614dba", title: "홈 최신 질문", isAnonymous: true,
-    nickname: null, answer: { body: "공식답변" },
-  }] } });
+test("home latest questions show five public items with category, KST date, answer state, and safe detail links", async () => {
+  const calls = [];
+  globalThis.fetch = async (url, options) => {
+    calls.push({ url, options });
+    return jsonResponse(200, { ok: true, data: { items: Array.from({ length: 5 }, (_, index) => ({
+      id: `5e0221de-67a8-47ec-9211-7d28b8614db${index}`, title: `홈 최신 질문 ${index + 1}`,
+      category: index === 0 ? "근로·고용" : "금융", createdAt: `2026-10-${String(12 - index).padStart(2, "0")}T15:00:00.000Z`,
+      answer: index === 0 ? { body: "공식답변" } : null, status: "published",
+      body: "메인에 표시하지 않을 질문 본문", nickname: "메인에 표시하지 않을 닉네임",
+    })) } });
+  };
   render(React.createElement(KnowledgeLatestQuestions, { enabled: true }));
-  const link = await screen.findByRole("link", { name: /홈 최신 질문/u });
-  assert.equal(link.getAttribute("href"), "/knowledge/5e0221de-67a8-47ec-9211-7d28b8614dba/");
+  const firstLink = await screen.findByRole("link", { name: /홈 최신 질문 1/u });
+  assert.equal(firstLink.getAttribute("href"), "/knowledge/5e0221de-67a8-47ec-9211-7d28b8614db0/");
+  assert.equal(calls[0].url, "/api/knowledge/v1/questions?limit=5&page=1");
+  assert.equal(calls[0].options.cache, "no-store");
+  assert.equal(screen.getAllByRole("link").filter(link => /\/knowledge\/[0-9a-f-]+\/$/u.test(new URL(link.href).pathname)).length, 5);
+  assert.equal(screen.getByText("근로·고용").textContent, "근로·고용");
+  assert.equal(screen.getAllByText("답변 완료").length, 1);
+  assert.equal(screen.getAllByText("답변 대기").length, 4);
+  assert.match(document.querySelector("time").textContent, /2026.*10.*13/u);
+  const timestamps = [...document.querySelectorAll("time")].map(time => Date.parse(time.dateTime));
+  assert.deepEqual(timestamps, [...timestamps].sort((a, b) => b - a));
+  assert.equal(screen.queryByText("메인에 표시하지 않을 질문 본문"), null);
+  assert.equal(screen.queryByText("메인에 표시하지 않을 닉네임"), null);
+  assert.equal(screen.getByRole("link", { name: /전체 질문 보기/u }).getAttribute("href"), "/knowledge/");
+});
+
+test("home latest questions omit hidden, malformed IDs, and render titles as text", async () => {
+  globalThis.fetch = async () => jsonResponse(200, { ok: true, data: { items: [
+    { id: "5e0221de-67a8-47ec-9211-7d28b8614dba", title: "숨김 질문", category: "기타", createdAt: "2026-10-12T00:00:00Z", answer: null, status: "hidden" },
+    { id: "not-a-uuid", title: "잘못된 ID", category: "기타", createdAt: "2026-10-12T00:00:00Z", answer: null },
+    { id: "5e0221de-67a8-47ec-9211-7d28b8614dba", title: "<img src=x onerror=alert(1)>", category: "기타", createdAt: "2026-10-12T00:00:00Z", answer: null },
+  ] } });
+  render(React.createElement(KnowledgeLatestQuestions, { enabled: true }));
+  const safeTitle = await screen.findByText("<img src=x onerror=alert(1)>");
+  assert.equal(safeTitle.closest("a").getAttribute("href"), "/knowledge/5e0221de-67a8-47ec-9211-7d28b8614dba/");
+  assert.equal(document.querySelector("img"), null);
+  assert.equal(screen.queryByText("숨김 질문"), null);
+  assert.equal(screen.queryByText("잘못된 ID"), null);
+  assert.equal(screen.getAllByRole("link").filter(link => /\/knowledge\/[0-9a-f-]+\/$/u.test(new URL(link.href).pathname)).length, 1);
+});
+
+test("home latest questions hide safely on empty or failed public API responses", async () => {
+  globalThis.fetch = async () => jsonResponse(500, { ok: false });
+  const first = render(React.createElement(KnowledgeLatestQuestions, { enabled: true }));
+  await waitFor(() => assert.equal(screen.queryByRole("heading", { name: "지식센터 최신 질문" }), null));
+  first.unmount();
+
+  globalThis.fetch = async () => jsonResponse(200, { ok: true, data: { items: [] } });
+  render(React.createElement(KnowledgeLatestQuestions, { enabled: true }));
+  await waitFor(() => assert.equal(screen.queryByRole("heading", { name: "지식센터 최신 질문" }), null));
 });
 
 test("clicking the selected question again collapses it, while selecting another replaces the detail", async () => {

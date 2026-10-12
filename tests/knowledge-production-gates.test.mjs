@@ -3,7 +3,7 @@ import { test } from "node:test";
 import fs from "node:fs";
 import { createHash } from "node:crypto";
 import { JSDOM } from "jsdom";
-import { knowledgeGates, knowledgeBuildGates } from "../lib/knowledge/gates.ts";
+import { knowledgeGates, knowledgeBuildGates, knowledgeHomePublicEnabled } from "../lib/knowledge/gates.ts";
 import { knowledgeSeo } from "../lib/knowledge/seo.ts";
 import { curatedKnowledgeSeo, parseCuratedManifest } from "../pages-functions/knowledge-curated-seo.ts";
 import { renderKnowledgeQuestion } from "../pages-functions/knowledge-seo.ts";
@@ -22,6 +22,18 @@ const env = (publicOn, indexOn) => ({ KNOWLEDGE_ENV:"production", KNOWLEDGE_PUBL
 const ctx = (path, values, host="gyesanbox.kr") => ({request:new Request(`https://${host}${path}`),env:values,params:{questionId:id}});
 const assets = () => Promise.resolve(new Response('<html><head><meta name="robots" content="noindex, nofollow"></head><body>계산박스 지식센터</body></html>',
   {headers:{"content-type":"text/html","etag":"old","content-length":"1","x-robots-tag":"noindex"}}));
+
+test("homepage Knowledge feed respects the production public gate, not the preview flag",()=>{
+  assert.equal(knowledgeHomePublicEnabled({
+    KNOWLEDGE_ENV:"production", KNOWLEDGE_PUBLIC_ENABLED:"false", NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW:"true",
+  }),false);
+  assert.equal(knowledgeHomePublicEnabled({
+    KNOWLEDGE_ENV:"production", KNOWLEDGE_PUBLIC_ENABLED:"true", NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW:"false",
+  }),true);
+  assert.equal(knowledgeHomePublicEnabled({
+    KNOWLEDGE_ENV:"preview", NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW:"true",
+  }),true);
+});
 
 test("Production/Preview matrix applies to actual detail/list HTML and sitemap, defaults fail closed", async()=>{
   const saved=globalThis.fetch;

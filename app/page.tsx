@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { KnowledgeLatestQuestions } from "@/components/knowledge/KnowledgeLatestQuestions";
+import { knowledgeHomePublicEnabled } from "@/lib/knowledge/gates";
 
 const siteUrl = "https://gyesanbox.kr/";
 const homeTitle = "계산박스 | 기준·공식·해석을 함께 제공하는 생활 계산 서비스";
@@ -224,6 +225,7 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
+  const knowledgeEnabled = knowledgeHomePublicEnabled(process.env);
   const jsonLdItems = [
     {
       "@context": "https://schema.org",
@@ -294,6 +296,7 @@ export default function Home() {
           값은 서버에 저장하지 않으며, 결과는 실제 지급액·세금·대출 심사·정산
           결과와 다를 수 있는 참고값입니다.
         </p>
+        {knowledgeEnabled ? <KnowledgeLatestQuestions enabled /> : null}
         <a className="button button--primary" href="/calculators/">
           계산기 목록 보기
           <span aria-hidden="true">→</span>
@@ -316,10 +319,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-
-      {process.env.NEXT_PUBLIC_ENABLE_KNOWLEDGE_PREVIEW === "true" ? (
-        <KnowledgeLatestQuestions enabled />
-      ) : null}
 
       <section className="home-calculators" aria-labelledby="home-principles-title">
         <div>

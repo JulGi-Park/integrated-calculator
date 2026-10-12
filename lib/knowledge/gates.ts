@@ -7,4 +7,4 @@ export type KnowledgeGateEnv = {
 };
 
 // One implementation also runs in plain Node build scripts, without TS loaders.
-export { knowledgeGates, knowledgeBuildGates } from "./gates.mjs";
+export { knowledgeGates, knowledgeBuildGates, knowledgeHomePublicEnabled } from "./gates.mjs";
