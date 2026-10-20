@@ -318,7 +318,7 @@ test("변경 이력은 신규 공개와 전세·월세 변경을 최신순으로
     .map(([, year, month, day]) => Date.UTC(Number(year), Number(month) - 1, Number(day)));
 
   assert.ok(dates.length > 0);
-  assert.equal(dates[0], Date.UTC(2026, 7, 24));
+  assert.equal(dates[0], Date.UTC(2026, 9, 12));
   assert.deepEqual(dates, [...dates].sort((a, b) => b - a));
   assert.match(html, /계산기 검색과 핵심 결과 판단 안내/);
   assert.match(html, /핵심 계산기 8개의 결과 화면/);
@@ -337,7 +337,7 @@ test("변경 이력은 신규 공개와 전세·월세 변경을 최신순으로
   assert.match(html, /13\.14%/);
   assert.match(html, /0\.9%/);
   assert.doesNotMatch(html, /13\.139999999999999|0\.8999999999999999/);
-  assert.match(html, /주요 계산기 공개와 계산 기준·기능 변경 중/);
+  assert.match(html, /주요 계산기와 지식센터 기능, 계산 기준 변경 중/);
 });
 
 test("신규 페이지는 H1 하나와 파싱 가능한 WebPage·BreadcrumbList JSON-LD를 렌더링한다", () => {
