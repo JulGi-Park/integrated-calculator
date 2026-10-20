@@ -60,6 +60,7 @@ DSR 페이지가 안내하는 2026년 하반기 기준은 금융위 금융규제
 - 타깃 테스트 28건 중 26 PASS, 2 FAIL. 기준선 `bd06ce6` 격리 worktree에서 동일 명령·동일 결과(26 PASS, 2 FAIL)로 신규 회귀 0건을 확인했습니다. 기존 실패는 소스 전체에서 `준비` 문자열을 검색하여 정상 Knowledge validator를 placeholder로 오인하는 테스트와, Worker/Pages Function으로 제공되는 `/knowledge/` 동적 route를 정적 allowlist가 누락한 테스트입니다. 게시자 빌드 감사는 별도로 수정 후 통과했습니다.
 - 21개 계산기 390px 화면, 홈페이지·변경이력·지식센터 목록의 360px/1440px 화면을 확인했습니다. 전체 가로 overflow 0, 제품 pageerror 0입니다. 빈 필수입력 상태에서 누른 계산기는 오류 안내를 낼 수 있으므로 이번 화면 QA를 전체 계산 공식의 계산 정확성 테스트로 해석하지 않습니다.
 - 자동 브라우저에서 관측한 외부 AdSense `lidar.js` 권한 정책 경고는 위에 기록했습니다. 사용자에게 보이는 제품 runtime 장애로 이어지지 않았습니다.
+- Preview Pages 배포 `11430869-b46e-438e-bb6a-cbc74ede936f` 성공, URL `https://11430869.integrated-calculator.pages.dev/updates/`, 배포 SHA `507cb187d9ea961282acff9c456ecb12d0686b61`, `commit_dirty=false`. 실제 브라우저에서 1440×1000 및 390×844 변경이력 화면의 날짜·본문·링크를 확인했고, overflow 0, preview console/pageerror 0입니다.
 
 ## G. 미완료 사항 및 AdSense 판단
 
@@ -73,5 +74,5 @@ DSR 페이지가 안내하는 2026년 하반기 기준은 금융위 금융규제
 
 - 변경된 사용자 페이지 주소: **없음**. 추가된 변경 이력 상세 링크는 기존 `/`, `/terms/`, `/knowledge/` 공개 주소를 사용합니다.
 - Production URL, Worker, DB, binding, 환경변수, public/index/admin/import gate 변경: 0.
-- Git push, main 반영, Production 배포: 0.
+- 감사 브랜치 Preview용 Git push: 1. main 반영 및 Production 배포: 0.
 - 원래 존재하던 미추적 파일 7개는 수정·삭제하지 않았습니다.
