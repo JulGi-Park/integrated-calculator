@@ -1,0 +1,6 @@
+"priority","type","scope","sampleUrl","finding","action"
+"P2","답변 적합성","13개 Q&A","https://gyesanbox.kr/knowledge/1b14f1f2-3d2e-4ded-a5a9-2c863e81bfbf/","같은 주휴수당 일반 답변이 서로 다른 상황 질문에 반복됨. 개별 임금액·근무시간 산정 없이 일반 안내에 머무는 질문이 포함됨. 반복 자체가 곧 오답이라는 뜻은 아님.","질문별 핵심 쟁점에 맞춰 개별 답변 검토. 운영 데이터 수정은 별도 승인 필요."
+"P2","답변 적합성","3개 Q&A","https://gyesanbox.kr/knowledge/6020875e-974a-4644-a9d4-dda4df1fd59a/","입사월 급여 일할계산, 거래별 세금계산서 시점, 강사 근로자성 질문에 답변이 쟁점을 직접 풀어주지 않는 사례가 확인됨.","사실관계별 공식 기준과 적용 예시를 답변에 보완."
+"P3","변경 이력","/updates/","https://gyesanbox.kr/updates/","최신 항목이 2026-08-24였음. 배포 기록에서 확인한 2026-09-16 및 10월 변경사항을 실제 변경 이력에 보완.","현재 브랜치에서 날짜·근거·링크를 보완. Preview 검증 필요."
+"P3","링크/푸터","250 공개 페이지·332 목적지","https://gyesanbox.kr/","332개 링크/og:image 목적지 모두 최종 200. 푸터 250개 모두 © 2026 줄기Dev. All rights reserved. 일치. 제보된 불일치 현재 미재현.","불필요한 변경 없음."
+"P3","지식센터 렌더링","/knowledge/ 목록 및 220개 상세","https://gyesanbox.kr/knowledge/","목록 초기 HTML은 클라이언트 로딩 안내이며 API 요청 후 DOM에 최신 목록을 채움. 충분히 대기한 브라우저 검증에서 전체 220건과 최신 질문이 표시됨. 최초 HTTP 스냅샷 후 질문 1건이 추가되어 목록·sitemap은 220건, 추가 상세 URL도 HTTP 200·자기 canonical·index,follow로 확인.","Search Console URL 검사에서 Google 렌더 결과를 확인하고 CSR/API 크롤링을 주기적으로 관찰."

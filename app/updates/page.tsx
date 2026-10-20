@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
+import { knowledgeBuildGates } from "@/lib/knowledge/gates.mjs";
 
 const canonical = "https://gyesanbox.kr/updates/";
 const title = "계산기 변경 이력 | 계산박스";
 const description =
-  "계산박스 공개 계산기와 신뢰 페이지에서 확인 가능한 기준·기능 변경 이력을 안내합니다.";
+  "계산박스 공개 계산기, 지식센터와 신뢰 페이지에서 확인 가능한 기준·기능 변경 이력을 안내합니다.";
 const ogImage = "https://gyesanbox.kr/og/policy.png";
 
 export const metadata: Metadata = {
@@ -51,6 +52,49 @@ const trainingCertificateCostReleaseUpdate = {
     "계산기 페이지에서 입력 항목, 총 본인부담 예상액, 국비지원 예상액, 재응시 비용 비교와 공식 출처를 확인할 수 있습니다.",
   href: "/calculators/training-certificate-cost/",
 } as const;
+
+const recentUpdates = [
+  {
+    date: "2026년 10월 12일",
+    target: "홈페이지 지식센터 최신 질문과 로딩 안내",
+    change: "홈페이지 소개 문구 아래에 최신 공개 질문 5건을 추가했습니다. 질문 제목, 카테고리, 등록일과 답변 상태를 표시하고, 조회 중·등록된 질문 없음·조회 실패 상태를 구분합니다.",
+    reason: "새 질문과 답변을 홈페이지에서 바로 찾고, 조회 중에도 지식센터 영역과 전체 질문 보기 링크를 이용할 수 있도록 하기 위해서입니다.",
+    evidence: "홈페이지에서 최신 질문 목록, 질문 상세 링크, 전체 질문 보기와 조회 중 안내를 확인할 수 있습니다. 기존 계산기 목록 보기 버튼과 계산기 바로가기는 유지했습니다.",
+    href: "/",
+  },
+  {
+    date: "2026년 10월 8일",
+    target: "지식센터 메뉴와 공개 질문 검색 경로",
+    change: "PC·모바일 공통 메뉴에 지식센터를 추가하고, 공개 질문별 주소·검색 정보·관련 질문 링크와 지식센터 사이트맵의 발견 경로를 연결했습니다.",
+    reason: "계산기 이용 중 궁금한 내용을 질문·답변으로 찾아보고, 공개된 질문 상세로 이동하기 쉽게 하기 위해서입니다.",
+    evidence: "상단 지식센터 메뉴, 공개 질문 상세의 제목·설명·관련 질문, robots.txt의 지식센터 사이트맵 안내에서 확인할 수 있습니다. 사이트맵 등록이 검색 노출을 보장하지는 않습니다.",
+    href: "/knowledge/",
+  },
+  {
+    date: "2026년 10월 7일",
+    target: "지식센터 질문 등록 검증과 목록 복귀",
+    change: "질문 본문 3,000자 한도와 글자수 표시를 맞추고, 관련 계산기를 선택하지 않아도 질문을 등록할 수 있도록 보완했습니다. 등록 성공 후 최신 질문 목록으로 이동합니다.",
+    reason: "입력 오류를 등록 요청 전에 확인하고, 선택 입력 때문에 등록이 막히거나 등록 결과를 확인하기 어려운 상황을 줄이기 위해서입니다.",
+    evidence: "지식센터 질문 등록 화면에서 본문 글자수, 필수 입력 안내와 관련 계산기 선택사항을 확인할 수 있습니다. 글자수는 줄바꿈·유니코드 정규화와 앞뒤 공백 제거 후 코드포인트 기준으로 계산합니다.",
+    href: "/knowledge/",
+  },
+  {
+    date: "2026년 10월 5일",
+    target: "지식센터 질문 목록·상세와 작성 화면 개선",
+    change: "공개 질문 목록에서 검색·카테고리 선택·페이지 이동을 제공하고, 질문 상세에서 공식답변과 관련 계산기·관련 질문을 확인할 수 있도록 화면을 정리했습니다. 질문 작성 화면의 입력 안내와 사용 흐름도 보완했습니다.",
+    reason: "질문을 찾고 답변과 연결된 계산기를 살펴보는 과정을 단순하게 하고, 새 질문을 작성할 때 입력 기준을 이해하기 쉽게 안내하기 위해서입니다.",
+    evidence: "지식센터 목록의 검색·카테고리·페이지 이동, 공개 질문 상세의 공식답변·관련 링크, 질문 작성 화면의 입력 안내에서 확인할 수 있습니다.",
+    href: "/knowledge/",
+  },
+  {
+    date: "2026년 9월 16일",
+    target: "사이트 저작권자 표기 통일",
+    change: "공통 푸터의 저작권자 표기를 줄기Dev로 통일했습니다. 서비스 이름은 계산박스를 유지합니다.",
+    reason: "운영 주체와 서비스 이름을 구분하고, 소개·이용약관·푸터의 안내를 일관되게 제공하기 위해서입니다.",
+    evidence: "홈페이지와 계산기 페이지의 공통 푸터, 이용약관의 저작권 안내에서 확인할 수 있습니다.",
+    href: "/terms/",
+  },
+] as const;
 
 const baseUpdates = [
   {
@@ -216,6 +260,7 @@ const baseUpdates = [
 ] as const;
 
 const updates = [
+  ...recentUpdates,
   baseUpdates[0],
   baseUpdates[1],
   baseUpdates[2],
@@ -224,13 +269,14 @@ const updates = [
 ];
 
 export default function UpdatesPage() {
+  const knowledgePublic = knowledgeBuildGates(process.env).publicEnabled;
   return (
     <>
       <JsonLdScripts items={jsonLdItems} />
       <PolicyPageLayout
         eyebrow="Updates"
         title="계산기 변경 이력"
-        description="계산박스의 주요 계산기 공개와 계산 기준·기능 변경 중 현재 공개 페이지와 코드에서 확인할 수 있는 내용을 기록합니다."
+        description="계산박스의 주요 계산기와 지식센터 기능, 계산 기준 변경 중 현재 공개 페이지와 코드에서 확인할 수 있는 내용을 기록합니다."
       >
         {updates.map((update) => (
           <section key={`${update.date}-${update.target}`}>
@@ -239,7 +285,9 @@ export default function UpdatesPage() {
             <p><strong>변경한 내용:</strong> {update.change}</p>
             <p><strong>변경 이유:</strong> {update.reason}</p>
             <p><strong>확인 기준:</strong> {update.evidence}</p>
-            <p><a href={update.href}>상세 페이지 보기</a></p>
+            {(update.href !== "/knowledge/" || knowledgePublic) && (
+              <p><a href={update.href}>상세 페이지 보기</a></p>
+            )}
           </section>
         ))}
       </PolicyPageLayout>
