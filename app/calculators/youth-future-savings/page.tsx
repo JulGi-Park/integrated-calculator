@@ -11,9 +11,9 @@ import {
 } from "@/components/calculators/youthFutureSavingsContentData";
 
 const title =
-  "청년미래적금 계산기 | 정부기여금·만기 예상금액";
+  "2026 청년미래적금 계산기 | 정부기여금·만기 예상금액";
 const description =
-  "월 납입액·연 이자율·정부기여금 참고 유형을 입력해 청년미래적금의 예상 만기금액을 계산합니다. 월 최대 50만원, 3년, 일반형 6%·우대형 12%와 비과세 기준을 안내합니다.";
+  "월 납입액과 예상 금리를 입력해 3년 만기 예상액을 계산합니다. 월 최대 50만원과 일반형 6%·우대형 12% 기여금은 참고 기준이며, 가입 자격은 판정하지 않습니다.";
 const ogUrl = "https://gyesanbox.kr/calculators/youth-future-savings/";
 const ogImage = "https://gyesanbox.kr/og/youth-future-savings.png";
 

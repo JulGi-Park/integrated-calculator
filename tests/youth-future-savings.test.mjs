@@ -22,6 +22,16 @@ test("청년미래적금 계산기는 전용 OG/Twitter 이미지를 사용한�
   assert.equal(png.readUInt32BE(20), 630);
 });
 
+test("청년미래적금 검색 메타는 현재 2026 상품과 계산 한계를 정확히 설명한다", () => {
+  assert.equal(
+    metadata.title,
+    "2026 청년미래적금 계산기 | 정부기여금·만기 예상금액",
+  );
+  assert.match(metadata.description, /3년 만기/);
+  assert.match(metadata.description, /일반형 6%·우대형 12%/);
+  assert.match(metadata.description, /가입 자격은 판정하지 않습니다/);
+});
+
 test("청년미래적금 대표 계산 케이스를 계산한다", () => {
   const response = calculateYouthFutureSavings({
     monthlyDeposit: 500_000,

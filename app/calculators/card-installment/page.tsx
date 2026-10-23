@@ -7,9 +7,9 @@ import {
 } from "@/components/calculators/CardInstallmentContent";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 
-const title = "카드 할부 계산기 | 월별 수수료·총 납부액 계산";
+const title = "카드 할부 계산기 | 수수료율 직접 입력·총 납부액";
 const description =
-  "구매금액, 할부 개월 수, 연 할부 수수료율을 입력해 월별 수수료, 월 납부액, 총 수수료와 총 납부액을 추정합니다.";
+  "구매금액·할부 개월 수·연 할부 수수료율을 직접 입력해 월별 수수료와 총 납부액을 추정합니다. 카드사별 실제 요율과 부분 무이자 조건은 반영하지 않습니다.";
 const ogUrl = "https://gyesanbox.kr/calculators/card-installment/";
 const ogImage = "https://gyesanbox.kr/og/card-installment.png";
 
