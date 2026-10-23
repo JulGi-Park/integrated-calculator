@@ -240,8 +240,8 @@ Naver 검색결과를 조회해 카드 할부, 청년미래적금, 주급/주휴
 
 ### Preview
 
-- Cloudflare Pages Preview deployment `7ea3f981-0aa8-4673-8e28-8beb832b5e75`, commit `49e365eb3268ad8a6992e6d349f22386c1deb40a`, `commit_dirty=false`, 배포 성공.
-- [카드 할부 계산기 Preview](https://7ea3f981.integrated-calculator.pages.dev/calculators/card-installment/)와 [청년미래적금 계산기 Preview](https://7ea3f981.integrated-calculator.pages.dev/calculators/youth-future-savings/) 모두 HTTP 브라우저 렌더를 확인했다.
+- Cloudflare Pages 최종 Preview deployment `a0182865-0937-4fa0-b408-71eb51a8066c`, commit `f85696b93e0e535272bc4bb6de75cc39babcd9d4`, `commit_dirty=false`, 배포 성공. UI/실측은 코드가 동일한 직전 Preview에서도 검증했다.
+- [카드 할부 계산기 Preview](https://a0182865.integrated-calculator.pages.dev/calculators/card-installment/)와 [청년미래적금 계산기 Preview](https://a0182865.integrated-calculator.pages.dev/calculators/youth-future-savings/) 모두 HTTP 브라우저 렌더를 확인했다.
 - 각 페이지의 초기 문서 title/description, Production canonical, H1이 정상이고 title/description이 초기 HTML에서 확인됐다. 계산기 화면/본문과 링크는 기존 그대로다.
 - 모바일 overflow 실측: 두 URL 모두 1440×900에서 `scrollWidth=clientWidth=1425`(browser layout viewport 실제 폭 기준), 390×844에서 `390=390`, 360×800에서 `360=360`. 1440 desktop 기준 viewport 요청 폭은 1440px이며 실제 document client width 1425px(스크롤바 제외)였다.
 - browser console error 0, `Runtime.exceptionThrown` 0.
@@ -249,16 +249,27 @@ Naver 검색결과를 조회해 카드 할부, 청년미래적금, 주급/주휴
 
 ### 운영 반영
 
-운영 승격은 사용자 지시서 범위에 포함되며 진행 전 마지막 승인 기준선을 재확인한다. 아래 항목은 main 반영 및 Production smoke를 실제 완료한 후 업데이트한다.
+운영 반영은 사용자 지시서의 승인 범위에서 진행했다.
+
+- main/origin/main은 ff-only 반영 후 `f85696b93e0e535272bc4bb6de75cc39babcd9d4`로 일치했다. 승격 전 main 대 branch ahead/behind는 `0/2`, merge-base는 `dbda7ee560438b3e94be70044e48517551cf8906`이었다.
+- Cloudflare Pages Production deployment `abe59ffa-96df-4488-985c-818461b04098`는 success, Source SHA `f85696b93e0e535272bc4bb6de75cc39babcd9d4`, `commit_dirty=false`.
+- Production에서 카드 할부·청년미래적금 페이지 모두 초기 HTML title/description, 자기 자신을 가리키는 Production canonical, 기존 H1을 확인했다. 두 URL 모두 HTTP 200.
+- 운영 브라우저 폭 검사: 1440×900에서 각 페이지 `scrollWidth=clientWidth=1425`(수직 스크롤바 제외), 390×844에서 `390=390`, 360×800에서 `360=360`. 가로 overflow 없음.
+- 두 페이지 browser console error 0, CDP `Runtime.exceptionThrown` 0.
+- 회귀 URL GET 결과: `/`, `/calculators/labor-pay/`, `/knowledge/`, `/robots.txt`, `/sitemap.xml`, `/sitemap-knowledge.xml` 모두 HTTP 200.
+- Knowledge Worker, D1, Pages env vars, binding, Access, ads, public/index/admin/import gate는 변경하지 않았다. D1 write/schema/migration 및 Worker 배포도 없었다.
+- 방문자 페이지 주소는 변경하지 않았다.
 
 | 항목 | 값 |
 |---|---|
 | 작업 브랜치 | `codex/naver-ctr-seo-261023-001` |
 | Preview 검증 SHA | `49e365eb3268ad8a6992e6d349f22386c1deb40a` |
-| Preview deployment | `7ea3f981-0aa8-4673-8e28-8beb832b5e75` (success, clean) |
+| Preview deployment | `a0182865-0937-4fa0-b408-71eb51a8066c` (success, clean) |
 | Preview alias | `https://codex-naver-ctr-seo-261023-0.integrated-calculator.pages.dev` |
-| Production commit / deployment ID / Source SHA | 진행 전 |
-| Production runtime / 기존 기능 회귀 | 진행 전 |
+| Production code release SHA | `f85696b93e0e535272bc4bb6de75cc39babcd9d4` |
+| Production deployment | `abe59ffa-96df-4488-985c-818461b04098` (success, clean) |
+| Production Source / `commit_dirty` | `f85696b93e0e535272bc4bb6de75cc39babcd9d4` / `false` |
+| Production runtime / 회귀 | 수정 URL·홈·대표 계산기·Knowledge·robots·sitemap PASS; console/pageerror 0 |
 | 기존 URL 변경 | 없음 |
 | Worker/D1/환경변수/gate 변경 | 0 |
 
