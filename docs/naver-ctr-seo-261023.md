@@ -236,18 +236,29 @@ Naver 검색결과를 조회해 카드 할부, 청년미래적금, 주급/주휴
 
 기준선에서 반복된 실패 10건은 변경 브랜치에도 그대로 재현됐다: 운영 source placeholder 문구 검색, 정적 route 검사에서 `/knowledge/` route 검출, 관련 질문 fixture 기대값, Knowledge Worker 보안 테스트 파일 7개. 변경 대상 두 페이지 테스트는 통과했고 새 실패는 없었다.
 
-## 배포 및 최종 운영 검증
+## Preview 검증 및 최종 운영 검증
 
-상태: 진행 중. 아래 표는 검증을 마친 후 업데이트한다.
+### Preview
+
+- Cloudflare Pages Preview deployment `7ea3f981-0aa8-4673-8e28-8beb832b5e75`, commit `49e365eb3268ad8a6992e6d349f22386c1deb40a`, `commit_dirty=false`, 배포 성공.
+- [카드 할부 계산기 Preview](https://7ea3f981.integrated-calculator.pages.dev/calculators/card-installment/)와 [청년미래적금 계산기 Preview](https://7ea3f981.integrated-calculator.pages.dev/calculators/youth-future-savings/) 모두 HTTP 브라우저 렌더를 확인했다.
+- 각 페이지의 초기 문서 title/description, Production canonical, H1이 정상이고 title/description이 초기 HTML에서 확인됐다. 계산기 화면/본문과 링크는 기존 그대로다.
+- 모바일 overflow 실측: 두 URL 모두 1440×900에서 `scrollWidth=clientWidth=1425`(browser layout viewport 실제 폭 기준), 390×844에서 `390=390`, 360×800에서 `360=360`. 1440 desktop 기준 viewport 요청 폭은 1440px이며 실제 document client width 1425px(스크롤바 제외)였다.
+- browser console error 0, `Runtime.exceptionThrown` 0.
+- `2026 청년미래적금` 문구 기준은 금융위원회 2026-09-16 발표의 2026년 10월 7일 2차 모집 기준이다. 차기 2027년 인상 언급은 확정 기준으로 포함하지 않았다.
+
+### 운영 반영
+
+운영 승격은 사용자 지시서 범위에 포함되며 진행 전 마지막 승인 기준선을 재확인한다. 아래 항목은 main 반영 및 Production smoke를 실제 완료한 후 업데이트한다.
 
 | 항목 | 값 |
 |---|---|
 | 작업 브랜치 | `codex/naver-ctr-seo-261023-001` |
-| 최종 commit SHA | 미기록 |
-| Preview deployment | 미기록 |
-| Production deployment ID | 미기록 |
-| Production Source SHA / `commit_dirty` | 미기록 |
-| PC/모바일 및 runtime 검증 | 미기록 |
+| Preview 검증 SHA | `49e365eb3268ad8a6992e6d349f22386c1deb40a` |
+| Preview deployment | `7ea3f981-0aa8-4673-8e28-8beb832b5e75` (success, clean) |
+| Preview alias | `https://codex-naver-ctr-seo-261023-0.integrated-calculator.pages.dev` |
+| Production commit / deployment ID / Source SHA | 진행 전 |
+| Production runtime / 기존 기능 회귀 | 진행 전 |
 | 기존 URL 변경 | 없음 |
 | Worker/D1/환경변수/gate 변경 | 0 |
 
