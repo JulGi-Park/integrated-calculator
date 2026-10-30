@@ -35,6 +35,7 @@ const pageWindow = (current: number, total: number): Array<number | "ellipsis-st
 
 export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
   const apiBase = enabled ? KNOWLEDGE_PUBLIC_API : "";
+  const [enhanced, setEnhanced] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
   const [items, setItems] = useState<Question[]>([]);
   const [selected, setSelected] = useState<Question | null>(null);
@@ -101,8 +102,14 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
     finally { setLoading(false); }
   }, [call]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect -- initial data synchronization belongs to the client preview.
-  useEffect(() => { if (!apiBase) return; void Promise.all([loadServices(), loadList()]).catch(() => undefined); }, [apiBase, loadList, loadServices]);
+  useEffect(() => {
+    if (!apiBase) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Switch from the opaque HTTP fallback to the existing interactive UI after hydration.
+    setEnhanced(true);
+    const requestedPage = new URLSearchParams(window.location.search).get("page") ?? "1";
+    const initialPage = /^[1-9]\d*$/u.test(requestedPage) && Number.isSafeInteger(Number(requestedPage)) ? Number(requestedPage) : 1;
+    void Promise.all([loadServices(), loadList(initialPage)]).catch(() => undefined);
+  }, [apiBase, loadList, loadServices]);
   useEffect(() => { if (typeof window === "undefined" || !apiBase || !composerMounted || !turnstileVisible) return; const w = window as Window & { turnstile?: { render: (el: HTMLElement, opts: Record<string, unknown>) => unknown; reset: (id?: unknown) => void } }; const mount = () => { if (!widgetRef.current || !w.turnstile || widgetId.current !== null) return; widgetId.current = w.turnstile.render(widgetRef.current, { sitekey: TURNSTILE_SITEKEY, language: "ko", callback: (token: string) => { turnstileTokenRef.current = token; setTurnstileToken(token); setTurnstilePrompt(""); if (pendingTurnstileSubmitRef.current) { pendingTurnstileSubmitRef.current = false; createFormRef.current?.requestSubmit(); } }, "expired-callback": () => { turnstileTokenRef.current = ""; setTurnstileToken(""); }, "error-callback": () => { turnstileTokenRef.current = ""; setTurnstileToken(""); } }); }; if (w.turnstile) mount(); else { const script = document.querySelector<HTMLScriptElement>('script[src*="challenges.cloudflare.com/turnstile"]') || document.createElement("script"); if (!script.src) { script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"; script.async = true; script.defer = true; document.head.appendChild(script); } script.addEventListener("load", mount, { once: true }); return () => script.removeEventListener("load", mount); } }, [apiBase, composerMounted, turnstileVisible]);
 
   const resetToken = () => { const w = window as Window & { turnstile?: { reset: (id?: unknown) => void } }; if (w.turnstile) w.turnstile.reset(widgetId.current || undefined); turnstileTokenRef.current = ""; pendingTurnstileSubmitRef.current = false; setTurnstileToken(""); setTurnstilePrompt(""); };
@@ -237,6 +244,9 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
   if (!apiBase) return <section className={styles.shell}><p className={styles.error}>Preview에서만 제공되는 지식센터입니다.</p></section>;
   return <main className={styles.shell} aria-labelledby="knowledge-title">
     <header className={styles.header}><p className={styles.eyebrow}>Knowledge center</p><h1 id="knowledge-title">계산박스 지식센터</h1><p>궁금한 내용을 남기면 계산박스가 공식 답변을 안내합니다.</p></header>
+    {/* Pages Functions fill this opaque island. React owns its lifetime, not its children. */}
+    {!enhanced && <div id="knowledge-server-list" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: "" }} />}
+    <div hidden={!enhanced}>
     {notice ? <p className={styles.notice} role="status">{notice}</p> : null}
     {error ? <div className={styles.error} role="alert"><p>{error}</p><button type="button" onClick={() => { setError(""); void loadList(page); }}>다시 시도</button></div> : null}
     <div className={styles.listHeading} ref={listTopRef}><h2>최신 질문</h2><span>{query ? `검색 결과 ${total}건` : category ? `${category} 질문 ${total}건` : `전체 ${total}건`}</span></div>
@@ -269,5 +279,6 @@ export function KnowledgeCenter({ enabled }: { enabled: boolean }) {
       </div>
       {selected ? renderQuestionDetail(styles.desktopDetail, "desktop-question-detail") : <div className={`${styles.detail} ${styles.desktopDetail}`}><p className={styles.empty}>질문을 선택하면 상세 내용을 확인할 수 있습니다.</p></div>}
     </section>
+    </div>
   </main>;
 }

@@ -117,11 +117,11 @@ test("related questions use published list data, exclude self, cap links, and es
       isAnonymous: true, nickname: null, status: "published", answer: { body: "공식답변" },
       relatedServices: [{ slug: "labor-pay", name: "주휴수당 계산기" }] }, "preview", related);
     const dom = new JSDOM(html);
-    const anchors = [...dom.window.document.querySelectorAll("#related-questions + ul a")];
+    const anchors = [...dom.window.document.querySelectorAll('[aria-labelledby="related-questions"] ul a')];
     assert.equal(anchors.length, 5);
     assert.ok(anchors.every((anchor) => anchor.getAttribute("href") !== `/knowledge/${id(1)}/`));
-    assert.equal(anchors[0].textContent, `<관련 질문> & '`);
+    assert.equal(anchors[0].querySelector('span').textContent, `<관련 질문> & '`);
     assert.equal(dom.window.document.querySelectorAll("script").length, 0);
-    assert.equal(dom.window.document.querySelectorAll("#related-calculators + ul a").length, 1);
+    assert.equal(dom.window.document.querySelectorAll('[aria-labelledby="related-calculators"] ul a').length, 1);
   } finally { globalThis.fetch = original; }
 });

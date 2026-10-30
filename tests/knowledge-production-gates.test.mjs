@@ -20,7 +20,7 @@ const fingerprint = { title:sha(q.title),question_body:sha(q.body),answer_body:s
 const env = (publicOn, indexOn) => ({ KNOWLEDGE_ENV:"production", KNOWLEDGE_PUBLIC_ENABLED:String(publicOn),
   KNOWLEDGE_INDEX_ENABLED:String(indexOn), KNOWLEDGE_SERVICE:{fetch:request=>globalThis.fetch(request.url)} });
 const ctx = (path, values, host="gyesanbox.kr") => ({request:new Request(`https://${host}${path}`),env:values,params:{questionId:id}});
-const assets = () => Promise.resolve(new Response('<html><head><meta name="robots" content="noindex, nofollow"></head><body>계산박스 지식센터</body></html>',
+const assets = () => Promise.resolve(new Response('<html><head><meta name="robots" content="noindex, nofollow"></head><body>계산박스 지식센터<div id="knowledge-server-list"></div></body></html>',
   {headers:{"content-type":"text/html","etag":"old","content-length":"1","x-robots-tag":"noindex"}}));
 
 test("homepage Knowledge feed respects the production public gate, not the preview flag",()=>{
@@ -106,7 +106,8 @@ test("list response fails closed on missing/duplicate robots and preserves UI wi
   for(const html of ['<html></html>','<meta name="robots" content="index"><meta name="robots" content="index">']) {
     assert.equal((await list({...ctx('/knowledge/',env(true,true)),next:async()=>new Response(html,{headers:{'content-type':'text/html'}})})).status,503);
   }
-  const result=await list({...ctx('/knowledge/',env(true,true)),next:assets});
+  const listEnv={...env(true,true),KNOWLEDGE_SERVICE:{fetch:async()=>Response.json({ok:true,data:{items:[],page:1,page_size:10,total:0,total_pages:1}})}};
+  const result=await list({...ctx('/knowledge/',listEnv),next:assets});
   assert.equal(result.headers.get('cache-control'),'no-store');assert.equal(result.headers.get('etag'),null);
   assert.equal(result.headers.get('content-length'),null);assert.equal(result.headers.get('x-robots-tag'),'index, follow');
 });

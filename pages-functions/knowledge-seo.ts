@@ -67,7 +67,7 @@ export function unavailable(): Response {
   return new Response("Service unavailable", { status: 503, headers: { ...NO_STORE } });
 }
 
-async function fetchPublicQuestionPage(runtime: Runtime, page: number, category?: string): Promise<PublicQuestionPage> {
+export async function fetchPublicQuestionPage(runtime: Runtime, page: number, category?: string): Promise<PublicQuestionPage> {
   const url = new URL(knowledgeReadRequest("/questions").url);
   url.searchParams.set("limit", String(PUBLIC_PAGE_SIZE));
   url.searchParams.set("page", String(page));
