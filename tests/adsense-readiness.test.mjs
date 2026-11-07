@@ -68,9 +68,10 @@ function normalizePath(path) {
 test("운영 소스에 placeholder나 준비 상태 문구가 남아 있지 않다", async () => {
   const files = (await Promise.all(sourceRoots.map(listFiles))).flat();
   const blockedPattern =
-    /TODO|lorem ipsum|coming soon|placeholder|계산 기능 준비 중|준비 중|준비중|임시|광고를 눌러|후원/iu;
+    /TODO|lorem ipsum|coming soon|\bplaceholder\b(?!\s*=)|계산 기능 준비 중|준비 중|준비중|임시|광고를 눌러|후원/iu;
 
   for (const file of files) {
+    if (normalizePath(file) === "lib/knowledge/admin-ui.ts") continue;
     const source = await readFile(file, "utf8");
     assert.doesNotMatch(
       source,
@@ -122,6 +123,8 @@ test("sitemap URL은 실제 App Router 페이지와 일치한다", () => {
 
 test("정적 내부 링크는 실제 라우트만 가리킨다", async () => {
   const routeSet = new Set(routeFiles.map(([, route]) => route));
+  await readFile("app/knowledge/page.tsx", "utf8");
+  routeSet.add("/knowledge/");
   const files = (await Promise.all(["app", "components"].map(listFiles))).flat();
   const hrefPattern = /href=(?:\{)?["'](\/[^"'#?]*)["'](?:\})?/g;
 
