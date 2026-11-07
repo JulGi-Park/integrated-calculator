@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { KnowledgeLatestQuestions } from "@/components/knowledge/KnowledgeLatestQuestions";
+import knowledgeHomeCases from "@/lib/knowledge/home-cases.json";
 import { knowledgeHomePublicEnabled } from "@/lib/knowledge/gates";
 
 const siteUrl = "https://gyesanbox.kr/";
@@ -302,6 +303,22 @@ export default function Home() {
           <span aria-hidden="true">→</span>
         </a>
       </section>
+
+      {knowledgeEnabled && process.env.KNOWLEDGE_ENV === "production" ? (
+        <section className="home-calculators" aria-labelledby="home-cases-title">
+          <h2 id="home-cases-title">계산 사례</h2>
+          <div className="home-calculators__links">
+            {knowledgeHomeCases.map(({ href, title, description }) => (
+              <a className="calculator-card" key={href} href={href}>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{description}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="home-calculators" aria-labelledby="home-calculators-title">
         <div>

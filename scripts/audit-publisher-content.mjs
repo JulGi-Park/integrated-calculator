@@ -3,6 +3,7 @@ import { access, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { privateStaticRoutes } from "./prune-disabled-static-routes.mjs";
 import { knowledgeBuildGates } from "../lib/knowledge/gates.mjs";
+import knowledgeHomeCases from "../lib/knowledge/home-cases.json" with { type: "json" };
 
 const projectRoot = process.cwd();
 const outputRoot = path.join(projectRoot, "out");
@@ -128,6 +129,15 @@ if (knowledgeGates.publicEnabled) {
   assert.ok(robotsTag, "Knowledge must declare its indexing policy.");
   assert.equal(getAttribute(robotsTag, "content").includes("noindex"), !knowledgeGates.indexEnabled, "Knowledge robots must match its index gate.");
   linkableRoutes.add("/knowledge/");
+  if (process.env.KNOWLEDGE_ENV === "production") {
+    const homeHtml = await readFile(outputPathFor("/"), "utf8");
+    const homeLinks = new Set((homeHtml.match(/<a\b[^>]*>/gi) ?? []).map((tag) => getAttribute(tag, "href")));
+    for (const { href } of knowledgeHomeCases) {
+      assert.match(href, /^\/knowledge\/[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\/$/u);
+      assert.ok(homeLinks.has(href), `Home case link is missing from static HTML: ${href}`);
+      linkableRoutes.add(href);
+    }
+  }
 }
 const appPageRoutes = await discoverAppPageRoutes();
 const privatePaths = new Set(privateStaticRoutes.map((route) => route.pathname));
