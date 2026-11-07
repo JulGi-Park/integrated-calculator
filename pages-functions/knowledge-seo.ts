@@ -6,6 +6,7 @@ import {
   knowledgeSeoRobots,
   normalizeKnowledgeQuestionId,
 } from "../lib/knowledge/seo";
+import { splitKnowledgeAnswerLinks } from "../lib/knowledge/answer-links";
 import { knowledgeGates, type KnowledgeGateEnv } from "../lib/knowledge/gates";
 import { knowledgeServiceFetch, knowledgeReadRequest, type KnowledgeTransportEnv } from "./knowledge-transport";
 import { CALCULATOR_REGISTRY } from "../lib/calculatorRegistry";
@@ -196,7 +197,13 @@ export async function fetchPublishedQuestion(runtime: Runtime, id: string): Prom
   }
 }
 
-const paragraphs = (body: string) => body.split(/\n{2,}/u).map((part) => `<p>${escape(part).replace(/\n/gu, "<br>")}</p>`).join("");
+const paragraphs = (body: string, render = escape) => body.split(/\n{2,}/u)
+  .map((part) => `<p>${render(part).replace(/\n/gu, "<br>")}</p>`).join("");
+
+const renderAnswerSources = (text: string) => splitKnowledgeAnswerLinks(text)
+  .map((part) => typeof part === "string"
+    ? escape(part)
+    : `<a href="${escape(part.href)}">${escape(part.label)}</a>`).join("");
 
 function formattedQuestionDate(value: string | undefined): { dateTime: string; label: string } | null {
   if (!value) return null;
@@ -235,7 +242,7 @@ export function renderKnowledgeQuestion(question: PublicQuestion, environment: "
   const questionDate = formattedQuestionDate(question.createdAt);
   const category = question.category?.trim() || "기타";
   const answer = question.answer
-    ? `<section class="knowledge-answer" aria-labelledby="official-answer"><div class="knowledge-answer__heading"><span class="knowledge-answer__mark" aria-hidden="true">✓</span><div><p class="knowledge-eyebrow">공식 답변</p><h2 id="official-answer">계산박스 공식답변</h2></div></div><div class="knowledge-prose knowledge-answer__body">${paragraphs(question.answer.body)}</div></section>`
+    ? `<section class="knowledge-answer" aria-labelledby="official-answer"><div class="knowledge-answer__heading"><span class="knowledge-answer__mark" aria-hidden="true">✓</span><div><p class="knowledge-eyebrow">공식 답변</p><h2 id="official-answer">계산박스 공식답변</h2></div></div><div class="knowledge-prose knowledge-answer__body">${paragraphs(question.answer.body, renderAnswerSources)}</div></section>`
     : `<section class="knowledge-answer" aria-labelledby="official-answer"><div class="knowledge-answer__heading"><span class="knowledge-answer__mark" aria-hidden="true">✓</span><div><p class="knowledge-eyebrow">공식 답변</p><h2 id="official-answer">계산박스 공식답변</h2></div></div><p class="knowledge-answer__pending">아직 공식답변이 등록되지 않았습니다.</p></section>`;
   const services = question.relatedServices.length
     ? `<section class="knowledge-support-card knowledge-calculators" aria-labelledby="related-calculators"><div class="knowledge-section-heading"><p class="knowledge-eyebrow">계산박스 도구</p><h2 id="related-calculators">관련 계산기</h2></div><ul class="knowledge-calculator-list">${question.relatedServices.map((service) => {

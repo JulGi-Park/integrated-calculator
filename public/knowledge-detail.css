@@ -59,6 +59,7 @@ body.knowledge-detail-body { margin: 0; color: var(--text); background: radial-g
 .knowledge-answer__heading .knowledge-eyebrow { margin-bottom: 1px; }
 .knowledge-answer h2 { font-size: 1.18rem; }
 .knowledge-answer__body { color: #24362a; }
+.knowledge-answer__body a { color: var(--accent-dark); text-decoration: underline; text-underline-offset: .16em; }
 .knowledge-answer__pending { margin: 0; color: var(--muted); }
 
 .knowledge-support-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 16px; margin-top: 22px; }
