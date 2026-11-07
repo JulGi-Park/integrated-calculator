@@ -55,8 +55,8 @@ export const brokerageFeePolicySources = [
     verifiedAt: "2026-08-09",
   },
   {
-    title: "경상북도 부동산중개보수 안내",
-    href: "https://gb.go.kr/Main/page.do?LARGE_CODE=1070&MEDIUM_CODE=10&SMALL_CODE=30&mnu_uid=15502",
+    title: "경상북도 주택의 중개보수 등에 관한 조례",
+    href: "https://www.law.go.kr/LSW/ordinInfoP.do?ordinSeq=2004189",
     description: "현행 주택 거래금액별 상한요율과 한도액 안내",
     verifiedAt: "2026-08-09",
   },

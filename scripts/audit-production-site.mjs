@@ -96,6 +96,20 @@ assert.deepEqual(
 assert.equal(productionUrls.length, 30, "Production must have 30 sitemap URLs.");
 
 const routeSet = new Set(productionUrls.map((url) => new URL(url).pathname));
+const { response: knowledgeSitemapResponse, body: knowledgeSitemap } = await get(
+  `${origin}/sitemap-knowledge.xml`,
+);
+assert.equal(knowledgeSitemapResponse.status, 200, "Knowledge sitemap must return 200.");
+const knowledgeRoutes = new Set(["/knowledge/"]);
+for (const [, url] of knowledgeSitemap.matchAll(/<loc>(.*?)<\/loc>/g)) {
+  const parsed = new URL(decodeEntities(url));
+  assert.equal(parsed.origin, origin, "Knowledge sitemap contains a different origin.");
+  assert.match(parsed.pathname, /^\/knowledge\/[0-9a-f-]{36}\/$/i);
+  assert.equal(parsed.href, `${origin}${parsed.pathname}`);
+  assert.ok(!knowledgeRoutes.has(parsed.pathname), `Duplicate knowledge URL: ${url}`);
+  knowledgeRoutes.add(parsed.pathname);
+}
+assert.ok(knowledgeRoutes.size > 1, "Knowledge sitemap contains no detail URLs.");
 const titles = new Map();
 const descriptions = new Map();
 const canonicals = new Set();
@@ -183,13 +197,35 @@ for (const absoluteUrl of productionUrls) {
 }
 
 for (const pathname of internalLinks) {
-  assert.equal(routeSet.has(pathname), true, `Broken production internal route: ${pathname}`);
+  if (routeSet.has(pathname)) continue;
+  assert.ok(knowledgeRoutes.has(pathname), `Broken production internal route: ${pathname}`);
+  const url = `${origin}${pathname}`;
+  const { response, body } = await get(url);
+  assert.equal(response.status, 200, `${pathname}: must return HTTP 200.`);
+  assert.equal(response.url, url, `${pathname}: unexpectedly redirects.`);
+  const head = body.split(/<\/head>/i)[0] ?? "";
+  const canonical = matchRequired(head, /<link\s+rel=["']canonical["']\s+href=["']([^"']+)["']/i, pathname);
+  assert.equal(canonical, url, `${pathname}: canonical mismatch.`);
+  assert.doesNotMatch(head, /<meta[^>]+name=["']robots["'][^>]+noindex/i);
+  assert.doesNotMatch(response.headers.get("x-robots-tag") ?? "", /noindex/i);
+  assert.doesNotMatch(body, /pagead2\.googlesyndication|adsbygoogle|data-ad-slot/i);
 }
 
 const { response: robotsResponse, body: robots } = await get(`${origin}/robots.txt`);
 assert.equal(robotsResponse.status, 200);
 assert.match(robots, /Sitemap:\s*https:\/\/gyesanbox\.kr\/sitemap\.xml/i);
+assert.match(robots, /Sitemap:\s*https:\/\/gyesanbox\.kr\/sitemap-knowledge\.xml/i);
 assert.doesNotMatch(robots, /Disallow:\s*\/(calculators|about|methodology|updates)/i);
+
+const { response: adsResponse, body: adsTxt } = await get(`${origin}/ads.txt`);
+assert.equal(adsResponse.status, 200, "ads.txt must return HTTP 200.");
+assert.match(adsResponse.headers.get("content-type") ?? "", /^text\/plain\b/i);
+const { body: home } = await get(`${origin}/`);
+const publisher = matchRequired(home, /adsbygoogle\.js\?client=ca-(pub-\d{16})/, "Homepage AdSense publisher");
+assert.ok(adsTxt.split(/\r?\n/).some((line) => {
+  const [domain, account, relationship] = line.split(",").map((field) => field.trim());
+  return domain === "google.com" && account === publisher && relationship === "DIRECT";
+}), "ads.txt must authorize the publisher shown on the homepage.");
 
 for (const pathname of [
   "/this-page-does-not-exist/",
