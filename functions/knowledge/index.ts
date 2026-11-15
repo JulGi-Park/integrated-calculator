@@ -19,6 +19,11 @@ export const onRequestGet = async (context: KnowledgePageFunctionContext & { nex
   const html = await response.text();
   const robotsTag = /<meta\s+name="robots"\s+content="[^"]*"\s*\/?>/gu;
   if ([...html.matchAll(robotsTag)].length !== 1) return unavailable();
+  const canonicalTag = /<link\s+rel="canonical"\s+href="https:\/\/gyesanbox\.kr\/knowledge\/"\s*\/?>/gu;
+  if ([...html.matchAll(canonicalTag)].length !== 1) return unavailable();
+  const canonical = data.page === 1
+    ? "https://gyesanbox.kr/knowledge/"
+    : `https://gyesanbox.kr/knowledge/?page=${data.page}`;
   const island = '<div id="knowledge-server-list"></div>';
   if (html.split(island).length !== 2 || !html.includes("</head>")) return unavailable();
   const robots = runtime.indexEnabled ? "index, follow" : "noindex, nofollow, noarchive";
@@ -29,6 +34,7 @@ export const onRequestGet = async (context: KnowledgePageFunctionContext & { nex
   headers.delete("ETag");
   headers.delete("Content-Encoding");
   const rendered = html.replace(robotsTag, `<meta name="robots" content="${robots}">`)
+    .replace(canonicalTag, `<link rel="canonical" href="${canonical}">`)
     .replace("</head>", '<link rel="stylesheet" href="/knowledge-list.css"></head>')
     .replace(island, () => `<div id="knowledge-server-list">${renderKnowledgeList(data)}</div>`);
   return new Response(rendered, { status: 200, headers });
