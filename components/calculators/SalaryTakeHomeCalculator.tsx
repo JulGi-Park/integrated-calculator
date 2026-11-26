@@ -29,6 +29,10 @@ import {
   type SalaryTakeHomeRawInputs,
 } from "./salaryTakeHomeClientUtils";
 import { ResultDecisionLayer } from "./ResultDecisionLayer";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
+import { RatioBar } from "@/components/ui/RatioBar";
 import styles from "./SalaryTakeHomeCalculator.module.css";
 
 interface FieldDefinition {
@@ -370,15 +374,21 @@ export function SalaryTakeHomeCalculator() {
     <>
       <aside className={styles.policyNotice} aria-label="국민연금 적용 기준">
         <strong>현재 국민연금 기준소득월액</strong>
-        <p>
-          하한 {formatWon(policy.nationalPension.standardMonthlyIncomeMinimum)},
-          상한 {formatWon(policy.nationalPension.standardMonthlyIncomeMaximum)}
-          을 {pensionEffectiveFrom}부터 {pensionEffectiveTo}까지 적용합니다.
+        <p className={styles.policyDetails}>
+          <span>
+            하한 {formatWon(policy.nationalPension.standardMonthlyIncomeMinimum)}
+          </span>
+          <span>
+            상한 {formatWon(policy.nationalPension.standardMonthlyIncomeMaximum)}
+          </span>
+          <span>
+            적용 기간 {pensionEffectiveFrom}~{pensionEffectiveTo}
+          </span>
         </p>
       </aside>
 
-      <div className={styles.calculator}>
-        <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+      <CalculatorLayout className={styles.calculator}>
+        <CalculatorPanel as="form" className={styles.formCard} onSubmit={handleSubmit} noValidate>
           <div className={styles.cardHeading}>
             <div>
               <p className={styles.step}>01 · 급여 조건</p>
@@ -402,10 +412,9 @@ export function SalaryTakeHomeCalculator() {
               return (
                 <div className={styles.field} key={name}>
                   <label htmlFor={name}>{label}</label>
-                  <div
-                    className={`${styles.inputShell} ${
-                      fieldErrors.length > 0 ? styles.inputShellError : ""
-                    }`}
+                  <FieldShell
+                    className={styles.inputShell}
+                    invalid={fieldErrors.length > 0}
                   >
                     <input
                       ref={(element) => {
@@ -424,7 +433,7 @@ export function SalaryTakeHomeCalculator() {
                       aria-describedby={describedBy}
                     />
                     <span aria-hidden="true">{unit}</span>
-                  </div>
+                  </FieldShell>
                   <p className={styles.fieldDescription} id={descriptionId}>
                     {description}
                   </p>
@@ -460,9 +469,10 @@ export function SalaryTakeHomeCalculator() {
               초기화
             </button>
           </div>
-        </form>
+        </CalculatorPanel>
 
-        <section
+        <CalculatorPanel
+          as="section"
           className={styles.resultCard}
           aria-labelledby="salary-result-heading"
         >
@@ -499,17 +509,10 @@ export function SalaryTakeHomeCalculator() {
                 <div className={styles.primaryResult}>
                   <p>월 예상 실수령액</p>
                   <strong>{formatWon(result.estimatedMonthlyTakeHome)}</strong>
-                  <span>
-                    연간 예상 실수령액{" "}
-                    {formatWon(result.estimatedAnnualTakeHome)}
-                  </span>
+                  <span>월 환산 세후 금액</span>
                 </div>
 
                 <dl className={styles.summaryGrid} aria-label="결과 요약">
-                  <div>
-                    <dt>월 예상 실수령액</dt>
-                    <dd>{formatWon(result.estimatedMonthlyTakeHome)}</dd>
-                  </div>
                   <div>
                     <dt>연간 예상 실수령액</dt>
                     <dd>{formatWon(result.estimatedAnnualTakeHome)}</dd>
@@ -518,11 +521,16 @@ export function SalaryTakeHomeCalculator() {
                     <dt>월 급여</dt>
                     <dd>{formatWon(result.monthlyGrossSalary)}</dd>
                   </div>
-                  <div>
-                    <dt>월 공제 합계</dt>
-                    <dd>{formatWon(result.totalMonthlyDeductions)}</dd>
-                  </div>
                 </dl>
+
+                <RatioBar
+                  total={result.monthlyGrossSalary}
+                  value={result.estimatedMonthlyTakeHome}
+                  valueLabel="실수령액"
+                  remainderLabel="공제액"
+                  formatValue={formatWon}
+                  className={styles.salaryRatio}
+                />
 
                 <ResultDecisionLayer
                   meaning={`월 급여의 약 ${Math.round((result.estimatedMonthlyTakeHome / result.monthlyGrossSalary) * 100)}%가 예상 실수령액입니다. 연봉을 비교할 때는 세전 금액보다 이 월 예상액과 공제 구성을 함께 보세요.`}
@@ -628,8 +636,8 @@ export function SalaryTakeHomeCalculator() {
               </div>
             )}
           </div>
-        </section>
-      </div>
+        </CalculatorPanel>
+      </CalculatorLayout>
     </>
   );
 }

@@ -26,6 +26,9 @@ import {
   serializeAveragePriceInputs,
   type AveragePriceRawInputs,
 } from "./averagePriceClientUtils";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
 import styles from "./AveragePriceCalculator.module.css";
 
 interface FieldDefinition {
@@ -389,8 +392,8 @@ export function AveragePriceCalculator() {
   const resultStatus = result ? getResultStatus(result) : null;
 
   return (
-    <div className={styles.calculator}>
-      <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+    <CalculatorLayout className={styles.calculator}>
+      <CalculatorPanel as="form" className={styles.formCard} onSubmit={handleSubmit} noValidate>
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>01 · 입력</p>
@@ -410,10 +413,11 @@ export function AveragePriceCalculator() {
                   {label}
                   {optional ? " (선택)" : ""}
                 </label>
-                <div
+                <FieldShell
                   className={`${styles.inputShell} ${
                     fieldErrors.length > 0 ? styles.inputShellError : ""
                   }`}
+                  invalid={fieldErrors.length > 0}
                 >
                   <input
                     ref={(element) => {
@@ -434,7 +438,7 @@ export function AveragePriceCalculator() {
                     }
                   />
                   <span aria-hidden="true">{unit}</span>
-                </div>
+                </FieldShell>
                 {description && <small>{description}</small>}
                 {fieldErrors.length > 0 && (
                   <p className={styles.fieldError} id={errorId}>
@@ -452,7 +456,7 @@ export function AveragePriceCalculator() {
           <div className={styles.fieldGrid}>
             <div className={styles.field}>
               <label htmlFor="scenarioBQuantity">추가 매수 수량</label>
-              <div className={styles.inputShell}>
+              <FieldShell className={styles.inputShell}>
                 <input
                   id="scenarioBQuantity"
                   name="scenarioBQuantity"
@@ -463,11 +467,11 @@ export function AveragePriceCalculator() {
                   onChange={handleChange}
                 />
                 <span aria-hidden="true">주/개</span>
-              </div>
+              </FieldShell>
             </div>
             <div className={styles.field}>
               <label htmlFor="scenarioBPrice">추가 매수 단가</label>
-              <div className={styles.inputShell}>
+              <FieldShell className={styles.inputShell}>
                 <input
                   id="scenarioBPrice"
                   name="scenarioBPrice"
@@ -478,7 +482,7 @@ export function AveragePriceCalculator() {
                   onChange={handleChange}
                 />
                 <span aria-hidden="true">원</span>
-              </div>
+              </FieldShell>
             </div>
           </div>
           {scenarioBError && <p className={styles.fieldError}>{scenarioBError}</p>}
@@ -511,9 +515,9 @@ export function AveragePriceCalculator() {
             초기화
           </button>
         </div>
-      </form>
+      </CalculatorPanel>
 
-      <section className={styles.resultCard} aria-labelledby="result-heading">
+      <CalculatorPanel as="section" className={styles.resultCard} aria-labelledby="result-heading">
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>02 · 결과</p>
@@ -676,7 +680,7 @@ export function AveragePriceCalculator() {
             </div>
           )}
         </div>
-      </section>
-    </div>
+      </CalculatorPanel>
+    </CalculatorLayout>
   );
 }

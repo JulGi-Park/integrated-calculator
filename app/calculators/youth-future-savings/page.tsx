@@ -3,6 +3,7 @@ import Link from "next/link";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { YouthFutureSavingsCalculator } from "@/components/calculators/YouthFutureSavingsCalculator";
 import { YouthFutureSavingsContent } from "@/components/calculators/YouthFutureSavingsContent";
+import design from "@/components/calculators/YouthFutureSavingsDesignTokens.module.css";
 import {
   youthFutureSavingsBreadcrumbJsonLd,
   youthFutureSavingsFaqJsonLd,
@@ -53,7 +54,7 @@ export default function YouthFutureSavingsPage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className={`page-section youth-future-savings-page ${design.themeAnchor}`}>
       <JsonLdScripts items={jsonLdItems} />
 
       <div className="page-heading seller-margin-heading">

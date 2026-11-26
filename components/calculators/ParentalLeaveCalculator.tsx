@@ -19,6 +19,9 @@ import type {
 import {
   formatWon,
 } from "./parentalLeaveClientUtils";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
 import styles from "./ParentalLeaveCalculator.module.css";
 
 type SpecialPolicyMode = "general" | "sixPlusSix" | "singleParent";
@@ -283,8 +286,8 @@ export function ParentalLeaveCalculator() {
         </p>
       </aside>
 
-      <div className={styles.calculator}>
-        <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+      <CalculatorLayout className={styles.calculator}>
+        <CalculatorPanel as="form" className={styles.formCard} onSubmit={handleSubmit} noValidate>
           <div className={styles.cardHeading}>
             <div>
               <p className={styles.step}>01 · 입력</p>
@@ -296,10 +299,9 @@ export function ParentalLeaveCalculator() {
           <div className={styles.fieldGrid}>
             <div className={styles.field}>
               <label htmlFor="monthlyOrdinaryWage">월 통상임금</label>
-              <div
-                className={`${styles.inputShell} ${
-                  wageErrors.length > 0 ? styles.inputShellError : ""
-                }`}
+              <FieldShell
+                className={styles.inputShell}
+                invalid={wageErrors.length > 0}
               >
                 <input
                   ref={wageInputRef}
@@ -313,7 +315,7 @@ export function ParentalLeaveCalculator() {
                   aria-describedby="monthlyOrdinaryWage-description monthlyOrdinaryWage-error"
                 />
                 <span aria-hidden="true">원</span>
-              </div>
+              </FieldShell>
               <p
                 className={styles.fieldDescription}
                 id="monthlyOrdinaryWage-description"
@@ -329,10 +331,9 @@ export function ParentalLeaveCalculator() {
 
             <div className={styles.field}>
               <label htmlFor="leaveMonths">육아휴직 사용 개월 수</label>
-              <div
-                className={`${styles.inputShell} ${
-                  monthErrors.length > 0 ? styles.inputShellError : ""
-                }`}
+              <FieldShell
+                className={styles.inputShell}
+                invalid={monthErrors.length > 0}
               >
                 <input
                   ref={monthsInputRef}
@@ -346,7 +347,7 @@ export function ParentalLeaveCalculator() {
                   aria-describedby="leaveMonths-description leaveMonths-error"
                 />
                 <span aria-hidden="true">개월</span>
-              </div>
+              </FieldShell>
               <p className={styles.fieldDescription} id="leaveMonths-description">
                 1개월부터 12개월까지 1개월 단위로 계산합니다.
               </p>
@@ -411,7 +412,7 @@ export function ParentalLeaveCalculator() {
                 <div className={styles.specialGrid}>
                   <div>
                     <label htmlFor="childAgeMonths">자녀 월령</label>
-                    <div className={styles.inputShell}>
+                    <FieldShell className={styles.inputShell}>
                       <input
                         id="childAgeMonths"
                         name="childAgeMonths"
@@ -422,7 +423,7 @@ export function ParentalLeaveCalculator() {
                         aria-describedby="childAgeMonths-description"
                       />
                       <span aria-hidden="true">개월</span>
-                    </div>
+                    </FieldShell>
                     <p
                       className={styles.fieldDescription}
                       id="childAgeMonths-description"
@@ -433,7 +434,7 @@ export function ParentalLeaveCalculator() {
 
                   <div>
                     <label htmlFor="partnerLeaveMonths">배우자 사용 개월 수</label>
-                    <div className={styles.inputShell}>
+                    <FieldShell className={styles.inputShell}>
                       <input
                         id="partnerLeaveMonths"
                         name="partnerLeaveMonths"
@@ -444,7 +445,7 @@ export function ParentalLeaveCalculator() {
                         aria-describedby="partnerLeaveMonths-description"
                       />
                       <span aria-hidden="true">개월</span>
-                    </div>
+                    </FieldShell>
                     <p
                       className={styles.fieldDescription}
                       id="partnerLeaveMonths-description"
@@ -553,9 +554,10 @@ export function ParentalLeaveCalculator() {
               다시 계산
             </button>
           </div>
-        </form>
+        </CalculatorPanel>
 
-        <section
+        <CalculatorPanel
+          as="section"
           className={styles.resultCard}
           aria-labelledby="parental-leave-result-heading"
         >
@@ -732,8 +734,8 @@ export function ParentalLeaveCalculator() {
 
             {feedback && <p className={styles.feedback}>{feedback}</p>}
           </div>
-        </section>
-      </div>
+        </CalculatorPanel>
+      </CalculatorLayout>
     </>
   );
 }

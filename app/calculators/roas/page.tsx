@@ -45,7 +45,7 @@ export default function RoasPage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className="page-section roas-page">
       <JsonLdScripts items={jsonLdItems} />
 
       <div className={`page-heading seller-margin-heading ${pageStyles.heading}`}>

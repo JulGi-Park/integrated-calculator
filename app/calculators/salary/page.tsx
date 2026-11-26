@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import designStyles from "@/components/calculators/SalaryDesignTokens.module.css";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { SalaryTakeHomeCalculator } from "@/components/calculators/SalaryTakeHomeCalculator";
 import { SalaryTakeHomeContent } from "@/components/calculators/SalaryTakeHomeContent";
@@ -68,9 +69,18 @@ export default function SalaryTakeHomePage() {
     <section className="page-section salary-page">
       <JsonLdScripts items={jsonLdItems} />
 
+      <nav className={designStyles.breadcrumb} aria-label="현재 위치">
+        <Link href="/">홈</Link>
+        <span aria-hidden="true">›</span>
+        <Link href="/calculators/">계산기</Link>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">연봉 실수령액</span>
+      </nav>
+
       <CompactCalculatorHero
-        className="seller-margin-heading"
-        eyebrow="Salary take-home"
+        className="salary-heading"
+        eyebrow="급여 · 근로"
+        metaBeforeDescription
         title="2026 연봉 실수령액 계산기"
         description={
           <>
@@ -89,7 +99,7 @@ export default function SalaryTakeHomePage() {
             {formatKoreanDate(SALARY_TAKE_HOME_POLICY_2026.verifiedAt)}
           </span>
           <span>
-            퇴직금과 비정기 상여를 제외한 일반 근로자의 예상값입니다.
+          일반 근로자 기준 · 퇴직금·비정기 상여 제외
           </span>
           </>
         }

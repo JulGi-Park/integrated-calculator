@@ -6,6 +6,7 @@ import {
   cardInstallmentFaqs,
 } from "@/components/calculators/CardInstallmentContent";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
+import design from "@/components/calculators/CardInstallmentDesignTokens.module.css";
 
 const title = "카드 할부 계산기 | 수수료율 직접 입력·총 납부액";
 const description =
@@ -89,7 +90,7 @@ export default function CardInstallmentPage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className={`page-section card-installment-page ${design.themeAnchor}`}>
       <JsonLdScripts items={jsonLdItems} />
 
       <div className="page-heading seller-margin-heading">

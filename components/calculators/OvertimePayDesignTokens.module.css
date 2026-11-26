@@ -1,0 +1,81 @@
+/* Approved R04 A안 palette, limited to the overtime-pay route. */
+.route { min-width: 0; }
+
+:global(html:has(.overtime-pay-page)) { min-width: 0; }
+:global(body:has(.overtime-pay-page)) {
+  --gb-bg: #f5f7fa;
+  --gb-surface: #fff;
+  --gb-ink: #182b47;
+  --gb-muted: #5d6d83;
+  --gb-primary: #235dcc;
+  --gb-primary-hover: #194baa;
+  --gb-primary-soft: #edf3ff;
+  --gb-line: #e0e6ef;
+  --gb-input-line: #8796aa;
+  --gb-focus: #235dcc;
+  --gb-error: #9e2929;
+  --gb-error-soft: #fff0f0;
+  --gb-warning: #865416;
+  --gb-warning-soft: #fff1d9;
+  --gb-radius-input: 10px;
+  --gb-radius-card: 14px;
+  --gb-container: 1200px;
+  --background: var(--gb-bg);
+  --surface: var(--gb-surface);
+  --text: var(--gb-ink);
+  --foreground: var(--gb-ink);
+  --muted: var(--gb-muted);
+  --line: var(--gb-line);
+  --accent: var(--gb-primary);
+  --accent-dark: var(--gb-primary-hover);
+  --accent-soft: var(--gb-primary-soft);
+  --max-width: var(--gb-container);
+  color: var(--gb-ink);
+  background: var(--gb-bg);
+  font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+}
+
+:global(body:has(.overtime-pay-page) .site-header) {
+  border-color: var(--gb-line);
+  background: rgb(255 255 255 / 94%);
+}
+:global(body:has(.overtime-pay-page) .site-header__desktop .nav-link) { color: var(--gb-ink); }
+:global(body:has(.overtime-pay-page) .site-header__desktop .nav-link:hover) { color: var(--gb-primary); }
+:global(body:has(.overtime-pay-page) .site-main) { width: min(100% - 40px, var(--gb-container)); }
+:global(body:has(.overtime-pay-page) .overtime-pay-page.page-section) { padding-block: 32px 80px; }
+:global(body:has(.overtime-pay-page) .site-footer) { border-color: var(--gb-line); background: var(--gb-surface); }
+
+:global(.overtime-pay-heading) { max-width: 1200px; margin-bottom: 20px; }
+:global(.overtime-pay-heading h1) {
+  color: var(--gb-ink);
+  font-size: clamp(2rem, 3.2vw, 2.3rem);
+  line-height: 1.3;
+  letter-spacing: -0.055em;
+  word-break: keep-all;
+  text-wrap: balance;
+}
+:global(.overtime-pay-heading > p:not(.page-heading__eyebrow)) { max-width: 72ch; color: var(--gb-muted); line-height: 1.7; }
+:global(.overtime-pay-heading .seller-margin-meta) { display: flex; flex-wrap: wrap; gap: 8px; }
+:global(.overtime-pay-heading .seller-margin-meta > span) {
+  display: inline-flex;
+  min-block-size: 32px;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid #d6e3fb;
+  border-radius: 9px;
+  color: #235dcc;
+  background: #edf3ff;
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 619px) {
+  :global(body:has(.overtime-pay-page) .site-main) { width: calc(100% - 32px); }
+  :global(body:has(.overtime-pay-page) .overtime-pay-page.page-section) { padding-block: 28px 60px; }
+  :global(.overtime-pay-heading) { margin-bottom: 18px; }
+  :global(.overtime-pay-heading h1) { font-size: clamp(24px, 6.5vw, 26px); }
+}
+
+@media (max-width: 359px) {
+  :global(body:has(.overtime-pay-page) .site-main) { width: calc(100% - 24px); }
+}

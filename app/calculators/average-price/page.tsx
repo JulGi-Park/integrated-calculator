@@ -44,7 +44,7 @@ export default function AveragePricePage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className="page-section average-price-page">
       <JsonLdScripts items={jsonLdItems} />
 
       <div className="page-heading seller-margin-heading">

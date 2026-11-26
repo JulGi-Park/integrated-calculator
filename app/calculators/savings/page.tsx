@@ -7,6 +7,7 @@ import {
   savingsWebApplicationJsonLd,
 } from "@/components/calculators/savingsContentData";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
+import design from "@/components/calculators/SavingsDesignTokens.module.css";
 
 const title = "예금·적금 이자 계산기 | 세후 이자·만기 수령액 계산";
 const description =
@@ -43,7 +44,7 @@ export default function SavingsPage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className={`page-section savings-page ${design.themeAnchor}`}>
       <JsonLdScripts items={jsonLdItems} />
 
       <div className="page-heading seller-margin-heading">

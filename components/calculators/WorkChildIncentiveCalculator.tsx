@@ -26,6 +26,9 @@ import {
 } from "./workChildIncentiveClientUtils";
 import { workChildIncentivePolicySummary } from "./workChildIncentiveContentData";
 import { ResultDecisionLayer } from "./ResultDecisionLayer";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
 import styles from "./WorkChildIncentiveCalculator.module.css";
 
 const amountFields: WorkChildIncentiveInputField[] = [
@@ -256,8 +259,8 @@ export function WorkChildIncentiveCalculator() {
         <span>예상 계산용이며 실제 심사 결과와 다를 수 있습니다.</span>
       </aside>
 
-      <div className={styles.calculator}>
-        <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+      <CalculatorLayout className={styles.calculator}>
+        <CalculatorPanel as="form" className={styles.formCard} onSubmit={handleSubmit} noValidate>
           <div className={styles.cardHeading}>
             <div>
               <p className={styles.step}>01 · 입력</p>
@@ -317,7 +320,7 @@ export function WorkChildIncentiveCalculator() {
                 return (
                   <div className={styles.field} key={field}>
                     <label htmlFor={field}>{fieldLabels[field]}</label>
-                    <div className={`${styles.inputShell} ${fieldErrors.length > 0 ? styles.inputShellError : ""}`}>
+                    <FieldShell className={styles.inputShell} invalid={fieldErrors.length > 0}>
                       <input
                         ref={index === 0 ? firstInputRef : undefined}
                         id={field}
@@ -331,7 +334,7 @@ export function WorkChildIncentiveCalculator() {
                         aria-describedby={`${field}-description ${field}-error`}
                       />
                       <span aria-hidden="true">{field === "childCount" ? "명" : "원"}</span>
-                    </div>
+                    </FieldShell>
                     <p className={styles.fieldDescription} id={`${field}-description`}>
                       {field === "totalIncome" && "2025년 부부합산 연간 총소득을 입력합니다."}
                       {field === "totalSalary" && "근로·사업·종교인 총급여액 등 예상 산정 기준을 입력합니다."}
@@ -403,9 +406,9 @@ export function WorkChildIncentiveCalculator() {
               다시 계산
             </button>
           </div>
-        </form>
+        </CalculatorPanel>
 
-        <section className={styles.resultCard} aria-labelledby="work-child-result-heading">
+        <CalculatorPanel as="section" className={styles.resultCard} aria-labelledby="work-child-result-heading">
           <div className={styles.cardHeading}>
             <div>
               <p className={styles.step}>02 · 결과</p>
@@ -525,8 +528,8 @@ export function WorkChildIncentiveCalculator() {
               </p>
             </div>
           )}
-        </section>
-      </div>
+        </CalculatorPanel>
+      </CalculatorLayout>
     </>
   );
 }

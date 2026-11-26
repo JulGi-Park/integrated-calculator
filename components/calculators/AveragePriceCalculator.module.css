@@ -1,84 +1,111 @@
+:global(body:has(.average-price-page)) {
+  --gb-bg: #f5f7fa;
+  --gb-surface: #fff;
+  --gb-ink: #182b47;
+  --gb-muted: #5d6d83;
+  --gb-primary: #235dcc;
+  --gb-primary-hover: #194baa;
+  --gb-primary-soft: #edf3ff;
+  --gb-line: #e0e6ef;
+  --gb-input-line: #8796aa;
+  --gb-focus: #235dcc;
+  --gb-error: #9e2929;
+  --gb-error-soft: #fff0f0;
+  --gb-warning: #865416;
+  --gb-warning-soft: #fff1d9;
+  --gb-radius-input: 10px;
+  --gb-radius-card: 14px;
+  --gb-container: 1200px;
+  --background: var(--gb-bg);
+  --surface: var(--gb-surface);
+  --text: var(--gb-ink);
+  --foreground: var(--gb-ink);
+  --muted: var(--gb-muted);
+  --line: var(--gb-line);
+  --accent: var(--gb-primary);
+  --accent-dark: var(--gb-primary-hover);
+  --accent-soft: var(--gb-primary-soft);
+  --max-width: var(--gb-container);
+  color: var(--gb-ink);
+  background: var(--gb-bg);
+  font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+}
+
+:global(body:has(.average-price-page) .site-header) {
+  border-color: var(--gb-line);
+  background: rgb(255 255 255 / 94%);
+}
+
+:global(body:has(.average-price-page) .site-header__desktop .nav-link) {
+  color: var(--gb-ink);
+}
+
+:global(body:has(.average-price-page) .site-main) {
+  width: min(100% - 40px, var(--gb-container));
+}
+
+:global(body:has(.average-price-page) .page-section) {
+  padding-block: 32px 80px;
+}
+
+:global(body:has(.average-price-page) .site-footer) {
+  border-color: var(--gb-line);
+  background: var(--gb-surface);
+}
+
 .calculator {
+  width: 100%;
+  margin-block: 24px 36px;
+}
+
+.formCard,
+.resultCard {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
-  gap: 24px;
-  align-items: start;
-}
-
-.formCard,
-.resultCard {
   min-width: 0;
-  border: 1px solid var(--line);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 18px 50px rgba(35, 57, 43, 0.06);
-}
-
-.formCard,
-.resultCard {
-  padding: 30px;
-}
-
-.resultCard {
-  position: sticky;
-  top: 24px;
+  align-content: start;
+  gap: 20px;
 }
 
 .cardHeading {
   display: flex;
+  min-width: 0;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 28px;
+  gap: 16px;
 }
 
 .cardHeading h2,
 .cardHeading p {
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .cardHeading h2 {
-  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  color: var(--gb-ink);
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+  line-height: 1.35;
 }
 
 .cardHeading > p {
-  color: var(--muted);
-  font-size: 0.8rem;
+  color: var(--gb-muted);
+  font-size: 0.84rem;
+  line-height: 1.55;
+  text-align: right;
 }
 
 .step {
-  margin-bottom: 6px !important;
-  color: var(--accent);
-  font-size: 0.72rem;
+  margin: 0 0 8px;
+  color: var(--gb-primary);
+  font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .fieldGrid {
   display: grid;
+  min-width: 0;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px 16px;
-}
-
-.scenarioFieldset {
-  margin: 24px 0 0;
-  border: 1px solid #d5ddd7;
-  border-radius: 14px;
-  padding: 18px;
-}
-
-.scenarioFieldset legend {
-  padding: 0 7px;
-  color: #38433c;
-  font-weight: 800;
-}
-
-.scenarioFieldset > p {
-  margin: 0 0 16px;
-  color: var(--muted);
-  font-size: 0.82rem;
-  line-height: 1.55;
+  gap: 16px 14px;
 }
 
 .field {
@@ -88,223 +115,257 @@
 .field label {
   display: block;
   margin-bottom: 7px;
-  color: #38433c;
-  font-size: 0.86rem;
-  font-weight: 700;
+  color: var(--gb-ink);
+  font-size: 0.9rem;
+  font-weight: 750;
+  line-height: 1.45;
 }
 
 .field small {
   display: block;
-  margin-top: 5px;
-  color: var(--muted);
-  font-size: 0.76rem;
+  margin-top: 6px;
+  color: var(--gb-muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
 }
 
 .inputShell {
-  display: flex;
-  min-width: 0;
-  min-height: 48px;
-  align-items: center;
-  border: 1px solid #cfd6d0;
-  border-radius: 11px;
-  background: #fff;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
-}
-
-.inputShell:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(35, 97, 68, 0.12);
+  width: 100%;
+  gap: 8px;
+  padding-inline: 13px;
 }
 
 .inputShellError {
-  border-color: #b33c35;
+  border-color: var(--gb-error);
 }
 
 .inputShell input {
-  min-width: 0;
   width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 0;
   border: 0;
   outline: 0;
-  padding: 11px 4px 11px 13px;
-  color: var(--text);
+  color: var(--gb-ink);
   background: transparent;
   font: inherit;
+  font-size: 1rem;
   font-variant-numeric: tabular-nums;
 }
 
 .inputShell span {
   flex: 0 0 auto;
-  padding: 0 13px 0 8px;
-  color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 700;
+  color: var(--gb-muted);
+  font-size: 0.88rem;
 }
 
 .fieldError {
-  margin: 6px 2px 0;
-  color: #9f302b;
-  font-size: 0.76rem;
-  line-height: 1.45;
+  margin: 6px 0 0;
+  color: var(--gb-error);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.scenarioFieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--gb-line);
+  border-radius: 12px;
+  background: #fbfcfe;
+}
+
+.scenarioFieldset legend {
+  padding-inline: 6px;
+  color: var(--gb-ink);
+  font-weight: 800;
+}
+
+.scenarioFieldset > p {
+  margin: 0 0 14px;
+  color: var(--gb-muted);
+  font-size: 0.84rem;
+  line-height: 1.55;
 }
 
 .errorSummary,
 .staleNotice,
 .calculationNotice {
+  margin: 0;
   padding: 12px 14px;
   border-radius: 10px;
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.86rem;
+  line-height: 1.55;
 }
 
 .errorSummary {
   display: grid;
-  gap: 4px;
-  margin-top: 22px;
-  color: #842d28;
-  background: #fbe9e7;
+  gap: 6px;
+  color: var(--gb-error);
+  background: var(--gb-error-soft);
+}
+
+.errorSummary span {
+  font-size: 0.84rem;
 }
 
 .staleNotice {
-  margin: 0 0 16px;
-  color: #735113;
-  background: #fff4d9;
+  color: var(--gb-warning);
+  background: var(--gb-warning-soft);
 }
 
 .calculationNotice {
-  margin: 20px 0 0;
-  color: #48564d;
-  background: var(--accent-soft);
+  color: var(--gb-muted);
+  background: var(--gb-primary-soft);
 }
 
-.actions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+.actions,
+.resultActions {
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-  margin-top: 28px;
 }
 
 .calculateButton,
-.resetButton {
-  min-height: 50px;
-  border-radius: 11px;
-  padding: 0 22px;
+.resetButton,
+.resultActions button {
+  min-height: 48px;
+  border: 1px solid var(--gb-primary);
+  border-radius: 10px;
+  padding: 10px 16px;
   font: inherit;
   font-weight: 800;
   cursor: pointer;
 }
 
 .calculateButton {
-  border: 0;
+  flex: 1 1 180px;
   color: #fff;
-  background: var(--accent);
+  background: var(--gb-primary);
 }
 
 .calculateButton:hover {
-  background: var(--accent-dark);
+  background: var(--gb-primary-hover);
 }
 
-.resetButton {
-  border: 1px solid #cfd6d0;
-  color: #445047;
-  background: #fff;
+.resetButton,
+.resultActions button {
+  color: var(--gb-primary);
+  background: var(--gb-surface);
+}
+
+.calculateButton:focus-visible,
+.resetButton:focus-visible,
+.resultActions button:focus-visible {
+  outline: 3px solid rgb(35 93 204 / 34%);
+  outline-offset: 2px;
 }
 
 .resultLive {
-  min-height: 450px;
+  min-width: 0;
 }
 
 .emptyResult {
   display: grid;
-  min-height: 360px;
+  min-height: 220px;
   place-content: center;
   justify-items: center;
-  color: var(--muted);
+  gap: 12px;
+  border: 1px dashed #bdc9d8;
+  border-radius: 12px;
+  padding: 24px;
+  color: var(--gb-muted);
+  background: #fbfcfe;
   text-align: center;
 }
 
 .emptyResult span {
   display: grid;
-  width: 64px;
-  height: 64px;
+  width: 42px;
+  height: 42px;
   place-items: center;
-  border-radius: 20px;
-  color: var(--accent);
-  background: var(--accent-soft);
-  font-size: 1.6rem;
+  border-radius: 50%;
+  color: var(--gb-primary);
+  background: var(--gb-primary-soft);
+  font-size: 1.2rem;
   font-weight: 800;
 }
 
 .emptyResult p {
-  margin: 18px 0 0;
+  max-width: 30ch;
+  margin: 0;
+  line-height: 1.6;
 }
 
 .staleResult .primaryResult,
 .staleResult .resultList,
 .staleResult .detailList {
-  opacity: 0.42;
+  opacity: 0.58;
 }
 
 .primaryResult {
-  padding: 26px;
-  border-radius: 18px;
-  background: #f2f6f3;
-  transition: opacity 150ms ease;
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  padding: clamp(18px, 3vw, 28px);
+  border: 1px solid #d9e6ff;
+  border-radius: 14px;
+  background: var(--gb-primary-soft);
 }
 
 .status {
   display: inline-flex;
-  padding: 4px 10px;
+  min-height: 26px;
+  align-items: center;
   border-radius: 999px;
-  font-size: 0.76rem;
+  padding: 4px 10px;
+  font-size: 0.78rem;
   font-weight: 800;
 }
 
 .profit {
-  color: #17603e;
-  background: #dceee3;
+  color: #17633e;
+  background: #e6f5ec;
 }
 
 .loss {
-  color: #982f2a;
-  background: #f8e1df;
+  color: var(--gb-error);
+  background: var(--gb-error-soft);
 }
 
 .neutral {
-  color: #67501e;
-  background: #f3ead3;
+  color: var(--gb-warning);
+  background: var(--gb-warning-soft);
 }
 
 .primaryResult p {
-  margin: 22px 0 2px;
-  color: var(--muted);
-  font-size: 0.82rem;
+  margin: 5px 0 0;
+  color: var(--gb-muted);
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .primaryResult strong {
-  display: block;
-  overflow-wrap: anywhere;
-  font-size: clamp(2rem, 5vw, 3rem);
+  max-width: 100%;
+  color: var(--gb-ink);
+  font-size: clamp(1.75rem, 4vw, 2.6rem);
   font-variant-numeric: tabular-nums;
-  line-height: 1.15;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 .primaryResult > span:last-child {
-  display: block;
-  margin-top: 8px;
-  color: #526057;
-  font-size: 0.88rem;
-  font-weight: 700;
+  color: var(--gb-muted);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .resultList,
 .detailList {
   display: grid;
-  margin: 24px 0 0;
-  transition: opacity 150ms ease;
-}
-
-.detailList {
-  margin-top: 14px;
+  gap: 0;
+  margin: 0;
 }
 
 .resultList div,
@@ -312,31 +373,34 @@
   display: flex;
   min-width: 0;
   justify-content: space-between;
-  gap: 20px;
-  padding: 13px 2px;
-  border-bottom: 1px solid #e6e9e6;
+  gap: 14px;
+  padding: 12px 2px;
+  border-bottom: 1px solid var(--gb-line);
 }
 
 .resultList dt,
 .detailList dt {
-  color: var(--muted);
-  font-size: 0.82rem;
+  flex: 0 0 auto;
+  color: var(--gb-muted);
+  font-size: 0.87rem;
 }
 
 .resultList dd,
 .detailList dd {
   min-width: 0;
   margin: 0;
-  overflow-wrap: anywhere;
-  text-align: right;
+  color: var(--gb-ink);
   font-size: 0.9rem;
-  font-weight: 800;
+  font-weight: 750;
   font-variant-numeric: tabular-nums;
+  text-align: right;
+  overflow-wrap: anywhere;
 }
 
 .subheading {
-  margin: 24px 0 0;
-  font-size: 0.95rem;
+  margin: 0 0 12px;
+  color: var(--gb-ink);
+  font-size: 1.05rem;
 }
 
 .comparisonWrap {
@@ -346,93 +410,79 @@
 
 .comparisonTable {
   width: 100%;
-  min-width: 520px;
-  margin-top: 14px;
+  min-width: 560px;
   border-collapse: collapse;
-  font-size: 0.82rem;
-  font-variant-numeric: tabular-nums;
+  font-size: 0.86rem;
+  text-align: left;
 }
 
 .comparisonTable th,
 .comparisonTable td {
-  border: 1px solid #dfe5e0;
-  padding: 10px;
-  text-align: right;
-  white-space: nowrap;
-}
-
-.comparisonTable th:first-child {
-  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--gb-line);
+  overflow-wrap: anywhere;
 }
 
 .comparisonTable thead th {
-  background: #f2f6f3;
+  color: var(--gb-ink);
+  background: var(--gb-primary-soft);
 }
 
-.resultActions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 22px;
-}
-
-.resultActions button {
-  min-height: 44px;
-  border: 1px solid #c7d0ca;
-  border-radius: 10px;
-  color: #314139;
-  background: #fff;
-  font: inherit;
-  font-size: 0.86rem;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.resultActions button:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.actionMessage {
-  min-height: 1.5em;
-  margin: 12px 2px 0;
-  color: #4e5d54;
-  font-size: 0.8rem;
+.comparisonTable tbody th {
+  color: var(--gb-muted);
   font-weight: 700;
 }
 
-@media (max-width: 900px) {
-  .calculator {
-    grid-template-columns: 1fr;
-  }
-
-  .resultCard {
-    position: static;
-  }
+.resultActions {
+  margin-top: 6px;
 }
 
-@media (max-width: 560px) {
+.actionMessage {
+  min-height: 1.4em;
+  margin: 8px 0 0;
+  color: var(--gb-muted);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 619px) {
+  :global(body:has(.average-price-page) .site-main) {
+    width: min(100% - 32px, var(--gb-container));
+  }
+
+  :global(body:has(.average-price-page) .page-section) {
+    padding-block: 28px 60px;
+  }
+
+  .calculator {
+    margin-block: 18px 28px;
+  }
+
   .formCard,
   .resultCard {
-    padding: 22px;
-    border-radius: 18px;
+    gap: 18px;
   }
 
   .cardHeading {
-    display: block;
+    flex-wrap: wrap;
   }
 
   .cardHeading > p {
-    margin-top: 8px;
+    width: 100%;
+    text-align: left;
   }
 
-  .fieldGrid,
-  .actions,
-  .resultActions {
+  .fieldGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .actions {
+    display: grid;
     grid-template-columns: 1fr;
   }
+}
 
-  .resetButton {
-    order: 2;
+@media (max-width: 359px) {
+  :global(body:has(.average-price-page) .site-main) {
+    width: calc(100% - 24px);
   }
 }

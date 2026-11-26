@@ -26,6 +26,9 @@ import {
   YOUTH_FUTURE_SAVINGS_STORAGE_KEY,
   type YouthFutureSavingsRawInputs,
 } from "./youthFutureSavingsClientUtils";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
 import styles from "./YouthFutureSavingsCalculator.module.css";
 
 const contributionOptions: Array<{
@@ -290,8 +293,8 @@ export function YouthFutureSavingsCalculator() {
   }
 
   return (
-    <div className={styles.calculator}>
-      <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+    <CalculatorLayout className={styles.calculator}>
+      <CalculatorPanel as="form" className={styles.formCard} onSubmit={handleSubmit} noValidate>
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>01 · 입력</p>
@@ -310,11 +313,7 @@ export function YouthFutureSavingsCalculator() {
             return (
               <div className={styles.field} key={name}>
                 <label htmlFor={name}>{label}</label>
-                <div
-                  className={`${styles.inputShell} ${
-                    fieldErrors.length > 0 ? styles.inputShellError : ""
-                  }`}
-                >
+                <FieldShell className={styles.inputShell} invalid={fieldErrors.length > 0}>
                   <input
                     ref={index === 0 ? monthlyDepositRef : undefined}
                     id={name}
@@ -328,7 +327,7 @@ export function YouthFutureSavingsCalculator() {
                     aria-describedby={describedBy}
                   />
                   <span aria-hidden="true">{unit}</span>
-                </div>
+                </FieldShell>
                 <p className={styles.fieldDescription} id={`${name}-description`}>
                   {description}
                 </p>
@@ -363,7 +362,7 @@ export function YouthFutureSavingsCalculator() {
           {input.contributionType === "customRate" && (
             <div className={styles.field}>
               <label htmlFor="customContributionRate">정부기여금 비율</label>
-              <div className={styles.inputShell}>
+              <FieldShell className={styles.inputShell}>
                 <input
                   id="customContributionRate"
                   name="customContributionRate"
@@ -374,7 +373,7 @@ export function YouthFutureSavingsCalculator() {
                   onChange={handleInputChange}
                 />
                 <span aria-hidden="true">%</span>
-              </div>
+              </FieldShell>
               {getFieldErrors(errors, "customContributionRate").map((error) => (
                 <p className={styles.fieldError} key={error.code}>
                   {error.message}
@@ -386,7 +385,7 @@ export function YouthFutureSavingsCalculator() {
           {input.contributionType === "customMonthly" && (
             <div className={styles.field}>
               <label htmlFor="customMonthlyContribution">월 정부기여금 예상액</label>
-              <div className={styles.inputShell}>
+              <FieldShell className={styles.inputShell}>
                 <input
                   id="customMonthlyContribution"
                   name="customMonthlyContribution"
@@ -397,7 +396,7 @@ export function YouthFutureSavingsCalculator() {
                   onChange={handleInputChange}
                 />
                 <span aria-hidden="true">원</span>
-              </div>
+              </FieldShell>
               {getFieldErrors(errors, "customMonthlyContribution").map((error) => (
                 <p className={styles.fieldError} key={error.code}>
                   {error.message}
@@ -440,9 +439,9 @@ export function YouthFutureSavingsCalculator() {
             다시 계산
           </button>
         </div>
-      </form>
+      </CalculatorPanel>
 
-      <section className={styles.resultCard} aria-labelledby="youth-result-heading">
+      <CalculatorPanel as="section" className={styles.resultCard} aria-labelledby="youth-result-heading">
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>02 · 결과</p>
@@ -513,7 +512,7 @@ export function YouthFutureSavingsCalculator() {
             </p>
           </div>
         )}
-      </section>
-    </div>
+      </CalculatorPanel>
+    </CalculatorLayout>
   );
 }

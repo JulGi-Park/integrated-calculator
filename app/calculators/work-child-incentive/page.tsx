@@ -3,6 +3,7 @@ import Link from "next/link";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { WorkChildIncentiveCalculator } from "@/components/calculators/WorkChildIncentiveCalculator";
 import { WorkChildIncentiveContent } from "@/components/calculators/WorkChildIncentiveContent";
+import design from "@/components/calculators/WorkChildIncentiveDesignTokens.module.css";
 import {
   workChildIncentiveBreadcrumbJsonLd,
   workChildIncentiveFaqJsonLd,
@@ -52,7 +53,7 @@ export default function WorkChildIncentivePage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className={`page-section work-child-incentive-page ${design.themeAnchor}`}>
       <JsonLdScripts items={jsonLdItems} />
 
       <div className="page-heading seller-margin-heading">

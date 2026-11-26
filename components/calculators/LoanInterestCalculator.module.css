@@ -486,6 +486,36 @@
   outline-offset: 3px;
 }
 
+/* R04 공통 레이아웃과 패널을 사용하며 계산기 고유 내부 요소만 장식합니다. */
+.calculator { margin-top: 24px; }
+.resultColumn { display: grid; min-width: 0; align-content: start; gap: 16px; }
+.calculator, .results { gap: 16px; }
+.formCard, .emptyCard, .summaryCard, .comparisonSection, .scheduleSection {
+  border: 0; border-radius: 0; background: transparent; box-shadow: none;
+}
+.formCard, .summaryCard, .comparisonSection, .scheduleSection { padding: 0; }
+.inputShell { border-color: var(--gb-input-line, #8796aa); border-radius: var(--gb-radius-input, 10px); background: var(--gb-surface, #fff); }
+.inputShell:focus-within { border-color: var(--gb-focus, var(--accent)); box-shadow: 0 0 0 3px rgb(35 93 204 / 16%); }
+.inputShell:has(input[aria-invalid="true"]) { border-color: var(--gb-error, #9e2929); }
+.loanSummary { border-color: var(--gb-line, var(--line)); }
+.loanSummary div + div { border-color: var(--gb-line, var(--line)); }
+.winnerGrid div { background: var(--gb-primary-soft, var(--accent-soft)); }
+.winnerGrid strong, .lastInstallment strong { color: var(--gb-primary, var(--accent)); }
+.comparisonCard { border-color: var(--gb-line, var(--line)); background: #f8faff; }
+.comparisonCard dl div { border-color: var(--gb-line, var(--line)); }
+.typeSelector button { border-color: var(--gb-input-line, #8796aa); color: var(--gb-ink, var(--text)); }
+.tableScroller, .tableScroller th, .tableScroller td { border-color: var(--gb-line, var(--line)); }
+.tableScroller thead th { color: var(--gb-ink, var(--text)); background: #f3f6fb; }
+.tableScroller th:first-child { background: #f8faff; }
+.lastInstallment { color: var(--gb-ink, var(--text)); background: var(--gb-primary-soft, var(--accent-soft)); }
+.notice { border-color: var(--gb-line, var(--line)); color: var(--gb-muted, var(--muted)); background: #fff; }
+.calculateButton { border: 1px solid var(--gb-primary, var(--accent)); background: var(--gb-primary, var(--accent)); }
+.resetButton, .scheduleActions button, .resultActions button { border-color: var(--gb-input-line, #8796aa); color: var(--gb-ink, var(--text)); }
+.calculateButton:focus-visible, .resetButton:focus-visible, .typeSelector button:focus-visible, .scheduleActions button:focus-visible { outline-color: rgb(35 93 204 / 35%); }
+.comparisonGrid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); }
+.results { min-width: 0; }
+.sharedPanel { min-width: 0; }
+
 @media (max-width: 900px) {
   .fieldGrid,
   .comparisonGrid {

@@ -9,6 +9,7 @@ import {
   rentVsJeonseWebApplicationJsonLd,
 } from "@/components/calculators/rentVsJeonseContentData";
 import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
+import "@/components/calculators/RentVsJeonseDesignTokens.module.css";
 
 const seo = PUBLIC_CALCULATOR_SEO["rent-vs-jeonse"];
 const { title, description } = seo;
@@ -44,7 +45,7 @@ export default function RentVsJeonsePage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className="page-section rent-vs-jeonse-page">
       <JsonLdScripts items={jsonLdItems} />
 
       <CompactCalculatorHero

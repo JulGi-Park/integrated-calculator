@@ -1,0 +1,81 @@
+.figure {
+  min-width: 0;
+  margin: 18px 0 0;
+}
+
+.caption {
+  margin-bottom: 8px;
+  color: var(--gb-ink, var(--text));
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #d9e1ed;
+}
+
+.value {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--gb-primary, #235dcc);
+}
+
+.legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 14px;
+  margin-top: 9px;
+}
+
+.legend span {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 10px minmax(0, auto) auto;
+  align-items: center;
+  gap: 4px 6px;
+  color: var(--gb-muted, var(--muted));
+  font-size: 0.76rem;
+}
+
+.legend strong {
+  color: var(--gb-ink, var(--text));
+  font-variant-numeric: tabular-nums;
+}
+
+.legend small {
+  grid-column: 2 / -1;
+  overflow-wrap: anywhere;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.valueMarker,
+.remainderMarker {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.valueMarker {
+  background: var(--gb-primary, #235dcc);
+}
+
+.remainderMarker {
+  background: #8796aa;
+}
+
+.unavailable {
+  margin: 16px 0 0;
+  color: var(--gb-muted, var(--muted));
+  font-size: 0.8rem;
+}
+
+@media (max-width: 560px) {
+  .legend {
+    grid-template-columns: 1fr;
+  }
+}

@@ -43,7 +43,7 @@ export default function CarCostPage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className="page-section car-cost-page">
       <JsonLdScripts items={jsonLdItems} />
 
       <div className="page-heading seller-margin-heading">

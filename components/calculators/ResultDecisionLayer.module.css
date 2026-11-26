@@ -3,9 +3,9 @@
   gap: 18px;
   margin-top: 24px;
   padding: 22px;
-  border: 1px solid #c5d5ca;
+  border: 1px solid var(--gb-line, #c5d5ca);
   border-radius: 18px;
-  background: #f5faf7;
+  background: var(--gb-primary-soft, #f5faf7);
 }
 
 .heading p,
@@ -30,10 +30,10 @@
 
 .meaning {
   padding: 14px 16px;
-  border-left: 4px solid var(--accent);
+  border-left: 4px solid var(--gb-primary, var(--accent));
   border-radius: 8px;
   background: #fff;
-  color: #33443a;
+  color: var(--gb-ink, #33443a);
   line-height: 1.7;
 }
 
@@ -45,7 +45,7 @@
 
 .grid article {
   padding: 16px;
-  border: 1px solid #d7e2da;
+  border: 1px solid var(--gb-line, #d7e2da);
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.86);
 }

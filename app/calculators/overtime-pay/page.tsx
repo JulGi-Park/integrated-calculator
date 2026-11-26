@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import designStyles from "@/components/calculators/OvertimePayDesignTokens.module.css";
 import { OvertimePayCalculator } from "@/components/calculators/OvertimePayCalculator";
 import {
   OvertimePayContent,
@@ -38,7 +39,7 @@ export const metadata: Metadata = {
 
 export default function OvertimePayPage() {
   return (
-    <section className="page-section">
+    <section className={`page-section overtime-pay-page ${designStyles.route}`}>
       <JsonLdScripts
         items={[
           overtimePayWebApplicationJsonLd,
@@ -47,7 +48,7 @@ export default function OvertimePayPage() {
         ]}
       />
 
-      <div className="page-heading seller-margin-heading">
+      <div className="page-heading seller-margin-heading overtime-pay-heading">
         <p className="page-heading__eyebrow">Overtime pay</p>
         <h1>연장·야간·휴일근로수당 계산기</h1>
         <p>

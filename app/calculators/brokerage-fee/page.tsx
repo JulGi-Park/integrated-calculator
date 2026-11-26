@@ -9,6 +9,7 @@ import {
   brokerageFeePolicySummary,
   brokerageFeeWebApplicationJsonLd,
 } from "@/lib/calculators/brokerage-fee/content";
+import "@/components/calculators/BrokerageFeeDesignTokens.module.css";
 
 const title = "부동산 중개보수 계산기 | 복비·중개수수료 계산";
 const description =
@@ -45,7 +46,7 @@ export default function BrokerageFeePage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className="page-section brokerage-fee-page">
       <JsonLdScripts items={jsonLdItems} />
 
       <div className="page-heading seller-margin-heading">

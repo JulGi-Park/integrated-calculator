@@ -1,297 +1,360 @@
-.calculator,
+:global(body:has(.car-cost-page)) {
+  --gb-bg: #f5f7fa;
+  --gb-surface: #fff;
+  --gb-ink: #182b47;
+  --gb-muted: #5d6d83;
+  --gb-primary: #235dcc;
+  --gb-primary-hover: #194baa;
+  --gb-primary-soft: #edf3ff;
+  --gb-line: #e0e6ef;
+  --gb-input-line: #8796aa;
+  --gb-focus: #235dcc;
+  --gb-error: #9e2929;
+  --gb-error-soft: #fff0f0;
+  --gb-warning: #865416;
+  --gb-warning-soft: #fff1d9;
+  --gb-radius-input: 10px;
+  --gb-radius-card: 14px;
+  --gb-container: 1200px;
+  --background: var(--gb-bg);
+  --surface: var(--gb-surface);
+  --text: var(--gb-ink);
+  --foreground: var(--gb-ink);
+  --muted: var(--gb-muted);
+  --line: var(--gb-line);
+  --accent: var(--gb-primary);
+  --accent-dark: var(--gb-primary-hover);
+  --accent-soft: var(--gb-primary-soft);
+  --max-width: var(--gb-container);
+  color: var(--gb-ink);
+  background: var(--gb-bg);
+  font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+}
+
+:global(body:has(.car-cost-page) .site-header) {
+  border-color: var(--gb-line);
+  background: rgb(255 255 255 / 94%);
+}
+
+:global(body:has(.car-cost-page) .site-header__desktop .nav-link) {
+  color: var(--gb-ink);
+}
+
+:global(body:has(.car-cost-page) .site-main) {
+  width: min(100% - 40px, var(--gb-container));
+}
+
+:global(body:has(.car-cost-page) .page-section) {
+  padding-block: 32px 80px;
+}
+
+:global(body:has(.car-cost-page) .site-footer) {
+  border-color: var(--gb-line);
+  background: var(--gb-surface);
+}
+
+.calculator {
+  width: 100%;
+  margin-block: 24px 36px;
+}
+
+.formCard {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 20px;
+}
+
 .results {
   display: grid;
-  gap: 24px;
-}
-
-.formCard,
-.summaryCard,
-.emptyCard,
-.notice {
   min-width: 0;
-  border: 1px solid var(--line);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 18px 50px rgba(35, 57, 43, 0.06);
-}
-
-.formCard,
-.summaryCard {
-  padding: 30px;
+  gap: 16px;
 }
 
 .cardHeading {
   display: flex;
+  min-width: 0;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 26px;
+  gap: 16px;
 }
 
 .cardHeading h2,
 .cardHeading p {
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .cardHeading h2 {
-  font-size: clamp(1.35rem, 3vw, 1.8rem);
-  letter-spacing: -0.04em;
+  color: var(--gb-ink);
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+  line-height: 1.35;
 }
 
 .cardHeading > p {
-  max-width: 320px;
-  color: var(--muted);
-  font-size: 0.82rem;
+  color: var(--gb-muted);
+  font-size: 0.84rem;
+  line-height: 1.55;
   text-align: right;
 }
 
 .step {
-  margin-bottom: 6px !important;
-  color: var(--accent);
-  font-size: 0.72rem;
+  margin: 0 0 8px;
+  color: var(--gb-primary);
+  font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .fieldGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 14px;
 }
 
-.field,
-.checkboxField {
+.field {
   min-width: 0;
 }
 
-.field label,
-.checkboxField label {
+.field label {
   display: block;
   margin-bottom: 7px;
-  color: #38433c;
-  font-size: 0.88rem;
-  font-weight: 800;
+  color: var(--gb-ink);
+  font-size: 0.9rem;
+  font-weight: 750;
+  line-height: 1.45;
 }
 
 .inputShell {
-  display: flex;
-  min-height: 52px;
-  align-items: center;
-  border: 1px solid #cfd6d0;
-  border-radius: 12px;
-  background: #fff;
-}
-
-.inputShell:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(35, 97, 68, 0.12);
+  width: 100%;
+  gap: 8px;
+  padding-inline: 13px;
 }
 
 .inputShellError {
-  border-color: #b33c35;
+  border-color: var(--gb-error);
 }
 
 .inputShell input {
-  min-width: 0;
   width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 0;
   border: 0;
   outline: 0;
-  padding: 12px 4px 12px 14px;
-  color: var(--text);
+  color: var(--gb-ink);
   background: transparent;
   font: inherit;
+  font-size: 1rem;
   font-variant-numeric: tabular-nums;
 }
 
-.inputShell span {
+.inputShell > span {
   flex: 0 0 auto;
-  padding: 0 14px 0 8px;
-  color: var(--muted);
+  color: var(--gb-muted);
+  font-size: 0.88rem;
+}
+
+.fieldDescription,
+.fieldError {
+  margin: 6px 0 0;
   font-size: 0.82rem;
-  font-weight: 800;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.fieldDescription {
+  color: var(--gb-muted);
+}
+
+.fieldError {
+  color: var(--gb-error);
+  font-weight: 700;
 }
 
 .checkboxField {
   display: flex;
-  min-height: 52px;
+  min-height: 48px;
   align-items: center;
   gap: 10px;
-  padding: 12px 14px;
-  border: 1px solid #cfd6d0;
-  border-radius: 12px;
-  background: #fff;
+  padding: 10px 12px;
+  border: 1px solid var(--gb-line);
+  border-radius: 10px;
+  color: var(--gb-ink);
+  background: #fbfcfe;
 }
 
 .checkboxField input {
   width: 18px;
   height: 18px;
-  accent-color: var(--accent);
+  accent-color: var(--gb-primary);
 }
 
 .checkboxField label {
   margin: 0;
-}
-
-.fieldDescription,
-.fieldError,
-.storageNotice,
-.actionMessage,
-.notice {
-  color: var(--muted);
-  font-size: 0.8rem;
-  line-height: 1.6;
-}
-
-.fieldDescription,
-.fieldError {
-  margin: 7px 2px 0;
-  font-size: 0.76rem;
-}
-
-.fieldError {
-  color: #9f302b;
+  font-size: 0.9rem;
   font-weight: 700;
 }
 
 .storageNotice {
-  margin: 18px 0 0;
+  margin: 0;
+  color: var(--gb-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
 }
 
-.errorSummary {
-  margin: 22px 0 0;
-  padding: 12px 14px;
-  border-radius: 10px;
-  color: #842d28;
-  background: #fbe9e7;
-  font-size: 0.83rem;
-  font-weight: 800;
-}
-
+.errorSummary,
 .staleNotice {
   margin: 0;
   padding: 12px 14px;
   border-radius: 10px;
-  color: #735113;
-  background: #fff4d9;
-  font-size: 0.83rem;
-  font-weight: 800;
+  font-size: 0.86rem;
+  line-height: 1.55;
 }
 
-.actions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+.errorSummary {
+  color: var(--gb-error);
+  background: var(--gb-error-soft);
+}
+
+.staleNotice {
+  color: var(--gb-warning);
+  background: var(--gb-warning-soft);
+}
+
+.actions,
+.resultActions {
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-  margin-top: 28px;
 }
 
 .calculateButton,
-.resetButton {
+.resetButton,
+.resultActions button {
   min-height: 48px;
-  border-radius: 11px;
-  padding: 0 20px;
+  border: 1px solid var(--gb-primary);
+  border-radius: 10px;
+  padding: 10px 16px;
   font: inherit;
   font-weight: 800;
   cursor: pointer;
 }
 
 .calculateButton {
-  border: 0;
+  flex: 1 1 180px;
   color: #fff;
-  background: var(--accent);
+  background: var(--gb-primary);
 }
 
-.resetButton {
-  border: 1px solid #cfd6d0;
-  color: #3c4b42;
-  background: #fff;
+.calculateButton:hover {
+  background: var(--gb-primary-hover);
 }
 
-.resultActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 18px;
-}
-
+.resetButton,
 .resultActions button {
-  min-height: 46px;
-  border: 1px solid #cfd6d0;
-  border-radius: 11px;
-  padding: 0 18px;
-  color: #3c4b42;
-  background: #fff;
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
+  color: var(--gb-primary);
+  background: var(--gb-surface);
 }
 
-.actionMessage {
-  min-height: 1.5em;
-  margin: 10px 0 0;
+.calculateButton:focus-visible,
+.resetButton:focus-visible,
+.resultActions button:focus-visible,
+.checkboxField input:focus-visible {
+  outline: 3px solid rgb(35 93 204 / 34%);
+  outline-offset: 2px;
 }
 
 .emptyCard {
   display: grid;
-  min-height: 220px;
-  place-content: center;
+  min-height: 240px;
+  align-content: center;
   justify-items: center;
-  padding: 36px;
-  color: var(--muted);
+  gap: 8px;
+  color: var(--gb-muted);
   text-align: center;
 }
 
 .emptyCard h2 {
-  margin: 0 0 6px;
-  color: var(--text);
-  font-size: 1.35rem;
+  margin: 0;
+  color: var(--gb-ink);
+  font-size: 1.25rem;
 }
 
 .emptyCard p {
+  max-width: 42ch;
   margin: 0;
+  line-height: 1.6;
+}
+
+.summaryCard {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 18px;
 }
 
 .summaryGrid,
 .detailGrid {
   display: grid;
+  min-width: 0;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 10px;
+  margin: 0;
 }
 
 .summaryGrid div,
 .detailGrid div {
   min-width: 0;
-  padding: 18px;
-  border-radius: 16px;
-  background: #eef5f0;
+  padding: 14px;
+  border: 1px solid var(--gb-line);
+  border-radius: 10px;
+  background: #fbfcfe;
 }
 
-.detailGrid {
-  margin-top: 14px;
-}
-
-.detailGrid div {
-  background: #fafcfb;
-  border: 1px solid #dde4de;
+.summaryGrid div:nth-child(3) {
+  border-color: #d5e2fa;
+  background: var(--gb-primary-soft);
 }
 
 .summaryGrid dt,
 .detailGrid dt {
-  color: var(--muted);
-  font-size: 0.78rem;
+  color: var(--gb-muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
 }
 
 .summaryGrid dd,
 .detailGrid dd {
-  margin: 4px 0 0;
-  overflow-wrap: anywhere;
-  color: var(--accent-dark);
+  margin: 6px 0 0;
+  color: var(--gb-ink);
+  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.summaryGrid div:nth-child(3) dd {
+  color: var(--gb-primary);
+  font-size: clamp(1.2rem, 2vw, 1.65rem);
+}
+
+.actionMessage {
+  min-height: 1.4em;
+  margin: 0;
+  color: var(--gb-muted);
+  font-size: 0.82rem;
 }
 
 .notice {
-  padding: 20px 24px;
+  padding: 16px 18px;
+  border: 1px solid var(--gb-line);
+  border-radius: 12px;
+  color: var(--gb-muted);
+  background: var(--gb-primary-soft);
+  font-size: 0.84rem;
+  line-height: 1.65;
 }
 
 .notice p {
@@ -299,41 +362,56 @@
 }
 
 .notice p + p {
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
-.calculateButton:focus-visible,
-.resetButton:focus-visible,
-.resultActions button:focus-visible {
-  outline: 3px solid rgba(35, 97, 68, 0.3);
-  outline-offset: 3px;
-}
-
-@media (max-width: 900px) {
-  .fieldGrid,
-  .summaryGrid,
-  .detailGrid {
-    grid-template-columns: 1fr;
+@media (max-width: 959px) {
+  .results {
+    grid-column: 1;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 619px) {
+  :global(body:has(.car-cost-page) .site-main) {
+    width: min(100% - 32px, var(--gb-container));
+  }
+
+  :global(body:has(.car-cost-page) .page-section) {
+    padding-block: 28px 60px;
+  }
+
+  .calculator {
+    margin-block: 18px 28px;
+  }
+
   .formCard,
   .summaryCard {
-    padding: 22px;
-    border-radius: 18px;
+    gap: 18px;
   }
 
   .cardHeading {
-    display: block;
+    flex-wrap: wrap;
   }
 
   .cardHeading > p {
-    margin-top: 8px;
+    width: 100%;
     text-align: left;
   }
 
+  .fieldGrid,
+  .summaryGrid,
+  .detailGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .actions {
+    display: grid;
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 359px) {
+  :global(body:has(.car-cost-page) .site-main) {
+    width: calc(100% - 24px);
   }
 }

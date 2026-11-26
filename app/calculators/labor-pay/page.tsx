@@ -3,6 +3,7 @@ import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { LaborPayCalculator } from "@/components/calculators/LaborPayCalculator";
 import { LaborPayContent } from "@/components/calculators/LaborPayContent";
 import { CompactCalculatorHero } from "@/components/common/CompactCalculatorHero";
+import designTokens from "@/components/calculators/LaborPayDesignTokens.module.css";
 import {
   laborPayBaseDate,
   laborPayBreadcrumbJsonLd,
@@ -58,42 +59,7 @@ export default function LaborPayPage() {
   ];
 
   return (
-    <section className="page-section labor-pay-page">
-      <style>
-        {`
-          @media (max-width: 560px) {
-            body:has(.labor-pay-page) .site-header__inner {
-              align-items: flex-start;
-              flex-direction: column;
-              gap: 8px;
-              padding-block: 14px;
-            }
-
-            body:has(.labor-pay-page) .site-header nav {
-              justify-content: flex-start;
-            }
-
-            .labor-pay-page,
-            .labor-pay-heading,
-            .labor-pay-heading p,
-            .labor-pay-heading span {
-              min-width: 0;
-              overflow-wrap: anywhere;
-              word-break: break-all;
-            }
-
-            .labor-pay-page * {
-              overflow-wrap: anywhere;
-              word-break: break-all;
-            }
-
-            .labor-pay-heading .seller-margin-meta {
-              display: grid;
-              gap: 6px;
-            }
-          }
-        `}
-      </style>
+    <section className={`page-section labor-pay-page ${designTokens.scope}`}>
       <JsonLdScripts items={jsonLdItems} />
 
       <CompactCalculatorHero

@@ -13,6 +13,9 @@ import {
   type CarCostResult,
   type CarCostValidationError,
 } from "@/lib/calculators/car-cost/car-cost";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
 import styles from "./CarCostCalculator.module.css";
 
 type RawInputs = Record<CarCostInputField, string | boolean>;
@@ -340,8 +343,8 @@ export function CarCostCalculator() {
   }
 
   return (
-    <div className={styles.calculator}>
-      <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+    <CalculatorLayout className={styles.calculator}>
+      <CalculatorPanel as="form" className={styles.formCard} onSubmit={handleSubmit} noValidate>
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>01 · 차량 유지 조건</p>
@@ -359,10 +362,11 @@ export function CarCostCalculator() {
             return (
               <div className={styles.field} key={name}>
                 <label htmlFor={name}>{label}</label>
-                <div
+                <FieldShell
                   className={`${styles.inputShell} ${
                     fieldErrors.length > 0 ? styles.inputShellError : ""
                   }`}
+                  invalid={fieldErrors.length > 0}
                 >
                   <input
                     ref={(element) => {
@@ -385,7 +389,7 @@ export function CarCostCalculator() {
                     }
                   />
                   <span aria-hidden="true">{unit}</span>
-                </div>
+                </FieldShell>
                 <p className={styles.fieldDescription} id={descriptionId}>
                   {description}
                 </p>
@@ -443,13 +447,13 @@ export function CarCostCalculator() {
             초기화
           </button>
         </div>
-      </form>
+      </CalculatorPanel>
 
       {!result && (
-        <section className={styles.emptyCard} aria-live="polite">
+        <CalculatorPanel as="section" className={styles.emptyCard} aria-live="polite">
           <h2>자동차 한달 유지비를 확인하세요</h2>
           <p>주행거리와 비용을 입력하면 월·연 비용과 1km당 비용을 계산합니다.</p>
-        </section>
+        </CalculatorPanel>
       )}
 
       {result && calculatedInput && (
@@ -460,7 +464,8 @@ export function CarCostCalculator() {
             </p>
           )}
 
-          <section
+          <CalculatorPanel
+            as="section"
             className={styles.summaryCard}
             aria-labelledby="car-cost-result-heading"
           >
@@ -512,9 +517,9 @@ export function CarCostCalculator() {
             <p className={styles.actionMessage} aria-live="polite">
               {actionMessage}
             </p>
-          </section>
+          </CalculatorPanel>
 
-          <section className={styles.summaryCard} aria-labelledby="detail-title">
+          <CalculatorPanel as="section" className={styles.summaryCard} aria-labelledby="detail-title">
             <div className={styles.cardHeading}>
               <div>
                 <p className={styles.step}>03 · 상세 계산 내역</p>
@@ -601,7 +606,7 @@ export function CarCostCalculator() {
                 <dd>{formatWon(result.totalCostPerKm)}</dd>
               </div>
             </dl>
-          </section>
+          </CalculatorPanel>
 
           <aside className={styles.notice}>
             <p>
@@ -617,6 +622,6 @@ export function CarCostCalculator() {
           </aside>
         </div>
       )}
-    </div>
+    </CalculatorLayout>
   );
 }

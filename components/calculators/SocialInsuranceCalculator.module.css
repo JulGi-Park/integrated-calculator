@@ -3,10 +3,10 @@
   gap: 5px;
   margin-bottom: 22px;
   padding: 16px 18px;
-  border: 1px solid #cbd8cf;
-  border-radius: 14px;
-  color: #425148;
-  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--gb-line);
+  border-radius: var(--gb-radius-card);
+  color: var(--gb-ink);
+  background: var(--gb-primary-soft);
   font-size: 0.86rem;
 }
 
@@ -19,14 +19,9 @@
 }
 
 .calculator {
-  display: grid;
-  grid-template-columns: minmax(0, 0.94fr) minmax(420px, 1.06fr);
-  gap: 24px;
-  align-items: start;
+  gap: 20px;
 }
 
-.formCard,
-.resultCard,
 .contentSection,
 .disclaimerBox {
   min-width: 0;
@@ -37,9 +32,7 @@
 }
 
 .formCard,
-.resultCard {
-  padding: 30px;
-}
+.resultCard { padding: 24px; }
 
 .resultCard {
   position: sticky;
@@ -89,29 +82,20 @@
 .field label {
   display: block;
   margin-bottom: 7px;
-  color: #38433c;
+  color: var(--gb-ink);
   font-size: 0.88rem;
   font-weight: 700;
 }
 
 .inputShell {
-  display: flex;
   min-width: 0;
-  min-height: 50px;
-  align-items: center;
-  border: 1px solid #cfd6d0;
-  border-radius: 11px;
-  background: #fff;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  min-height: 48px;
+  border-radius: var(--gb-radius-input);
 }
 
 .inputShell:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(35, 97, 68, 0.12);
-}
-
-.inputShellError {
-  border-color: #b33c35;
+  border-color: var(--gb-focus);
+  box-shadow: 0 0 0 3px rgb(35 93 204 / 16%);
 }
 
 .inputShell input {
@@ -129,7 +113,7 @@
 .inputShell span {
   flex: 0 0 auto;
   padding: 0 13px 0 8px;
-  color: var(--muted);
+  color: var(--gb-muted);
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -147,15 +131,15 @@
 }
 
 .fieldError {
-  color: #9f302b;
+  color: var(--gb-error);
 }
 
 .storageNotice {
   margin: 22px 0 0;
   padding: 11px 13px;
   border-radius: 10px;
-  color: #526058;
-  background: #f2f6f3;
+  color: var(--gb-muted);
+  background: var(--gb-primary-soft);
   font-size: 0.78rem;
 }
 
@@ -190,24 +174,24 @@
 .calculateButton {
   border: 0;
   color: #fff;
-  background: var(--accent);
+  background: var(--gb-primary);
 }
 
 .calculateButton:hover {
-  background: var(--accent-dark);
+  background: var(--gb-primary-hover);
 }
 
 .resetButton,
 .resultActions button {
-  border: 1px solid #cfd6d0;
-  color: #445047;
+  border: 1px solid var(--gb-input-line);
+  color: var(--gb-ink);
   background: #fff;
 }
 
 .calculateButton:focus-visible,
 .resetButton:focus-visible,
 .resultActions button:focus-visible {
-  outline: 3px solid rgba(35, 97, 68, 0.3);
+  outline: 3px solid var(--gb-focus);
   outline-offset: 3px;
 }
 
@@ -260,7 +244,7 @@
   min-width: 0;
   padding: 26px;
   border-radius: 18px;
-  background: #f2f6f3;
+  background: var(--gb-primary-soft);
 }
 
 .primaryResult p,
@@ -273,7 +257,7 @@
   display: block;
   overflow-wrap: anywhere;
   margin: 8px 0 4px;
-  color: var(--accent-dark);
+  color: var(--gb-primary);
   font-size: clamp(2rem, 5vw, 3rem);
   line-height: 1.12;
   font-variant-numeric: tabular-nums;
@@ -284,6 +268,13 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   margin: 16px 0 0;
+}
+
+.contributionRatio {
+  margin-block: 18px 0;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--gb-primary-soft);
 }
 
 .summaryGrid div {
@@ -306,7 +297,7 @@
 .exampleCard dd {
   overflow-wrap: anywhere;
   margin: 4px 0 0;
-  color: #26312a;
+  color: var(--gb-ink);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
@@ -357,8 +348,8 @@
 }
 
 .resultActions button:hover {
-  border-color: var(--accent);
-  background: var(--accent-soft);
+  border-color: var(--gb-primary);
+  background: var(--gb-primary-soft);
 }
 
 .actionMessage {
@@ -423,8 +414,8 @@
 }
 
 .relatedCard:hover {
-  border-color: var(--accent);
-  background: var(--accent-soft);
+  border-color: var(--gb-primary);
+  background: var(--gb-primary-soft);
 }
 
 .criteriaGrid p {
@@ -446,7 +437,7 @@
 }
 
 .sourceList a {
-  color: var(--accent-dark);
+  color: var(--gb-primary);
   font-weight: 800;
 }
 
@@ -481,10 +472,13 @@
 }
 
 .disclaimerBox {
-  background: #f8faf8;
+  background: var(--gb-primary-soft);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 959px) {
+  .calculator {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .calculator,
   .criteriaGrid,
   .exampleGrid,
@@ -504,7 +498,7 @@
   .contentSection,
   .disclaimerBox {
     padding: 18px;
-    border-radius: 16px;
+    border-radius: var(--gb-radius-card);
   }
 
   .cardHeading {

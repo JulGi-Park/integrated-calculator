@@ -1,23 +1,12 @@
 .calculator {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
-  gap: 24px;
-  align-items: start;
+  gap: 20px;
   min-width: 0;
 }
 
 .formCard,
 .resultCard {
   min-width: 0;
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 18px 50px rgba(35, 57, 43, 0.06);
-}
-
-.formCard,
-.resultCard {
-  padding: 28px;
+  padding: 24px;
 }
 
 .resultCard {
@@ -81,27 +70,20 @@
 .fieldLegend {
   display: block;
   margin-bottom: 7px;
-  color: #38433c;
+  color: var(--gb-ink, var(--text));
   font-size: 0.86rem;
   font-weight: 700;
 }
 
 .inputShell {
-  display: flex;
+  min-width: 0;
   min-height: 48px;
-  align-items: center;
-  border: 1px solid #cfd6d0;
-  border-radius: 11px;
-  background: #fff;
+  border-radius: var(--gb-radius-input, 10px);
 }
 
 .inputShell:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(35, 97, 68, 0.12);
-}
-
-.inputShellError {
-  border-color: #b33c35;
+  border-color: var(--gb-focus, var(--accent));
+  box-shadow: 0 0 0 3px rgb(35 93 204 / 16%);
 }
 
 .inputShell input {
@@ -118,7 +100,7 @@
 .inputShell span {
   flex: 0 0 auto;
   padding: 0 13px 0 8px;
-  color: var(--muted);
+  color: var(--gb-muted, var(--muted));
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -142,16 +124,16 @@
 
 .segmentButton {
   min-height: 44px;
-  border: 1px solid #cfd6d0;
-  color: #445047;
+  border: 1px solid var(--gb-input-line, #8796aa);
+  color: var(--gb-ink, var(--text));
   background: #fff;
   white-space: normal;
 }
 
 .segmentButtonActive {
-  border-color: var(--accent);
+  border-color: var(--gb-primary, var(--accent));
   color: #fff;
-  background: var(--accent);
+  background: var(--gb-primary, var(--accent));
 }
 
 .helper {
@@ -163,7 +145,7 @@
 
 .fieldError {
   margin: 6px 2px 0;
-  color: #9f302b;
+  color: var(--gb-error, #9f302b);
   font-size: 0.76rem;
   line-height: 1.45;
 }
@@ -172,7 +154,7 @@
   display: flex;
   align-items: flex-start;
   gap: 9px;
-  color: #38433c;
+  color: var(--gb-ink, var(--text));
   font-size: 0.86rem;
   font-weight: 700;
 }
@@ -201,15 +183,28 @@
 
 .calculateButton {
   color: #fff;
-  background: var(--accent);
+  background: var(--gb-primary, var(--accent));
+}
+
+.calculateButton:hover {
+  background: var(--gb-primary-hover, var(--accent-dark));
 }
 
 .resetButton,
 .smallButton,
 .textButton {
-  border: 1px solid #cfd6d0;
-  color: #445047;
+  border: 1px solid var(--gb-input-line, #8796aa);
+  color: var(--gb-ink, var(--text));
   background: #fff;
+}
+
+.segmentButton:focus-visible,
+.calculateButton:focus-visible,
+.resetButton:focus-visible,
+.smallButton:focus-visible,
+.textButton:focus-visible {
+  outline: 3px solid var(--gb-focus, var(--accent));
+  outline-offset: 3px;
 }
 
 .smallButton {
@@ -258,19 +253,19 @@
 }
 
 .staleNotice {
-  color: #735113;
-  background: #fff4d9;
+  color: var(--gb-warning, #735113);
+  background: var(--gb-warning-soft, #fff4d9);
 }
 
 .warning {
-  color: #7b3c09;
-  background: #fff0dd;
+  color: var(--gb-warning, #7b3c09);
+  background: var(--gb-warning-soft, #fff4d9);
 }
 
 .primaryResult {
   padding: 24px;
   border-radius: 16px;
-  background: #f2f6f3;
+  background: var(--gb-primary-soft, var(--accent-soft));
 }
 
 .status {
@@ -358,11 +353,7 @@
   overflow-wrap: anywhere;
 }
 
-@media (max-width: 860px) {
-  .calculator {
-    grid-template-columns: 1fr;
-  }
-
+@media (max-width: 959px) {
   .resultCard {
     position: static;
   }
@@ -372,7 +363,7 @@
   .formCard,
   .resultCard {
     padding: 20px;
-    border-radius: 16px;
+    border-radius: var(--gb-radius-card, 14px);
   }
 
   .fieldGrid,

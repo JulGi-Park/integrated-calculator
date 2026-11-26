@@ -12,8 +12,8 @@
   min-width: 0;
   border: 1px solid var(--line);
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 18px 50px rgba(35, 57, 43, 0.06);
+  background: var(--gb-surface);
+  box-shadow: 0 18px 50px rgb(24 43 71 / 5%);
 }
 
 .formCard,
@@ -73,7 +73,7 @@
 
 .groupTitle {
   margin: 0;
-  color: #344039;
+  color: var(--gb-ink);
   font-size: 1rem;
 }
 
@@ -90,7 +90,7 @@
 .field label {
   display: block;
   margin-bottom: 7px;
-  color: #38433c;
+  color: var(--gb-ink);
   font-size: 0.88rem;
   font-weight: 800;
 }
@@ -99,18 +99,18 @@
   display: flex;
   min-height: 52px;
   align-items: center;
-  border: 1px solid #cfd6d0;
+  border: 1px solid var(--gb-input-line);
   border-radius: 12px;
-  background: #fff;
+  background: var(--gb-surface);
 }
 
 .inputShell:focus-within {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(35, 97, 68, 0.12);
+  box-shadow: 0 0 0 3px rgb(35 93 204 / 16%);
 }
 
 .inputShellError {
-  border-color: #b33c35;
+  border-color: var(--gb-error);
 }
 
 .inputShell input {
@@ -147,7 +147,7 @@
 }
 
 .fieldError {
-  color: #9f302b;
+  color: var(--gb-error);
   font-weight: 700;
 }
 
@@ -161,13 +161,13 @@
 }
 
 .errorSummary {
-  color: #842d28;
-  background: #fbe9e7;
+  color: var(--gb-error);
+  background: var(--gb-error-soft);
 }
 
 .staleNotice {
-  color: #735113;
-  background: #fff4d9;
+  color: var(--gb-warning);
+  background: var(--gb-surface)4d9;
 }
 
 .actions {
@@ -189,7 +189,7 @@
 
 .calculateButton {
   border: 0;
-  color: #fff;
+  color: var(--gb-surface);
   background: var(--accent);
 }
 
@@ -198,9 +198,9 @@
 }
 
 .resetButton {
-  border: 1px solid #cfd6d0;
-  color: #3c4b42;
-  background: #fff;
+  border: 1px solid var(--gb-input-line);
+  color: var(--gb-ink);
+  background: var(--gb-surface);
 }
 
 .emptyCard {
@@ -245,9 +245,9 @@
 .winner {
   min-width: 0;
   padding: 18px;
-  border: 1px solid #e1e6e2;
+  border: 1px solid var(--gb-line);
   border-radius: 16px;
-  background: #fff;
+  background: var(--gb-surface);
 }
 
 .summaryItem span,
@@ -261,14 +261,14 @@
   display: block;
   margin-top: 5px;
   overflow-wrap: anywhere;
-  color: #263229;
+  color: var(--gb-ink);
   font-size: 1.05rem;
   font-variant-numeric: tabular-nums;
 }
 
 .winner {
   grid-column: 1 / -1;
-  background: #eef5f0;
+  background: var(--gb-primary-soft);
 }
 
 .winner strong {
@@ -284,9 +284,9 @@
 .detailCard {
   min-width: 0;
   padding: 20px;
-  border: 1px solid #e1e6e2;
+  border: 1px solid var(--gb-line);
   border-radius: 16px;
-  background: #fff;
+  background: var(--gb-surface);
 }
 
 .detailCard h3 {
@@ -303,7 +303,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 10px 0;
-  border-top: 1px solid #e7ebe8;
+  border-top: 1px solid var(--gb-line);
 }
 
 .detailCard dt {
@@ -322,14 +322,14 @@
 }
 
 .interpretation {
-  color: #4f5c54;
+  color: var(--gb-muted);
   font-size: 0.9rem;
   line-height: 1.75;
 }
 
 .interpretation h2 {
   margin: 0 0 8px;
-  color: #263229;
+  color: var(--gb-ink);
   font-size: 1.25rem;
 }
 
@@ -352,7 +352,7 @@
 
 .calculateButton:focus-visible,
 .resetButton:focus-visible {
-  outline: 3px solid rgba(35, 97, 68, 0.3);
+  outline: 3px solid rgb(35 93 204 / 45%);
   outline-offset: 3px;
 }
 

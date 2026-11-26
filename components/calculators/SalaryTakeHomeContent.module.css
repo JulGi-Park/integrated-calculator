@@ -85,7 +85,7 @@
 .criteriaList div {
   min-width: 0;
   padding: 18px 20px;
-  border-left: 3px solid #b7cabe;
+  border-left: 3px solid var(--gb-line, #b7cabe);
   background: rgba(255, 255, 255, 0.65);
 }
 
@@ -96,7 +96,7 @@
 
 .criteriaList dd {
   margin: 6px 0 0;
-  color: #526057;
+  color: var(--gb-muted, #526057);
   overflow-wrap: anywhere;
   font-size: 0.86rem;
 }
@@ -162,9 +162,9 @@
 
 .exclusionList li {
   padding: 7px 11px;
-  border: 1px solid #d4dad5;
+  border: 1px solid var(--gb-line, #d4dad5);
   border-radius: 999px;
-  color: #536058;
+  color: var(--gb-muted, #536058);
   background: rgba(255, 255, 255, 0.65);
   font-size: 0.8rem;
 }
@@ -204,7 +204,7 @@
 
 .relatedLink:hover {
   transform: translateY(-2px);
-  border-color: #9fb7a7;
+  border-color: var(--gb-primary, #9fb7a7);
 }
 
 .comingSoon {

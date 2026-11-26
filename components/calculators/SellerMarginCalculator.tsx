@@ -25,6 +25,9 @@ import {
   type SellerMarginRawInputs,
 } from "./sellerMarginClientUtils";
 import styles from "./SellerMarginCalculator.module.css";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
 
 interface FieldDefinition {
   name: SellerMarginInputField;
@@ -395,8 +398,9 @@ export function SellerMarginCalculator() {
     : null;
 
   return (
-    <div className={styles.calculator}>
-      <form
+    <CalculatorLayout className={styles.calculator}>
+      <CalculatorPanel
+        as="form"
         className={styles.formCard}
         onSubmit={handleSubmit}
         noValidate
@@ -420,10 +424,11 @@ export function SellerMarginCalculator() {
             return (
               <div className={styles.field} key={name}>
                 <label htmlFor={name}>{label}</label>
-                <div
+                <FieldShell
                   className={`${styles.inputShell} ${
                     fieldErrors.length > 0 ? styles.inputShellError : ""
                   }`}
+                  invalid={fieldErrors.length > 0}
                 >
                   <input
                     ref={(element) => {
@@ -444,7 +449,7 @@ export function SellerMarginCalculator() {
                     }
                   />
                   <span aria-hidden="true">{unit}</span>
-                </div>
+                </FieldShell>
                 {fieldErrors.length > 0 && (
                   <p className={styles.fieldError} id={errorId}>
                     {fieldErrors.map(getErrorMessage).join(" ")}
@@ -482,9 +487,13 @@ export function SellerMarginCalculator() {
             초기화
           </button>
         </div>
-      </form>
+      </CalculatorPanel>
 
-      <section className={styles.resultCard} aria-labelledby="result-heading">
+      <CalculatorPanel
+        as="section"
+        className={styles.resultCard}
+        aria-labelledby="result-heading"
+      >
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>02 · 예상 결과</p>
@@ -580,7 +589,7 @@ export function SellerMarginCalculator() {
             </div>
           )}
         </div>
-      </section>
-    </div>
+      </CalculatorPanel>
+    </CalculatorLayout>
   );
 }

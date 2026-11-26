@@ -19,8 +19,10 @@ import {
   serializeOvertimePayInputs,
   type OvertimePayRawInputs,
 } from "./overtimePayClientUtils";
-import extraStyles from "./OvertimePayCalculator.module.css";
-import styles from "./SeveranceCalculator.module.css";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
+import styles from "./OvertimePayCalculator.module.css";
 
 type FieldDefinition = Readonly<{
   name: OvertimePayInputField;
@@ -319,8 +321,8 @@ export function OvertimePayCalculator() {
         </p>
       </aside>
 
-      <div className={styles.calculator}>
-        <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+      <CalculatorLayout className={styles.calculator}>
+        <CalculatorPanel as="form" className={styles.formCard} onSubmit={handleSubmit} noValidate>
           <div className={styles.cardHeading}>
             <div>
               <p className={styles.step}>01 · 근로 시간</p>
@@ -329,7 +331,7 @@ export function OvertimePayCalculator() {
             <p>원 단위 반올림</p>
           </div>
 
-          <label className={extraStyles.checkNotice}>
+          <label className={styles.checkNotice}>
             <input type="checkbox" defaultChecked />
             <span>상시근로자 5인 이상 사업장 적용 가능성을 확인했습니다.</span>
           </label>
@@ -352,11 +354,7 @@ export function OvertimePayCalculator() {
                     <label htmlFor={name}>{label}</label>
                     {!required && <span className={styles.optionalChip}>선택 입력</span>}
                   </div>
-                  <div
-                    className={`${styles.inputShell} ${
-                      fieldErrors.length > 0 ? styles.inputShellError : ""
-                    }`}
-                  >
+                  <FieldShell className={styles.inputShell} invalid={fieldErrors.length > 0}>
                     <input
                       ref={(element) => {
                         if (element) {
@@ -374,7 +372,7 @@ export function OvertimePayCalculator() {
                       aria-describedby={describedBy}
                     />
                     <span aria-hidden="true">{unit}</span>
-                  </div>
+                  </FieldShell>
                   <p className={styles.fieldDescription} id={descriptionId}>
                     {description}
                   </p>
@@ -411,9 +409,13 @@ export function OvertimePayCalculator() {
               다시 계산
             </button>
           </div>
-        </form>
+        </CalculatorPanel>
 
-        <section className={styles.resultCard} aria-labelledby="overtime-result-heading">
+        <CalculatorPanel
+          as="section"
+          className={styles.resultCard}
+          aria-labelledby="overtime-result-heading"
+        >
           <div className={styles.cardHeading}>
             <div>
               <p className={styles.step}>02 · 계산 결과</p>
@@ -485,7 +487,7 @@ export function OvertimePayCalculator() {
                       <dd>{formatWon(result.holidayPayOver8)}</dd>
                     </div>
                     <div>
-                      <dt>일반 1.0배 상당액</dt>
+                      <dt>일반 1.0배 기준 참고액</dt>
                       <dd>{formatWon(result.regularEquivalentPay)}</dd>
                     </div>
                   </dl>
@@ -496,7 +498,8 @@ export function OvertimePayCalculator() {
                   <p>
                     기준일 2026년 8월 9일, 근로기준법 제56조 기준을 참고한
                     예상값입니다. 실제 지급액은 통상임금 산정과 사업장 조건에
-                    따라 달라질 수 있습니다.
+                    따라 달라질 수 있습니다. 일반 1.0배 기준 참고액은 비교용이며
+                    총 예상 지급액이나 가산수당 합계에 더하지 않습니다.
                   </p>
                 </div>
 
@@ -517,8 +520,8 @@ export function OvertimePayCalculator() {
               </div>
             )}
           </div>
-        </section>
-      </div>
+        </CalculatorPanel>
+      </CalculatorLayout>
     </>
   );
 }

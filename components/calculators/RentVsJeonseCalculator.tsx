@@ -13,6 +13,9 @@ import {
   type RentVsJeonseValidationError,
 } from "@/lib/calculators/rent-vs-jeonse/rent-vs-jeonse";
 import styles from "./RentVsJeonseCalculator.module.css";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
 
 type RawInput = Record<RentVsJeonseInputField, string>;
 
@@ -421,8 +424,8 @@ export function RentVsJeonseCalculator() {
   }
 
   return (
-    <div className={styles.calculator}>
-      <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+    <CalculatorLayout className={`${styles.calculator} rent-vs-jeonse-page`}>
+      <CalculatorPanel as="form" className={styles.formCard} onSubmit={handleSubmit} noValidate>
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>Step 1</p>
@@ -447,11 +450,7 @@ export function RentVsJeonseCalculator() {
                 return (
                   <div className={styles.field} key={name}>
                     <label htmlFor={name}>{label}</label>
-                    <div
-                      className={`${styles.inputShell} ${
-                        hasError ? styles.inputShellError : ""
-                      }`}
-                    >
+                    <FieldShell className={styles.inputShell} invalid={hasError}>
                       <input
                         aria-describedby={
                           hasError ? `${descriptionId} ${errorId}` : descriptionId
@@ -467,7 +466,7 @@ export function RentVsJeonseCalculator() {
                         value={input[name]}
                       />
                       <span>{unit}</span>
-                    </div>
+                    </FieldShell>
                     <p className={styles.fieldDescription} id={descriptionId}>
                       {description}
                     </p>
@@ -507,11 +506,11 @@ export function RentVsJeonseCalculator() {
             초기화
           </button>
         </div>
-      </form>
+      </CalculatorPanel>
 
       {result && calculatedInput ? (
         <div className={styles.results}>
-          <section className={styles.summaryCard} aria-labelledby="summary-title">
+          <CalculatorPanel as="section" className={styles.summaryCard} aria-labelledby="summary-title">
             <div className={styles.sectionHeading}>
               <div>
                 <p className={styles.step}>Step 2</p>
@@ -550,9 +549,9 @@ export function RentVsJeonseCalculator() {
                 <strong>{getCheaperLabel(result.cheaperOption)}</strong>
               </div>
             </div>
-          </section>
+          </CalculatorPanel>
 
-          <section className={styles.detailSection} aria-labelledby="detail-title">
+          <CalculatorPanel as="section" className={styles.detailSection} aria-labelledby="detail-title">
             <div className={styles.sectionHeading}>
               <div>
                 <p className={styles.step}>Step 3</p>
@@ -642,7 +641,7 @@ export function RentVsJeonseCalculator() {
                 ]}
               />
             </div>
-          </section>
+          </CalculatorPanel>
 
           <aside className={styles.interpretation} aria-labelledby="interpretation-title">
             <h2 id="interpretation-title">결과 해석</h2>
@@ -662,12 +661,12 @@ export function RentVsJeonseCalculator() {
           {feedback ? <p className={styles.feedback} role="status">{feedback}</p> : null}
         </div>
       ) : (
-        <section className={styles.emptyCard} aria-labelledby="empty-result-title">
+        <CalculatorPanel as="section" className={styles.emptyCard} aria-labelledby="empty-result-title">
           <span aria-hidden="true">=</span>
           <h2 id="empty-result-title">계산 전입니다</h2>
           <p>입력값을 확인한 뒤 계산하면 결과 요약과 상세 내역이 표시됩니다.</p>
-        </section>
+        </CalculatorPanel>
       )}
-    </div>
+    </CalculatorLayout>
   );
 }

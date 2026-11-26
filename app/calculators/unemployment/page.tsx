@@ -11,6 +11,7 @@ import {
 } from "@/components/calculators/unemploymentContentData";
 import { UNEMPLOYMENT_POLICY_2026 } from "@/lib/calculators/unemployment/policy";
 import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
+import design from "@/components/calculators/UnemploymentDesignTokens.module.css";
 
 const seo = PUBLIC_CALCULATOR_SEO.unemployment;
 const { title, description } = seo;
@@ -60,11 +61,11 @@ export default function UnemploymentPage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className={`page-section unemployment-page ${design.themeAnchor}`}>
       <JsonLdScripts items={jsonLdItems} />
 
       <CompactCalculatorHero
-        className="seller-margin-heading"
+        className="salary-heading unemployment-heading"
         eyebrow="Unemployment benefit"
         title="실업급여 계산기"
         description={

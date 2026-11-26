@@ -28,6 +28,9 @@ import {
   type SeveranceRawInputs,
 } from "./severanceClientUtils";
 import { ResultDecisionLayer } from "./ResultDecisionLayer";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
 import styles from "./SeveranceCalculator.module.css";
 
 type FieldDefinition = {
@@ -498,8 +501,8 @@ export function SeveranceCalculator() {
         </p>
       </aside>
 
-      <div className={styles.calculator}>
-        <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+      <CalculatorLayout className={styles.calculator}>
+        <CalculatorPanel as="form" className={styles.formCard} onSubmit={handleSubmit} noValidate>
           <div className={styles.cardHeading}>
             <div>
               <p className={styles.step}>01 · 근무 조건</p>
@@ -537,10 +540,11 @@ export function SeveranceCalculator() {
                         <span className={styles.optionalChip}>선택 입력</span>
                       )}
                     </div>
-                    <div
+                    <FieldShell
                       className={`${styles.inputShell} ${
                         fieldErrors.length > 0 ? styles.inputShellError : ""
                       }`}
+                      invalid={fieldErrors.length > 0}
                     >
                       <input
                         ref={(element) => {
@@ -562,7 +566,7 @@ export function SeveranceCalculator() {
                         aria-describedby={describedBy}
                       />
                       {unit && <span aria-hidden="true">{unit}</span>}
-                    </div>
+                    </FieldShell>
                     <p className={styles.fieldDescription} id={descriptionId}>
                       {description}
                     </p>
@@ -610,9 +614,10 @@ export function SeveranceCalculator() {
               초기화
             </button>
           </div>
-        </form>
+        </CalculatorPanel>
 
-        <section
+        <CalculatorPanel
+          as="section"
           className={styles.resultCard}
           aria-labelledby="severance-result-heading"
         >
@@ -819,8 +824,8 @@ export function SeveranceCalculator() {
               </div>
             )}
           </div>
-        </section>
-      </div>
+        </CalculatorPanel>
+      </CalculatorLayout>
     </>
   );
 }

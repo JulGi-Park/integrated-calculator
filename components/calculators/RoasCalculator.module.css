@@ -1,34 +1,405 @@
-.roasCalculator {
-  min-width: 0;
-  width: 100%;
-  max-width: 100%;
+:global(body:has(.roas-page)) {
+  --gb-bg: #f5f7fa;
+  --gb-surface: #fff;
+  --gb-ink: #182b47;
+  --gb-muted: #5d6d83;
+  --gb-primary: #235dcc;
+  --gb-primary-hover: #194baa;
+  --gb-primary-soft: #edf3ff;
+  --gb-line: #e0e6ef;
+  --gb-input-line: #8796aa;
+  --gb-focus: #235dcc;
+  --gb-error: #9e2929;
+  --gb-error-soft: #fff0f0;
+  --gb-warning: #865416;
+  --gb-warning-soft: #fff1d9;
+  --gb-radius-input: 10px;
+  --gb-radius-card: 14px;
+  --gb-container: 1200px;
+  --background: var(--gb-bg);
+  --surface: var(--gb-surface);
+  --text: var(--gb-ink);
+  --foreground: var(--gb-ink);
+  --muted: var(--gb-muted);
+  --line: var(--gb-line);
+  --accent: var(--gb-primary);
+  --accent-dark: var(--gb-primary-hover);
+  --accent-soft: var(--gb-primary-soft);
+  --max-width: var(--gb-container);
+  color: var(--gb-ink);
+  background: var(--gb-bg);
+  font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
 }
 
-.roasCalculator h2,
-.roasCalculator p,
-.roasCalculator dd {
+:global(body:has(.roas-page) .site-header) {
+  border-color: var(--gb-line);
+  background: rgb(255 255 255 / 94%);
+}
+
+:global(body:has(.roas-page) .site-header__desktop .nav-link) {
+  color: var(--gb-ink);
+}
+
+:global(body:has(.roas-page) .site-main) {
+  width: min(100% - 40px, var(--gb-container));
+}
+
+:global(body:has(.roas-page) .page-section) {
+  padding-block: 32px 80px;
+}
+
+:global(body:has(.roas-page) .site-footer) {
+  border-color: var(--gb-line);
+  background: var(--gb-surface);
+}
+
+.calculator {
+  width: 100%;
+  margin-block: 24px 36px;
+}
+
+.formCard,
+.resultCard {
+  display: grid;
+  align-content: start;
+  gap: 20px;
+}
+
+.cardHeading {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cardHeading h2,
+.cardHeading p {
+  margin: 0;
   overflow-wrap: anywhere;
 }
 
-.roasCalculator form,
-.roasCalculator section {
-  max-width: 100%;
+.cardHeading h2 {
+  color: var(--gb-ink);
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+  line-height: 1.35;
 }
 
-@media (max-width: 560px) {
-  .roasCalculator form > div:first-child,
-  .roasCalculator section > div:first-child {
+.cardHeading > p {
+  color: var(--gb-muted);
+  font-size: 0.84rem;
+  line-height: 1.55;
+  text-align: right;
+}
+
+.step {
+  margin: 0 0 8px;
+  color: var(--gb-primary);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.fieldGrid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 14px;
+}
+
+.field {
+  min-width: 0;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--gb-ink);
+  font-size: 0.9rem;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.inputShell {
+  width: 100%;
+  gap: 8px;
+  padding-inline: 13px;
+}
+
+.inputShellError {
+  border-color: var(--gb-error);
+}
+
+.inputShell input {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  color: var(--gb-ink);
+  background: transparent;
+  font: inherit;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.inputShell span {
+  flex: 0 0 auto;
+  color: var(--gb-muted);
+  font-size: 0.88rem;
+}
+
+.fieldError {
+  margin: 6px 0 0;
+  color: var(--gb-error);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.errorSummary {
+  padding: 12px 14px;
+  border: 1px solid #efc3c3;
+  border-radius: 10px;
+  color: var(--gb-error);
+  background: var(--gb-error-soft);
+  font-size: 0.9rem;
+}
+
+.actions,
+.resultActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.calculateButton,
+.resetButton,
+.resultActions button {
+  min-height: 46px;
+  border: 1px solid var(--gb-primary);
+  border-radius: 10px;
+  padding: 9px 15px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.calculateButton {
+  flex: 1 1 180px;
+  color: #fff;
+  background: var(--gb-primary);
+}
+
+.calculateButton:hover {
+  background: var(--gb-primary-hover);
+}
+
+.resetButton,
+.resultActions button {
+  color: var(--gb-primary);
+  background: var(--gb-surface);
+}
+
+.calculateButton:focus-visible,
+.resetButton:focus-visible,
+.resultActions button:focus-visible {
+  outline: 3px solid rgb(35 93 204 / 34%);
+  outline-offset: 2px;
+}
+
+.resultLive {
+  min-width: 0;
+}
+
+.emptyResult {
+  display: grid;
+  min-height: 220px;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  border: 1px dashed #bdc9d8;
+  border-radius: 12px;
+  color: var(--gb-muted);
+  background: #fbfcfe;
+  text-align: center;
+}
+
+.emptyResult span {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--gb-primary);
+  background: var(--gb-primary-soft);
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.emptyResult p {
+  max-width: 30ch;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.staleResult .primaryResult,
+.staleResult .resultList {
+  opacity: 0.58;
+}
+
+.staleNotice {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  color: var(--gb-warning);
+  background: var(--gb-warning-soft);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.primaryResult {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  padding: clamp(18px, 3vw, 28px);
+  border: 1px solid #d9e6ff;
+  border-radius: 14px;
+  background: var(--gb-primary-soft);
+}
+
+.status {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.profit {
+  color: #176b47;
+  background: #e7f6ef;
+}
+
+.loss {
+  color: #9e2929;
+  background: #fff0f0;
+}
+
+.breakEven {
+  color: #805510;
+  background: #fff1d9;
+}
+
+.primaryResult p {
+  margin: 5px 0 0;
+  color: var(--gb-muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.primaryResult strong {
+  max-width: 100%;
+  color: var(--gb-ink);
+  font-size: clamp(1.75rem, 4vw, 2.6rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.primaryResult > span:last-child {
+  color: var(--gb-muted);
+  font-size: 0.9rem;
+}
+
+.resultList {
+  display: grid;
+  gap: 0;
+  margin: 8px 0 0;
+}
+
+.resultList div {
+  display: flex;
+  min-width: 0;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 2px;
+  border-bottom: 1px solid var(--gb-line);
+}
+
+.resultList dt {
+  flex: 0 0 auto;
+  color: var(--gb-muted);
+  font-size: 0.87rem;
+}
+
+.resultList dd {
+  min-width: 0;
+  margin: 0;
+  color: var(--gb-ink);
+  font-size: 0.9rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.actionMessage {
+  min-height: 1.4em;
+  margin: 8px 0 0;
+  color: var(--gb-muted);
+  font-size: 0.82rem;
+}
+
+.resultCard h2,
+.resultCard dd,
+.resultCard p {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 959px) {
+  .formCard,
+  .resultCard {
+    gap: 18px;
+  }
+}
+
+@media (max-width: 619px) {
+  :global(body:has(.roas-page) .site-main) {
+    width: calc(100% - 32px);
+  }
+
+  :global(body:has(.roas-page) .page-section) {
+    padding-block: 28px 60px;
+  }
+
+  .calculator {
+    margin-block: 18px 28px;
+  }
+
+  .cardHeading {
     flex-wrap: wrap;
   }
 
-  .roasCalculator form > div:first-child > p,
-  .roasCalculator section > div:first-child > p {
+  .cardHeading > p {
     width: 100%;
+    text-align: left;
   }
 
-  .roasCalculator h2,
-  .roasCalculator p,
-  .roasCalculator dd {
-    word-break: break-all;
+  .fieldGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .resultList div {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 359px) {
+  :global(body:has(.roas-page) .site-main) {
+    width: calc(100% - 24px);
   }
 }

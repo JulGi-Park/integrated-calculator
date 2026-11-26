@@ -28,6 +28,9 @@ import {
   type LoanInterestRawInputs,
 } from "./loanInterestClientUtils";
 import { ResultDecisionLayer } from "./ResultDecisionLayer";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
 import styles from "./LoanInterestCalculator.module.css";
 
 const INITIAL_VISIBLE_INSTALLMENTS = 20;
@@ -437,8 +440,8 @@ export function LoanInterestCalculator() {
     visibleInstallments < selectedResult.schedule.length;
 
   return (
-    <div className={styles.calculator}>
-      <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+    <CalculatorLayout className={styles.calculator}>
+      <CalculatorPanel as="form" className={styles.formCard} onSubmit={handleSubmit} noValidate>
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>01 · 대출 조건</p>
@@ -462,11 +465,7 @@ export function LoanInterestCalculator() {
             return (
               <div className={styles.field} key={name}>
                 <label htmlFor={name}>{label}</label>
-                <div
-                  className={`${styles.inputShell} ${
-                    fieldErrors.length > 0 ? styles.inputShellError : ""
-                  }`}
-                >
+                <FieldShell className={styles.inputShell} invalid={fieldErrors.length > 0}>
                   <input
                     ref={(element) => {
                       if (element) {
@@ -484,7 +483,7 @@ export function LoanInterestCalculator() {
                     aria-describedby={describedBy}
                   />
                   <span aria-hidden="true">{unit}</span>
-                </div>
+                </FieldShell>
                 <p className={styles.fieldDescription} id={descriptionId}>
                   {description}
                 </p>
@@ -520,14 +519,15 @@ export function LoanInterestCalculator() {
             초기화
           </button>
         </div>
-      </form>
+      </CalculatorPanel>
 
+      <div className={styles.resultColumn}>
       {!result && (
-        <section className={styles.emptyCard} aria-live="polite">
+        <CalculatorPanel as="section" className={styles.emptyCard} aria-live="polite">
           <span aria-hidden="true">₩</span>
           <h2>상환방식을 비교해 보세요</h2>
           <p>대출 조건을 입력하면 세 방식의 예상 비용과 일정을 보여드립니다.</p>
-        </section>
+        </CalculatorPanel>
       )}
 
       {result && calculatedInput && (
@@ -538,8 +538,9 @@ export function LoanInterestCalculator() {
             </p>
           )}
 
-          <section
-            className={styles.summaryCard}
+          <CalculatorPanel
+            as="section"
+            className={`${styles.summaryCard} ${styles.sharedPanel}`}
             aria-labelledby="loan-result-heading"
           >
             <div className={styles.cardHeading}>
@@ -620,10 +621,11 @@ export function LoanInterestCalculator() {
                 {actionMessage}
               </p>
             </div>
-          </section>
+          </CalculatorPanel>
 
-          <section
-            className={styles.comparisonSection}
+          <CalculatorPanel
+            as="section"
+            className={`${styles.comparisonSection} ${styles.sharedPanel}`}
             aria-labelledby="comparison-heading"
           >
             <div className={styles.sectionHeading}>
@@ -676,10 +678,11 @@ export function LoanInterestCalculator() {
                 );
               })}
             </div>
-          </section>
+          </CalculatorPanel>
 
-          <section
-            className={styles.scheduleSection}
+          <CalculatorPanel
+            as="section"
+            className={`${styles.scheduleSection} ${styles.sharedPanel}`}
             aria-labelledby="schedule-heading"
           >
             <div className={styles.sectionHeading}>
@@ -774,7 +777,7 @@ export function LoanInterestCalculator() {
                 </span>
               </aside>
             )}
-          </section>
+          </CalculatorPanel>
 
           <aside className={styles.notice}>
             <p>
@@ -788,6 +791,7 @@ export function LoanInterestCalculator() {
           </aside>
         </div>
       )}
-    </div>
+      </div>
+    </CalculatorLayout>
   );
 }

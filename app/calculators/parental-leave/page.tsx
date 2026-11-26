@@ -10,6 +10,7 @@ import {
 } from "@/components/calculators/parentalLeaveContentData";
 import { PARENTAL_LEAVE_POLICY_2026 } from "@/lib/calculators/parental-leave/parentalLeave";
 import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
+import design from "@/components/calculators/ParentalLeaveDesignTokens.module.css";
 
 const seo = PUBLIC_CALCULATOR_SEO["parental-leave"];
 const { title, description } = seo;
@@ -45,11 +46,11 @@ export default function ParentalLeavePage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className={`page-section parental-leave-page ${design.themeAnchor}`}>
       <JsonLdScripts items={jsonLdItems} />
 
       <CompactCalculatorHero
-        className="seller-margin-heading"
+        className="salary-heading parental-leave-heading"
         eyebrow="Parental leave benefit"
         title="육아휴직급여 계산기"
         description={

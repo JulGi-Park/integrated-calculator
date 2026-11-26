@@ -27,6 +27,9 @@ import {
   type BrokerageFeeRawInputs,
 } from "./brokerageFeeClientUtils";
 import styles from "./BrokerageFeeCalculator.module.css";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
 
 interface FieldDefinition {
   name: keyof BrokerageFeeRawInputs;
@@ -390,8 +393,8 @@ export function BrokerageFeeCalculator() {
   }
 
   return (
-    <div className={styles.calculator}>
-      <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+    <CalculatorLayout className={`${styles.calculator} brokerage-fee-page`}>
+      <CalculatorPanel as="form" className={styles.formCard} onSubmit={handleSubmit} noValidate>
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>01 · 거래 정보</p>
@@ -429,11 +432,7 @@ export function BrokerageFeeCalculator() {
                   {label}
                   {name === "negotiatedRatePercent" ? " (선택)" : ""}
                 </label>
-                <div
-                  className={`${styles.inputShell} ${
-                    fieldErrors.length > 0 ? styles.inputShellError : ""
-                  }`}
-                >
+                <FieldShell className={styles.inputShell} invalid={fieldErrors.length > 0}>
                   <input
                     ref={(element) => {
                       if (element) {
@@ -453,7 +452,7 @@ export function BrokerageFeeCalculator() {
                     }
                   />
                   <span aria-hidden="true">{unit}</span>
-                </div>
+                </FieldShell>
                 {description && <small>{description}</small>}
                 {fieldErrors.length > 0 && (
                   <p className={styles.fieldError} id={errorId}>
@@ -493,9 +492,9 @@ export function BrokerageFeeCalculator() {
             초기화
           </button>
         </div>
-      </form>
+      </CalculatorPanel>
 
-      <section className={styles.resultCard} aria-labelledby="result-heading">
+      <CalculatorPanel as="section" className={styles.resultCard} aria-labelledby="result-heading">
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>02 · 계산 결과</p>
@@ -639,7 +638,7 @@ export function BrokerageFeeCalculator() {
             </div>
           )}
         </div>
-      </section>
-    </div>
+      </CalculatorPanel>
+    </CalculatorLayout>
   );
 }

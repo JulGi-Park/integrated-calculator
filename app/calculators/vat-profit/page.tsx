@@ -58,7 +58,7 @@ export default function VatProfitPage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className="page-section vat-profit-page">
       <JsonLdScripts items={jsonLdItems} />
 
       <CompactCalculatorHero

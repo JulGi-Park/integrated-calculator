@@ -24,6 +24,11 @@ import {
   type SocialInsuranceRawInputs,
 } from "./socialInsuranceClientUtils";
 import { ResultDecisionLayer } from "./ResultDecisionLayer";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
+import { RatioBar } from "@/components/ui/RatioBar";
+import designTokens from "./SocialInsuranceDesignTokens.module.css";
 import styles from "./SocialInsuranceCalculator.module.css";
 
 interface FieldDefinition {
@@ -334,8 +339,8 @@ export function SocialInsuranceCalculator() {
         </p>
       </aside>
 
-      <div className={styles.calculator}>
-        <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+      <CalculatorLayout className={`${styles.calculator} ${designTokens.scope}`}>
+        <CalculatorPanel as="form" className={styles.formCard} onSubmit={handleSubmit} noValidate>
           <div className={styles.cardHeading}>
             <div>
               <p className={styles.step}>01 · 급여 입력</p>
@@ -359,10 +364,9 @@ export function SocialInsuranceCalculator() {
               return (
                 <div className={styles.field} key={name}>
                   <label htmlFor={name}>{label}</label>
-                  <div
-                    className={`${styles.inputShell} ${
-                      fieldErrors.length > 0 ? styles.inputShellError : ""
-                    }`}
+                  <FieldShell
+                    className={styles.inputShell}
+                    invalid={fieldErrors.length > 0}
                   >
                     <input
                       ref={(element) => {
@@ -381,7 +385,7 @@ export function SocialInsuranceCalculator() {
                       aria-describedby={describedBy}
                     />
                     <span aria-hidden="true">원</span>
-                  </div>
+                  </FieldShell>
                   <p className={styles.fieldDescription} id={descriptionId}>
                     {description}
                   </p>
@@ -417,9 +421,10 @@ export function SocialInsuranceCalculator() {
               다시 계산
             </button>
           </div>
-        </form>
+        </CalculatorPanel>
 
-        <section
+        <CalculatorPanel
+          as="section"
           className={styles.resultCard}
           aria-labelledby="social-insurance-result-heading"
         >
@@ -488,8 +493,17 @@ export function SocialInsuranceCalculator() {
                   </div>
                 </dl>
 
+                <RatioBar
+                  className={styles.contributionRatio}
+                  total={result.monthlySalary}
+                  value={result.totalEmployeeContribution}
+                  valueLabel="근로자 보험료"
+                  remainderLabel="공제 후 참고 금액"
+                  formatValue={formatWon}
+                />
+
                 <ResultDecisionLayer
-                  meaning={`과세기준급여 ${formatWon(result.taxableMonthlyPay)}에서 근로자 부담 보험료 ${formatWon(result.totalEmployeeContribution)}를 뺀 참고 금액입니다. 사업주 부담분을 합산한 총 보험료가 아닙니다.`}
+                  meaning={`보험료 산정 기준은 과세기준급여 ${formatWon(result.taxableMonthlyPay)}입니다. 공제 후 참고 금액 ${formatWon(result.afterContributionAmount)}은 월 급여 ${formatWon(result.monthlySalary)}에서 근로자 부담 보험료 ${formatWon(result.totalEmployeeContribution)}만큼 차감한 금액으로, 비과세 금액은 별도로 차감하지 않았습니다. 사업주 부담분을 합산한 총 보험료는 아닙니다.`}
                   appliedRules={[
                     `국민연금 기준소득월액 ${getPensionBaseStatusLabel(result.pensionBaseStatus)}`,
                     `건강보험 ${result.employeeHealthInsurance === policy.healthInsurance.employeeMonthlyPremiumMaximum ? "근로자 부담 상한 적용" : result.employeeHealthInsurance === policy.healthInsurance.employeeMonthlyPremiumMinimum ? "근로자 부담 하한 적용" : "상·하한 미적용"}`,
@@ -587,8 +601,8 @@ export function SocialInsuranceCalculator() {
               </div>
             )}
           </div>
-        </section>
-      </div>
+        </CalculatorPanel>
+      </CalculatorLayout>
     </>
   );
 }

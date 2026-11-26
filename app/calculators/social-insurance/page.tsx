@@ -63,11 +63,11 @@ export default function SocialInsurancePage() {
   ];
 
   return (
-    <section className="page-section salary-page">
+    <section className="page-section social-insurance-page">
       <JsonLdScripts items={jsonLdItems} />
 
       <CompactCalculatorHero
-        className="seller-margin-heading"
+        className="social-insurance-heading"
         eyebrow="Social insurance"
         title="2026 국민연금 납부액·4대보험 계산기"
         description={

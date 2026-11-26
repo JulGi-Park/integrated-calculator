@@ -30,6 +30,9 @@ import {
 } from "./dsrClientUtils";
 import { ResultDecisionLayer } from "./ResultDecisionLayer";
 import styles from "./DsrCalculator.module.css";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
 
 const repaymentOptions: Array<{
   value: DsrInput["repaymentType"];
@@ -390,8 +393,8 @@ export function DsrCalculator() {
   }
 
   return (
-    <div className={styles.calculator}>
-      <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+    <CalculatorLayout className={`${styles.calculator} dsr-page`}>
+      <CalculatorPanel as="form" className={styles.formCard} onSubmit={handleSubmit} noValidate>
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>01 · 입력</p>
@@ -468,11 +471,7 @@ export function DsrCalculator() {
             return (
               <div className={styles.field} key={name}>
                 <label htmlFor={name}>{label}</label>
-                <div
-                  className={`${styles.inputShell} ${
-                    fieldErrors.length > 0 ? styles.inputShellError : ""
-                  }`}
-                >
+                <FieldShell className={styles.inputShell} invalid={fieldErrors.length > 0}>
                   <input
                     ref={index === 0 ? annualIncomeRef : undefined}
                     id={name}
@@ -486,7 +485,7 @@ export function DsrCalculator() {
                     aria-describedby={describedBy}
                   />
                   <span aria-hidden="true">{unit}</span>
-                </div>
+                </FieldShell>
                 <p className={styles.fieldDescription} id={`${name}-description`}>
                   {description}
                 </p>
@@ -552,9 +551,9 @@ export function DsrCalculator() {
             다시 계산
           </button>
         </div>
-      </form>
+      </CalculatorPanel>
 
-      <section className={styles.resultCard} aria-labelledby="dsr-result-heading">
+      <CalculatorPanel as="section" className={styles.resultCard} aria-labelledby="dsr-result-heading">
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>02 · 결과</p>
@@ -729,7 +728,7 @@ export function DsrCalculator() {
             </p>
           </div>
         )}
-      </section>
-    </div>
+      </CalculatorPanel>
+    </CalculatorLayout>
   );
 }

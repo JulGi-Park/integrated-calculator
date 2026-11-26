@@ -11,6 +11,7 @@ import {
   loanInterestWebApplicationJsonLd,
 } from "@/components/calculators/loanInterestContentData";
 import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
+import design from "@/components/calculators/LoanDesignTokens.module.css";
 
 const seo = PUBLIC_CALCULATOR_SEO.loan;
 const { title, description } = seo;
@@ -59,7 +60,7 @@ export default function LoanInterestPage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className={`page-section loan-page ${design.themeAnchor}`}>
       <JsonLdScripts items={jsonLdItems} />
 
       <CompactCalculatorHero

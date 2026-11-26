@@ -350,3 +350,74 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* R05 A안: 이 페이지의 입력과 결과에만 공통 계산기 레이아웃을 적용합니다. */
+.calculator {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: start;
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.formCard,
+.summaryCard,
+.emptyCard {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: var(--gb-ink, var(--text));
+  background: transparent;
+  box-shadow: none;
+}
+
+.results { min-width: 0; gap: 16px; }
+.fieldGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 14px; }
+.fieldLegend,
+.field label { color: var(--gb-ink, var(--text)); }
+.radioLabel {
+  border-color: var(--gb-input-line, #8796aa);
+  color: var(--gb-ink, var(--text));
+  background: var(--gb-surface, #fff);
+}
+.radioLabel input { accent-color: var(--gb-primary, var(--accent)); }
+.inputShell {
+  min-height: 50px;
+  border-color: var(--gb-input-line, #8796aa);
+  border-radius: var(--gb-radius-input, 10px);
+  background: var(--gb-surface, #fff);
+}
+.inputShell:focus-within { border-color: var(--gb-focus, var(--accent)); box-shadow: 0 0 0 3px rgb(35 93 204 / 16%); }
+.inputShell:has(input[aria-invalid="true"]) { border-color: var(--gb-error, #9e2929); }
+.inputShell input { color: var(--gb-ink, var(--text)); }
+.inputShell span { color: var(--gb-muted, var(--muted)); }
+.fieldDescription,
+.storageNotice,
+.cardHeading > p { color: var(--gb-muted, var(--muted)); }
+.step { color: var(--gb-primary, var(--accent)); }
+.calculateButton { border: 1px solid var(--gb-primary, var(--accent)); background: var(--gb-primary, var(--accent)); }
+.calculateButton:hover { background: var(--gb-primary-hover, var(--accent-dark)); }
+.resetButton,
+.resultActions button { border-color: var(--gb-input-line, #8796aa); color: var(--gb-ink, var(--text)); }
+.summaryGrid div,
+.detailGrid div { border-color: var(--gb-line, var(--line)); background: var(--gb-surface, #fff); }
+.summaryGrid dd,
+.detailGrid dd { color: var(--gb-ink, var(--text)); }
+.notice { border-color: var(--gb-line, var(--line)); color: var(--gb-muted, var(--muted)); background: var(--gb-surface, #fff); }
+.errorSummary,
+.staleNotice { color: var(--gb-error, #9e2929); background: var(--gb-error-soft, #fff0f0); }
+.calculateButton:focus-visible,
+.resetButton:focus-visible,
+.resultActions button:focus-visible,
+.radioLabel:focus-within { outline-color: rgb(35 93 204 / 35%); }
+
+@media (max-width: 959px) {
+  .calculator { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .fieldGrid,
+  .radioOptions,
+  .summaryGrid,
+  .detailGrid { grid-template-columns: minmax(0, 1fr); }
+}

@@ -22,6 +22,9 @@ import {
   UNEMPLOYMENT_RESULT_CANONICAL_URL,
 } from "./unemploymentClientUtils";
 import { ResultDecisionLayer } from "./ResultDecisionLayer";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
 import styles from "./UnemploymentCalculator.module.css";
 
 type RawInputs = {
@@ -351,8 +354,8 @@ export function UnemploymentCalculator() {
         </p>
       </aside>
 
-      <div className={styles.calculator}>
-        <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+      <CalculatorLayout className={styles.calculator}>
+        <CalculatorPanel as="form" className={styles.formCard} onSubmit={handleSubmit} noValidate>
           <div className={styles.cardHeading}>
             <div>
               <p className={styles.step}>01 · 수급 조건</p>
@@ -392,10 +395,11 @@ export function UnemploymentCalculator() {
 
             <div className={styles.field}>
               <label htmlFor="wageAmount">{wageUnit} 금액</label>
-              <div
+              <FieldShell
                 className={`${styles.inputShell} ${
                   wageAmountErrors.length > 0 ? styles.inputShellError : ""
                 }`}
+                invalid={wageAmountErrors.length > 0}
               >
                 <input
                   ref={wageInputRef}
@@ -409,7 +413,7 @@ export function UnemploymentCalculator() {
                   aria-describedby="wageAmount-description wageAmount-error"
                 />
                 <span aria-hidden="true">원</span>
-              </div>
+              </FieldShell>
               <p className={styles.fieldDescription} id="wageAmount-description">
                 월급 기준은 간편 추정이며, 1일 평균임금 직접 입력이 더 정확한
                 계산에 가깝습니다.
@@ -450,10 +454,11 @@ export function UnemploymentCalculator() {
 
             <div className={styles.field}>
               <label htmlFor="insuredMonths">고용보험 가입기간</label>
-              <div
+              <FieldShell
                 className={`${styles.inputShell} ${
                   insuredMonthsErrors.length > 0 ? styles.inputShellError : ""
                 }`}
+                invalid={insuredMonthsErrors.length > 0}
               >
                 <input
                   ref={insuredMonthsRef}
@@ -467,7 +472,7 @@ export function UnemploymentCalculator() {
                   aria-describedby="insuredMonths-description insuredMonths-error"
                 />
                 <span aria-hidden="true">개월</span>
-              </div>
+              </FieldShell>
               <p
                 className={styles.fieldDescription}
                 id="insuredMonths-description"
@@ -565,9 +570,10 @@ export function UnemploymentCalculator() {
               초기화
             </button>
           </div>
-        </form>
+        </CalculatorPanel>
 
-        <section
+        <CalculatorPanel
+          as="section"
           className={styles.resultCard}
           aria-labelledby="unemployment-result-heading"
         >
@@ -725,8 +731,8 @@ export function UnemploymentCalculator() {
               </div>
             )}
           </div>
-        </section>
-      </div>
+        </CalculatorPanel>
+      </CalculatorLayout>
     </>
   );
 }

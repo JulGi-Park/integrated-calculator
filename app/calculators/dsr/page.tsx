@@ -3,6 +3,7 @@ import Link from "next/link";
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import { DsrCalculator } from "@/components/calculators/DsrCalculator";
 import { DsrContent } from "@/components/calculators/DsrContent";
+import "@/components/calculators/DsrDesignTokens.module.css";
 import {
   dsrBreadcrumbJsonLd,
   dsrFaqJsonLd,
@@ -52,7 +53,7 @@ export default function DsrPage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className="page-section dsr-page">
       <JsonLdScripts items={jsonLdItems} />
 
       <div className="page-heading seller-margin-heading">

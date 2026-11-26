@@ -15,6 +15,9 @@ import {
   type TrainingCertificateCostResult,
   type TrainingCertificateCostValidationError,
 } from "@/lib/calculators/training-certificate-cost";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
 import styles from "./TrainingCertificateCostCalculator.module.css";
 
 type RawInputs = Record<TrainingCertificateCostInputField, string>;
@@ -201,10 +204,11 @@ function CostField({
         {field.label}
         {field.optional && <span className={styles.optional}>선택</span>}
       </label>
-      <div
+      <FieldShell
         className={`${styles.inputShell} ${
           errors.length > 0 ? styles.inputShellError : ""
         }`}
+        invalid={errors.length > 0}
       >
         <input
           ref={inputRef}
@@ -220,7 +224,7 @@ function CostField({
           aria-describedby={describedBy || undefined}
         />
         <span aria-hidden="true">{field.unit}</span>
-      </div>
+      </FieldShell>
       {field.description && (
         <p className={styles.fieldDescription} id={descriptionId}>
           {field.description}
@@ -338,8 +342,8 @@ export function TrainingCertificateCostCalculator() {
   }
 
   return (
-    <div className={styles.calculator}>
-      <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+    <CalculatorLayout className={styles.calculator}>
+      <CalculatorPanel as="form" className={styles.formCard} onSubmit={handleSubmit} noValidate>
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>01 · 비용 입력</p>
@@ -398,14 +402,14 @@ export function TrainingCertificateCostCalculator() {
             초기화
           </button>
         </div>
-      </form>
+      </CalculatorPanel>
 
       {!result && (
-        <section className={styles.emptyCard} aria-live="polite">
+        <CalculatorPanel as="section" className={styles.emptyCard} aria-live="polite">
           <span aria-hidden="true">₩</span>
           <h2>예상 취득비용을 계산해 보세요</h2>
           <p>훈련비와 시험·추가 비용을 입력하면 본인부담 예상액을 보여드립니다.</p>
-        </section>
+        </CalculatorPanel>
       )}
 
       {result && calculatedInput && (
@@ -416,7 +420,8 @@ export function TrainingCertificateCostCalculator() {
             </p>
           )}
 
-          <section
+          <CalculatorPanel
+            as="section"
             className={styles.primaryResultCard}
             aria-labelledby="training-certificate-result-heading"
           >
@@ -428,9 +433,9 @@ export function TrainingCertificateCostCalculator() {
               {formatWon(result.estimatedTotalOutOfPocket)}
             </strong>
             <p>총 본인부담 예상액</p>
-          </section>
+          </CalculatorPanel>
 
-          <section className={styles.resultCard} aria-labelledby="support-summary-heading">
+          <CalculatorPanel as="section" className={styles.resultCard} aria-labelledby="support-summary-heading">
             <div className={styles.cardHeading}>
               <div>
                 <p className={styles.step}>03 · 지원 효과</p>
@@ -451,9 +456,9 @@ export function TrainingCertificateCostCalculator() {
                 <dd>{formatWon(result.estimatedSavingsAmount)}</dd>
               </div>
             </dl>
-          </section>
+          </CalculatorPanel>
 
-          <section className={styles.resultCard} aria-labelledby="cost-breakdown-heading">
+          <CalculatorPanel as="section" className={styles.resultCard} aria-labelledby="cost-breakdown-heading">
             <div className={styles.cardHeading}>
               <div>
                 <p className={styles.step}>04 · 비용 상세</p>
@@ -495,10 +500,11 @@ export function TrainingCertificateCostCalculator() {
                 <dd>{formatWon(result.estimatedTotalOutOfPocket)}</dd>
               </div>
             </dl>
-          </section>
+          </CalculatorPanel>
 
           {retryComparisonScenarios && (
-            <section
+            <CalculatorPanel
+              as="section"
               className={styles.resultCard}
               aria-labelledby="retry-comparison-heading"
             >
@@ -552,7 +558,7 @@ export function TrainingCertificateCostCalculator() {
                     )} 증가합니다.`
                   : "추가 응시료를 입력하면 응시 횟수별 비용 차이를 확인할 수 있습니다."}
               </p>
-            </section>
+            </CalculatorPanel>
           )}
 
           <aside className={styles.notice} aria-label="계산 결과 안내">
@@ -564,6 +570,6 @@ export function TrainingCertificateCostCalculator() {
           </aside>
         </div>
       )}
-    </div>
+    </CalculatorLayout>
   );
 }

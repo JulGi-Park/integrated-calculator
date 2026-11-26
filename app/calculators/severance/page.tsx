@@ -11,6 +11,7 @@ import {
 } from "@/components/calculators/severanceContentData";
 import { SEVERANCE_POLICY_2026 } from "@/lib/calculators/severance/policy";
 import { PUBLIC_CALCULATOR_SEO } from "@/lib/seo/publicCalculatorSeo";
+import design from "@/components/calculators/SeveranceDesignTokens.module.css";
 
 const seo = PUBLIC_CALCULATOR_SEO.severance;
 const { title, description } = seo;
@@ -65,11 +66,11 @@ export default function SeverancePage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className={`page-section severance-page ${design.themeAnchor}`}>
       <JsonLdScripts items={jsonLdItems} />
 
       <CompactCalculatorHero
-        className="seller-margin-heading"
+        className="salary-heading severance-heading"
         eyebrow="Severance pay"
         title="퇴직금 계산기"
         description={

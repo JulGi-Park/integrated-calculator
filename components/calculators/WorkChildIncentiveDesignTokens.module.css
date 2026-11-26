@@ -1,0 +1,27 @@
+/* A안 색상과 간격을 근로·자녀장려금 페이지에만 적용합니다. */
+.themeAnchor { --work-child-incentive-design-loaded: 1; }
+:global(html:has(.work-child-incentive-page)) { min-width: 0; }
+:global(body:has(.work-child-incentive-page)) {
+  --gb-bg: #f5f7fa; --gb-surface: #fff; --gb-ink: #182b47; --gb-muted: #5d6d83;
+  --gb-primary: #235dcc; --gb-primary-hover: #194baa; --gb-primary-soft: #edf3ff;
+  --gb-line: #e0e6ef; --gb-input-line: #8796aa; --gb-focus: #235dcc;
+  --gb-error: #9e2929; --gb-error-soft: #fff0f0; --gb-warning: #865416;
+  --gb-warning-soft: #fff1d9; --gb-radius-input: 10px; --gb-radius-card: 14px;
+  --gb-container: 1200px; --background: var(--gb-bg); --surface: var(--gb-surface);
+  --text: var(--gb-ink); --foreground: var(--gb-ink); --muted: var(--gb-muted);
+  --line: var(--gb-line); --accent: var(--gb-primary); --accent-dark: var(--gb-primary-hover);
+  --accent-soft: var(--gb-primary-soft); --max-width: var(--gb-container);
+  color: var(--gb-ink); background: var(--gb-bg);
+  font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+}
+:global(body:has(.work-child-incentive-page) .site-header) { border-color: var(--gb-line); background: rgb(255 255 255 / 94%); }
+:global(body:has(.work-child-incentive-page) .site-header__desktop .nav-link) { color: var(--gb-ink); }
+:global(body:has(.work-child-incentive-page) .site-header__desktop .nav-link:hover) { color: var(--gb-primary); }
+:global(body:has(.work-child-incentive-page) .site-main) { width: min(100% - 40px, var(--gb-container)); }
+:global(body:has(.work-child-incentive-page) .work-child-incentive-page.page-section) { padding-block: 32px 80px; }
+:global(body:has(.work-child-incentive-page) .site-footer) { border-color: var(--gb-line); background: var(--gb-surface); }
+@media (max-width: 619px) {
+  :global(body:has(.work-child-incentive-page) .site-main) { width: calc(100% - 32px); }
+  :global(body:has(.work-child-incentive-page) .work-child-incentive-page.page-section) { padding-block: 28px 60px; }
+}
+@media (max-width: 359px) { :global(body:has(.work-child-incentive-page) .site-main) { width: calc(100% - 24px); } }

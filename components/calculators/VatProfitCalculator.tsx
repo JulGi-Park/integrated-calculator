@@ -22,7 +22,10 @@ import {
   parseVatProfitInput,
   type VatProfitRawInputs,
 } from "./vatProfitClientUtils";
-import styles from "./LaborPayCalculator.module.css";
+import styles from "./VatProfitCalculator.module.css";
+import { CalculatorLayout } from "@/components/ui/CalculatorLayout";
+import { CalculatorPanel } from "@/components/ui/CalculatorPanel";
+import { FieldShell } from "@/components/ui/FieldShell";
 
 const labels: Record<VatProfitInputField, string> = {
   amountMode: "입력 기준",
@@ -165,8 +168,13 @@ export function VatProfitCalculator() {
   }
 
   return (
-    <div className={styles.calculator}>
-      <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
+    <CalculatorLayout className={styles.calculator}>
+      <CalculatorPanel
+        as="form"
+        className={styles.formCard}
+        onSubmit={handleSubmit}
+        noValidate
+      >
         <div className={styles.cardHeading}>
           <div>
             <p className={styles.step}>Step 1</p>
@@ -232,10 +240,11 @@ export function VatProfitCalculator() {
             return (
               <div className={styles.field} key={name}>
                 <label htmlFor={name}>{label}</label>
-                <div
+                <FieldShell
                   className={`${styles.inputShell} ${
                     fieldErrors.length > 0 ? styles.inputShellError : ""
                   }`}
+                  invalid={fieldErrors.length > 0}
                 >
                   <input
                     ref={(node) => {
@@ -253,8 +262,8 @@ export function VatProfitCalculator() {
                       fieldErrors.length > 0 ? errorId : undefined
                     }
                   />
-                  <span>원</span>
-                </div>
+                  <span aria-hidden="true">원</span>
+                </FieldShell>
                 <p className={styles.helper}>{helper}</p>
                 {fieldErrors.map((error) => (
                   <p
@@ -283,9 +292,10 @@ export function VatProfitCalculator() {
             다시 계산
           </button>
         </div>
-      </form>
+      </CalculatorPanel>
 
-      <section
+      <CalculatorPanel
+        as="section"
         className={styles.resultCard}
         aria-label="부가세 계산 결과"
         aria-live="polite"
@@ -376,7 +386,7 @@ export function VatProfitCalculator() {
             </div>
           )}
         </div>
-      </section>
-    </div>
+      </CalculatorPanel>
+    </CalculatorLayout>
   );
 }

@@ -47,7 +47,7 @@ export default function TrainingCertificateCostPage() {
   ];
 
   return (
-    <section className="page-section">
+    <section className="page-section training-certificate-cost-page">
       <JsonLdScripts items={jsonLdItems} />
 
       <div className="page-heading seller-margin-heading">
