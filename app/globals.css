@@ -47,12 +47,29 @@ a:focus-visible {
   flex-direction: column;
 }
 
+.site-header,
+.site-footer {
+  --surface: #fff;
+  --text: #182b47;
+  --muted: #5d6d83;
+  --line: #dbe3ef;
+  --accent: #235dcc;
+  --accent-dark: #194aa8;
+  --accent-soft: #eaf1ff;
+  color: var(--text);
+  background: var(--surface);
+}
+
+.site-header :is(a, button):focus-visible,
+.site-footer a:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
 .site-header {
   position: relative;
   z-index: 30;
-  border-bottom: 1px solid rgba(22, 32, 25, 0.09);
-  background: rgba(245, 246, 242, 0.85);
-  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
 }
 
 .site-header__inner,
@@ -73,7 +90,7 @@ a:focus-visible {
 
 .site-header__mobile { display: none; }
 .site-header__desktop nav { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; justify-content: flex-end; }
-.site-header__desktop .nav-link { color: #38433c; font-size: .92rem; font-weight: 700; }
+.site-header__desktop .nav-link { color: var(--text); font-size: .92rem; font-weight: 700; }
 .site-header__desktop .nav-link:hover { color: var(--accent); }
 
 .site-menu-trigger {
@@ -114,7 +131,7 @@ a:focus-visible {
 }
 
 .site-menu-panel__links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
-.site-menu-link { display: flex; min-height: 44px; align-items: center; border-radius: 8px; padding: 6px 8px; color: #38433c; font-size: .9rem; font-weight: 700; }
+.site-menu-link { display: flex; min-height: 44px; align-items: center; border-radius: 8px; padding: 6px 8px; color: var(--text); font-size: .9rem; font-weight: 700; }
 .site-menu-link:hover,
 .site-menu-link:focus-visible { color: var(--accent); background: var(--accent-soft); }
 .site-menu-panel__favorites { margin-top: 8px; border-top: 1px solid var(--line); padding-top: 8px; }
@@ -737,7 +754,7 @@ a:focus-visible {
 }
 
 .site-footer__copyright {
-  color: #536058;
+  color: var(--muted);
 }
 
 .site-footer__nav {
@@ -748,7 +765,7 @@ a:focus-visible {
 }
 
 .site-footer__nav a {
-  color: #425148;
+  color: var(--text);
   font-weight: 700;
 }
 
@@ -850,4 +867,27 @@ a:focus-visible {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+.site-header__inner,
+.site-footer__inner {
+  width: min(1200px, 100% - 48px);
+}
+
+@media (max-width: 800px) {
+  .site-header__mobile .site-header__inner {
+    width: calc(100% - 32px);
+    justify-content: space-between;
+    min-height: 60px;
+  }
+  .site-header__action { margin-left: 0; }
+  .site-menu-trigger { color: var(--text); background: var(--surface); border: 1px solid var(--line); }
+  .site-menu-trigger:hover,
+  .site-menu-trigger:active { color: var(--accent); background: var(--accent-soft); }
+  .site-menu-trigger__icon { display: none; }
+  .site-menu-panel { left: auto; right: 0; width: min(320px, calc(100vw - 32px)); }
+}
+
+@media (max-width: 599px) {
+  .site-footer__inner { width: calc(100% - 32px); }
 }

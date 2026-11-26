@@ -1,0 +1,107 @@
+:global(body):has(.home) {
+  background: #f5f7fa;
+}
+
+:global(.site-main):has(> .home) {
+  width: min(1200px, 100% - 48px);
+}
+
+.home {
+  --ink: #182b47;
+  --muted: #5d6d83;
+  --primary: #235dcc;
+  --line: #dbe3ef;
+  color: var(--ink);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 24px;
+  align-items: end;
+  padding: 32px 0 24px;
+}
+
+.hero h1 { margin: 0 0 12px; font-size: 2.25rem; line-height: 1.3; letter-spacing: -.04em; }
+.eyebrow { margin: 0 0 8px; color: var(--primary); font-size: .8125rem; font-weight: 700; }
+.intro { margin: 0; max-width: 780px; color: var(--muted); overflow-wrap: anywhere; }
+.summary { border-left: 1px solid var(--line); padding-left: 24px; }
+.summary strong { color: var(--primary); font-size: 1.75rem; }
+.summary p, .count { margin: 0; color: var(--muted); font-size: .8125rem; }
+
+.jump { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0 22px; }
+.jump a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fff;
+  font-size: .875rem;
+  font-weight: 700;
+}
+.jump a:first-child { background: var(--primary); color: #fff; border-color: var(--primary); }
+.jump a:hover:not(:first-child) { border-color: var(--primary); color: var(--primary); }
+
+.sectionHeading, .groupHeading { display: flex; align-items: center; gap: 12px; }
+.sectionHeading { justify-content: space-between; flex-wrap: wrap; margin-bottom: 13px; }
+.sectionHeading h2 { margin: 0; font-size: 1.5rem; letter-spacing: -.025em; }
+.sectionHeading a, .cardLink { color: var(--primary); font-size: .875rem; font-weight: 700; }
+.sectionHeading a:hover, .card:hover .cardLink { text-decoration: underline; }
+
+.directory, .cases, .principles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 16px;
+}
+.column { display: grid; gap: 16px; min-width: 0; }
+.anchor, .group { scroll-margin-top: 80px; }
+.group, .card { border: 1px solid var(--line); border-radius: 14px; background: #fff; padding: 16px 19px; min-width: 0; }
+.groupHeading { margin-bottom: 7px; }
+.groupHeading h3 { margin: 0; font-size: 1.125rem; }
+.icon { display: grid; place-items: center; flex: 0 0 38px; height: 38px; border-radius: 10px; background: #eaf1ff; color: var(--primary); }
+.count { margin-left: auto; }
+.group ul { margin: 0; padding: 0; list-style: none; }
+.group li + li { border-top: 1px solid #e9edf4; }
+.group li a { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 65px; padding: 10px 0; overflow-wrap: anywhere; }
+.group li a:hover strong { color: var(--primary); text-decoration: underline; }
+.group strong, .group small { display: block; }
+.group strong { font-size: .9375rem; line-height: 1.45; }
+.group small { color: var(--muted); font-size: .75rem; margin-top: 3px; }
+.arrow { color: var(--primary); font-size: 1.35rem; }
+
+.section, .latest { margin-top: 28px; }
+.latest:empty { display: none; }
+.latest > section { margin: 0; color: var(--ink); background: #fff; border-color: var(--line); }
+.latest a:hover { color: var(--primary); }
+.principles { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.cases, .principles { align-items: stretch; }
+.card { display: flex; flex-direction: column; gap: 8px; overflow-wrap: anywhere; }
+.card h3, .card p { margin: 0; }
+.card h3 { font-size: 1rem; }
+.card p { color: var(--muted); font-size: .875rem; }
+.cardLink { margin-top: auto; }
+.home :is(a, button):focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+
+@media (max-width: 959px) {
+  .hero { grid-template-columns: 1fr; }
+  .summary { display: none; }
+  .directory, .cases { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .column { display: contents; }
+  .principles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 599px) {
+  :global(.site-main):has(> .home) { width: calc(100% - 32px); }
+  .hero { padding: 23px 0 16px; }
+  .hero h1 { font-size: 1.625rem; }
+  .intro { font-size: .875rem; }
+  .jump { gap: 7px; padding-bottom: 18px; }
+  .jump a { padding-inline: 12px; font-size: .8125rem; }
+  .directory, .cases, .principles { grid-template-columns: 1fr; gap: 12px; }
+  .group, .card { padding: 15px 16px; }
+  .sectionHeading h2 { font-size: 1.3125rem; }
+  .sectionHeading a { font-size: .8125rem; }
+}

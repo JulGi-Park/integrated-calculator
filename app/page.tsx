@@ -4,6 +4,22 @@ import { KnowledgeLatestQuestions } from "@/components/knowledge/KnowledgeLatest
 import knowledgeHomeCases from "@/lib/knowledge/home-cases.json";
 import { knowledgeHomePublicEnabled } from "@/lib/knowledge/gates";
 
+import { CALCULATOR_REGISTRY, type CalculatorCategory } from "@/lib/calculatorRegistry";
+import styles from "./Home.module.css";
+
+const categoryColumns = [
+  [{ name: "급여", id: "pay", icon: "M7 7V4h10v3M3 12h18M10 12v3h4v-3M3 7h18v14H3z" }],
+  [
+    { name: "금융", id: "finance", icon: "m3 10 9-6 9 6M5 11v8m7-8v8m7-8v8M3 20h18" },
+    { name: "주거", id: "housing", icon: "m3 11 9-8 9 8M5 10v11h14V10M10 21v-7h4v7" },
+  ],
+  [
+    { name: "사업", id: "business", icon: "M4 5h16v14H4zM4 10h16M8 15h3m3 0h2" },
+    { name: "투자", id: "investment", icon: "M4 20V4m0 16h16M7 15l5-5 4 3 5-7m-5 0h5v5" },
+    { name: "생활", id: "living", icon: "m4 10 8-6 8 6v10H4zM8 14h8m-8 3h5" },
+  ],
+] as const satisfies readonly (readonly { name: CalculatorCategory; id: string; icon: string }[])[];
+
 const siteUrl = "https://gyesanbox.kr/";
 const homeTitle = "계산박스 | 기준·공식·해석을 함께 제공하는 생활 계산 서비스";
 const homeDescription =
@@ -286,78 +302,108 @@ export default function Home() {
   return (
     <>
       <JsonLdScripts items={jsonLdItems} />
-      <section className="hero">
-        <div className="hero__eyebrow">생활과 사업에 필요한 계산을 한곳에서</div>
-        <h1>계산박스</h1>
-        <p className="hero__description">
+      <div className={styles.home}>
+        <section className={styles.hero}>
+          <div>
+            <p className={styles.eyebrow}>생활과 사업에 필요한 계산을 한곳에서</p>
+            <h1>계산박스</h1>
+            <p className={styles.intro}>
           계산박스는 gyesanbox.kr에서 운영하는 생활·금융·근로 계산 서비스입니다.
           판매자 마진, 부가세, 연봉 실수령액, 대출 이자, 퇴직금, 실업급여처럼
           자주 필요한 계산 도구를 빠르게 찾아보세요. 각 계산기는 입력값 기준의
           예상 결과와 계산 기준, 입력값 설명, 유의사항을 함께 제공합니다. 입력한
           값은 서버에 저장하지 않으며, 결과는 실제 지급액·세금·대출 심사·정산
           결과와 다를 수 있는 참고값입니다.
-        </p>
-        {knowledgeEnabled ? <KnowledgeLatestQuestions enabled /> : null}
-        <a className="button button--primary" href="/calculators/">
-          계산기 목록 보기
-          <span aria-hidden="true">→</span>
-        </a>
-      </section>
+            </p>
+          </div>
+          <div className={styles.summary}>
+            <strong>{CALCULATOR_REGISTRY.length}개 계산기</strong>
+            <p>급여부터 금융·주거·사업까지</p>
+          </div>
+        </section>
 
-      {knowledgeEnabled && process.env.KNOWLEDGE_ENV === "production" ? (
-        <section className="home-calculators" aria-labelledby="home-cases-title">
-          <h2 id="home-cases-title">계산 사례</h2>
-          <div className="home-calculators__links">
-            {knowledgeHomeCases.map(({ href, title, description }) => (
-              <a className="calculator-card" key={href} href={href}>
-                <div>
-                  <h3>{title}</h3>
-                  <p>{description}</p>
-                </div>
-              </a>
+        <nav className={styles.jump} aria-label="계산기 분야">
+          <a href="#home-directory">전체 {CALCULATOR_REGISTRY.length}</a>
+          {categoryColumns.flat().map(({ name, id }) => (
+            <a href={`#home-${id}`} key={id}>{name}</a>
+          ))}
+        </nav>
+
+        <section id="home-directory" className={styles.anchor} aria-labelledby="home-calculators-title">
+          <div className={styles.sectionHeading}>
+            <h2 id="home-calculators-title">계산기 바로가기</h2>
+            <a href="/calculators/">전체 목록 보기 <span aria-hidden="true">→</span></a>
+          </div>
+          <div className={styles.directory}>
+            {categoryColumns.map((column) => (
+              <div className={styles.column} key={column[0].id}>
+                {column.map(({ name, id, icon }) => {
+                  const items = calculators.filter(({ href }) =>
+                    CALCULATOR_REGISTRY.some((item) => item.path === href && item.category === name),
+                  );
+                  return (
+                    <section className={styles.group} id={`home-${id}`} key={id} aria-labelledby={`home-${id}-heading`}>
+                      <div className={styles.groupHeading}>
+                        <span className={styles.icon} aria-hidden="true">
+                          <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                            <path d={icon} />
+                          </svg>
+                        </span>
+                        <h3 id={`home-${id}-heading`}>{name}</h3>
+                        <span className={styles.count}>{items.length}개</span>
+                      </div>
+                      <ul>
+                        {items.map(({ href, name, description }) => (
+                          <li key={href}>
+                            <a href={href}>
+                              <span><strong>{name}</strong><small>{description}</small></span>
+                              <span className={styles.arrow} aria-hidden="true">›</span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  );
+                })}
+              </div>
             ))}
           </div>
         </section>
-      ) : null}
 
-      <section className="home-calculators" aria-labelledby="home-calculators-title">
-        <div>
-          <p className="page-heading__eyebrow">Calculators</p>
-          <h2 id="home-calculators-title">바로가기</h2>
-        </div>
-        <div className="home-calculators__links">
-          {calculators.map((calculator) => (
-            <a className="calculator-card" key={calculator.href} href={calculator.href}>
-              <div>
-                <h3>{calculator.name}</h3>
-                <p>{calculator.description}</p>
-              </div>
-            </a>
-          ))}
-        </div>
-      </section>
+        {knowledgeEnabled ? (
+          <div className={styles.latest}><KnowledgeLatestQuestions enabled /></div>
+        ) : null}
 
-      <section className="home-calculators" aria-labelledby="home-principles-title">
-        <div>
-          <p className="page-heading__eyebrow">Principles</p>
-          <h2 id="home-principles-title">운영 기준</h2>
-        </div>
-        <div className="home-calculators__links">
-          {servicePrinciples.map((principle) => (
-            <article className="calculator-card" key={principle.title}>
-              <div>
-                <h3>{principle.title}</h3>
-                <p>{principle.description}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-        <p className="home-principles__link">
-          <a className="text-link" href="/methodology/">
-            계산 방법론과 검수 절차 보기 →
-          </a>
-        </p>
-      </section>
+        {knowledgeEnabled && process.env.KNOWLEDGE_ENV === "production" ? (
+          <section className={styles.section} aria-labelledby="home-cases-title">
+            <div className={styles.sectionHeading}><h2 id="home-cases-title">계산 사례</h2></div>
+            <div className={styles.cases}>
+              {knowledgeHomeCases.map(({ href, title, description }) => (
+                <a className={styles.card} key={href} href={href}>
+                  <h3>{title}</h3>
+                  <p>{description}</p>
+                  <span className={styles.cardLink}>사례 보기 <span aria-hidden="true">→</span></span>
+                </a>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <section className={styles.section} aria-labelledby="home-principles-title">
+          <div className={styles.sectionHeading}>
+            <h2 id="home-principles-title">운영 기준</h2>
+            <a href="/methodology/">계산 방법론과 검수 절차 보기 <span aria-hidden="true">→</span></a>
+          </div>
+          <div className={styles.principles}>
+            {servicePrinciples.map(({ title, description }) => (
+              <article className={styles.card} key={title}>
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
     </>
   );
 }

@@ -81,12 +81,15 @@ export function SiteHeader({ knowledgeEnabled = false }: { knowledgeEnabled?: bo
       </div>
       <div className="site-header__mobile">
         <div className="site-header__inner">
+          <Link className="brand" href="/" aria-label="계산박스 홈">
+            <span className="brand__mark" aria-hidden="true">=</span>
+            <span>계산박스</span>
+          </Link>
+          <div className="site-header__action"><FavoritesHeader showList={false} /></div>
           <button ref={triggerRef} type="button" className="site-menu-trigger" onClick={() => setOpen((value) => !value)} aria-expanded={open} aria-controls="site-menu-panel" aria-label={open ? "메뉴 닫기" : "메뉴 열기"}>
             <span className="site-menu-trigger__icon" aria-hidden="true"><span /><span /><span /></span>
             <span>메뉴</span>
           </button>
-          <Link className="brand" href="/" aria-label="계산박스 홈">계산박스</Link>
-          <div className="site-header__action"><FavoritesHeader showList={false} /></div>
           {open && <MobileMenuPanel items={items} onClose={() => setOpen(false)} />}
         </div>
       </div>

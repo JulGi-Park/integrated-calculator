@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { CalculatorCategoryFilter } from "@/components/calculators/CalculatorCategoryFilter";
 import { CALCULATOR_REGISTRY } from "@/lib/calculatorRegistry";
 
+import styles from "./Catalog.module.css";
+
 const ogTitle = "계산기 모음 - 부가세·연봉·4대보험·대출 계산";
 const ogDescription = "계산박스에서 제공하는 생활 계산기 목록입니다. 필요한 계산기를 선택해 빠르게 확인해보세요.";
 const ogUrl = "https://gyesanbox.kr/calculators/";
@@ -23,15 +25,16 @@ export const metadata: Metadata = {
 
 export default function CalculatorsPage() {
   return (
-    <section className="page-section">
+    <section className={`page-section ${styles.catalog}`}>
       <div className="page-heading">
-        <p className="page-heading__eyebrow">Calculators</p>
         <h1>계산기 목록</h1>
         <p>
           현재 공개 운영 중인 계산기 {CALCULATOR_REGISTRY.length}개를 모았습니다. 각 계산기는 입력값,
           계산 기준, 결과 해석과 주의사항을 함께 제공합니다.
         </p>
       </div>
+
+      <CalculatorCategoryFilter calculators={CALCULATOR_REGISTRY} />
 
       <div className="calculator-guide" aria-label="계산기 선택 안내">
         <article><h2>급여</h2><p>연봉 실수령액, 4대보험, 주휴수당, 퇴직금, 실업급여 등 급여·근로·지원 관련 계산을 확인합니다.</p></article>
@@ -41,8 +44,6 @@ export default function CalculatorsPage() {
         <article><h2>투자</h2><p>물타기·평단가처럼 추가 매수 후 평균단가와 손익 기준을 확인합니다.</p></article>
         <article><h2>생활</h2><p>자동차 유지비와 국비지원 자격증 취득비용 등 생활 과정의 비용을 계산합니다.</p></article>
       </div>
-
-      <CalculatorCategoryFilter calculators={CALCULATOR_REGISTRY} />
     </section>
   );
 }
