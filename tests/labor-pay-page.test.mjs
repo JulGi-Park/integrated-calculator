@@ -88,8 +88,9 @@ test("주휴시간 FAQ와 FAQPage JSON-LD는 최신 계산 기준을 같은 문�
     (faq) => faq.question === "주휴수당 계산식은 어떻게 되나요?",
   );
   assert.ok(formulaFaq);
-  assert.match(formulaFaq.answer, /1주 소정근로일 수/);
-  assert.match(formulaFaq.answer, /5일 기준으로 보정/);
+  assert.match(formulaFaq.answer, /4주간 본인의 총 소정근로시간/);
+  assert.match(formulaFaq.answer, /간편 계산은 주 5일 통상근로 형태를 가정/);
+  assert.match(formulaFaq.answer, /4주간 본인의 총 소정근로시간/);
 
   const formulaJsonLd = laborPayFaqJsonLd.mainEntity.find(
     (entry) => entry.name === formulaFaq.question,

@@ -11,16 +11,28 @@ export interface LaborPayRawInputs {
   averageWeeklyScheduledHours: string;
   weeklyWorkDays: string;
   includeMonthlyEstimate: boolean;
+  fourWeekScheduledHours: string;
+  ordinaryWorkerFourWeekWorkDays: string;
+  hasComparableWorker: boolean;
+  employmentWeeks: string;
+  employmentContinuesThroughHoliday: boolean;
+  mode: "quick" | "detailed";
 }
 
 export const initialLaborPayInput: LaborPayRawInputs = {
+  mode: "quick",
   hourlyWage: "10320",
   weeklyScheduledHours: "40",
   weeklyActualHours: "40",
   isFullAttendance: "",
   averageWeeklyScheduledHours: "",
-  weeklyWorkDays: "",
+  weeklyWorkDays: "5",
   includeMonthlyEstimate: false,
+  fourWeekScheduledHours: "",
+  ordinaryWorkerFourWeekWorkDays: "20",
+  hasComparableWorker: true,
+  employmentWeeks: "4",
+  employmentContinuesThroughHoliday: true,
 };
 
 function parseNumber(value: string): number | undefined {
@@ -38,6 +50,12 @@ export function parseLaborPayInput(input: LaborPayRawInputs): Partial<LaborPayIn
     averageWeeklyScheduledHours: parseNumber(input.averageWeeklyScheduledHours),
     weeklyWorkDays: parseNumber(input.weeklyWorkDays),
     includeMonthlyEstimate: input.includeMonthlyEstimate,
+    mode: input.mode,
+    fourWeekScheduledHours: parseNumber(input.fourWeekScheduledHours),
+    ordinaryWorkerFourWeekWorkDays: parseNumber(input.ordinaryWorkerFourWeekWorkDays),
+    hasComparableWorker: input.hasComparableWorker,
+    employmentWeeks: parseNumber(input.employmentWeeks),
+    employmentContinuesThroughHoliday: input.employmentContinuesThroughHoliday,
   };
 }
 

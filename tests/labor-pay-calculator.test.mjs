@@ -68,7 +68,7 @@ test("주 18시간·주 6일이면 1일 평균 3시간으로 주휴시간을 계
   assert.equal(data.weeklyHolidayHours, 3);
 });
 
-test("주 18시간·주 4일이면 5일 보정으로 주휴 3.6시간을 계산한다", () => {
+test("간편 모드는 통상근로일 입력을 그대로 분모로 사용한다", () => {
   const data = assertSuccess(
     calculateLaborPay({
       ...baseInput,
@@ -78,11 +78,11 @@ test("주 18시간·주 4일이면 5일 보정으로 주휴 3.6시간을 계산�
     }),
   );
 
-  assert.equal(data.effectiveWorkDays, 5);
-  assert.equal(data.weeklyHolidayHours, 3.6);
+  assert.equal(data.effectiveWorkDays, 4);
+  assert.equal(data.weeklyHolidayHours, 4.5);
 });
 
-test("주 15시간·주 3일이면 5일 보정으로 주휴 3시간을 계산한다", () => {
+test("간편 모드는 5일 가정이 기본이며 분모를 자동 보정하지 않는다", () => {
   const data = assertSuccess(
     calculateLaborPay({
       ...baseInput,
@@ -93,8 +93,56 @@ test("주 15시간·주 3일이면 5일 보정으로 주휴 3시간을 계산한
   );
 
   assert.equal(data.isEligible, true);
-  assert.equal(data.effectiveWorkDays, 5);
+  assert.equal(data.effectiveWorkDays, 3);
+  assert.equal(data.weeklyHolidayHours, 5);
+});
+
+test("상세 모드: 4주 60시간·통상근로일 20일은 3시간과 30,960원", () => {
+  const data = assertSuccess(calculateLaborPay({ ...baseInput, mode: "detailed", weeklyScheduledHours: 15, weeklyActualHours: 15, fourWeekScheduledHours: 60, ordinaryWorkerFourWeekWorkDays: 20, hasComparableWorker: true, employmentWeeks: 4, employmentContinuesThroughHoliday: true }));
+  assert.equal(data.eligibilityBasisHours, 15);
   assert.equal(data.weeklyHolidayHours, 3);
+  assert.equal(data.weeklyHolidayPay, 30_960);
+});
+
+test("상세 모드: 통상근로일 24일은 2.5시간과 25,800원", () => {
+  const data = assertSuccess(calculateLaborPay({ ...baseInput, mode: "detailed", weeklyScheduledHours: 15, weeklyActualHours: 15, fourWeekScheduledHours: 60, ordinaryWorkerFourWeekWorkDays: 24, hasComparableWorker: true, employmentWeeks: 4, employmentContinuesThroughHoliday: true }));
+  assert.equal(data.weeklyHolidayHours, 2.5);
+  assert.equal(data.weeklyHolidayPay, 25_800);
+});
+
+for (const [hours, days, expectedHours, expectedPay] of [
+  [96, 20, 4.8, 49_536],
+  [96, 24, 4, 41_280],
+]) {
+  test(`상세 모드: 4주 ${hours}시간·통상근로일 ${days}일 산정`, () => {
+    const data = assertSuccess(calculateLaborPay({ ...baseInput, mode: "detailed", weeklyScheduledHours: 24, weeklyActualHours: 24, fourWeekScheduledHours: hours, ordinaryWorkerFourWeekWorkDays: days, hasComparableWorker: true, employmentWeeks: 4, employmentContinuesThroughHoliday: true }));
+    assert.equal(data.weeklyHolidayHours, expectedHours);
+    assert.equal(data.weeklyHolidayPay, expectedPay);
+  });
+}
+
+test("상세 모드: 불규칙 4주 64시간·통상근로일 20일은 3.2시간", () => {
+  const data = assertSuccess(calculateLaborPay({ ...baseInput, mode: "detailed", weeklyScheduledHours: 20, weeklyActualHours: 20, fourWeekScheduledHours: 64, ordinaryWorkerFourWeekWorkDays: 20, hasComparableWorker: true, employmentWeeks: 4, employmentContinuesThroughHoliday: true }));
+  assert.equal(data.eligibilityBasisHours, 16);
+  assert.equal(data.weeklyHolidayHours, 3.2);
+  assert.equal(data.weeklyHolidayPay, 33_024);
+});
+
+test("상세 모드는 4주 미만이면 금액 대신 수동 확인을 요구한다", () => {
+  const data = assertSuccess(calculateLaborPay({ ...baseInput, mode: "detailed", fourWeekScheduledHours: 30, ordinaryWorkerFourWeekWorkDays: 20, hasComparableWorker: true, employmentWeeks: 2, employmentContinuesThroughHoliday: true }));
+  assert.equal(data.requiresManualReview, true);
+  assert.equal(data.isEligible, false);
+});
+
+test("상세 모드는 비교 근로자가 없으면 금액 산출을 보류한다", () => {
+  const data = assertSuccess(calculateLaborPay({ ...baseInput, mode: "detailed", fourWeekScheduledHours: 60, ordinaryWorkerFourWeekWorkDays: 20, hasComparableWorker: false, employmentWeeks: 4, employmentContinuesThroughHoliday: true }));
+  assert.equal(data.requiresManualReview, true);
+  assert.equal(data.weeklyHolidayPay, 0);
+});
+
+test("상세 모드는 주휴일 전 근로관계 종료 조건이면 금액 산출을 보류한다", () => {
+  const data = assertSuccess(calculateLaborPay({ ...baseInput, mode: "detailed", fourWeekScheduledHours: 60, ordinaryWorkerFourWeekWorkDays: 20, hasComparableWorker: true, employmentWeeks: 4, employmentContinuesThroughHoliday: false }));
+  assert.equal(data.requiresManualReview, true);
 });
 
 test("주 14시간이면 지급 대상이 아니다", () => {

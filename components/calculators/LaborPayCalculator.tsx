@@ -33,7 +33,7 @@ import styles from "./LaborPayCalculator.module.css";
 interface FieldDefinition {
   name: Exclude<LaborPayInputField, "isFullAttendance">;
   label: string;
-  unit: "원" | "시간" | "일";
+  unit: "원" | "시간" | "일" | "주";
   helper?: string;
 }
 
@@ -55,11 +55,14 @@ const fields: FieldDefinition[] = [
   },
   {
     name: "weeklyWorkDays",
-    label: "1주 소정근로일 수",
+    label: "통상근로자 기준 주 근로일 수",
     unit: "일",
     helper:
-      "근로계약 등에서 정한 1주 소정근로일 수를 입력합니다. 5일 미만이면 주휴시간은 5일 기준으로 계산합니다.",
+      "간편 계산은 통상근로자가 주 5일 근무한다고 가정합니다. 실제 근로일 수가 달라도 이 값을 통상근로자의 주 근무일 수로 입력하세요.",
   },
+  { name: "fourWeekScheduledHours", label: "4주간 본인 총 소정근로시간 (상세)", unit: "시간", helper: "불규칙 일정이면 계약상 4주 총 시간을 입력하세요." },
+  { name: "ordinaryWorkerFourWeekWorkDays", label: "통상근로자 4주 총 소정근로일 수 (상세)", unit: "일", helper: "주 5일이면 20일, 주 6일이면 24일입니다." },
+  { name: "employmentWeeks", label: "근로기간 (주, 상세)", unit: "주", helper: "4주 미만은 현재 근거로 계산하지 않습니다." },
 ];
 
 const labels: Record<LaborPayInputField, string> = {
@@ -68,7 +71,10 @@ const labels: Record<LaborPayInputField, string> = {
   weeklyActualHours: "실제 근로시간",
   isFullAttendance: "소정근로일 개근 여부",
   averageWeeklyScheduledHours: "4주 평균 주 소정근로시간",
-  weeklyWorkDays: "1주 소정근로일 수",
+  weeklyWorkDays: "통상근로자 기준 주 근로일 수",
+  fourWeekScheduledHours: "4주간 본인 총 소정근로시간",
+  ordinaryWorkerFourWeekWorkDays: "통상근로자 4주 총 소정근로일 수",
+  employmentWeeks: "근로기간",
 };
 
 function getErrorMessage(error: LaborPayValidationError) {
@@ -91,7 +97,7 @@ function getErrorMessage(error: LaborPayValidationError) {
     case "DAILY_SCHEDULED_HOURS_EXCEED_STANDARD_LIMIT":
       return `1일 평균 소정근로시간은 ${MAX_DAILY_SCHEDULED_HOURS}시간 이하로 입력해 주세요. 탄력적·교대제 등 특수 근무형태는 이 계산기의 안내 범위에 포함되지 않습니다.`;
     case "WORK_DAYS_OUT_OF_RANGE":
-      return "1주 소정근로일 수는 1일부터 7일 사이로 입력해 주세요.";
+      return "통상근로자 기준 주 근로일 수는 1일부터 7일 사이로 입력해 주세요.";
     case "MUST_BE_BOOLEAN":
       return "소정근로일 개근 여부를 선택해 주세요.";
   }
@@ -225,8 +231,16 @@ export function LaborPayCalculator() {
           <p>소수 시간 입력이 가능합니다.</p>
         </div>
 
+        <div className={styles.segmented} role="group" aria-label="계산 방식">
+          <button type="button" className={`${styles.segmentButton} ${input.mode === "quick" ? styles.segmentButtonActive : ""}`} aria-pressed={input.mode === "quick"} onClick={() => { setInput((v) => ({ ...v, mode: "quick" })); markStale(); }}>간편 계산 (주 5일 가정)</button>
+          <button type="button" className={`${styles.segmentButton} ${input.mode === "detailed" ? styles.segmentButtonActive : ""}`} aria-pressed={input.mode === "detailed"} onClick={() => { setInput((v) => ({ ...v, mode: "detailed" })); markStale(); }}>상세 계산 (4주 기준)</button>
+        </div>
+
         <div className={styles.fieldGrid}>
           {fields.map(({ name, label, unit, helper }) => {
+            if (name === "fourWeekScheduledHours" || name === "ordinaryWorkerFourWeekWorkDays" || name === "employmentWeeks") {
+              if (input.mode !== "detailed") return null;
+            } else if (input.mode === "detailed" && name === "weeklyWorkDays") return null;
             const fieldErrors = errorsByField[name] ?? [];
             const errorId = `${name}-error`;
 
@@ -321,6 +335,15 @@ export function LaborPayCalculator() {
             ))}
           </fieldset>
 
+          {input.mode === "detailed" ? <fieldset className={`${styles.field} ${styles.fieldFull}`}>
+            <legend className={styles.fieldLegend}>비교 가능한 통상근로자</legend>
+            <div className={styles.segmented}>
+              <button type="button" className={`${styles.segmentButton} ${input.hasComparableWorker ? styles.segmentButtonActive : ""}`} aria-pressed={input.hasComparableWorker} onClick={() => setInput((v) => ({ ...v, hasComparableWorker: true }))}>있음</button>
+              <button type="button" className={`${styles.segmentButton} ${!input.hasComparableWorker ? styles.segmentButtonActive : ""}`} aria-pressed={!input.hasComparableWorker} onClick={() => setInput((v) => ({ ...v, hasComparableWorker: false }))}>없음</button>
+            </div>
+            <label className={styles.checkboxRow}><input type="checkbox" checked={input.employmentContinuesThroughHoliday} onChange={(e) => setInput((v) => ({ ...v, employmentContinuesThroughHoliday: e.target.checked }))} /> 산정 대상 주의 주휴일 시점까지 근로관계 유지</label>
+          </fieldset> : null}
+
           <label className={`${styles.checkboxRow} ${styles.fieldFull}`}>
             <input
               name="includeMonthlyEstimate"
@@ -386,16 +409,16 @@ export function LaborPayCalculator() {
                     result.isEligible ? styles.eligible : styles.ineligible
                   }`}
                 >
-                  {result.isEligible ? "지급 대상" : "지급 대상 아님"}
+                  {result.requiresManualReview ? "추가 확인 필요" : result.isEligible ? "지급 요건 충족 가능" : "지급 요건 미충족"}
                 </span>
                 <p>예상 주휴수당</p>
-                <strong>{formatLaborPayWon(result.weeklyHolidayPay)}</strong>
+                <strong>{result.requiresManualReview ? "산정 불가" : formatLaborPayWon(result.weeklyHolidayPay)}</strong>
               </div>
 
               <dl className={styles.resultList}>
                 <div>
                   <dt>예상 주휴시간</dt>
-                  <dd>{formatLaborPayHours(result.weeklyHolidayHours)}</dd>
+                  <dd>{result.requiresManualReview ? "산정 불가" : formatLaborPayHours(result.weeklyHolidayHours)}</dd>
                 </div>
                 <div>
                   <dt>기본 근로임금</dt>
@@ -403,7 +426,7 @@ export function LaborPayCalculator() {
                 </div>
                 <div>
                   <dt>예상 주급 (주휴 포함)</dt>
-                  <dd>{formatLaborPayWon(result.weeklyPayIncludingHoliday)}</dd>
+                  <dd>{result.requiresManualReview ? "기본 근로임금만 표시" : formatLaborPayWon(result.weeklyPayIncludingHoliday)}</dd>
                 </div>
               <div>
                 <dt>판정 기준 시간</dt>
@@ -411,7 +434,7 @@ export function LaborPayCalculator() {
               </div>
               <div>
                 <dt>적용 소정근로일 수</dt>
-                <dd>{result.effectiveWorkDays}일</dd>
+                  <dd>{result.calculationMode === "detailed" ? `${input.ordinaryWorkerFourWeekWorkDays}일 / 4주` : `${result.effectiveWorkDays}일 / 주`}</dd>
               </div>
                 {result.monthlyEstimate !== null ? (
                   <div>
@@ -433,7 +456,7 @@ export function LaborPayCalculator() {
                 <div>
                   <dt>주휴시간 계산식</dt>
                   <dd>
-                    소정근로시간 / 적용 소정근로일 수 ({result.effectiveWorkDays}일)
+                    {result.appliedFormula}
                   </dd>
                 </div>
                 <div>

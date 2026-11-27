@@ -11,7 +11,12 @@ export type LaborPayInputField =
   | "weeklyActualHours"
   | "isFullAttendance"
   | "averageWeeklyScheduledHours"
-  | "weeklyWorkDays";
+  | "weeklyWorkDays"
+  | "fourWeekScheduledHours"
+  | "ordinaryWorkerFourWeekWorkDays"
+  | "employmentWeeks";
+
+export type LaborPayMode = "quick" | "detailed";
 
 export type LaborPayValidationCode =
   | "REQUIRED"
@@ -32,6 +37,12 @@ export interface LaborPayInput {
   averageWeeklyScheduledHours?: number;
   weeklyWorkDays: number;
   includeMonthlyEstimate?: boolean;
+  mode?: LaborPayMode;
+  fourWeekScheduledHours?: number;
+  ordinaryWorkerFourWeekWorkDays?: number;
+  hasComparableWorker?: boolean;
+  employmentWeeks?: number;
+  employmentContinuesThroughHoliday?: boolean;
 }
 
 export interface LaborPayValidationError {
@@ -51,6 +62,9 @@ export interface LaborPayResult {
   isBelowMinimumWage: boolean;
   reasons: string[];
   warnings: string[];
+  calculationMode: LaborPayMode;
+  requiresManualReview: boolean;
+  appliedFormula: string;
 }
 
 export type LaborPayResponse =
@@ -128,6 +142,23 @@ export function validateLaborPayInput(
     errors.push({ field: "isFullAttendance", code: "MUST_BE_BOOLEAN" });
   }
 
+  if (input.mode === "detailed") {
+    const fourWeekHours = input.fourWeekScheduledHours;
+    const comparatorDays = input.ordinaryWorkerFourWeekWorkDays;
+    if (!isFiniteNumber(fourWeekHours) || fourWeekHours <= 0 || fourWeekHours > 160) {
+      errors.push({ field: "fourWeekScheduledHours", code: "HOURS_OUT_OF_RANGE" });
+    }
+    if (!isFiniteNumber(comparatorDays) || comparatorDays < 1 || comparatorDays > 28) {
+      errors.push({ field: "ordinaryWorkerFourWeekWorkDays", code: "WORK_DAYS_OUT_OF_RANGE" });
+    }
+    if (typeof input.hasComparableWorker !== "boolean") {
+      errors.push({ field: "ordinaryWorkerFourWeekWorkDays", code: "MUST_BE_BOOLEAN" });
+    }
+    if (!isFiniteNumber(input.employmentWeeks) || input.employmentWeeks <= 0 || input.employmentWeeks > 52) {
+      errors.push({ field: "fourWeekScheduledHours", code: "HOURS_OUT_OF_RANGE" });
+    }
+  }
+
   const averageWeeklyScheduledHours = input.averageWeeklyScheduledHours;
   if (
     typeof averageWeeklyScheduledHours !== "undefined" &&
@@ -152,20 +183,16 @@ export function validateLaborPayInput(
   }
 
   const weeklyWorkDays = input.weeklyWorkDays;
-  if (typeof weeklyWorkDays === "undefined" || weeklyWorkDays === null) {
-    errors.push({ field: "weeklyWorkDays", code: "REQUIRED" });
-  } else if (!isFiniteNumber(weeklyWorkDays)) {
-    errors.push({ field: "weeklyWorkDays", code: "INVALID_NUMBER" });
-  } else if (weeklyWorkDays < 1 || weeklyWorkDays > 7) {
-    errors.push({ field: "weeklyWorkDays", code: "WORK_DAYS_OUT_OF_RANGE" });
-  } else if (
-    isFiniteNumber(weeklyScheduledHours) &&
-    weeklyScheduledHours / weeklyWorkDays > MAX_DAILY_SCHEDULED_HOURS
-  ) {
-    errors.push({
-      field: "weeklyScheduledHours",
-      code: "DAILY_SCHEDULED_HOURS_EXCEED_STANDARD_LIMIT",
-    });
+  if (input.mode !== "detailed") {
+    if (typeof weeklyWorkDays === "undefined" || weeklyWorkDays === null) {
+      errors.push({ field: "weeklyWorkDays", code: "REQUIRED" });
+    } else if (!isFiniteNumber(weeklyWorkDays)) {
+      errors.push({ field: "weeklyWorkDays", code: "INVALID_NUMBER" });
+    } else if (weeklyWorkDays < 1 || weeklyWorkDays > 7) {
+      errors.push({ field: "weeklyWorkDays", code: "WORK_DAYS_OUT_OF_RANGE" });
+    } else if (isFiniteNumber(weeklyScheduledHours) && weeklyScheduledHours / weeklyWorkDays > MAX_DAILY_SCHEDULED_HOURS) {
+      errors.push({ field: "weeklyScheduledHours", code: "DAILY_SCHEDULED_HOURS_EXCEED_STANDARD_LIMIT" });
+    }
   }
 
   return errors;
@@ -178,8 +205,11 @@ export function calculateLaborPay(input: LaborPayInput): LaborPayResponse {
     return { success: false, errors };
   }
 
+  const mode = input.mode ?? "quick";
   const eligibilityBasisHours =
-    typeof input.averageWeeklyScheduledHours === "number"
+    mode === "detailed" && typeof input.fourWeekScheduledHours === "number"
+      ? input.fourWeekScheduledHours / 4
+      : typeof input.averageWeeklyScheduledHours === "number"
       ? input.averageWeeklyScheduledHours
       : input.weeklyScheduledHours;
   const reasons: string[] = [];
@@ -200,10 +230,24 @@ export function calculateLaborPay(input: LaborPayInput): LaborPayResponse {
     );
   }
 
-  const isEligible = reasons.length === 0;
-  const effectiveWorkDays = Math.max(input.weeklyWorkDays, 5);
-  const calculatedHolidayHours =
-    input.weeklyScheduledHours / effectiveWorkDays;
+  const unsupported = mode === "detailed" &&
+    (!input.hasComparableWorker || input.employmentWeeks! < 4 || input.employmentContinuesThroughHoliday === false);
+  if (mode === "detailed" && !input.hasComparableWorker) {
+    warnings.push("비교 가능한 통상근로자가 없는 경우의 산정은 지원하지 않습니다. 고용노동부에 확인하세요.");
+  }
+  if (mode === "detailed" && input.employmentWeeks! < 4) {
+    warnings.push("근로기간이 4주 미만인 경우의 산정은 지원하지 않습니다. 고용노동부에 확인하세요.");
+  }
+  if (mode === "detailed" && input.employmentContinuesThroughHoliday === false) {
+    warnings.push("퇴사 주 및 근로관계 종료 시점은 이 계산기에서 판정하지 않습니다. 고용노동부에 확인하세요.");
+  }
+  const isEligible = reasons.length === 0 && !unsupported;
+  const effectiveWorkDays = mode === "detailed"
+    ? input.ordinaryWorkerFourWeekWorkDays! / 4
+    : input.weeklyWorkDays;
+  const calculatedHolidayHours = mode === "detailed"
+    ? input.fourWeekScheduledHours! / input.ordinaryWorkerFourWeekWorkDays!
+    : input.weeklyScheduledHours / effectiveWorkDays;
   const weeklyHolidayHours = isEligible
     ? roundToHours(calculatedHolidayHours)
     : 0;
@@ -228,6 +272,11 @@ export function calculateLaborPay(input: LaborPayInput): LaborPayResponse {
       isBelowMinimumWage,
       reasons,
       warnings,
+      calculationMode: mode,
+      requiresManualReview: unsupported,
+      appliedFormula: mode === "detailed"
+        ? "4주간 본인 소정근로시간 ÷ 통상근로자의 같은 기간 총 소정근로일수"
+        : `1주 소정근로시간 ÷ 통상근로자 기준 주 소정근로일 수(${input.weeklyWorkDays}일 가정)`,
     },
   };
 }
