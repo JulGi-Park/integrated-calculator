@@ -90,14 +90,15 @@ test("published detail returns metadata and question/answer in escaped initial H
 
 test("only approved HTTPS sources in official answers become links in initial HTML", async () => {
   const source = "https://www.law.go.kr/example?a=1&b=2";
-  const answerBody = `근거 (${source})에서 확인하세요.\nhttps://law.go.kr.evil.example/ https://law.go.kr@evil.example/ http://law.go.kr/ javascript:alert(1)`;
+  const kakaobank = "https://www.kakaobank.com/products/youthFutureSavings";
+  const answerBody = `근거 (${source})와 (${kakaobank})에서 확인하세요.\nhttps://law.go.kr.evil.example/ https://law.go.kr@evil.example/ http://law.go.kr/ javascript:alert(1)`;
   const { renderKnowledgeQuestion } = await import("../pages-functions/knowledge-seo.ts");
   const html = renderKnowledgeQuestion({ ...question, body: source, answer: { body: answerBody } });
   const dom = new JSDOM(html);
   const document = dom.window.document;
   assert.equal(document.querySelectorAll(".knowledge-question-body a").length, 0);
   const links = [...document.querySelectorAll(".knowledge-answer__body a")];
-  assert.deepEqual(links.map((link) => link.href), [source]);
+  assert.deepEqual(links.map((link) => link.href), [source, kakaobank]);
   assert.ok(document.querySelector(".knowledge-answer__body p").innerHTML.includes("</a>)에서"));
   assert.equal(document.querySelector(".knowledge-answer__body p").textContent, answerBody.replace("\n", ""));
   dom.window.close();

@@ -6,6 +6,10 @@ const verifiedRoots = [
   "kebhana.com", "help.sell.smartstore.naver.com",
 ];
 
+const approvedExactUrls = new Set([
+  "https://www.kakaobank.com/products/youthFutureSavings",
+]);
+
 export function splitKnowledgeAnswerLinks(text: string): Array<string | { label: string; href: string }> {
   const parts: Array<string | { label: string; href: string }> = [];
   let cursor = 0;
@@ -18,7 +22,9 @@ export function splitKnowledgeAnswerLinks(text: string): Array<string | { label:
       continue;
     }
     if (url.protocol !== "https:" || url.username || url.password || url.port) continue;
-    if (!verifiedRoots.some((root) => url.hostname === root || url.hostname.endsWith(`.${root}`))) continue;
+    const approvedExactUrl = approvedExactUrls.has(label) && url.href === label;
+    const verifiedRoot = verifiedRoots.some((root) => url.hostname === root || url.hostname.endsWith(`.${root}`));
+    if (!approvedExactUrl && !verifiedRoot) continue;
 
     parts.push(text.slice(cursor, match.index), { label, href: url.href });
     cursor = match.index + label.length;
