@@ -9,7 +9,7 @@ const criteria = [
 ];
 
 const exclusions = [
-  "무이자 할부와 부분 무이자",
+  "카드사 무이자 행사 자동 조회, 일부 회차에만 수수료가 붙는 부분 무이자",
   "카드사·가맹점 이벤트, 청구 할인, 즉시 할인",
   "포인트 사용, 캐시백, 선결제, 중도상환",
   "연체이자, 결제일별 일수 차이, 카드사 내부 원 단위 처리 차이",
@@ -29,7 +29,7 @@ export const cardInstallmentFaqs = [
   {
     question: "부분 무이자는 계산할 수 있나요?",
     answer:
-      "이 계산기는 전체 기간에 같은 연 수수료율을 적용하는 단순 추정 도구입니다. 부분 무이자 조건은 직접 반영하지 않습니다.",
+      "이 계산기는 전체 기간에 같은 연 수수료율을 적용하는 단순 추정 도구입니다. 가령 12개월 중 처음 3회차만 고객 부담이라면, 연 수수료율을 입력한 뒤 월별 내역에서 1~3회차 수수료만 더하세요. 이 페이지의 120만 원 예시에서는 12,000원, 11,000원, 10,000원을 합한 33,000원입니다.",
   },
   {
     question: "확정 청구금액으로 볼 수 있나요?",
@@ -44,7 +44,7 @@ export function CardInstallmentContent() {
       <section className={styles.contentSection} aria-labelledby="criteria-title">
         <div className={styles.sectionHeading}>
           <h2 id="criteria-title">계산 기준</h2>
-          <p>코드, 테스트, 화면 설명이 같은 기준을 사용합니다.</p>
+          <p>카드사 앱에 표시된 연 할부 수수료율을 입력하세요. 매달 갚은 원금만큼 다음 달 수수료가 줄어듭니다.</p>
         </div>
         <ul className={styles.pointList}>
           {criteria.map((item) => (
