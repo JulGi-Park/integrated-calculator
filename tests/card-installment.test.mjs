@@ -30,10 +30,10 @@ test("카드 할부 계산기는 전용 Open Graph와 Twitter 이미지를 사�
 test("카드 할부 검색결과 제목과 설명은 실제 직접입력 계약을 명확히 한다", () => {
   assert.equal(
     metadata.title,
-    "카드 할부 계산기 | 수수료율 직접 입력·총 납부액",
+    "카드 할부 계산기 | 할부 이자·회차별 납부액",
   );
   assert.match(metadata.description, /연 할부 수수료율을 직접 입력/);
-  assert.match(metadata.description, /부분 무이자 조건은 반영하지 않습니다/);
+  assert.match(metadata.description, /6개월·12개월 비용 비교/);
 });
 
 const baseInput = {

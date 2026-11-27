@@ -1,3 +1,4 @@
+import { calculateCardInstallment } from "@/lib/calculators/card-installment/calculate";
 import styles from "./CardInstallmentCalculator.module.css";
 
 const criteria = [
@@ -14,6 +15,11 @@ const exclusions = [
   "포인트 사용, 캐시백, 선결제, 중도상환",
   "연체이자, 결제일별 일수 차이, 카드사 내부 원 단위 처리 차이",
 ];
+
+const comparisonInput = { purchaseAmount: 1_200_000, annualFeeRatePercent: 12 };
+const sixMonths = calculateCardInstallment({ ...comparisonInput, installmentMonths: 6 });
+const twelveMonths = calculateCardInstallment({ ...comparisonInput, installmentMonths: 12 });
+const won = new Intl.NumberFormat("ko-KR");
 
 export const cardInstallmentFaqs = [
   {
@@ -100,6 +106,26 @@ export function CardInstallmentContent() {
         </div>
       </section>
 
+      <section className={styles.contentSection} aria-labelledby="duration-title">
+        <div className={styles.sectionHeading}>
+          <h2 id="duration-title">카드 할부 이자, 6개월과 12개월 비교</h2>
+          <p>같은 120만 원을 두 기간 모두 연 12%로 결제한다고 했을 때의 예상액입니다.</p>
+        </div>
+        <ul className={styles.pointList}>
+          {[sixMonths, twelveMonths].map(({ installmentMonths, schedule, totalFee, totalPayment }) => (
+            <li key={installmentMonths}>
+              <strong>{installmentMonths}개월</strong> · 첫 달 {won.format(schedule[0].monthlyPayment)}원,
+              총 수수료 {won.format(totalFee)}원, 총 납부액 {won.format(totalPayment)}원
+            </li>
+          ))}
+          <li>
+            12개월은 6개월보다 첫 달에 {won.format(sixMonths.schedule[0].monthlyPayment - twelveMonths.schedule[0].monthlyPayment)}원
+            적게 내지만, 총 수수료는 {won.format(twelveMonths.totalFee - sixMonths.totalFee)}원 더 냅니다.
+            내 결제 조건을 비교할 때는 할부 기간마다 카드사가 제시한 수수료율을 각각 입력하세요.
+          </li>
+        </ul>
+      </section>
+
       <section className={styles.contentSection} aria-labelledby="exclusion-title">
         <div className={styles.sectionHeading}>
           <h2 id="exclusion-title">적용되지 않는 예외</h2>
@@ -133,9 +159,14 @@ export function CardInstallmentContent() {
         </div>
         <p className={styles.bodyText}>
           이 계산기는 사용자가 입력한 연 할부 수수료율을 기준으로 잔여 원금
-          방식의 월별 예상 수수료를 계산합니다. 실제 수수료율은 카드사, 회원
-          등급, 결제 시점, 가맹점, 이벤트에 따라 달라질 수 있으므로 카드사
-          앱·홈페이지·고객센터의 공식 수수료율과 청구 조건을 우선 확인하세요.
+          방식의 월별 예상 수수료를 계산합니다.{" "}
+          <a className="text-link" href="https://www.bccard.com/app/card/ContentsLinkActn.do?pgm_id=ind1084">
+            BC카드 금융소비자 가이드
+          </a>
+          에서는 할부잔액과 실제 사용일수로 수수료를 산정하는 방식을 안내합니다.
+          계산박스는 연 수수료율을 12로 나눠 월 수수료율을 구하므로 실제 청구액과
+          차이가 날 수 있습니다. 결제 전에는 카드사 앱이나 명세서에서 본인에게
+          적용되는 수수료율과 청구 조건을 확인하세요.
         </p>
       </section>
 

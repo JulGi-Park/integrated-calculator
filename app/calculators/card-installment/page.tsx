@@ -8,9 +8,9 @@ import {
 import { JsonLdScripts } from "@/components/common/JsonLdScripts";
 import design from "@/components/calculators/CardInstallmentDesignTokens.module.css";
 
-const title = "카드 할부 계산기 | 수수료율 직접 입력·총 납부액";
+const title = "카드 할부 계산기 | 할부 이자·회차별 납부액";
 const description =
-  "구매금액·할부 개월 수·연 할부 수수료율을 직접 입력해 월별 수수료와 총 납부액을 추정합니다. 카드사별 실제 요율과 부분 무이자 조건은 반영하지 않습니다.";
+  "구매금액, 할부 기간, 본인에게 적용되는 연 할부 수수료율을 직접 입력해 회차별 납부액과 총 수수료를 확인하세요. 6개월·12개월 비용 비교 예시도 볼 수 있습니다.";
 const ogUrl = "https://gyesanbox.kr/calculators/card-installment/";
 const ogImage = "https://gyesanbox.kr/og/card-installment.png";
 
@@ -97,8 +97,8 @@ export default function CardInstallmentPage() {
         <p className="page-heading__eyebrow">Card installment</p>
         <h1>카드 할부 계산기</h1>
         <p>
-          구매금액, 할부 개월 수, 연 할부 수수료율을 입력해 월별 수수료와
-          총 납부액을 추정합니다.
+          카드 할부 이자로 얼마나 더 내는지 확인해 보세요. 구매금액, 할부 기간과
+          연 수수료율을 입력하면 회차별 납부액과 총 수수료를 계산합니다.
         </p>
         <div className="seller-margin-meta">
           <span>계산 기준일: 2026년 8월 9일</span>
