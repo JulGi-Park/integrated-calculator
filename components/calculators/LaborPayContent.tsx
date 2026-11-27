@@ -68,8 +68,9 @@ export function LaborPayContent() {
           <article className={styles.infoCard}>
             <h3>15시간 기준</h3>
             <p>
-              4주 평균 또는 해당 기간의 1주 소정근로시간이 15시간 이상인지
-              먼저 확인합니다.
+              근로계약에서 정한 시간을 기준으로 4주간 평균을 냅니다.
+              근로기간이 4주보다 짧으면 그 기간을 평균합니다.
+              주 평균이 15시간 이상인지 먼저 확인하세요.
             </p>
           </article>
           <article className={styles.infoCard}>
@@ -121,9 +122,11 @@ export function LaborPayContent() {
         </div>
         <ul className={styles.exclusionList}>
           <li>
-            주휴시간은 원칙적으로 1주 소정근로시간을 1주 소정근로일 수로
-            나누어 계산합니다. 일반적인 경우 소정근로일이 5일 미만이면 5일
-            기준으로 보정합니다.
+            단시간 근로자의 법정 산정 기준은 4주간 본인의 소정근로시간을
+            같은 기간 통상 근로자의 총 소정근로일 수로 나누는 방식입니다.
+            이 계산기는 해당 주의 시간과 근로일 수로 추정하며, 입력한
+            근로일이 5일 미만이면 5일을 적용합니다. 주별 일정이나
+            통상 근로자의 근무일이 다르면 실제 금액과 차이가 날 수 있습니다.
           </li>
           <li>
             이 계산기는 1주 40시간·1일 평균 8시간 이하의 일반적인 근무형태를
@@ -145,8 +148,8 @@ export function LaborPayContent() {
         <div className={styles.sectionHeading}>
           <h2 id="labor-example">계산 예시</h2>
           <p>
-            아래 예시는 2026년 최저임금과 주 20시간 개근을 가정한 사례입니다.
-            하루 4시간·주 5일 근무와 주 15시간 경계도 함께 보여드립니다.
+            시급 10,320원에 하루 4시간씩 주 5일을 모두 근무한 사례입니다.
+            15시간 경계와 근무시간이 주마다 달라지는 경우도 확인할 수 있습니다.
           </p>
         </div>
         <div className={styles.exampleGrid}>
@@ -200,7 +203,7 @@ export function LaborPayContent() {
       <section className={styles.section} aria-labelledby="labor-sources">
         <div className={styles.sectionHeading}>
           <h2 id="labor-sources">공식 출처</h2>
-          <p>계산 기준 문구는 아래 공식 자료를 2026년 8월 15일 확인해 정리했습니다.</p>
+          <p>주휴일 요건과 단시간 근로자의 산정 기준은 아래 공식 자료에서 확인할 수 있습니다.</p>
         </div>
         <ul className={styles.exclusionList}>
           {laborPayOfficialSources.map((source) => (

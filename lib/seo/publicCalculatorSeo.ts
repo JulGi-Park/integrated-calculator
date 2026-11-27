@@ -92,9 +92,9 @@ export const PUBLIC_CALCULATOR_SEO = {
   "labor-pay": {
     slug: "labor-pay",
     path: "/calculators/labor-pay/",
-    title: "알바 주급·주휴수당 계산기 2026 | 시급·근무시간 기준",
+    title: "주휴수당 계산기 | 2026 알바 주급·주 15시간 기준",
     description:
-      "시급과 주간 근무시간을 입력해 기본 근로임금, 주휴수당, 주휴 포함 예상 주급을 계산하고 주 15시간 기준과 개근 여부를 확인합니다.",
+      "시급과 계약상·실제 근무시간, 개근 여부를 입력해 예상 주휴수당과 주휴 포함 알바 주급을 계산하세요. 주 15시간 기준과 4주 평균 입력 예시를 확인할 수 있습니다.",
     image: "https://gyesanbox.kr/og/labor-pay-hero.png",
     imagePath: "/og/labor-pay-hero.png",
     imageAlt: "주휴수당 계산기 — 시급과 근로시간 기준 주급 계산",

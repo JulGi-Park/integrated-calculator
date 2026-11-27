@@ -11,7 +11,7 @@ import {
 test("주휴수당 계산기 페이지는 공개 메타데이터와 색인 허용 설정을 가진다", () => {
   assert.equal(
     metadata.title,
-    "알바 주급·주휴수당 계산기 2026 | 시급·근무시간 기준",
+    "주휴수당 계산기 | 2026 알바 주급·주 15시간 기준",
   );
   assert.equal(metadata.robots.index, true);
   assert.equal(metadata.robots.follow, true);
