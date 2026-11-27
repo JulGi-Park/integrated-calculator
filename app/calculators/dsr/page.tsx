@@ -64,6 +64,12 @@ export default function DsrPage() {
           공식 부채산정 기준의 일반 DSR과 2026년 하반기 공식 스트레스
           DSR을 자동 계산합니다.
         </p>
+        <p>
+          약정금리 입력란에는 은행에서 안내받은 금리를 그대로 넣으세요.
+          하반기 스트레스 금리를 미리 더하면 심사용 금리가 이중으로 반영됩니다.
+          지역과 금리 유형에 따른 적용 기준은{" "}
+          <a href="#dsr-sources-heading">2026년 하반기 스트레스 DSR 운영방안과 공식 출처</a>에서 확인할 수 있습니다.
+        </p>
         <div className="seller-margin-meta">
           <span>계산 기준일: {dsrPolicySummary.verifiedAt}</span>
           <span>
