@@ -41,6 +41,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <PolicyPageLayout
+      current="/about/"
       eyebrow="About"
       title="계산박스 소개"
       description="계산박스는 대한민국 사용자가 생활·금융·근로·사업·주거 계산의 기준과 결과를 함께 이해하도록 돕는 계산 전문 정보 서비스입니다."

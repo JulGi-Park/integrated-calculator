@@ -39,6 +39,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <PolicyPageLayout
+      current="/terms/"
       eyebrow="Terms"
       title="이용약관"
       description="계산박스 서비스를 이용할 때 참고할 기본 조건을 안내합니다."

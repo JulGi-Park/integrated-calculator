@@ -226,7 +226,7 @@ test("홈 JSON-LD ItemList는 공개 계산기만 유지한다", async () => {
 test("방법론·변경 이력 페이지는 공개 SEO와 JSON-LD를 갖는다", async () => {
   for (const [file, path, title, required] of [
     ["app/methodology/page.tsx", "/methodology/", "계산 방법론 | 계산박스", ["공식 출처 우선순위", "기준일은 자료를 확인한 날짜", "합계금액 10,000원", "하한 41만원", "14시간과 15시간", "NaN", "Infinity", "브라우저 중심", "개인별 세무·노무·금융 상담"]],
-    ["app/updates/page.tsx", "/updates/", "계산기 변경 이력 | 계산박스", ["2026년 6월 19일", "2026년 6월 22일", "2026년 6월 25일", "2026년 7월 10일", "2026년 7월 11일", "2026년 7월 12일", "2026년 7월 13일", "2026년 7월 27일", "상세 페이지 보기"]],
+    ["app/updates/page.tsx", "/updates/", "계산박스 변경 이력 | 계산박스", ["2026년 6월 19일", "2026년 6월 22일", "2026년 6월 25일", "2026년 7월 10일", "2026년 7월 11일", "2026년 7월 12일", "2026년 7월 13일", "2026년 7월 27일", "상세 페이지 보기"]],
   ]) {
     const source = await readFile(file, "utf8");
     assert.equal((source.match(/<h1/g) ?? []).length, 0);
@@ -319,8 +319,17 @@ test("변경 이력은 신규 공개와 전세·월세 변경을 최신순으로
     .map(([, year, month, day]) => Date.UTC(Number(year), Number(month) - 1, Number(day)));
 
   assert.ok(dates.length > 0);
-  assert.equal(dates[0], Date.UTC(2026, 9, 12));
+  assert.equal(dates[0], Date.UTC(2026, 10, 27));
   assert.deepEqual(dates, [...dates].sort((a, b) => b - a));
+  assert.equal((html.match(/2026년 11월 27일/g) ?? []).length, 1);
+  assert.match(html, /<h1>계산박스 변경 이력<\/h1>/);
+  assert.match(html, /신규 계산기 추가, 계산 기준 변경, 기능 개선, 디자인 개편 및 사용자 편의성 향상/);
+  assert.match(html, /계산박스 웹사이트 디자인 개편/);
+  assert.match(html, /메인페이지와 계산기 목록의 탐색 UI, 공개 계산기 21종의 주요 화면 디자인/);
+  assert.match(html, /공통 헤더·푸터/);
+  assert.match(html, /소개·계산 방법론·변경 이력·문의·개인정보처리방침·이용약관·면책문구 7개 안내 페이지/);
+  assert.match(html, /지식센터 목록·상세·질문 작성 화면/);
+  assert.match(html, /#f5f7fa/);
   assert.match(html, /계산기 검색과 핵심 결과 판단 안내/);
   assert.match(html, /핵심 계산기 8개의 결과 화면/);
   assert.match(html, /계산박스 상표등록출원 및 브랜드 식별 신호/);
@@ -338,7 +347,7 @@ test("변경 이력은 신규 공개와 전세·월세 변경을 최신순으로
   assert.match(html, /13\.14%/);
   assert.match(html, /0\.9%/);
   assert.doesNotMatch(html, /13\.139999999999999|0\.8999999999999999/);
-  assert.match(html, /주요 계산기와 지식센터 기능, 계산 기준 변경 중/);
+  assert.doesNotMatch(html, /주요 계산기와 지식센터 기능, 계산 기준 변경 중/);
 });
 
 test("신규 페이지는 H1 하나와 파싱 가능한 WebPage·BreadcrumbList JSON-LD를 렌더링한다", () => {

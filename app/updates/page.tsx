@@ -4,9 +4,9 @@ import { PolicyPageLayout } from "@/components/common/PolicyPageLayout";
 import { knowledgeBuildGates } from "@/lib/knowledge/gates.mjs";
 
 const canonical = "https://gyesanbox.kr/updates/";
-const title = "계산기 변경 이력 | 계산박스";
+const title = "계산박스 변경 이력 | 계산박스";
 const description =
-  "계산박스 공개 계산기, 지식센터와 신뢰 페이지에서 확인 가능한 기준·기능 변경 이력을 안내합니다.";
+  "계산박스의 신규 계산기 추가, 계산 기준 변경, 기능 개선, 디자인 개편 및 사용자 편의성 향상 등 주요 서비스 변경 사항을 기록합니다.";
 const ogImage = "https://gyesanbox.kr/og/policy.png";
 
 export const metadata: Metadata = {
@@ -29,7 +29,7 @@ const jsonLdItems = [
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "계산박스", item: "https://gyesanbox.kr/" },
-      { "@type": "ListItem", position: 2, name: "변경 이력", item: canonical },
+      { "@type": "ListItem", position: 2, name: "계산박스 변경 이력", item: canonical },
     ],
   },
   {
@@ -54,6 +54,14 @@ const trainingCertificateCostReleaseUpdate = {
 } as const;
 
 const recentUpdates = [
+  {
+    date: "2026년 11월 27일",
+    target: "계산박스 웹사이트 디자인 개편",
+    change: "메인페이지와 계산기 목록의 탐색 UI, 공개 계산기 21종의 주요 화면 디자인을 개선하고, 공통 헤더·푸터를 정리했습니다. 소개·계산 방법론·변경 이력·문의·개인정보처리방침·이용약관·면책문구 7개 안내 페이지와 지식센터 목록·상세·질문 작성 화면에도 같은 디자인 체계를 적용했습니다. 페이지 배경을 #f5f7fa로 통일하고 모바일 화면의 읽기와 이동 흐름을 다듬었습니다.",
+    reason: "계산 정보를 읽고 다른 안내 페이지로 이동하는 흐름을 분명하게 하고, 지식센터에서도 질문과 답변을 편하게 살펴볼 수 있도록 하기 위해서입니다.",
+    evidence: "메인페이지·계산기 목록·계산기 상세, 소개·정책 페이지의 공통 안내 메뉴와 본문, 지식센터의 검색·질문 목록·상세·작성 화면에서 확인할 수 있습니다. 320·390·768·1440px 화면에서 배경색과 반응형 배치를 확인했습니다.",
+    href: "/knowledge/",
+  },
   {
     date: "2026년 10월 12일",
     target: "홈페이지 지식센터 최신 질문과 로딩 안내",
@@ -274,9 +282,10 @@ export default function UpdatesPage() {
     <>
       <JsonLdScripts items={jsonLdItems} />
       <PolicyPageLayout
+        current="/updates/"
         eyebrow="Updates"
-        title="계산기 변경 이력"
-        description="계산박스의 주요 계산기와 지식센터 기능, 계산 기준 변경 중 현재 공개 페이지와 코드에서 확인할 수 있는 내용을 기록합니다."
+        title="계산박스 변경 이력"
+        description={description}
       >
         {updates.map((update) => (
           <section key={`${update.date}-${update.target}`}>

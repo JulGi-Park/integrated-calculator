@@ -40,6 +40,7 @@ export const metadata: Metadata = {
 export default function DisclaimerPage() {
   return (
     <PolicyPageLayout
+      current="/disclaimer/"
       eyebrow="Disclaimer"
       title="면책문구"
       description="계산박스 계산 결과의 참고용 성격과 실제 적용 기준 차이를 안내합니다."

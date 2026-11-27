@@ -52,6 +52,7 @@ export default function MethodologyPage() {
     <>
       <JsonLdScripts items={jsonLdItems} />
       <PolicyPageLayout
+        current="/methodology/"
         eyebrow="Methodology"
         title="계산 방법론"
         description="계산박스가 계산 기준을 조사하고 결과를 검수·갱신하는 방법을 공개합니다."

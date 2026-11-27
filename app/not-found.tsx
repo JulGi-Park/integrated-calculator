@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import styles from "@/components/common/PolicyPageLayout.module.css";
 
 export const metadata: Metadata = {
   title: "페이지를 찾을 수 없습니다 | 계산박스",
@@ -9,8 +10,8 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <section className="page-section">
-      <div className="page-heading">
+    <section className={`page-section policy-page ${styles.shell}`}>
+      <div className={`page-heading ${styles.heading}`}>
         <p className="page-heading__eyebrow">404</p>
         <h1>페이지를 찾을 수 없습니다</h1>
         <p>
@@ -19,7 +20,7 @@ export default function NotFound() {
         </p>
       </div>
       <nav className="link-row" aria-label="오류 페이지 이동">
-        <Link className="button button--primary" href="/">
+        <Link className={`button button--primary ${styles.errorHome}`} href="/">
           홈으로 이동
         </Link>
         <Link className="text-link" href="/calculators/">

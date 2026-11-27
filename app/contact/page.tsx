@@ -40,6 +40,7 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <PolicyPageLayout
+      current="/contact/"
       eyebrow="Contact"
       title="문의"
       description="계산박스 이용 중 확인이 필요한 내용은 이메일로 보내 주세요."

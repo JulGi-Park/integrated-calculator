@@ -1,0 +1,77 @@
+.shell:global(.policy-page) {
+  width: min(100%, 1200px);
+  max-width: 1200px;
+  margin-inline: auto;
+  padding: 32px clamp(16px, 3vw, 32px) 64px;
+  color: #182b47;
+  background: #f5f7fa;
+}
+:global(body):has(.shell) {
+  background: #f5f7fa;
+}
+.heading:global(.policy-page__heading) { max-width: 840px; margin-bottom: 24px; }
+.heading:global(.page-heading) h1 { font-size: clamp(26px, 4vw, 34px); }
+.heading:global(.page-heading) > p:last-child { color: #5d6d83; }
+.heading p:first-child { color: #235dcc; }
+.grid {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 840px);
+  gap: 24px;
+  align-items: start;
+}
+.desktopGuide, .mobileGuide, .document {
+  background: #fff;
+  border: 1px solid #dbe3ef;
+  border-radius: 14px;
+}
+.desktopGuide, .mobileGuide { padding: 16px; }
+.desktopGuide > p { margin: 0 0 8px; font-weight: 700; }
+.mobileGuide { display: none; }
+.mobileGuide summary { cursor: pointer; font-weight: 700; }
+.guideLinks { display: grid; gap: 4px; }
+.guideLinks a {
+  display: block;
+  padding: 8px 10px;
+  color: #182b47;
+  border-radius: 7px;
+}
+.guideLinks a:hover, .guideLinks a[aria-current="page"] {
+  color: #235dcc;
+  background: #edf3ff;
+}
+.guideLinks a[aria-current="page"] { font-weight: 700; }
+.document {
+  max-width: 840px;
+  padding: clamp(16px, 4vw, 36px);
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+.document:global(.policy-page__content) :is(p, ul) { color: #182b47; font-size: inherit; line-height: inherit; }
+.document:global(.policy-page__content) a { color: #235dcc; }
+.document section:last-child { margin-bottom: 0; padding-bottom: 0; }
+.document[data-guide="/updates/"] > section {
+  border-left: 2px solid #d4e3fc;
+  padding-left: 16px;
+}
+.document[data-guide="/updates/"] > section > h2 + p { color: #235dcc; font-weight: 700; }
+.document[data-guide="/contact/"] > section:first-child {
+  padding: 16px;
+  border: 1px solid #dbe3ef;
+  border-radius: 10px;
+  background: #f5f8ff;
+}
+@media (max-width: 959px) {
+  .grid { grid-template-columns: 190px minmax(0, 1fr); gap: 16px; }
+}
+@media (max-width: 599px) {
+  .shell:global(.policy-page) { padding-block: 24px 48px; }
+  .grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .desktopGuide { display: none; }
+  .mobileGuide { display: block; }
+  .mobileGuide[open] > nav { margin-top: 10px; }
+}
+
+.errorHome:global(.button--primary) { color: #fff; background: #235dcc; }
+.errorHome:global(.button--primary):hover { background: #194aa9; }

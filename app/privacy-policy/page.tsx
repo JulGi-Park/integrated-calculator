@@ -39,6 +39,7 @@ export const metadata: Metadata = {
 export default function PrivacyPolicyPage() {
   return (
     <PolicyPageLayout
+      current="/privacy-policy/"
       eyebrow="Privacy"
       title="개인정보처리방침"
       description="계산박스의 개인정보 처리 기준과 쿠키, 광고, 분석 도구 사용 가능성을 안내합니다."
